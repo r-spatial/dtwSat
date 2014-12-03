@@ -19,7 +19,8 @@
 #' and a window size, e.g. c("sg", "2", "3").
 #' @docType methods
 #' @export
-timeSeriesSmoothing = function(x, y=NULL, timeline, frequency, method=c("wavelet",1))
+timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
+                               method=c("wavelet",1))
 {
   if( missing(x) )
     stop("Missing either a numeric vector or a zoo object.")      
@@ -66,31 +67,41 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency, method=c("wavelet
 
 
 
-
 #' @title Satellite image time series analysis. 
 #' 
 #' @description This function applies an open boundary DTW analysis and 
 #' retrieves all possible alignments of a query within a template.
 #' It also allows to compute some statistics for each dtw match.
 #' 
-#' @param query A zoo object with the query time series  
+#' @param query A zoo object with the query time series.
 #' @param template A zoo object with the template time series. 
 #' It must be larger than the query.
-#' @param theta A real between 1 and 0. It is a parameter for dtw local cost matrix computation. 
-#' For theta equal 1 the function computes a normal dtw, for lower values it includes 
-#' the time cost in the local matrix.
-#' @param satStat A logical, default is FALSE. Setting TRUE the function also computes 
-#' some statistics for each dtw match.
+#' @param theta A real between 1 and 0. It is a parameter for dtw local
+#' cost matrix computation. For theta equal 1 the function computes a 
+#' normal dtw, for lower values it includes the time cost in the local 
+#' matrix. Default is 1.
+#' @param span A real between 1 and 0. The span says how much the length 
+#' of a dtw match can be diferent from the length of the pattern. Default 
+#' is 2/3.
+#' @param satStat A logical, default is FALSE. Setting TRUE the function 
+#' also computes some statistics for each dtw match.
 #' @docType methods
 #' @export
-timeSeriesAnalysis = function(query, template, theta=1.0, satStat=FALSE)
+timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
+                              satStat=FALSE)
 {
   
   if(!is.zoo(query))
     stop("Missing zoo object. The query must be a zoo object.")
   if(!is.zoo(template))
     stop("Missing zoo object. The template must be a zoo object.")
-    
+  
+  if( span < 0 & 1 < span )
+    stop("Error: span must be a number between 0 and 1.")
+  
+  if( theta < 0 & 1 < theta )
+    stop("Error: theta must be a number between 0 and 1.")
+  
   tx = index(query)
   x  = as.numeric(query)
   ty = index(template)
@@ -128,7 +139,7 @@ timeSeriesAnalysis = function(query, template, theta=1.0, satStat=FALSE)
   # Step 6. Remove tiny matches 
   patternLength = abs(tx[length(tx)] - tx[1])
   lengthDays = abs(ty[b] - ty[a])
-  validSubsec = 2/3 * patternLength <= lengthDays & lengthDays <= 5/3 * patternLength
+  validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
   a = a[validSubsec]
   b = b[validSubsec]
   timeCost = timeCost[validSubsec]
@@ -144,8 +155,6 @@ timeSeriesAnalysis = function(query, template, theta=1.0, satStat=FALSE)
   
   
 }
-
-
 
 .statTimeSat = function(y, ty, a, b){
 
@@ -194,6 +203,122 @@ timeSeriesAnalysis = function(query, template, theta=1.0, satStat=FALSE)
   }))
   
   return(out)
+}
+
+
+
+
+
+
+#' @title Satellite image time series classification. 
+#' 
+#' @description This function classify the time segments based on the 
+#' open boundary DTW analysis results (i.e. results of timeSeriesAnalysis 
+#' function).
+#' 
+#' @param dtwResults A data frame with the based on the open boundary DTW
+#' analysis results. It must be larger than the query.
+#' @param from A character with the start date for the finalclassification.
+#' The format is yyyy-mm-dd.
+#' @param to A character with the end date for the finalclassification. The 
+#' format is yyyy-mm-dd.
+#' @param by An integer. The length in months of the time subsequences
+#' for the final classification. Default is 12 months.
+#' @param overlapping A real between 0 and 1 representing the percentage of
+#' minimum overlapping between the DTW mach and the subsequences for the 
+#' final classification. Default is 40\%.
+#' @param threshold A real with the DTW threshold, i.e. the maximum DTW cost 
+#' for consideration.
+#' @docType methods
+#' @export
+timeSeriesClassifier = function(dtwResults, from, to, by=12, 
+                                overlapping=0.4, threshold=4.0)
+{
+    if(!is.list(dtwResults))
+      stop("Missing a list. The parameter dtwResults must be a list.")
+    
+    if( !(is.character(from) | class(from)=="Date") )
+      stop("Missing a character. The parameter from must be a character or a Date in the formt yyyy-mm-dd.")
+    
+    if(!(is.character(to) | class(to)=="Date") )
+      stop("Missing a character. The parameter to must be a character or a Date in the formt yyyy-mm-dd.")
+    
+    if( overlapping < 0 & 1 < overlapping )
+      stop("Error: overlapping must be a number between 0 and 1.")
+    
+    from = as.Date(from, origin="1970-01-01")
+    to = as.Date(to, origin="1970-01-01")
+    startDates = seq(from, to, by = paste(by, "month"))
+    endDates = seq(startDates[2], to+by-1, by = paste(by, "month"))
+    years = as.numeric(format(endDates,"%Y"))
+    
+    className = names(dtwResults)
+    if(is.null(className))
+      className = paste("class",seq_along(dtwResults),sep="_")
+    
+    # Find the lowest cost for each class
+    lowesCous = lapply( dtwResults, function(x){
+      out = do.call("rbind", lapply(seq_along(years), function(k){
+        .lowestDTWCostInOverlapping(x, years[k], startDates[k], endDates[k], overlapping)
+      }))
+    })
+    
+    # Find the best classification based on DTW cost
+    lowesCous = data.frame(lowesCous)
+    bestClass = do.call("rbind", lapply(seq_along(years), function(k){
+        subsequence = lowesCous[k,grep(names(lowesCous), pattern=".dtw.cost")]
+        out = .bestDTWClass(subsequence, threshold=threshold)
+        data.frame(year=years[k], out)
+    }))
+
+    return(bestClass)
+}
+
+
+.bestDTWClass = function(x, threshold)
+{
+    x[x > threshold] = NA
+    x = x[order(x)]
+    
+    classNames = data.frame(lapply(names(x), function(name){
+      unlist(strsplit(name, split="\\."))[1]
+    }), stringsAsFactors = FALSE )
+    
+    classNames[is.na(x)] = "no-class"
+    
+    names(classNames) = paste("class", seq_along(x), sep=".")
+    names(x) = paste("dtw.cost", seq_along(x), sep=".")
+    
+    return(data.frame(classNames, x))
+}
+
+
+.lowestDTWCostInOverlapping = function(x, year, startDate, endDate, overlapping)
+{
+    I = which( year == as.numeric(format(x$dtw.to,"%Y")) )
+    
+    # Test minimum overlapping 
+    flag = unlist(lapply(I, function(i){
+      a = x$dtw.from[i]
+      if(a < startDate)
+        a = startDate
+      b = x$dtw.to[i]
+      if(endDate < b)
+        b = endDate
+      
+      subsequencesOverlapping = as.numeric(b - a) / as.numeric(endDate - startDate)
+      return(subsequencesOverlapping >= overlapping)
+    }))
+    
+    if(!any(flag))
+      return(data.frame(year = year, dtw.cost = NA, dtw.timeCost = NA, 
+                        stringsAsFactors = FALSE))
+    
+    # Return the lowest DTW cost
+    I = I[which.min(x$dtw.cost[I[flag]])]
+    return(data.frame(year = year, dtw.cost = x$dtw.cost[I], 
+                      dtw.timeCost = x$dtw.timeCost[I], stringsAsFactors = FALSE))
+
 }
 
 

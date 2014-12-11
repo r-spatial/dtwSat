@@ -5,14 +5,21 @@
 
 
 # Set workspace and processing parameters
-setwd("~/workspace/AllBlue/test")
+setwd("~/workspace/dtwSat/tests")
+LIBRARYPATH = "../../data/Tlibrary"
+# LIBRARYPATH = "../../data/Tlibrary/embrapa/output_octave/cultivated"
 URLSERVER = "http://www.dpi.inpe.br/mds/mds"
-DATASETS = "evi2"
-LIBRARYPATH = "../data/Tlibrary"
-coords = data.frame(longitude=-52.415303449,latitude=-12.3755423768)
-# coords = data.frame(longitude=-52.4549374155,latitude=-12.3384079189)
-# coords = data.frame(longitude=-52.40429,latitude=-12.35496)
-
+COVERAGES = "MOD13Q1"
+DATASETS = "evi"
+FROM="2000-01-01"
+TO="2014-08-31"
+# COORDINATES = data.frame(longitude=-52.415303449,latitude=-12.3755423768)
+# COORDINATES = data.frame(longitude=-52.4549374155,latitude=-12.3384079189)
+COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
+# COORDINATES = data.frame(longitude=-56.7065251011,latitude=-12.2115047254)
+# COORDINATES = data.frame(longitude=-56.8204205399,latitude=-12.2681083867)
+# COORDINATES = data.frame(longitude=-56.8058059977,latitude=-12.2547399261)
+# COORDINATES = data.frame(longitude=-56.5851917,latitude=-12.259192635)
 
 #######################################################################################
 #
@@ -21,52 +28,71 @@ TemporalPaternsFiles = dir(LIBRARYPATH,pattern=paste(DATASETS,".csv",sep=""));
 TemporalPatterns.list = lapply(paste(LIBRARYPATH,TemporalPaternsFiles,sep="/"),
                                read.table, as.is=TRUE, header=FALSE, sep=",")
 classes = unlist(strsplit(TemporalPaternsFiles, split="\\.csv"))
-classes = unlist(unique(lapply(strsplit(classes, split="\\."), function(name) name[1])))
+# classes = unlist(unique(lapply(strsplit(classes, split="\\."), function(name) name[1])))
+classes = unlist(lapply(strsplit(classes, split="\\."), function(name) name[1]))
 names(TemporalPatterns.list) = classes
 
 
-# for(g in G){
-    # Step 1. Get time series 
-    timeseries = getTimeSeries(wtssClient(URLSERVER), coverages="MOD13Q1", 
-                               datasets=c(unlist(DATASETS), "day2"), 
-                               latitude=coords[1,2], longitude=coords[1,1], 
-                               from="2000-01-01", to="2014-12-31")
-    timeline = as.Date(timeseries[[1]]$datasets$timeline)
-    ty = as.Date(timeseries[[1]]$datasets$day2)
-    y = as.numeric(timeseries[[1]]$datasets[,DATASETS])
-    
-    # Step 2. Pre-processing: Compute regular time series and smoothing
-    template = timeSeriesSmoothing(ty, y, timeline, method=c("wavelet",1))
-    gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
-        ylim(c(0,1)) + 
-        geom_line(size = .5, colour="black", fill="black") + 
-        geom_line(size = .8, data=data.frame(x=as.Date(index(template)), y=as.numeric(template)), color="green") + 
-        scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) +
-        xlab("Time") + 
-        ylab("EVI2") +
-        theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
-              axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
-    print(gp)
-    
-    # Step 3. Processing: Compute dtw and other metrics
-    results = lapply(seq_along(TemporalPatterns.list), function(j){
-      # j = 1
-      patternName=names(TemporalPatterns.list)[j]
-      x = as.numeric(TemporalPatterns.list[[j]][,2])
-      tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
-      query = zoo(x, tx)
-      return(timeSeriesAnalysis(query, template, theta=0.8, span=0.5, satStat=FALSE))
-    })
-    names(results) = names(TemporalPatterns.list)
-    
-    # Step 4. Post-processing
-    finalClassification = timeSeriesClassifier(results, from="2000-09-01", to="2014-08-31", 
-                         by = 12, overlapping = 0.0, threshold=4.0)
+# Step 1. Download time series
+datasets = DATASETS
+if(COVERAGES=="MOD13Q1")
+  datasets = c(DATASETS,"day2")
+timeseries = getTimeSeries(wtssClient(URLSERVER), coverages=COVERAGES, datasets=datasets,
+                           longitude=COORDINATES[1], latitude=COORDINATES[2],
+                           from=FROM, to=TO)
 
-# }
+# Step 2. Pre-processing: Compute regular time series and smoothing
+timeline = as.Date(timeseries[[1]]$datasets$timeline)
+ty = timeline 
+if(COVERAGES=="MOD13Q1")
+  ty = as.Date(timeseries[[1]]$datasets$day2)
+y = as.numeric(timeseries[[1]]$datasets[,DATASETS])
+template = timeSeriesSmoothing(ty, y, timeline, method=c("wavelet",1))
+gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
+  ylim(c(0,1)) + 
+  geom_line(size = .5, colour="black", fill="black") + 
+  geom_line(size = .8, data=data.frame(x=as.Date(index(template)), y=as.numeric(template)), color="green") + 
+  scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) +
+  xlab("Time") + 
+  ylab(toupper(DATASETS)) +
+  theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
+        axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
+print(gp)
+
+# Step 3. Processing: Compute dtw and other metrics
+results = lapply(seq_along(TemporalPatterns.list), function(j){
+  # j = 6
+  patternName=names(TemporalPatterns.list)[j]
+  x = as.numeric(TemporalPatterns.list[[j]][,2])
+  tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
+  query = zoo(x, tx)
+  THETA = 0.8
+#   if(patternName=="pasture" | patternName=="forest")
+#     THETA = 0.70
+  out = timeSeriesAnalysis(query, template, theta=THETA, span=0.3, satStat=FALSE)
+#   for(k in 1:dim(out)[1]){
+#     gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
+#         ylim(c(0,1)) + 
+#         geom_line(na.rm=TRUE, size = .5, colour="black", fill="black") + 
+#         geom_line(na.rm=TRUE, size = .8, data=data.frame(x=as.Date(ty[out$dtw.a[k]:out$dtw.b[k]]), y=y[out$dtw.a[k]:out$dtw.b[k]]), color="red") + 
+#         scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) + 
+#         xlab("Time") + 
+#         ylab("EVI2") + 
+#         ggtitle(patternName) +
+#         theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
+#         axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
+#         print(gp)
+#         print(out[k,])
+#         readline("Enter")
+#   }
+  return(out)
+})
+names(results) = names(TemporalPatterns.list)
+
+# Step 4. Post-processing
+finalClassification = timeSeriesClassifier(results, from="2000-09-01", to="2014-08-31", 
+                                           by = 12, overlapping = 0.5, threshold=0.05)
+
+# results
 
 View(finalClassification)
-
-
-
-

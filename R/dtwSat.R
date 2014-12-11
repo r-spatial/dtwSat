@@ -143,7 +143,7 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
   a = a[validSubsec]
   b = b[validSubsec]
   timeCost = timeCost[validSubsec]
-  dtwDist = d[b] - timeCost
+  dtwDist = (d[b] - timeCost) / length(tx)
   
   if(!satStat){
     return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
@@ -284,7 +284,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       unlist(strsplit(name, split="\\."))[1]
     }), stringsAsFactors = FALSE )
     
-    classNames[is.na(x)] = "no-class"
+    classNames[is.na(x)] = "notclassified"
     
     names(classNames) = paste("class", seq_along(x), sep=".")
     names(x) = paste("dtw.cost", seq_along(x), sep=".")
@@ -305,6 +305,9 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       b = x$dtw.to[i]
       if(endDate < b)
         b = endDate
+      
+      if(a >= endDate | b <= startDate)
+        return(FALSE)
       
       subsequencesOverlapping = as.numeric(b - a) / as.numeric(endDate - startDate)
       return(subsequencesOverlapping >= overlapping)

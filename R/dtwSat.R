@@ -83,12 +83,14 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' @param span A real between 1 and 0. The span says how much the length 
 #' of a dtw match can be diferent from the length of the pattern. Default 
 #' is 2/3.
+#' @param normalize A logical, default is TRUE. Setting TRUE it divides 
+#' the DTW distance by the pattern length.
 #' @param satStat A logical, default is FALSE. Setting TRUE the function 
 #' also computes some statistics for each dtw match.
 #' @docType methods
 #' @export
 timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
-                              satStat=FALSE)
+                              normalize=TRUE, satStat=FALSE)
 {
   
   if(!is.zoo(query))
@@ -143,7 +145,9 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
   a = a[validSubsec]
   b = b[validSubsec]
   timeCost = timeCost[validSubsec]
-  dtwDist = (d[b] - timeCost) / length(tx)
+  dtwDist = d[b] - timeCost
+  if(normalize)
+    dtwDist = dtwDist / length(tx)
   
   if(!satStat){
     return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),

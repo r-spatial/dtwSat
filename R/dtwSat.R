@@ -120,6 +120,19 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
   diffd = diff(d[NonNA])
   b = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
   
+#   gp = ggplot(data = data.frame(x=ty[NonNA], y=d[NonNA]), aes( x = as.Date(x), y = y )) + 
+#     ylim(c(0,10)) + 
+#     geom_line(size = .5, colour="black", fill="black") + 
+#     geom_point(data=data.frame(x=as.Date(ty[b]), y=d[b]), color="red") + 
+#     scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) +
+#     xlab("Time") + 
+#     ylab("DTW distance") +
+#     ggtitle(paste("Pattern -",patternName)) + 
+#     theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
+#           axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
+#   print(gp)
+#   
+  
   # Step 3. Map whole possible min paths (k-th paths)
   mapping = lapply(b, function(k){
     alignment$jmin = k
@@ -267,6 +280,17 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       }))
     })
     
+#     # Update probabilit
+#     lowesCous = lapply( years, function(y){
+#       lapply( dtwResults, function(x) x$dtw.cost[x$year==y })
+#     })
+#     
+#     dtwYX = distMat[1,2]
+#     dtwX = lowesCous[[1]]$dtw.cost[1]
+#     dtwY = lowesCous[[1]]$dtw.cost[2]
+#     dtwXY = (dtwYX * dtwX) / dtwY
+#     
+
     # Find the best classification based on DTW cost
     lowesCous = data.frame(lowesCous)
     bestClass = do.call("rbind", lapply(seq_along(years), function(k){
@@ -288,7 +312,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       unlist(strsplit(name, split="\\."))[1]
     }), stringsAsFactors = FALSE )
     
-    classNames[is.na(x)] = "notclassified"
+    classNames[is.na(x)] = "other"
     
     names(classNames) = paste("class", seq_along(x), sep=".")
     names(x) = paste("dtw.cost", seq_along(x), sep=".")
@@ -327,6 +351,42 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
                       dtw.timeCost = x$dtw.timeCost[I], stringsAsFactors = FALSE))
 
 }
+
+
+
+
+#' @title Computes the accuracy of a classification
+#' 
+#' @description This function computs the accuracy a classification based
+#' on the a given dataset of controll points.
+#' 
+#' @param predicted A vector of prediction. 
+#' @param reference A vector of reference for the predicted classes. 
+#' @docType methods
+#' @export
+computeAccuracy = function(predicted, reference)
+{
+
+  if( length(predicted)!=length(reference) )
+    stop("The vectors 'predicted and 'reference' must have the same length.")
+  
+  factorLevels = unique( c(reference,predicted) )
+  
+  # Global accuracy
+  global_accuracy = sum(predicted==reference) / length(reference)
+  
+  a = factor(predicted, levels = factorLevels)
+  b = factor(reference, levels = factorLevels)
+    
+  # Check predicted classes against reference class labels
+  confusion_table = table(a, b)
+  
+  return(list(global_accuracy = global_accuracy, 
+              confusion_table = confusion_table))
+}
+
+
+
 
 
 

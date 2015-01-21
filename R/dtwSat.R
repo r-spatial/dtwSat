@@ -379,7 +379,7 @@ computeAccuracy = function(predicted, reference)
   b = factor(reference, levels = factorLevels)
     
   # Check predicted classes against reference class labels
-  confusion_table = table(a, b)
+  confusion_table = table(predicted=a, reference=b)
   
   return(list(global_accuracy = global_accuracy, 
               confusion_table = confusion_table))

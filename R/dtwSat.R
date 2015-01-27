@@ -241,6 +241,9 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
 #' format is yyyy-mm-dd.
 #' @param by An integer. The length in months of the time subsequences
 #' for the final classification. Default is 12 months.
+#' @param method A character. The method for classification either by lowest 
+#' DTW cost (lowestCost) or greatest posterior probability (greatestProb).
+#' Default is lowestCost.
 #' @param overlapping A real between 0 and 1 representing the percentage of
 #' minimum overlapping between the DTW mach and the subsequences for the 
 #' final classification. Default is 40\%.
@@ -248,7 +251,7 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
 #' for consideration.
 #' @docType methods
 #' @export
-timeSeriesClassifier = function(dtwResults, from, to, by=12, 
+timeSeriesClassifier = function(dtwResults, from, to, by=12, method="lowestCost",
                                 overlapping=0.4, threshold=4.0)
 {
     if(!is.list(dtwResults))
@@ -263,6 +266,9 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     if( overlapping < 0 & 1 < overlapping )
       stop("Error: overlapping must be a number between 0 and 1.")
     
+    if( method!="lowestCost" & method!="greatestProb" )
+      stop("Missing the method. The method must be by either lowestCost or greatestProb.")
+    
     from = as.Date(from, origin="1970-01-01")
     to = as.Date(to, origin="1970-01-01")
     startDates = seq(from, to, by = paste(by, "month"))
@@ -274,40 +280,48 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       className = paste("class",seq_along(dtwResults),sep="_")
     
     # Find the lowest cost for each class
-    lowesCous = lapply( dtwResults, function(x){
-      out = do.call("rbind", lapply(seq_along(years), function(k){
-        .lowestDTWCostInOverlapping(x, years[k], startDates[k], endDates[k], overlapping)
-      }))
+    res = lapply( dtwResults, function(x){
+       out = do.call("rbind", lapply(seq_along(years), function(k){
+         .lowestDTWCostInOverlapping(x, years[k], startDates[k], endDates[k], overlapping)
+       }))
     })
     
+    
+    
 #     # Update probabilit
-#     lowesCous = lapply( years, function(y){
+#     res = lapply( years, function(y){
 #       lapply( dtwResults, function(x) x$dtw.cost[x$year==y })
 #     })
 #     
 #     dtwYX = distMat[1,2]
-#     dtwX = lowesCous[[1]]$dtw.cost[1]
-#     dtwY = lowesCous[[1]]$dtw.cost[2]
+#     dtwX = res[[1]]$dtw.cost[1]
+#     dtwY = res[[1]]$dtw.cost[2]
 #     dtwXY = (dtwYX * dtwX) / dtwY
 #     
 
     # Find the best classification based on DTW cost
-    lowesCous = data.frame(lowesCous)
+    res = data.frame(res)
     bestClass = do.call("rbind", lapply(seq_along(years), function(k){
-        subsequence = lowesCous[k,grep(names(lowesCous), pattern=".dtw.cost")]
-        out = .bestDTWClass(subsequence, threshold=threshold)
+        subsequence = res[k,grep(names(res), pattern=".dtw.cost")]
+        out = .bestDTWClass(subsequence, threshold=threshold, method=method)
         data.frame(year=years[k], out)
     }))
-
     return(bestClass)
 }
 
 
-.bestDTWClass = function(x, threshold)
+.bestDTWClass = function(x, threshold, method)
 {
     x[x > threshold] = NA
-    x = x[order(x)]
+    if(method=="lowestCost"){
+      x = x[order(x)]
+    }else{
+#       .getProbability(x, XXXXX)
+      x = x[order(x)]
+    }
     
+      
+      
     classNames = data.frame(lapply(names(x), function(name){
       unlist(strsplit(name, split="\\."))[1]
     }), stringsAsFactors = FALSE )
@@ -352,6 +366,11 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
 
 }
 
+
+.getProbability  = function(x, model)
+{
+  
+}
 
 
 

@@ -7,6 +7,7 @@ library(scales)
 library(sp)
 library(rgdal)
 library(caret)
+library(reshape)
 
 
 test_check("dtwSat")

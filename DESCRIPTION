@@ -15,5 +15,6 @@ Depends:
     roxygen2,
     dtw,
     zoo,
+    sp,
     waveslim
 License: MIT + file LICENSE

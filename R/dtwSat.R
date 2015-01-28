@@ -241,9 +241,6 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
 #' format is yyyy-mm-dd.
 #' @param by An integer. The length in months of the time subsequences
 #' for the final classification. Default is 12 months.
-#' @param method A character. The method for classification either by lowest 
-#' DTW cost (lowestCost) or greatest posterior probability (greatestProb).
-#' Default is lowestCost.
 #' @param overlapping A real between 0 and 1 representing the percentage of
 #' minimum overlapping between the DTW mach and the subsequences for the 
 #' final classification. Default is 40\%.
@@ -251,7 +248,7 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
 #' for consideration.
 #' @docType methods
 #' @export
-timeSeriesClassifier = function(dtwResults, from, to, by=12, method="lowestCost",
+timeSeriesClassifier = function(dtwResults, from, to, by=12,
                                 overlapping=0.4, threshold=4.0)
 {
     if(!is.list(dtwResults))
@@ -265,9 +262,6 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12, method="lowestCost"
     
     if( overlapping < 0 & 1 < overlapping )
       stop("Error: overlapping must be a number between 0 and 1.")
-    
-    if( method!="lowestCost" & method!="greatestProb" )
-      stop("Missing the method. The method must be by either lowestCost or greatestProb.")
     
     from = as.Date(from, origin="1970-01-01")
     to = as.Date(to, origin="1970-01-01")
@@ -303,25 +297,18 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12, method="lowestCost"
     res = data.frame(res)
     bestClass = do.call("rbind", lapply(seq_along(years), function(k){
         subsequence = res[k,grep(names(res), pattern=".dtw.cost")]
-        out = .bestDTWClass(subsequence, threshold=threshold, method=method)
+        out = .bestDTWClass(subsequence, threshold=threshold)
         data.frame(year=years[k], out)
     }))
     return(bestClass)
 }
 
 
-.bestDTWClass = function(x, threshold, method)
+.bestDTWClass = function(x, threshold)
 {
     x[x > threshold] = NA
-    if(method=="lowestCost"){
-      x = x[order(x)]
-    }else{
-#       .getProbability(x, XXXXX)
-      x = x[order(x)]
-    }
-    
-      
-      
+    x = x[order(x)]
+
     classNames = data.frame(lapply(names(x), function(name){
       unlist(strsplit(name, split="\\."))[1]
     }), stringsAsFactors = FALSE )

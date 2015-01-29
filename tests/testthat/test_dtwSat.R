@@ -6,8 +6,7 @@
 
 # Set workspace and processing parameters
 setwd("~/workspace/dtwSat/tests")
-LIBRARYPATH = "../../data/Tlibrary"
-# LIBRARYPATH = "../../data/Tlibrary/embrapa/output_octave/cultivated"
+LIBRARYPATH = "../../data/Tlibrary/embrapa/Tlibrary++"
 URLSERVER = "http://www.dpi.inpe.br/mds/mds"
 COVERAGES = "MOD13Q1"
 DATASETS = "evi"
@@ -66,10 +65,9 @@ results = lapply(seq_along(TemporalPatterns.list), function(j){
   x = as.numeric(TemporalPatterns.list[[j]][,2])
   tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
   query = zoo(x, tx)
-  THETA = 0.8
 #   if(patternName=="pasture" | patternName=="forest")
 #     THETA = 0.70
-  out = timeSeriesAnalysis(query, template, theta=THETA, span=0.3, normalize=TRUE, satStat=FALSE)
+  out = timeSeriesAnalysis(query, template, theta=0.6, span=0.3, normalize=TRUE, satStat=FALSE)
 #   for(k in 1:dim(out)[1]){
 #     gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
 #         ylim(c(0,1)) + 
@@ -91,8 +89,9 @@ names(results) = names(TemporalPatterns.list)
 
 # Step 4. Post-processing
 finalClassification = timeSeriesClassifier(results, from="2000-09-01", to="2014-08-31", 
-                                           by = 12, overlapping = 0.5, threshold=0.05)
+                                           by = 12, overlapping = 0.15, threshold=1)
 
 # results
 
 # View(finalClassification)
+

@@ -23,7 +23,7 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
                                method=c("wavelet",1))
 {
   if( missing(x) )
-    stop("Missing either a numeric vector or a zoo object.")      
+    stop("Missing either a numeric vector or a zoo object.")     
   
   if(!is.zoo(x))
   {
@@ -77,9 +77,9 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' @param template A zoo object with the template time series. 
 #' It must be larger than the query.
 #' @param theta A real between 1 and 0. It is a parameter for dtw local
-#' cost matrix computation. For theta equal 1 the function computes a 
-#' normal dtw, for lower values it includes the time cost in the local 
-#' matrix. Default is 1.
+#' cost matrix computation. For theta equal 0 the function computes a 
+#' normal dtw, for greater values it includes the time cost in the local 
+#' matrix. Default is 0.
 #' @param span A real between 1 and 0. The span says how much the length 
 #' of a dtw match can be diferent from the length of the pattern. Default 
 #' is 2/3.
@@ -89,7 +89,7 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' also computes some statistics for each dtw match.
 #' @docType methods
 #' @export
-timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
+timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
                               normalize=TRUE, satStat=FALSE)
 {
   
@@ -110,9 +110,9 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
   y  = as.numeric(template)
   
   # Step 1. Compute the open boundary DTW between the query and the template
-  alignment = dtw(x=x, y=y, tx=tx, ty=ty, theta=theta,
-                  step=symmetric0, # New symmetric with normalization N (see dtw package documentation)
-                  keep=TRUE,open.begin=TRUE,open.end=TRUE)
+  lm = .localCostMatrix(query, template, theta)
+  alignment = dtw(x=lm, step.pattern=symmetric0, # New symmetric with normalization N (see dtw package documentation)
+                  keep.internals=TRUE,open.begin=TRUE,open.end=TRUE)
   
   # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix) 
   d = alignment$costMatrix[alignment$N,1:alignment$M]
@@ -148,7 +148,7 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
   timeCost = unlist(lapply(mapping, function(map){
     t1 = as.numeric(format(tx[map$index1], "%j"))
     t2 = as.numeric(format(ty[map$index2], "%j"))
-    return((1 - theta) * sum(abs(t1 - t2)) / 365)
+    return(theta * sum(abs(t1 - t2)) / 365)
   })) # End a loop
   
   # Step 6. Remove tiny matches 
@@ -223,7 +223,18 @@ timeSeriesAnalysis = function(query, template, theta=1.0, span=2/3,
 }
 
 
-
+.localCostMatrix = function(query, template, theta){
+  tx = index(query)
+  x  = as.numeric(query)
+  ty = index(template)
+  y  = as.numeric(template)
+  tx = as.numeric(format(tx, "%j")) / 365
+  ty = as.numeric(format(ty, "%j")) / 365
+  lm = proxy::dist((1-theta)*x,(1-theta)*y,method="euclidean")
+  tm = proxy::dist(theta*tx,theta*ty,method="euclidean")
+  lm = lm + tm
+  return(lm)
+}
 
 
 
@@ -442,7 +453,7 @@ computeAccuracy = function(predicted, reference)
 ########################################
 ## Backtrack the steps taken - internal
 
-`kthbacktrack` <- function(gcm) {
+kthbacktrack <- function(gcm) {
   
   dir<-gcm$stepPattern;
   npat <- attr(dir,"npat");

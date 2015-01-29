@@ -40,16 +40,19 @@ computeGridTopologyList = function(cellcentre.offset, cellsize,
   threadsSizeX = computeThreadsSize(cells.dim[1], thread.size[1])
   threadsSizeY = computeThreadsSize(cells.dim[2], thread.size[2])
   
+  res = list()
+  k=1
   y = cellcentre.offset[2]
-  res = unlist(lapply(threadsSizeY, function(I){
-    x <<- cellcentre.offset[1]
-    out = lapply(threadsSizeX, function(J){
-      out = GridTopology(c(x,y), c(cellsize[1],cellsize[2]), c(J, I))
-      x <<- x + J*cellsize[1]
-      return(out)})
-    y <<- y + I*cellsize[2]
-    return(out)}))
-
+  for(I in threadsSizeY){
+    x = cellcentre.offset[1]
+    for(J in threadsSizeX){
+      res[[k]] = GridTopology(c(x,y), c(cellsize[1],cellsize[2]), c(J, I))
+      x = x + J*cellsize[1]
+      k = k + 1
+    }
+    y = y + I*cellsize[2]
+  }
+  
   res
 }
 

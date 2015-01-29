@@ -3,6 +3,7 @@
 export(computeAccuracy)
 export(computeGridTopologyList)
 export(computeThreadsSize)
+export(symmetric0)
 export(timeSeriesAnalysis)
 export(timeSeriesClassifier)
 export(timeSeriesSmoothing)

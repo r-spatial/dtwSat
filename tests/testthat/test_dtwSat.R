@@ -13,8 +13,8 @@ DATASETS = "evi"
 FROM="2000-01-01"
 TO="2014-08-31"
 # COORDINATES = data.frame(longitude=-52.415303449,latitude=-12.3755423768)
-# COORDINATES = data.frame(longitude=-52.4549374155,latitude=-12.3384079189)
-COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
+COORDINATES = data.frame(longitude=-52.4549374155,latitude=-12.3384079189)
+# COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
 # COORDINATES = data.frame(longitude=-56.7065251011,latitude=-12.2115047254)
 # COORDINATES = data.frame(longitude=-56.8204205399,latitude=-12.2681083867)
 # COORDINATES = data.frame(longitude=-56.8058059977,latitude=-12.2547399261)
@@ -50,7 +50,7 @@ template = timeSeriesSmoothing(ty, y, timeline, method=c("wavelet",1))
 gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
   ylim(c(0,1)) + 
   geom_line(size = .5, colour="black", fill="black") + 
-  geom_line(size = .8, data=data.frame(x=as.Date(index(template)), y=as.numeric(template)), color="green") + 
+  geom_line(size = .8, data=data.frame(x=as.Date(index(template)), y=as.numeric(template)), color="blue") + 
   scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) +
   xlab("Time") + 
   ylab(toupper(DATASETS)) +

@@ -57,4 +57,54 @@ computeGridTopologyList = function(cellcentre.offset, cellsize,
 }
 
 
+#' @title Recover MODIS dates
+#' 
+#' @description The function recovers the MODIS image dates. 
+#' 
+#' @param years An vector of integers with the years.Default 
+#' is form 2000 to the system time year format(Sys.time(), "%Y").
+#' @param frequency An integer with the frequency in days.
+#' @docType methods
+#' @export
+recoverMODISDates = function(years, frequency=16){
+  if(missing(years))
+    years = 2000:format(Sys.time(), "%Y")
+  
+  dates = as.Date(unlist(lapply(years, function(y){  
+    days = seq(from=0, to=365, by=frequency)
+    as.Date(days, origin=paste(y,"-01-01",sep=""))
+  })))
+  return(dates)
+}
+
+
+
+
+#' @title Computes DTW distance
+#' 
+#' @description The function computes the whole possible alignments 
+#' for a set of patterns in one time series. 
+#' 
+#' @param template A zoo object with the template time series. 
+#' It must be larger than the query.
+#' @param TemporalPatterns.list A list of patterns. Each node of the list 
+#' has two columns data.frame with the dates and the value. 
+#' @docType methods
+#' @export
+computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
+  res = lapply(seq_along(TemporalPatterns.list), function(j){
+    patternName = names(TemporalPatterns.list)[j]
+    x = as.numeric(TemporalPatterns.list[[j]][,2])
+    tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
+    query = zoo(x, tx)
+    out = timeSeriesAnalysis(query, template, theta=THETA, span=SPAN,
+                             normalize=NORMALIZE, satStat=SATSTAT)
+    return(out)
+  })
+  names(res) = names(TemporalPatterns.list)
+  return(res)
+}
+
+
+
 

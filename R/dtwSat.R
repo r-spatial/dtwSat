@@ -244,8 +244,7 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 #' open boundary DTW analysis results (i.e. results of timeSeriesAnalysis 
 #' function).
 #' 
-#' @param dtwResults A data frame with the based on the open boundary DTW
-#' analysis results. It must be larger than the query.
+#' @param dtwResults A list of dtw . 
 #' @param from A character with the start date for the finalclassification.
 #' The format is yyyy-mm-dd.
 #' @param to A character with the end date for the finalclassification. The 
@@ -257,10 +256,13 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 #' final classification. Default is 40\%.
 #' @param threshold A real with the DTW threshold, i.e. the maximum DTW cost 
 #' for consideration.
+#' @param BestClass A logical. If TRUE the function returns the best 
+#' classification for each period of time. If FALSE the functions 
+#' returns the lowest dtw for each class. Default is TRUE.
 #' @docType methods
 #' @export
 timeSeriesClassifier = function(dtwResults, from, to, by=12,
-                                overlapping=0.4, threshold=4.0)
+                                overlapping=0.4, threshold=4.0, BestClass=TRUE)
 {
     if(!is.list(dtwResults))
       stop("Missing a list. The parameter dtwResults must be a list.")
@@ -291,26 +293,29 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
        }))
     })
     
-    
-    
-#     # Update probabilit
-#     res = lapply( years, function(y){
-#       lapply( dtwResults, function(x) x$dtw.cost[x$year==y })
-#     })
-#     
-#     dtwYX = distMat[1,2]
-#     dtwX = res[[1]]$dtw.cost[1]
-#     dtwY = res[[1]]$dtw.cost[2]
-#     dtwXY = (dtwYX * dtwX) / dtwY
-#     
-
-    # Find the best classification based on DTW cost
-    res = data.frame(res)
-    bestClass = do.call("rbind", lapply(seq_along(years), function(k){
-        subsequence = res[k,grep(names(res), pattern=".dtw.cost")]
+    if(BestClass){
+      # Find the best classification based on DTW cost
+      res = data.frame(res)
+      bestClass = do.call("rbind", lapply(seq_along(years), function(k){
+        subsequence = res[k,grep(names(res), pattern="dtw.cost")]
         out = .bestDTWClass(subsequence, threshold=threshold)
         data.frame(year=years[k], out)
+      }))
+      return(bestClass)
+    }
+    
+
+    res = data.frame(res)
+    bestClass = unlist(lapply(seq_along(years), function(k){
+      out = lapply(unique(className), function(name){
+        subsequence = res[k,grep(names(res), pattern=name)]
+        dtwcost = res[k,grep(names(subsequence), pattern="dtw.cost")]
+        return(min(dtwcost)) 
+      })
+      names(out) = paste(unique(className), years[k], sep=".")
+      out
     }))
+    bestClass = lapply(bestClass, function(x) x)
     return(bestClass)
 }
 
@@ -330,6 +335,23 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     names(x) = paste("dtw.cost", seq_along(x), sep=".")
     
     return(data.frame(classNames, x))
+}
+
+.bestDTWClass = function(x, threshold)
+{
+  x[x > threshold] = NA
+  x = x[order(x)]
+  
+  classNames = data.frame(lapply(names(x), function(name){
+    unlist(strsplit(name, split="\\."))[1]
+  }), stringsAsFactors = FALSE )
+  
+  classNames[is.na(x)] = "other"
+  
+  names(classNames) = paste("class", seq_along(x), sep=".")
+  names(x) = paste("dtw.cost", seq_along(x), sep=".")
+  
+  return(data.frame(classNames, x))
 }
 
 

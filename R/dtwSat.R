@@ -262,7 +262,8 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 #' @docType methods
 #' @export
 timeSeriesClassifier = function(dtwResults, from, to, by=12,
-                                overlapping=0.4, threshold=4.0, BestClass=TRUE)
+                                overlapping=0.4, threshold=4.0, 
+                                BestClass=TRUE)
 {
     if(!is.list(dtwResults))
       stop("Missing a list. The parameter dtwResults must be a list.")
@@ -310,7 +311,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       out = lapply(unique(className), function(name){
         subsequence = res[k,grep(names(res), pattern=name)]
         dtwcost = res[k,grep(names(subsequence), pattern="dtw.cost")]
-        return(min(dtwcost)) 
+        return(min(as.numeric(dtwcost))) 
       })
       names(out) = paste(unique(className), years[k], sep=".")
       out
@@ -320,22 +321,6 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
 }
 
 
-.bestDTWClass = function(x, threshold)
-{
-    x[x > threshold] = NA
-    x = x[order(x)]
-
-    classNames = data.frame(lapply(names(x), function(name){
-      unlist(strsplit(name, split="\\."))[1]
-    }), stringsAsFactors = FALSE )
-    
-    classNames[is.na(x)] = "other"
-    
-    names(classNames) = paste("class", seq_along(x), sep=".")
-    names(x) = paste("dtw.cost", seq_along(x), sep=".")
-    
-    return(data.frame(classNames, x))
-}
 
 .bestDTWClass = function(x, threshold)
 {

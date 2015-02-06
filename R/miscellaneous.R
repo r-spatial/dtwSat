@@ -70,10 +70,11 @@ recoverMODISDates = function(years, frequency=16){
   if(missing(years))
     years = 2000:format(Sys.time(), "%Y")
   
-  dates = as.Date(unlist(lapply(years, function(y){  
-    days = seq(from=0, to=365, by=frequency)
-    as.Date(days, origin=paste(y,"-01-01",sep=""))
-  })))
+  dates = unlist(lapply(years, function(y){  
+    days = seq(from = 0, to = 365, by = frequency)
+    as.Date(days, origin = as.Date(paste(y,"-01-01",sep="")))
+  }))
+  dates = as.Date(dates, origin="1970-01-01")
   return(dates)
 }
 

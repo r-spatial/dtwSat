@@ -288,38 +288,48 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       className = paste("class",seq_along(dtwResults),sep="_")
     
     # Find the lowest cost for each class
-    res = lapply( dtwResults, function(x){
+    aux = lapply( dtwResults, function(x){
        out = do.call("rbind", lapply(seq_along(years), function(k){
          .lowestDTWCostInOverlapping(x, years[k], startDates[k], endDates[k], overlapping)
        }))
     })
+    aux = data.frame(aux)
     
     if(BestClass){
       # Find the best classification based on DTW cost
-      res = data.frame(res)
-      bestClass = do.call("rbind", lapply(seq_along(years), function(k){
-        subsequence = res[k,grep(names(res), pattern="dtw.cost")]
+      res = do.call("rbind", lapply(seq_along(years), function(k){
+        subsequence = aux[k,grep(names(aux), pattern="dtw.cost")]
         out = .bestDTWClass(subsequence, threshold=threshold)
         data.frame(year=years[k], out)
       }))
-      return(bestClass)
+      return(res)
     }
     
 
-    res = data.frame(res)
-    bestClass = unlist(lapply(seq_along(years), function(k){
-      out = lapply(unique(className), function(name){
-        subsequence = res[k,grep(names(res), pattern=name)]
-        dtwcost = res[k,grep(names(subsequence), pattern="dtw.cost")]
+#     res = data.frame(res)
+#     bestClass = unlist(lapply(seq_along(years), function(k){
+#       out = lapply(unique(className), function(name){
+#         subsequence = res[k,grep(names(res), pattern=name)]
+#         dtwcost = res[k,grep(names(subsequence), pattern="dtw.cost")]
+#         return(min(as.numeric(dtwcost))) 
+#       })
+#       names(out) = paste(unique(className), years[k], sep=".")
+#       out
+#     }))
+#     bestClass = lapply(bestClass, function(x) x)
+    res = lapply(c("years", unique(className)), function(name){
+      if(name=="years")
+        return(years)
+      out = unlist(lapply(seq_along(years), function(k){   
+        subsequence = aux[k,grep(names(aux), pattern=name)]
+        dtwcost = aux[k,grep(names(subsequence), pattern="dtw.cost")]
         return(min(as.numeric(dtwcost))) 
-      })
-      names(out) = paste(unique(className), years[k], sep=".")
-      out
-    }))
-    bestClass = lapply(bestClass, function(x) x)
-    return(bestClass)
+      }))
+      return(out)
+    })
+    names(res) = c("year", unique(className))
+    return(res)
 }
-
 
 
 .bestDTWClass = function(x, threshold)

@@ -320,10 +320,11 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     res = lapply(c("years", unique(className)), function(name){
       if(name=="years")
         return(years)
-      out = unlist(lapply(seq_along(years), function(k){   
+      out = unlist(lapply(seq_along(years), function(k){
         subsequence = aux[k,grep(names(aux), pattern=name)]
-        dtwcost = aux[k,grep(names(subsequence), pattern="dtw.cost")]
-        return(min(as.numeric(dtwcost))) 
+        dtwcost = subsequence[grep(names(subsequence), pattern="dtw.cost")]
+        dtwcost[is.na(dtwcost)] = THRESHOLD 
+        return(min(as.numeric(dtwcost), na.rm=TRUE))
       }))
       return(out)
     })

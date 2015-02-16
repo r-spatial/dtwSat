@@ -107,5 +107,97 @@ computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
 }
 
 
+#' @title Build SciDB query
+#' 
+#' @description The function builds the SciDB query for time 
+#' series analysis. 
+#' @param INPUTARRAY
+#' @param OUTPUTSCHEMA
+#' @param PATTERNNAMES
+#' @param XMIN
+#' @param XMAX
+#' @param YMIN
+#' @param YMAX
+#' @param COLIDS
+#' @param ROWIDS
+#' @param FROM
+#' @param TO
+#' @param THETA = 1.0
+#' @param SPAN = 0.3
+#' @param OVERLAPPING = 0.15
+#' @param THRESHOLD = 1.0
+#' @param NORMALIZE = TRUE
+#' @param SATSTAT = FALSE 
+#' @param NCORES = 1
+#' @param LIBRARYPATH
+#' @param EXPPRPATH
+#' @docType methods
+#' @export
+buildSciDBDTWQuery = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES, 
+                              XMIN, XMAX,
+                              YMIN, YMAX,
+                              COLIDS, ROWIDS,
+                              FROM, TO,
+                              THETA = 1.0, SPAN = 0.3,
+                              OVERLAPPING = 0.15, THRESHOLD = 1.0,
+                              NORMALIZE = TRUE, SATSTAT = FALSE, 
+                              NCORES = 1,
+                              LIBRARYPATH, EXPPRPATH){
 
+rOut = 0:(length(PATTERNNAMES)+2)
+attrRename = gsub(" ", ",",paste(paste("expr_value", rOut, sep="_"), c("col", "row", "year", PATTERNNAMES), collapse = ","))
+
+attrRedimension = paste(c("col_id", "row_id", "year_id", PATTERNNAMES), collapse = ",")
+
+tmin = as.integer(as.Date(FROM, origin="1970-01-01")) - as.integer(as.Date("2000-02-18", origin="1970-01-01") )
+tmax = trunc( (as.integer(as.Date(TO, origin="1970-01-01")) - as.integer(as.Date("2000-02-18", origin="1970-01-01")) ) / 23 ) + 1
+
+if(tmin < 0)
+  tmin = 0
+
+res = paste(" redimension(
+                        project(
+                              apply(
+                                    attribute_rename(
+                                              r_exec(
+                                                    project(
+                                                              apply(
+                                                                    redimension(
+                                                                                between(",INPUTARRAY,",",XMIN,",",YMIN,",",tmin,",",XMAX,",",YMAX,",",tmax,"),
+                                                                                <evi:int16>[col_id=",COLIDS,",32,0,row_id=",ROWIDS,",32,0,time_id=0:9200,",tmax+1,",0]
+                                                                    ),
+                                                                    devi, double(evi), dcol, double(col_id), drow, double(row_id), dtime, double(time_id)
+                                                            ), 
+                                                              devi, dcol, drow, dtime
+                                                    ),
+                                                    'output_attrs=",length(rOut),"',
+                                                    'expr=
+                                                          LIBRARYPATH=\"",LIBRARYPATH,"\"
+                                                          FROM=\"",FROM,"\"
+                                                          TO=\"",TO,"\"
+                                                          THETA=",THETA,"
+                                                          SPAN=",SPAN,"
+                                                          OVERLAPPING=",OVERLAPPING,"
+                                                          THRESHOLD=",THRESHOLD,"
+                                                          NORMALIZE=",NORMALIZE,"
+                                                          SATSTAT=",SATSTAT,"
+                                                          NCORES=",NCORES,"
+                                                          source(\"",EXPPRPATH,"\")
+                                                          res=list(59787,49064,2002,4,5,6,7,8,9,10,11,12,13,14)
+                                                          res'
+                                             ),
+                                             ",attrRename,"
+                                     ),
+                                     col_id,  int64(col),
+                                     row_id,  int64(row),
+                                     year_id, int64(year)
+                              ),",
+                              attrRedimension,"
+                        ),",
+                        OUTPUTSCHEMA,"
+              )", sep="")
+
+return(res)
+
+}
 

@@ -14,7 +14,8 @@ FROM="2000-01-01"
 TO="2014-08-31"
 # COORDINATES = data.frame(longitude=-52.415303449,latitude=-12.3755423768)
 # COORDINATES = data.frame(longitude=-52.4549374155,latitude=-12.3384079189)
-COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
+# COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
+COORDINATES = data.frame(longitude=-56.725483,latitude=-12.217708)
 # COORDINATES = data.frame(longitude=-56.7065251011,latitude=-12.2115047254)
 # COORDINATES = data.frame(longitude=-56.8204205399,latitude=-12.2681083867)
 # COORDINATES = data.frame(longitude=-56.8058059977,latitude=-12.2547399261)
@@ -72,7 +73,7 @@ results = lapply(seq_along(TemporalPatterns.list), function(j){
   query = zoo(x, tx)
 #   if(patternName=="pasture" | patternName=="forest")
 #     THETA = 0.70
-  out = timeSeriesAnalysis(query, template, theta=0.6, span=0.3, normalize=TRUE, satStat=FALSE)
+  out = timeSeriesAnalysis(query, template, theta=0.4, span=0.3, normalize=TRUE, satStat=FALSE)
 #   for(k in 1:dim(out)[1]){
 #     gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
 #         ylim(c(0,1)) + 
@@ -94,9 +95,9 @@ names(results) = names(TemporalPatterns.list)
 
 # Step 4. Post-processing
 finalClassification = timeSeriesClassifier(results, from="2000-09-01", to="2014-08-31", 
-                                           by = 12, overlapping = 0.15, threshold=1)
-
+                                           by = 12, overlapping = 0.15, threshold=1, 
+                                           sortBydtw=FALSE, aggregateByClass=FALSE)
 # results
 
-# View(finalClassification)
+data.frame(finalClassification)
 

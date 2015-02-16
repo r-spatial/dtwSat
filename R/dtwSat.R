@@ -256,14 +256,16 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 #' final classification. Default is 40\%.
 #' @param threshold A real with the DTW threshold, i.e. the maximum DTW cost 
 #' for consideration.
-#' @param BestClass A logical. If TRUE the function returns the best 
+#' @param sortBydtw A logical. If TRUE the function returns the best 
 #' classification for each period of time. If FALSE the functions 
 #' returns the lowest dtw for each class. Default is TRUE.
+#' @param aggregateByClass A logical. Aggregate results by common class. 
+#' Default is TRUE
 #' @docType methods
 #' @export
 timeSeriesClassifier = function(dtwResults, from, to, by=12,
                                 overlapping=0.4, threshold=4.0, 
-                                BestClass=TRUE)
+                                sortBydtw=TRUE, aggregateByClass=TRUE)
 {
     if(!is.list(dtwResults))
       stop("Missing a list. The parameter dtwResults must be a list.")
@@ -295,7 +297,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     })
     aux = data.frame(aux)
     
-    if(BestClass){
+    if(sortBydtw){
       # Find the best classification based on DTW cost
       res = do.call("rbind", lapply(seq_along(years), function(k){
         subsequence = aux[k,grep(names(aux), pattern="dtw.cost")]
@@ -304,32 +306,37 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
       }))
       return(res)
     }
-    
 
-#     res = data.frame(res)
-#     bestClass = unlist(lapply(seq_along(years), function(k){
-#       out = lapply(unique(className), function(name){
-#         subsequence = res[k,grep(names(res), pattern=name)]
-#         dtwcost = res[k,grep(names(subsequence), pattern="dtw.cost")]
-#         return(min(as.numeric(dtwcost))) 
-#       })
-#       names(out) = paste(unique(className), years[k], sep=".")
-#       out
-#     }))
-#     bestClass = lapply(bestClass, function(x) x)
-    res = lapply(c("years", unique(className)), function(name){
-      if(name=="years")
-        return(years)
-      out = unlist(lapply(seq_along(years), function(k){
-        subsequence = aux[k,grep(names(aux), pattern=name)]
-        dtwcost = subsequence[grep(names(subsequence), pattern="dtw.cost")]
-        dtwcost[is.na(dtwcost)] = THRESHOLD 
-        return(min(as.numeric(dtwcost), na.rm=TRUE))
+    
+    if(aggregateByClass){
+      res = lapply(c("years", unique(className)), function(name){
+        if(name=="years")
+          return(years)
+        out = unlist(lapply(seq_along(years), function(k){
+          subsequence = aux[k,grep(names(aux), pattern=name)]
+          dtwcost = subsequence[grep(names(subsequence), pattern="dtw.cost")]
+          dtwcost[is.na(dtwcost)] = THRESHOLD 
+          return(min(as.numeric(dtwcost), na.rm=TRUE))
+        }))
+        return(out)
+      })
+      names(res) = c("year", unique(className))
+      return(res)
+    }
+    
+    names(dtwResults) = paste(names(dtwResults),seq_along(dtwResults),sep="_")
+    
+    res = lapply(dtwResults, function(x){
+      unlist(lapply(years, function(y){
+          I = which(as.numeric(format(x$dtw.to, "%Y"))==y)
+          if(length(I)==0)
+            return(NA)
+          return(min(x$dtw.cost[I]))
       }))
-      return(out)
     })
-    names(res) = c("year", unique(className))
-    return(res)
+    
+    return(data.frame(year=years, res))  
+
 }
 
 

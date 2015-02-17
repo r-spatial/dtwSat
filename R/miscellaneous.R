@@ -157,7 +157,7 @@ res = paste(" redimension(
                                                     project(
                                                               apply(
                                                                     redimension(
-                                                                                between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMAX,",",XMAX,",",YMAX,",",TMAX,"),
+                                                                                between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"),
                                                                                 <evi:int16>[col_id=",COLIDS,",32,0,row_id=",ROWIDS,",32,0,time_id=0:9200,",TMAX,",0]
                                                                     ),
                                                                     devi, double(evi), dcol, double(col_id), drow, double(row_id), dtime, double(time_id)

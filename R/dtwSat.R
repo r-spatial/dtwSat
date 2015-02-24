@@ -546,3 +546,115 @@ kthbacktrack <- function(gcm) {
   
   return(out);
 }
+
+
+
+
+
+
+
+#' @title Satellite image time series analysis. 
+#' 
+#' @description This function applies an open boundary DTW analysis and 
+#' retrieves all possible alignments of a query within a template.
+#' It also allows to compute some statistics for each dtw match.
+#' 
+#' @param query A zoo object with the query time series.
+#' @param template A zoo object with the template time series. 
+#' It must be larger than the query.
+#' @param theta A real between 1 and 0. It is a parameter for dtw local
+#' cost matrix computation. For theta equal 0 the function computes a 
+#' normal dtw, for greater values it includes the time cost in the local 
+#' matrix. Default is 0.
+#' @param span A real between 1 and 0. The span says how much the length 
+#' of a dtw match can be diferent from the length of the pattern. Default 
+#' is 2/3.
+#' @param normalize A logical, default is TRUE. Setting TRUE it divides 
+#' the DTW distance by the pattern length.
+#' @param satStat A logical, default is FALSE. Setting TRUE the function 
+#' also computes some statistics for each dtw match.
+#' @docType methods
+#' @export
+timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
+                              normalize=TRUE, satStat=FALSE)
+{
+  
+  if(!is.zoo(query))
+    stop("Missing zoo object. The query must be a zoo object.")
+  if(!is.zoo(template))
+    stop("Missing zoo object. The template must be a zoo object.")
+  
+  if( span < 0 & 1 < span )
+    stop("Error: span must be a number between 0 and 1.")
+  
+  if( theta < 0 & 1 < theta )
+    stop("Error: theta must be a number between 0 and 1.")
+  
+  tx = index(query)
+  x  = as.numeric(query)
+  ty = index(template)
+  y  = as.numeric(template)
+  
+  # Step 1. Compute the open boundary DTW between the query and the template
+  lm = .localCostMatrix(query, template, theta)
+  alignment = dtw(x=lm, step.pattern=symmetric0, # New symmetric with normalization N (see dtw package documentation)
+                  keep.internals=TRUE,open.begin=TRUE,open.end=TRUE)
+  
+  # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix) 
+  d = alignment$costMatrix[alignment$N,1:alignment$M]
+  NonNA = which(!is.na(d))
+  diffd = diff(d[NonNA])
+  b = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
+  
+  #   gp = ggplot(data = data.frame(x=ty[NonNA], y=d[NonNA]), aes( x = as.Date(x), y = y )) + 
+  #     ylim(c(0,10)) + 
+  #     geom_line(size = .5, colour="black", fill="black") + 
+  #     geom_point(data=data.frame(x=as.Date(ty[b]), y=d[b]), color="red") + 
+  #     scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) +
+  #     xlab("Time") + 
+  #     ylab("DTW distance") +
+  #     ggtitle(paste("Pattern -",patternName)) + 
+  #     theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
+  #           axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
+  #   print(gp)
+  #   
+  
+  # Step 3. Map whole possible min paths (k-th paths)
+  mapping = lapply(b, function(k){
+    alignment$jmin = k
+    return(kthbacktrack(alignment))
+  }) # End mapping loop
+  
+  # Step 4. Retriave the starts of each path
+  a = unlist(lapply(mapping, function(map){
+    return(map$index2[1])
+  })) # End a loop
+  
+  # Step 5. Compute the time cost of each path
+  timeCost = unlist(lapply(mapping, function(map){
+    t1 = as.numeric(format(tx[map$index1], "%j"))
+    t2 = as.numeric(format(ty[map$index2], "%j"))
+    return(theta * sum(abs(t1 - t2)) / 365)
+  })) # End a loop
+  
+  # Step 6. Remove tiny matches 
+  patternLength = abs(tx[length(tx)] - tx[1])
+  lengthDays = abs(ty[b] - ty[a])
+  validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
+  a = a[validSubsec]
+  b = b[validSubsec]
+  timeCost = timeCost[validSubsec]
+  dtwDist = d[b] - timeCost
+  if(normalize)
+    dtwDist = dtwDist / length(tx)
+  
+  if(!satStat){
+    return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
+                      dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
+  }
+  
+  return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
+                    dtw.cost = dtwDist, dtw.timeCost = timeCost, .statTimeSat(y, ty, a, b), stringsAsFactors = FALSE))
+  
+  
+}

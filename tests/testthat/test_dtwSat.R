@@ -24,7 +24,7 @@ COORDINATES = data.frame(longitude=-56.725483,latitude=-12.217708)
 #######################################################################################
 #
 ### Get patterns/signatures/queries whatever you want to call it
-TemporalPaternsFiles = dir(LIBRARYPATH,pattern=paste(DATASETS,".csv",sep=""));
+TemporalPaternsFiles = dir(LIBRARYPATH,pattern=paste(DATASETS,".csv",sep=""))
 TemporalPatterns.list = lapply(paste(LIBRARYPATH,TemporalPaternsFiles,sep="/"),
                                read.table, as.is=TRUE, header=FALSE, sep=",")
 classes = unlist(strsplit(TemporalPaternsFiles, split="\\.csv"))
@@ -43,10 +43,11 @@ timeseries = getTimeSeries(wtssClient(URLSERVER), coverages=COVERAGES, datasets=
 
 # Step 2. Pre-processing: Compute regular time series and smoothing
 timeline = as.Date(timeseries[[1]]$datasets$timeline)
-ty = timeline 
+IDs = which(FROM<=timeline & timeline<=TO)
+ty = timeline[IDs]
 if(COVERAGES=="MOD13Q1")
-  ty = as.Date(timeseries[[1]]$datasets$day2)
-y = as.numeric(timeseries[[1]]$datasets[,DATASETS])
+  ty = as.Date(timeseries[[1]]$datasets$day2[IDs])
+y = as.numeric(timeseries[[1]]$datasets[,DATASETS][IDs])
 template = timeSeriesSmoothing(ty, y, timeline, method=c("wavelet",1))
 gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
   ylim(c(0,1)) + 
@@ -94,7 +95,7 @@ results = lapply(seq_along(TemporalPatterns.list), function(j){
 names(results) = names(TemporalPatterns.list)
 
 # Step 4. Post-processing
-finalClassification = timeSeriesClassifier(results, from="2000-09-01", to="2014-08-31", 
+finalClassification = timeSeriesClassifier(results, from=FROM, to=TO, 
                                            by = 12, overlapping = 0.15, threshold=1, 
                                            sortBydtw=FALSE, aggregateByClass=FALSE)
 # results

@@ -122,6 +122,8 @@ computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
 #' @param TMAX
 #' @param COLIDS
 #' @param ROWIDS
+#' @param JUNKCOL
+#' @param JUNKROW
 #' @param THETA = 1.0
 #' @param SPAN = 0.3
 #' @param OVERLAPPING = 0.15
@@ -138,6 +140,7 @@ buildSciDBDTWQuery = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES,
                               YMIN, YMAX,
                               TMIN, TMAX,
                               COLIDS, ROWIDS,
+                              JUNKCOL, JUNKROW,
                               THETA = 1.0, SPAN = 0.3,
                               OVERLAPPING = 0.15, THRESHOLD = 1.0,
                               NORMALIZE = TRUE, SATSTAT = FALSE, 
@@ -158,7 +161,7 @@ res = paste(" redimension(
                                                               apply(
                                                                     redimension(
                                                                                 between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"),
-                                                                                <evi:int16>[col_id=",COLIDS,",32,0,row_id=",ROWIDS,",32,0,time_id=0:9200,",TMAX,",0]
+                                                                                <evi:int16>[col_id=",COLIDS,",",JUNKCOL,",0,row_id=",ROWIDS,",",JUNKROW,",0,time_id=0:9200,",TMAX,",0]
                                                                     ),
                                                                     devi, double(evi), dcol, double(col_id), drow, double(row_id), dtime, double(time_id)
                                                             ), 
@@ -190,6 +193,41 @@ res = paste(" redimension(
                         OUTPUTSCHEMA,"
               )", sep="")
 
+# res = paste(" redimension(
+#                         project(
+#             apply(
+#             attribute_rename(
+#             r_exec(
+#             project(
+#             apply(TMP_1, devi, double(evi), dcol, double(col_id), drow, double(row_id), dtime, double(time_id)
+#             ), 
+#             devi, dcol, drow, dtime
+#             ),
+#             'output_attrs=",length(rOut),"',
+#             'expr=
+#             LIBRARYPATH=\"",LIBRARYPATH,"\"
+#             FROM=\"",FROM,"\"
+#             TO=\"",TO,"\"
+#             THETA=",THETA,"
+#             SPAN=",SPAN,"
+#             OVERLAPPING=",OVERLAPPING,"
+#             THRESHOLD=",THRESHOLD,"
+#             NORMALIZE=",NORMALIZE,"
+#             SATSTAT=",SATSTAT,"
+#             NCORES=",NCORES,"
+#             source(\"",EXPPRPATH,"\")
+#                                                           res'
+#                                              ),
+#                                              ",attrRename,"
+#                                      ),
+#                                      col_id,  int64(col),
+#                                      row_id,  int64(row),
+#                                      year_id, int64(year)
+#                               ),",
+#             attrRedimension,"
+#                         ),",
+#             OUTPUTSCHEMA,"
+#               )", sep="")
 return(res)
 
 }

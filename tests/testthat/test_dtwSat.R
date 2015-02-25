@@ -97,7 +97,7 @@ names(results) = names(TemporalPatterns.list)
 # Step 4. Post-processing
 finalClassification = timeSeriesClassifier(results, from=FROM, to=TO, 
                                            by = 12, overlapping = 0.15, threshold=1, 
-                                           sortBydtw=FALSE, aggregateByClass=FALSE)
+                                           sortBydtw=TRUE, aggregateByClass=TRUE)
 # results
 
 data.frame(finalClassification)

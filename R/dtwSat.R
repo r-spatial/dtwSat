@@ -111,9 +111,8 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
   
   # Step 1. Compute the open boundary DTW between the query and the template
   lm = .localCostMatrix(query, template, theta)
-  alignment = dtw(x=lm, step.pattern=symmetric0, # New symmetric with normalization N (see dtw package documentation)
-                  keep.internals=TRUE,open.begin=TRUE,open.end=TRUE)
-  
+  alignment = .globalCostMatrix(lm, window.function = noWindow, step.matrix = symmetric0)
+
   # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix) 
   d = alignment$costMatrix[alignment$N,1:alignment$M]
   NonNA = which(!is.na(d))
@@ -134,9 +133,8 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 #   
   
   # Step 3. Map whole possible min paths (k-th paths)
-  mapping = lapply(b, function(k){
-    alignment$jmin = k
-    return(kthbacktrack(alignment))
+  mapping = lapply(b, function(jmin){
+    return(kthbacktrack(alignment, jmin))
   }) # End mapping loop
   
   # Step 4. Retriave the starts of each path
@@ -148,7 +146,7 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
   timeCost = unlist(lapply(mapping, function(map){
     t1 = as.numeric(format(tx[map$index1], "%j"))
     t2 = as.numeric(format(ty[map$index2], "%j"))
-    return(theta * sum(abs(t1 - t2)) / 365)
+    return(theta * sum(abs(t1 - t2)) / 366)
   })) # End a loop
   
   # Step 6. Remove tiny matches 
@@ -169,7 +167,6 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 
   return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
                     dtw.cost = dtwDist, dtw.timeCost = timeCost, .statTimeSat(y, ty, a, b), stringsAsFactors = FALSE))
-  
   
 }
 
@@ -228,12 +225,31 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
   x  = as.numeric(query)
   ty = index(template)
   y  = as.numeric(template)
-  tx = as.numeric(format(tx, "%j")) / 365
-  ty = as.numeric(format(ty, "%j")) / 365
+  tx = as.numeric(format(tx, "%j")) / 366
+  ty = as.numeric(format(ty, "%j")) / 366
   lm = proxy::dist((1-theta)*x,(1-theta)*y,method="euclidean")
   tm = proxy::dist(theta*tx,theta*ty,method="euclidean")
   lm = lm + tm
   return(lm)
+}
+
+.globalCostMatrix =  function (lm, step.matrix = symmetric1, window.function = noWindow) 
+{
+  lm <- rbind(0, lm)
+  n = nrow(lm)
+  m = ncol(lm)
+  cm = matrix(NA, nrow=n, ncol=m)
+  cm[1,] = 0    
+  wm = matrix(FALSE, nrow = n, ncol = m)
+  wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
+  out = .Call("computeCM_Call", PACKAGE="dtw", wm, lm, cm, step.matrix)
+  out$costMatrix = out$costMatrix[-1,]
+  out$directionMatrix = out$directionMatrix[-1,]
+  out$stepPattern = step.matrix
+  out$N = n-1
+  out$M = m
+  class(out) <- "dtw"
+  return(out)
 }
 
 
@@ -390,13 +406,6 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
 }
 
 
-.getProbability  = function(x, model)
-{
-  
-}
-
-
-
 #' @title Computes the accuracy of a classification
 #' 
 #' @description This function computs the accuracy a classification based
@@ -429,123 +438,71 @@ computeAccuracy = function(predicted, reference)
 
 
 
+#' @title Computes the backtrack of dtw
+#' 
+#' @description This function computs the backtrack starting from  
+#' a given index of the last line of the global cost matrix. 
+#' 
+#' @param alignment A dtw alignment object. 
+#' @param jmin An integer. index of the last line of the global 
+#' cost matrix. 
+#' @docType methods
+#' @export
 
-
-
-# TODO: Add comment
-# 
-# Author: Maus, Victor
-###############################################################################
-#
-#
-#
-#     ############### EXTRACTED FROM DTW PACKAGE - By Victor Maus ##################
-#            These functions are needed to compute the k-th minimal paths
-#
-#
-#
-#
-#
-## Extract rows belonging to pattern no. sn
-## with first element stripped
-## in reverse order
-
-.extractpattern <- function(sp,sn) {
-  sbs<-sp[,1]==sn;	# pick only rows beginning by sn
-  spl<-sp[sbs,-1,drop=FALSE];
-  # of those: take only column Di, Dj, cost
-  # (drop first - pattern no. column)
+kthbacktrack = function(alignment, jmin=NULL) {
   
-  nr<-nrow(spl);	# how many are left
-  spl<-spl[nr:1,,drop=FALSE];	# invert row order
+  dir = alignment$stepPattern
+  npat = attr(dir,"npat")
   
-  return(spl);
-}
-
-
-###############################################################
-#                                                             #
-#   (c) Toni Giorgino <toni.giorgino@gmail.com>               #
-#       Laboratory for Biomedical Informatics                 #
-#       University of Pavia - Italy                           #
-#       www.labmedinfo.org                                    #
-#                                                             #
-#   $Id: backtrack.R 168 2008-07-11 05:52:05Z tonig $		  #
-#                                                             #
-###############################################################
-
-
-########################################
-## Backtrack the steps taken - internal
-
-kthbacktrack <- function(gcm) {
+  n = nrow(alignment$costMatrix)
+  m = ncol(alignment$costMatrix)
   
-  dir<-gcm$stepPattern;
-  npat <- attr(dir,"npat");
+  i = n
+  j = jmin
+  if(is.null(jmin))
+    j = alignment$jmin
   
-  n <- nrow(gcm$costMatrix);
-  m <- ncol(gcm$costMatrix);
+  nullrows = dir[,2]==0 & dir[,3]==0
+  tmp = dir[!nullrows,,drop=FALSE]
   
-  i <- n;
-  j <- gcm$jmin
-  
-  
-  
-  ## drop rows with (0,0) deltas 
-  nullrows <- dir[,2]==0 & dir[,3] ==0 ;
-  tmp <- dir[!nullrows,];
-  
-  ## Pre-compute steps
-  stepsCache <- list();  
+  stepsCache = list()  
   for(k in 1:npat) {
-    stepsCache[[k]] <- .extractpattern(tmp,k);
+    sbs = tmp[,1]==k  
+    spl = tmp[sbs,-1,drop=FALSE]
+    nr = nrow(spl)
+    stepsCache[[k]] = spl[nr:1,,drop=FALSE]
   }
   
-  
-  ## mapping lists
-  ii<-c(i);
-  jj<-c(j);
-  
+  ii<-c(i)
+  jj<-c(j)
   
   repeat {
-    ## cross fingers for termination
-    if(i==1){# && j==1) {
-      break; 	
-    }
-    ## direction taken
-    s<-gcm$directionMatrix[i,j];
-    if(is.na(s)) {
-      break;
-    }
+    if(i==1)
+      break	
+    s = alignment$directionMatrix[i,j]
+    if(is.na(s))
+      break
     
-    ## undo the steps
+    steps = stepsCache[[s]]
+    ns = nrow(steps)
     
-    steps<-stepsCache[[s]];
-    ns<-nrow(steps);
-    
-    ## In some rare cases (eg symmetricP0), ns will be 1
-    ## R indexing rules make k==0 a no-op anyway
     for(k in 1:ns) {
-      ## take note of current cell, prepending to mapping lists
-      if(i-steps[k,1] > 0) {       # Modified from original function
-        ii <- c(i-steps[k,1],ii);  # Modified from original function
-        jj <- c(j-steps[k,2],jj);  # Modified from original function
-      }                            # Modified from original function
-      ## All sub-steps are visited & appended; we have dropped (0,0) deltas
+      if(i-steps[k,1] > 0) {       
+        ii = c(i-steps[k,1],ii)
+        jj = c(j-steps[k,2],jj)
+      }                         
     }
     
-    ## And don't forget where we arrived to
-    i <- ii[1]#i-steps[ns,1]; # Modified from original function
-    j <- jj[1]#j-steps[ns,2]; # Modified from original function
+    i = ii[1]
+    j = jj[1]
   }
-  ############################################################################
   
-  out<-list();
-  out$index1<-ii;
-  out$index2<-jj;
-  
-  return(out);
+  out = list()
+  out$index1 = ii
+  out$index2 = jj
+  return(out)
 }
+
 
 
 
@@ -658,3 +615,5 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   
   
 }
+
+

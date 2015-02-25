@@ -62,7 +62,7 @@ computeGridTopologyList = function(cellcentre.offset, cellsize,
 #' @description The function recovers the MODIS image dates. 
 #' 
 #' @param years An vector of integers with the years.Default 
-#' is form 2000 to the system time year format(Sys.time(), "%Y").
+#' is form 2000 to the system time year format(Sys.time(), \"\%Y\").
 #' @param frequency An integer with the frequency in days.
 #' @docType methods
 #' @export

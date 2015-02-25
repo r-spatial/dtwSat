@@ -108,16 +108,16 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
   x  = as.numeric(query)
   ty = index(template)
   y  = as.numeric(template)
+  patternLength = abs(tx[length(tx)] - tx[1])
   
   # Step 1. Compute the open boundary DTW between the query and the template
-  lm = .localCostMatrix(query, template, theta)
-  alignment = .globalCostMatrix(lm, window.function = noWindow, step.matrix = symmetric0)
+  alignment = .dtwSat(query, template, theta, step.matrix = symmetric1, window.function = noWindow) 
 
   # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix) 
   d = alignment$costMatrix[alignment$N,1:alignment$M]
   NonNA = which(!is.na(d))
   diffd = diff(d[NonNA])
-  b = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
+  minPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
   
 #   gp = ggplot(data = data.frame(x=ty[NonNA], y=d[NonNA]), aes( x = as.Date(x), y = y )) + 
 #     ylim(c(0,10)) + 
@@ -132,42 +132,33 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
 #   print(gp)
 #   
   
-  # Step 3. Map whole possible min paths (k-th paths)
-  mapping = lapply(b, function(jmin){
-    return(kthbacktrack(alignment, jmin))
-  }) # End mapping loop
-  
-  # Step 4. Retriave the starts of each path
-  a = unlist(lapply(mapping, function(map){
-    return(map$index2[1])
-  })) # End a loop
-
-  # Step 5. Compute the time cost of each path
-  timeCost = unlist(lapply(mapping, function(map){
+  out = do.call("rbind",lapply(minPoints, function(b){
+    # Step 3. Map whole possible min paths (k-th paths)
+    map = kthbacktrack(alignment, b)
+    # Step 4. Retriave the starts of each path
+    a = map$index2[1]
+    # Step 5. Remove tiny matches 
+    lengthDays = abs(ty[b] - ty[a])
+    validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
+    if(!validSubsec)
+      return(data.frame(dtw.a = NA, dtw.b = NA, dtw.from = as.Date(NA), dtw.to = as.Date(NA),
+                        dtw.cost = NA, dtw.timeCost = NA, stringsAsFactors = NA))
+    # Step 6. Compute the time cost of each path
     t1 = as.numeric(format(tx[map$index1], "%j"))
     t2 = as.numeric(format(ty[map$index2], "%j"))
-    return(theta * sum(abs(t1 - t2)) / 366)
-  })) # End a loop
-  
-  # Step 6. Remove tiny matches 
-  patternLength = abs(tx[length(tx)] - tx[1])
-  lengthDays = abs(ty[b] - ty[a])
-  validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
-  a = a[validSubsec]
-  b = b[validSubsec]
-  timeCost = timeCost[validSubsec]
-  dtwDist = d[b] - timeCost
-  if(normalize)
-    dtwDist = dtwDist / length(tx)
-  
-  if(!satStat){
+    timeCost = theta * sum(abs(t1 - t2)) / 366
+    dtwDist = d[b] - timeCost
+    if(normalize)
+      dtwDist = dtwDist / length(tx)
+    
     return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
-                     dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
-  }
+                      dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
+    
+  })) # End mapping loop
 
-  return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
-                    dtw.cost = dtwDist, dtw.timeCost = timeCost, .statTimeSat(y, ty, a, b), stringsAsFactors = FALSE))
-  
+  # Remove null lines
+  nonnull = !apply(out, 1, is.na)[1,]
+  return(out[nonnull,])
 }
 
 .statTimeSat = function(y, ty, a, b){
@@ -216,6 +207,36 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
       ))
   }))
   
+  return(out)
+}
+
+
+.dtwSat =  function (query, template, theta, step.matrix = symmetric1, window.function = noWindow) 
+{
+  tx = index(query)
+  x  = as.numeric(query)
+  ty = index(template)
+  y  = as.numeric(template)
+  tx = as.numeric(format(tx, "%j")) / 366
+  ty = as.numeric(format(ty, "%j")) / 366
+  lm = proxy::dist((1-theta)*x,(1-theta)*y,method="euclidean")
+  tm = proxy::dist(theta*tx,theta*ty,method="euclidean")
+  lm = lm + tm
+  
+  lm <- rbind(0, lm)
+  n = nrow(lm)
+  m = ncol(lm)
+  cm = matrix(NA, nrow=n, ncol=m)
+  cm[1,] = 0    
+  wm = matrix(FALSE, nrow = n, ncol = m)
+  wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
+  out = .Call("computeCM_Call", PACKAGE="dtw", wm, lm, cm, step.matrix)
+  out$costMatrix = out$costMatrix[-1,]
+  out$directionMatrix = out$directionMatrix[-1,]
+  out$stepPattern = step.matrix
+  out$N = n-1
+  out$M = m
+  class(out) <- "dtw"
   return(out)
 }
 

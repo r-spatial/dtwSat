@@ -202,9 +202,12 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   y  = as.numeric(template)
   
   # Step 1. Compute the open boundary DTW between the query and the template
-  lm = .localCostMatrix(query, template, theta)
-  alignment = dtw(x=lm, step.pattern=symmetric0, # New symmetric with normalization N (see dtw package documentation)
-                  keep.internals=TRUE,open.begin=TRUE,open.end=TRUE)
+#   lm = .localCostMatrix(query, template, theta)
+#   alignment = dtw(x=lm, step.pattern=symmetric0, # New symmetric with normalization N (see dtw package documentation)
+#                   keep.internals=TRUE,open.begin=TRUE,open.end=TRUE)
+  
+  alignment = .dtwSat(query, template, theta, step.matrix = symmetric1, window.function = noWindow) 
+
   
   # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix) 
   d = alignment$costMatrix[alignment$N,1:alignment$M]

@@ -200,6 +200,7 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   x  = as.numeric(query)
   ty = index(template)
   y  = as.numeric(template)
+  patternLength = abs(tx[length(tx)] - tx[1])
   
   # Step 1. Compute the open boundary DTW between the query and the template
 #   lm = .localCostMatrix(query, template, theta)
@@ -213,39 +214,34 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   d = alignment$costMatrix[alignment$N,1:alignment$M]
   NonNA = which(!is.na(d))
   diffd = diff(d[NonNA])
-  b = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
+  endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
   
   # Step 3. Map whole possible min paths (k-th paths)
-  mapping = lapply(b, function(k){
-    alignment$jmin = k
-    return(kthbacktrack(alignment))
+  mapping = lapply(endPoints, function(b){
+    return(kthbacktrack(alignment, b))
   }) # End mapping loop
   
   # Step 4. Retriave the starts of each path
-  a = unlist(lapply(mapping, function(map){
+  startPoints = unlist(lapply(mapping, function(map){
     return(map$index2[1])
   })) # End a loop
   
-  # Step 5. Compute the time cost of each path
-  timeCost = unlist(lapply(mapping, function(map){
-    t1 = as.numeric(format(tx[map$index1], "%j"))
-    t2 = as.numeric(format(ty[map$index2], "%j"))
-    return(theta * sum(abs(t1 - t2)) / 366)
+  # Step 5. Remove tiny matches 
+  lengthDays = abs(ty[endPoints] - ty[startPoints])
+  validSubsec = which((1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength)
+  a = startPoints[validSubsec]
+  b = endPoints[validSubsec]
+
+  # Step 6. Compute the time cost of each path
+  timeCost = unlist(lapply(validSubsec, function(i){
+    return(theta * sum(abs(as.numeric(format(tx[mapping[[i]]$index1], "%j")) - as.numeric(format(ty[mapping[[i]]$index2], "%j")))) / 366)
   })) # End a loop
-  
-  # Step 6. Remove tiny matches 
-  patternLength = abs(tx[length(tx)] - tx[1])
-  lengthDays = abs(ty[b] - ty[a])
-  validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
-  a = a[validSubsec]
-  b = b[validSubsec]
-  timeCost = timeCost[validSubsec]
   dtwDist = d[b] - timeCost
   if(normalize)
     dtwDist = dtwDist / length(tx)
   
-    return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
-                      dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
+  return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
+                    dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
     
 }
 

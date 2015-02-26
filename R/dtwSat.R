@@ -301,15 +301,11 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
 
 .dtwSat =  function (query, template, theta, step.matrix = symmetric1, window.function = noWindow) 
 {
-  tx = index(query)
-  x  = as.numeric(query)
-  ty = index(template)
-  y  = as.numeric(template)
-  tx = as.numeric(format(tx, "%j")) / 366
-  ty = as.numeric(format(ty, "%j")) / 366
-  lm = proxy::dist((1-theta)*x,(1-theta)*y,method="euclidean")
-  tm = proxy::dist(theta*tx,theta*ty,method="euclidean")
-  lm = lm + tm
+  tx = theta*as.numeric(format(index(query), "%j")) / 366
+  x  = (1-theta)*as.numeric(query)
+  ty = theta*as.numeric(format(index(template), "%j")) / 366
+  y  = (1-theta)*as.numeric(template)
+  lm = proxy::dist(x, y, method="euclidean") + proxy::dist(tx, ty, method="euclidean")
   
   lm <- rbind(0, lm)
   n = nrow(lm)
@@ -324,7 +320,7 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   out$stepPattern = step.matrix
   out$N = n-1
   out$M = m
-  class(out) <- "dtw"
+  class(out) = "dtw"
   return(out)
 }
 

@@ -75,7 +75,7 @@ results = lapply(seq_along(TemporalPatterns.list), function(j){
 #   if(patternName=="pasture" | patternName=="forest")
 #     THETA = 0.70
 #   out = timeSeriesAnalysis(query, template, theta=0.4, span=0.3, normalize=TRUE, satStat=FALSE)
-  out = timeSeriesAnalysis2(query, template, theta=0.4, span=0.3, normalize=TRUE)
+  out = timeSeriesAnalysis2(query, template, theta=0.4, span=0.3, threshold=4.0, normalize=TRUE)
 #   for(k in 1:dim(out)[1]){
 #     gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
 #         ylim(c(0,1)) + 

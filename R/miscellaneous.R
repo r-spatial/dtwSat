@@ -161,7 +161,7 @@ res = paste(" redimension(
                                                               apply(
                                                                     redimension(
                                                                                 between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"),
-                                                                                <evi:int16>[col_id=",COLIDS,",",JUNKCOL,",0,row_id=",ROWIDS,",",JUNKROW,",0,time_id=0:9200,",TMAX,",0]
+                                                                                <evi:int16>[col_id=",COLIDS,",",JUNKCOL,",0,row_id=",ROWIDS,",",JUNKROW,",0,time_id=",TMIN,":",TMAX,",",TMAX,",0]
                                                                     ),
                                                                     devi, double(evi), dcol, double(col_id), drow, double(row_id), dtime, double(time_id)
                                                             ), 
@@ -169,6 +169,7 @@ res = paste(" redimension(
                                                     ),
                                                     'output_attrs=",length(rOut),"',
                                                     'expr=
+                                                          output_attrs=",length(rOut),"
                                                           LIBRARYPATH=\"",LIBRARYPATH,"\"
                                                           FROM=\"",FROM,"\"
                                                           TO=\"",TO,"\"

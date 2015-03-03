@@ -351,7 +351,7 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   out$stepPattern = step.matrix
   out$N = n-1
   out$M = m
-  class(out) <- "dtw"
+  class(out) = "dtw"
   return(out)
 }
 
@@ -590,7 +590,7 @@ kthbacktrack = function(alignment, jmin=NULL) {
     ns = nrow(steps)
     
     for(k in 1:ns) {
-      if(i-steps[k,1] > 0) {       
+      if(i-steps[k,1] > 0) {
         ii = c(i-steps[k,1],ii)
         jj = c(j-steps[k,2],jj)
       }                         

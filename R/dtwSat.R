@@ -161,42 +161,39 @@ timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
   return(out[nonnull,])
 }
 
+
+
+
 #' @title Satellite image time series analysis. 
 #' 
 #' @description This function applies an open boundary DTW analysis and 
 #' retrieves all possible alignments of a query within a template.
-#' It also allows to compute some statistics for each dtw match.
 #' 
 #' @param query A zoo object with the query time series.
 #' @param template A zoo object with the template time series. 
 #' It must be larger than the query.
-#' @param theta A real between 1 and 0. It is a parameter for dtw local
-#' cost matrix computation. For theta equal 0 the function computes a 
-#' normal dtw, for greater values it includes the time cost in the local 
-#' matrix. Default is 0.
-#' @param span A real between 1 and 0. The span says how much the length 
-#' of a dtw match can be diferent from the length of the pattern. Default 
-#' is 2/3.
-#' @param threshold A real with the DTW threshold, i.e. the maximum DTW
-#' cost for consideration. Default is NULL, i.e. there is no threshold.
-#' @param normalize A logical, default is TRUE. Setting TRUE it divides 
-#' the DTW distance by the pattern length.
+#' @param method
+#' @param threshold A real. The DTW distance threshold, i.e. the maximum DTW
+#' distance for consideration. Default is Inf.
+#' @param normalize A logical. It divides the DTW distance by the pattern 
+#' length. Default is TRUE.
+#' @param theta A real. Parameter of lineartimeweight method. It is the slope 
+#' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
+#' number of days. Default is NULL.
+#' @param alpha A real. The steepness of logistictimeweight method. Default is NULL.
+#' @param beta A real. The midpoint of logistictimeweight method. Default is NULL.
+#' @param delay A real. Parameter of petitjean method. The maximum delay for the dtw 
+#' alignment. Default is NULL.
 #' @docType methods
 #' @export
-timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
-                               threshold=NULL, normalize=TRUE)
+timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, normalize=TRUE, 
+                               delay = NULL, theta=NULL, alpha=NULL, beta=NULL)
 {
   
   if(!is.zoo(query))
     stop("Missing zoo object. The query must be a zoo object.")
   if(!is.zoo(template))
     stop("Missing zoo object. The template must be a zoo object.")
-  
-  if( span < 0 & 1 < span )
-    stop("Error: span must be a number between 0 and 1.")
-  
-  if( theta < 0 & 1 < theta )
-    stop("Error: theta must be a number between 0 and 1.")
   
   tx = index(query)
   x  = as.numeric(query)
@@ -205,46 +202,113 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   patternLength = abs(tx[length(tx)] - tx[1])
   
   # Step 1. Compute the open boundary DTW between the query and the template
-  alignment = .dtwSat(query, template, theta, step.matrix = symmetric1, window.function = noWindow)
-  
-  # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix)
-  d = alignment$costMatrix[alignment$N,1:alignment$M]
+  alignment = .dtwSat(query, template, method, delay, theta, alpha, beta, 
+                      step.matrix = symmetric1, window.function = noWindow)
 
+  # Step 2. Get the ending point of each path (minimum points in the last line of the accumulated cost matrix)
+  d = alignment$costMatrix[alignment$N,1:alignment$M]
   NonNA = which(!is.na(d))
   diffd = diff(d[NonNA])
   endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
-  
-  if(!is.null(threshold))
-    endPoints = endPoints[d[endPoints] <= threshold]
-  
-  # Step 3. Map whole possible min paths (k-th paths)
+  endPoints = endPoints[d[endPoints] < threshold]
+  if( length(endPoints) < 1 ) 
+    return(NULL)
+#   plot(d,type="l")
+#   points(endPoints, d[endPoints], col="red")
+  # Step 3. Map all low cost paths (k-th paths)
   mapping = lapply(endPoints, function(b){
     return(kthbacktrack(alignment, b))
   }) # End mapping loop
   
-  # Step 4. Retriave the starts of each path
+  # Step 4. Get the starting point of each path
   startPoints = unlist(lapply(mapping, function(map){
     return(map$index2[1])
   })) # End a loop
-  
-  # Step 5. Remove tiny matches 
-  lengthDays = abs(ty[endPoints] - ty[startPoints])
-  validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
-  a = startPoints[validSubsec]
-  b = endPoints[validSubsec]
 
-  # Step 6. Compute the time cost of each path
-  timeCost = unlist(lapply(which(validSubsec), function(i){
-    return(theta * sum(abs(as.numeric(format(tx[mapping[[i]]$index1], "%j")) - as.numeric(format(ty[mapping[[i]]$index2], "%j")))) / 366)
-  })) # End a loop
-  dtwDist = d[b] - timeCost
-
+  # Step 5. Normalize and retrieve the results
+  dtwDist = d[endPoints]
   if(normalize)
     dtwDist = dtwDist / length(tx)
-
-  return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
-                    dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
+  
+  return(data.frame(a = startPoints,
+                    b = endPoints,
+                    from = as.Date(ty[startPoints]),
+                    to = as.Date(ty[endPoints]),
+                    distance = dtwDist,
+                    stringsAsFactors = FALSE))
     
+}
+
+
+# DTW computation of the accumulated cost matrix and the direction matrix returns a dtw object
+.dtwSat =  function (query, template, method="dtw",
+                     delay=NULL, theta=NULL, alpha=NULL, beta=NULL, 
+                     step.matrix = symmetric1, window.function = noWindow)
+{
+  delta = switch(method, 
+              dtw = proxy::dist(as.numeric(query), as.numeric(template), method="euclidean"),
+              petitjean = .petitjeandtwCostMatrix(query, template, delay),
+              lineartimeweight = .lntwdtwCostMatrix(query, template, theta),
+              logistictimeweight = .logtwdtwCostMatrix(query, template, alpha, beta))
+
+  delta = rbind(0, delta)
+  n = nrow(delta)
+  m = ncol(delta)
+  cm = matrix(NA, nrow=n, ncol=m)
+  cm[1,] = 0
+  wm = matrix(FALSE, nrow = n, ncol = m)
+  wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
+  out = .Call("computeCM_Call", PACKAGE="dtw", wm, delta, cm, step.matrix)
+  out$costMatrix = out$costMatrix[-1,]
+  out$directionMatrix = out$directionMatrix[-1,]
+  out$stepPattern = step.matrix
+  out$N = n-1
+  out$M = m
+  class(out) = "dtw"
+  return(out)
+}
+
+.logisticweight = function(x, alpha, beta){
+  return( 1 / (1 + exp(1)^(-alpha*(x-beta))) )
+}
+
+.timeCostMatrix = function(query, template){ 
+    tx = as.numeric(format(index(query), "%j"))
+    ty = as.numeric(format(index(template), "%j"))
+    phi = proxy::dist(tx, ty, method="euclidean")
+    phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
+    return(phi)
+}
+
+.petitjeandtwCostMatrix =  function (query, template, delay) 
+{
+  x  = as.numeric(query)
+  y  = as.numeric(template)
+  phi = .timeCostMatrix(query, template)
+  delta = proxy::dist(x, y, method="euclidean")
+  phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
+  delta[phi>delay] = NA
+  return(delta)
+}
+
+.lntwdtwCostMatrix =  function (query, template, theta) 
+{
+  x  = as.numeric(query)
+  y  = as.numeric(template)
+  phi = .timeCostMatrix(query, template)
+  delta = proxy::dist(x, y, method="euclidean")
+  delta = delta + theta*phi/366
+  return(delta)
+}
+
+.logtwdtwCostMatrix =  function (query, template, alpha, beta)
+{
+  x  = as.numeric(query)
+  y  = as.numeric(template)
+  phi = .timeCostMatrix(query, template)
+  delta = proxy::dist(x, y, method="euclidean")
+  delta = delta + .logisticweight(phi, alpha, beta)
+  return(delta)
 }
 
 .statTimeSat = function(y, ty, a, b){
@@ -296,33 +360,6 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   return(out)
 }
 
-
-.dtwSat =  function (query, template, theta, step.matrix = symmetric1, window.function = noWindow) 
-{
-  tx = theta*as.numeric(format(index(query), "%j")) / 366
-  x  = (1-theta)*as.numeric(query)
-  ty = theta*as.numeric(format(index(template), "%j")) / 366
-  y  = (1-theta)*as.numeric(template)
-  lm = proxy::dist(x, y, method="euclidean") + proxy::dist(tx, ty, method="euclidean")
-  
-  lm <- rbind(0, lm)
-  n = nrow(lm)
-  m = ncol(lm)
-  cm = matrix(NA, nrow=n, ncol=m)
-  cm[1,] = 0    
-  wm = matrix(FALSE, nrow = n, ncol = m)
-  wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
-  out = .Call("computeCM_Call", PACKAGE="dtw", wm, lm, cm, step.matrix)
-  out$costMatrix = out$costMatrix[-1,]
-  out$directionMatrix = out$directionMatrix[-1,]
-  out$stepPattern = step.matrix
-  out$N = n-1
-  out$M = m
-  class(out) = "dtw"
-  return(out)
-}
-
-
 .localCostMatrix = function(query, template, theta){
   tx = index(query)
   x  = as.numeric(query)
@@ -335,26 +372,6 @@ timeSeriesAnalysis2 = function(query, template, theta=0, span=2/3,
   lm = lm + tm
   return(lm)
 }
-
-.globalCostMatrix =  function (lm, step.matrix = symmetric1, window.function = noWindow) 
-{
-  lm <- rbind(0, lm)
-  n = nrow(lm)
-  m = ncol(lm)
-  cm = matrix(NA, nrow=n, ncol=m)
-  cm[1,] = 0    
-  wm = matrix(FALSE, nrow = n, ncol = m)
-  wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
-  out = .Call("computeCM_Call", PACKAGE="dtw", wm, lm, cm, step.matrix)
-  out$costMatrix = out$costMatrix[-1,]
-  out$directionMatrix = out$directionMatrix[-1,]
-  out$stepPattern = step.matrix
-  out$N = n-1
-  out$M = m
-  class(out) = "dtw"
-  return(out)
-}
-
 
 
 #' @title Satellite image time series classification. 
@@ -419,7 +436,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     if(sortBydtw){
       # Find the best classification based on DTW cost
       res = do.call("rbind", lapply(seq_along(years), function(k){
-        subsequence = aux[k,grep(names(aux), pattern="dtw.cost")]
+        subsequence = aux[k,grep(names(aux), pattern="distance")]
         out = .bestDTWClass(subsequence, threshold=threshold)
         data.frame(year=years[k], out)
       }))
@@ -433,7 +450,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
           return(years)
         out = unlist(lapply(seq_along(years), function(k){
           subsequence = aux[k,grep(names(aux), pattern=name)]
-          dtwcost = subsequence[grep(names(subsequence), pattern="dtw.cost")]
+          dtwcost = subsequence[grep(names(subsequence), pattern="distance")]
           dtwcost[is.na(dtwcost)] = threshold 
           return(min(as.numeric(dtwcost), na.rm=TRUE))
         }))
@@ -447,10 +464,10 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     
     res = lapply(dtwResults, function(x){
       unlist(lapply(years, function(y){
-          I = which(as.numeric(format(x$dtw.to, "%Y"))==y)
+          I = which(as.numeric(format(x$to, "%Y"))==y)
           if(length(I)==0)
             return(NA)
-          return(min(x$dtw.cost[I]))
+          return(min(x$distance[I]))
       }))
     })
     
@@ -471,7 +488,7 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
   classNames[is.na(x)] = "other"
   
   names(classNames) = paste("class", seq_along(x), sep=".")
-  names(x) = paste("dtw.cost", seq_along(x), sep=".")
+  names(x) = paste("distance", seq_along(x), sep=".")
   
   return(data.frame(classNames, x))
 }
@@ -479,14 +496,14 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
 
 .lowestDTWCostInOverlapping = function(x, year, startDate, endDate, overlapping)
 {
-    I = which( year == as.numeric(format(x$dtw.to,"%Y")) )
+    I = which( year == as.numeric(format(x$to,"%Y")) )
     
     # Test minimum overlapping 
     flag = unlist(lapply(I, function(i){
-      a = x$dtw.from[i]
+      a = x$from[i]
       if(a < startDate)
         a = startDate
-      b = x$dtw.to[i]
+      b = x$to[i]
       if(endDate < b)
         b = endDate
       
@@ -498,13 +515,15 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
     }))
     
     if(!any(flag))
-      return(data.frame(year = year, dtw.cost = NA, dtw.timeCost = NA, 
+      return(data.frame(year = year, 
+                        distance = NA,
                         stringsAsFactors = FALSE))
     
     # Return the lowest DTW cost
-    I = I[which.min(x$dtw.cost[I[flag]])]
-    return(data.frame(year = year, dtw.cost = x$dtw.cost[I], 
-                      dtw.timeCost = x$dtw.timeCost[I], stringsAsFactors = FALSE))
+    I = I[which.min(x$distance[I[flag]])]
+    return(data.frame(year = year, 
+                      distance = x$distance[I], 
+                      stringsAsFactors = FALSE))
 
 }
 

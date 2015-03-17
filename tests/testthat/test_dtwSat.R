@@ -6,8 +6,9 @@
 
 # Set workspace and processing parameters
 setwd("~/workspace/dtwSat/tests")
-# LIBRARYPATH = "../../data/Tlibrary/embrapa/Tlibrary++"
-LIBRARYPATH = "../../data/Tlibrary/embrapa/amazon_simulation_all"
+# LIBRARYPATH = "../../data/Tlibrary/embrapa/Tlibrary-"
+LIBRARYPATH = "../../data/Tlibrary/embrapa/Tlibrary++"
+# LIBRARYPATH = "../../data/Tlibrary/embrapa/amazon_simulation_all"
 URLSERVER = "http://www.dpi.inpe.br/mds/mds"
 COVERAGES = "MOD13Q1"
 DATASETS = "evi"
@@ -15,8 +16,8 @@ FROM="2000-01-01"
 TO="2014-08-31"
 # COORDINATES = data.frame(longitude=-52.415303449,latitude=-12.3755423768)
 # COORDINATES = data.frame(longitude=-52.4549374155,latitude=-12.3384079189)
-# COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
-COORDINATES = data.frame(longitude=-56.725483,latitude=-12.217708)
+COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
+# COORDINATES = data.frame(longitude=-56.725483,latitude=-12.217708)
 # COORDINATES = data.frame(longitude=-56.7065251011,latitude=-12.2115047254)
 # COORDINATES = data.frame(longitude=-56.8204205399,latitude=-12.2681083867)
 # COORDINATES = data.frame(longitude=-56.8058059977,latitude=-12.2547399261)
@@ -68,30 +69,13 @@ print(gp)
 
 # Step 3. Processing: Compute dtw and other metrics
 results = lapply(seq_along(TemporalPatterns.list), function(j){
-  # j = 6
+  # j = 1
   patternName=names(TemporalPatterns.list)[j]
   x = as.numeric(TemporalPatterns.list[[j]][,2])
   tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
   query = zoo(x, tx)
-#   if(patternName=="pasture" | patternName=="forest")
-#     THETA = 0.70
-#   out = timeSeriesAnalysis(query, template, theta=0.4, span=0.3, normalize=TRUE, satStat=FALSE)
-  out = timeSeriesAnalysis2(query, template, theta=0.4, span=0.3, threshold=3.5, normalize=TRUE)
-#   for(k in 1:dim(out)[1]){
-#     gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) + 
-#         ylim(c(0,1)) + 
-#         geom_line(na.rm=TRUE, size = .5, colour="black", fill="black") + 
-#         geom_line(na.rm=TRUE, size = .8, data=data.frame(x=as.Date(ty[out$dtw.a[k]:out$dtw.b[k]]), y=y[out$dtw.a[k]:out$dtw.b[k]]), color="red") + 
-#         scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) + 
-#         xlab("Time") + 
-#         ylab("EVI2") + 
-#         ggtitle(patternName) +
-#         theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
-#         axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
-#         print(gp)
-#         print(out[k,])
-#         readline("Enter")
-#   }
+  out = timeSeriesAnalysis2(query, template, method="logistictimeweight", threshold=Inf, normalize=TRUE, 
+                                           delay = NULL, theta=NULL, alpha=0.1, beta=100)
   return(out)
 })
 names(results) = names(TemporalPatterns.list)
@@ -102,5 +86,5 @@ finalClassification = timeSeriesClassifier(results, from=FROM, to=TO,
                                            sortBydtw=TRUE, aggregateByClass=TRUE)
 # results
 
-data.frame(finalClassification)
+View(data.frame(finalClassification))
 

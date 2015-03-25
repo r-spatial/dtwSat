@@ -124,13 +124,13 @@ computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
 #' @param ROWIDS
 #' @param JUNKCOL
 #' @param JUNKROW
-#' @param THETA = 1.0
-#' @param SPAN = 0.3
-#' @param OVERLAPPING = 0.15
-#' @param THRESHOLD = 1.0
-#' @param NORMALIZE = TRUE
-#' @param SATSTAT = FALSE 
-#' @param NCORES = 1
+#' @param REALDAY
+#' @param METHOD
+#' @param THETA
+#' @param ALPHA
+#' @param BETA
+#' @param DELAY
+#' @param NCORES
 #' @param LIBRARYPATH
 #' @param EXPPRPATH
 #' @docType methods
@@ -141,10 +141,11 @@ buildSciDBDTWQuery = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES,
                               TMIN, TMAX,
                               COLIDS, ROWIDS,
                               JUNKCOL, JUNKROW,
-                              THETA = 1.0, SPAN = 0.3,
-                              OVERLAPPING = 0.15, THRESHOLD = 1.0,
-                              NORMALIZE = TRUE, SATSTAT = FALSE, 
-                              NCORES = 6,
+			      THRESHOLD, NORMALIZE,
+			      REALDAY, METHOD,
+			      THETA, ALPHA,
+			      BETA, DELAY,
+			      NCORES,
                               LIBRARYPATH, EXPPRPATH){
 
 rOut = 0:(length(PATTERNNAMES)+2)
@@ -173,13 +174,15 @@ res = paste(" redimension(
                                                           LIBRARYPATH=\"",LIBRARYPATH,"\"
                                                           FROM=\"",FROM,"\"
                                                           TO=\"",TO,"\"
-                                                          THETA=",THETA,"
-                                                          SPAN=",SPAN,"
-                                                          OVERLAPPING=",OVERLAPPING,"
-                                                          THRESHOLD=",THRESHOLD,"
-                                                          NORMALIZE=",NORMALIZE,"
-                                                          SATSTAT=",SATSTAT,"
-                                                          NCORES=",NCORES,"
+							  THRESHOLD=",THRESHOLD,"
+							  NORMALIZE=",NORMALIZE,"
+							  REALDAY=",REALDAY,"
+							  METHOD=",METHOD,"
+							  THETA=",THETA,"
+							  ALPHA=",ALPHA,"
+							  BETA=",BETA,"
+							  DELAY=",DELAY,"
+							  NCORES=",NCORES,"
                                                           source(\"",EXPPRPATH,"\")
                                                           res'
                                              ),

@@ -6,8 +6,9 @@
 
 # Set workspace and processing parameters
 setwd("~/workspace/dtwSat/tests")
-# LIBRARYPATH = "../../data/Tlibrary/embrapa/Tlibrary-"
-LIBRARYPATH = "../../data/Tlibrary/embrapa/Tlibrary++"
+LIBRARYPATH = "../../data/Tlibrary/mixPatterns.evi.RData"
+# LIBRARYPATH = "../../data/Tlibrary/EMBRAPA++.evi.RData"
+# LIBRARYPATH = "../../data/Tlibrary/EMBRAPA_crops.evi.RData"
 # LIBRARYPATH = "../../data/Tlibrary/embrapa/amazon_simulation_all"
 URLSERVER = "http://www.dpi.inpe.br/mds/mds"
 COVERAGES = "MOD13Q1"
@@ -26,14 +27,8 @@ COORDINATES = data.frame(longitude=-52.40429,latitude=-12.35496)
 #######################################################################################
 #
 ### Get patterns/signatures/queries whatever you want to call it
-TemporalPaternsFiles = dir(LIBRARYPATH,pattern=paste(DATASETS,".csv",sep=""))
-TemporalPatterns.list = lapply(paste(LIBRARYPATH,TemporalPaternsFiles,sep="/"),
-                               read.table, as.is=TRUE, header=FALSE, sep=",")
-classes = unlist(strsplit(TemporalPaternsFiles, split="\\.csv"))
-# classes = unlist(unique(lapply(strsplit(classes, split="\\."), function(name) name[1])))
-classes = unlist(lapply(strsplit(classes, split="\\."), function(name) name[1]))
-names(TemporalPatterns.list) = classes
-
+load(LIBRARYPATH)
+classes = names(query.list)
 
 # Step 1. Download time series
 datasets = DATASETS
@@ -68,17 +63,12 @@ gp = ggplot(data = data.frame(x=ty, y=y), aes( x = as.Date(x), y = y )) +
 print(gp)
 
 # Step 3. Processing: Compute dtw and other metrics
-results = lapply(seq_along(TemporalPatterns.list), function(j){
-  # j = 1
-  patternName=names(TemporalPatterns.list)[j]
-  x = as.numeric(TemporalPatterns.list[[j]][,2])
-  tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
-  query = zoo(x, tx)
+results = lapply(query.list, function(query){
   out = timeSeriesAnalysis2(query, template, method="logistictimeweight", threshold=Inf, normalize=TRUE, 
                                            delay = NULL, theta=NULL, alpha=0.1, beta=100)
   return(out)
 })
-names(results) = names(TemporalPatterns.list)
+names(results) = names(query.list)
 
 # Step 4. Post-processing
 finalClassification = timeSeriesClassifier(results, from=FROM, to=TO, 
@@ -86,5 +76,5 @@ finalClassification = timeSeriesClassifier(results, from=FROM, to=TO,
                                            sortBydtw=TRUE, aggregateByClass=TRUE)
 # results
 
-View(data.frame(finalClassification))
+# View(data.frame(finalClassification))
 

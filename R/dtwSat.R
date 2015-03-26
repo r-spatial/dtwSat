@@ -199,7 +199,6 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
   x  = as.numeric(query)
   ty = index(template)
   y  = as.numeric(template)
-  patternLength = abs(tx[length(tx)] - tx[1])
   
   # Step 1. Compute the open boundary DTW between the query and the template
   alignment = .dtwSat(query, template, method, delay, theta, alpha, beta, 
@@ -210,7 +209,7 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
   NonNA = which(!is.na(d))
   diffd = diff(d[NonNA])
   endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
-  endPoints = endPoints[d[endPoints] < threshold]
+  endPoints = endPoints[d[endPoints] <= threshold*length(tx)]
   if( length(endPoints) < 1 ) 
     return(NULL)
 #   plot(d,type="l")

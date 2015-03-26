@@ -12,9 +12,9 @@
 .Rproj.user
 
 # Man fileis
-man/
-.Rd
-.Rd~
+#man/
+#.Rd
+#.Rd~
 README.md~
 
 # Other files

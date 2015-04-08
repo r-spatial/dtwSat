@@ -75,7 +75,7 @@ modisColRowToLongLat = function(col, row, h=NULL, v=NULL, pixelsize, projCRS=NUL
   if(class(projCRS)!="CRS")
     projCRS = CRS("+proj=longlat +datum=WGS84 +no_defs")
   
-  tilesize = 1111950.51966666709631681442
+  tilesize = 1111950.51966666709631681442 # meters
   ncells = trunc(tilesize/pixelsize)
   nhtiles = 36
   nvtiles = 18
@@ -223,6 +223,9 @@ computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
 #' @param ROWIDS
 #' @param JUNKCOL
 #' @param JUNKROW
+#' @param THRESHOLD
+#' @param FILL
+#' @param NORMALIZE
 #' @param REALDAY
 #' @param METHOD
 #' @param THETA
@@ -240,7 +243,7 @@ buildSciDBDTWQuery = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES,
                               TMIN, TMAX,
                               COLIDS, ROWIDS,
                               JUNKCOL, JUNKROW,
-                  			      THRESHOLD, NORMALIZE,
+                  			      THRESHOLD, FILL, NORMALIZE,
                   			      REALDAY, METHOD,
                   			      THETA, ALPHA,
                   			      BETA, DELAY,
@@ -274,6 +277,7 @@ res = paste(" redimension(
                                                           FROM=\"",FROM,"\"
                                                           TO=\"",TO,"\"
                                           							  THRESHOLD=",THRESHOLD,"
+                                                          FILL=",FILL,"
                                           							  NORMALIZE=",NORMALIZE,"
                                           							  REALDAY=",REALDAY,"
                                           							  METHOD=\"",METHOD,"\"

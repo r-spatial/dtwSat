@@ -1,4 +1,84 @@
 
+#' @title Raster from scidb array. 
+#' 
+#' @description This function creates and project MODIS 
+#' arrays from from scidb database.
+#' 
+#' @param arrayname
+#' @param years
+#' @param mincol
+#' @param maxcol
+#' @param minrow
+#' @param maxrow
+#' @param pixelsize
+#' @param host
+#' @param port
+#' @param user
+#' @param password
+#' @param filepath
+#' @param overwrite
+#' 
+#' @docType methods
+#' @export
+modisrasterFromSciDBArray = function(arrayname, years, mincol, maxcol, minrow, maxrow, pixelsize, 
+                                     hostname, port, user, password, 
+                                     filepath, overwrite=TRUE)
+{
+  projCRSSinu = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+  TMPARRAY = "TMP_RASTER_ARRAY"
+  
+  hoststring = unlist(strsplit(hostname, split="://"))
+  hostscidb = hoststring[length(hoststring)]
+  hostname = paste0("https://", hostscidb)
+  scidbconnect(host=hostscidb, port=port, username=user, password=password)
+  
+  # Remove existing temp array from scidb
+  if(any(scidblist()==TMPARRAY))
+    scidbremove(TMPARRAY, force=TRUE)
+  
+  patternnames = scidb_attributes(scidb(arrayname))
+  
+  out = lapply(years, function(year){
+    cat("\nSaving slice ",which(years==year),"/",length(years))
+    TMPSCHEMA = paste("<",paste(paste(patternnames, collapse = ":double,"), ":double", sep=""),">",
+                      " [row_id=",minrow,":",maxrow,",256,0,col_id=",mincol,":",maxcol,",256,0]", sep="")
+    
+    iquery(paste("store(
+                 redimension(
+                 slice(",arrayname,", year_id, ",year,"),
+                 ",TMPSCHEMA,"
+                 ),
+                 ",TMPARRAY,"
+    )"), return=FALSE)
+
+    # Create raster from scidb array
+    tmpfile = paste(c(unlist(strsplit(filepath, split = "/")), "raster.tmp"), collapse = "/")
+    systemstring = paste("gdal_translate -of GTiff \"SCIDB:array=",TMPARRAY," host=",hostname," port=",port," user=",user," password=",password,"\" ",tmpfile,sep="")
+    system(systemstring)
+    
+    # Remove temp array from scidb
+    if(any(scidblist()==TMPARRAY))
+      scidbremove(TMPARRAY, force=TRUE)
+    
+    # Project raster
+    ceter_min_coords = modisColRowToLongLat(mincol, maxrow, h=NULL, v=NULL, pixelsize, projCRS=projCRSSinu)
+    min_coords = ceter_min_coords - pixelsize/2
+    ceter_max_coords = modisColRowToLongLat(maxcol, minrow, h=NULL, v=NULL, pixelsize, projCRS=projCRSSinu)
+    max_coords = ceter_max_coords + pixelsize/2
+    r_extent = extent(t(rbind(min_coords, max_coords)))
+    r2=brick(tmpfile, xmn=min_coords$longitude, xmx=max_coords$longitude, ymn=min_coords$latitude, ymx=max_coords$latitude, crs=projCRSSinu)
+    r2@extent = extent(t(rbind(min_coords, max_coords)))
+    names(r2) = paste("slice_",year,"_array_",arrayname,".",patternnames, sep="")
+    filename = paste(c(unlist(strsplit(filepath, split = "/")), paste("slice_",year,"_array_",arrayname,".tif",sep="") ), collapse = "/")
+    res = writeRaster(x=r2, filename = filename, format = "GTiff", overwrite = overwrite)
+    system(paste("rm -rf ",tmpfile))
+    res 
+  })
+  
+}
+
+
+
 #' @title longitude and latitude to MODIS column and row. 
 #' 
 #' @description This function computes the MODIS grid 

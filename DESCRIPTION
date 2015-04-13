@@ -16,5 +16,8 @@ Depends:
     dtw,
     zoo,
     sp,
+    raster,
+    rgdal,
+    scidb,
     waveslim
 License: MIT + file LICENSE

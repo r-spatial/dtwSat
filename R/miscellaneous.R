@@ -1,32 +1,30 @@
 
 #' @title Raster from scidb array. 
 #' 
-#' @description This function creates and project MODIS 
-#' arrays from from scidb database.
+#' @description This function creates and project MODIS grid from slices of 
+#' a scidb array.
 #' 
-#' @param arrayname
-#' @param years
-#' @param mincol
-#' @param maxcol
-#' @param minrow
-#' @param maxrow
-#' @param pixelsize
-#' @param host
-#' @param port
-#' @param user
-#' @param password
-#' @param filepath
-#' @param overwrite
+#' @param arrayname A carachter. SciDB array name.
+#' @param slices A numeric vector. The array index for each desired time slices.
+#' @param mincol An integer. The global index for the minimum MODIS column.
+#' @param maxcol An integer. The global index for the maximum MODIS column.
+#' @param minrow An integer. The global index for the minimum MODIS row.
+#' @param maxrow An integer. The global index for the maximum MODIS row.
+#' @param pixelsize A number. The MODIS resolution in meters.
+#' @param host A carachter.
+#' @param port An integer. 
+#' @param user A carachter.
+#' @param password A carachter.
+#' @param filepath A carachter.
+#' @param overwrite Logical. If TRUE, raster file will be overwritten if it exists. Default is FALSE.
 #' 
 #' @docType methods
 #' @export
-modisrasterFromSciDBArray = function(arrayname, years, mincol, maxcol, minrow, maxrow, pixelsize, 
-                                     hostname, port, user, password, 
-                                     filepath, overwrite=TRUE)
+modisrasterFromSciDBArray = function(arrayname, slices, mincol, maxcol, minrow, maxrow, pixelsize, 
+                                     hostname, port, user, password, filepath, overwrite=FALSE)
 {
   projCRSSinu = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
   TMPARRAY = "TMP_RASTER_ARRAY"
-  
   hoststring = unlist(strsplit(hostname, split="://"))
   hostscidb = hoststring[length(hoststring)]
   hostname = paste0("https://", hostscidb)
@@ -38,8 +36,8 @@ modisrasterFromSciDBArray = function(arrayname, years, mincol, maxcol, minrow, m
   
   patternnames = scidb_attributes(scidb(arrayname))
   
-  out = lapply(years, function(year){
-    cat("\nSaving slice ",which(years==year),"/",length(years))
+  out = lapply(slices, function(year){
+    cat("\nSaving slice ",which(slices==year),"/",length(slices))
     TMPSCHEMA = paste("<",paste(paste(patternnames, collapse = ":double,"), ":double", sep=""),">",
                       " [row_id=",minrow,":",maxrow,",256,0,col_id=",mincol,":",maxcol,",256,0]", sep="")
     

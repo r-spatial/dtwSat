@@ -5,38 +5,38 @@
 \alias{modisrasterFromSciDBArray}
 \title{Raster from scidb array.}
 \usage{
-modisrasterFromSciDBArray(arrayname, years, mincol, maxcol, minrow, maxrow,
-  pixelsize, hostname, port, user, password, filepath, overwrite = TRUE)
+modisrasterFromSciDBArray(arrayname, slices, mincol, maxcol, minrow, maxrow,
+  pixelsize, hostname, port, user, password, filepath, overwrite = FALSE)
 }
 \arguments{
-\item{arrayname}{}
+\item{arrayname}{A carachter. SciDB array name.}
 
-\item{years}{}
+\item{slices}{A numeric vector. The array index for each desired time slices.}
 
-\item{mincol}{}
+\item{mincol}{An integer. The global index for the minimum MODIS column.}
 
-\item{maxcol}{}
+\item{maxcol}{An integer. The global index for the maximum MODIS column.}
 
-\item{minrow}{}
+\item{minrow}{An integer. The global index for the minimum MODIS row.}
 
-\item{maxrow}{}
+\item{maxrow}{An integer. The global index for the maximum MODIS row.}
 
-\item{pixelsize}{}
+\item{pixelsize}{A number. The MODIS resolution in meters.}
 
-\item{port}{}
+\item{port}{An integer.}
 
-\item{user}{}
+\item{user}{A carachter.}
 
-\item{password}{}
+\item{password}{A carachter.}
 
-\item{filepath}{}
+\item{filepath}{A carachter.}
 
-\item{overwrite}{}
+\item{overwrite}{Logical. If TRUE, raster file will be overwritten if it exists. Default is FALSE.}
 
-\item{host}{}
+\item{host}{A carachter.}
 }
 \description{
-This function creates and project MODIS
-arrays from from scidb database.
+This function creates and project MODIS grid from slices of
+a scidb array.
 }
 

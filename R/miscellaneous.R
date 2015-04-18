@@ -385,3 +385,71 @@ return(res)
 
 
 
+
+
+
+
+#' @title Build SciDB query
+#' 
+#' @description The function builds the SciDB query for time 
+#' series analysis. 
+#' @param INPUTARRAY
+#' @param INPUTSCHEMA
+#' @param OUTPUTSCHEMA
+#' @param PATTERNNAMES 
+#' @param XMIN
+#' @param XMAX
+#' @param YMIN
+#' @param YMAX
+#' @param TMIN
+#' @param TMAX
+#' @param FILL
+#' @param NCORES
+#' @param EXPPRPATH
+#' @docType methods
+#' @export
+buildSciDBPostProcQuery = function(INPUTARRAY, 
+                                   INPUTSCHEMA,
+                                   OUTPUTSCHEMA,
+                                   PATTERNNAMES, 
+                                   XMIN, XMAX,
+                                   YMIN, YMAX,
+                                   TMIN, TMAX,
+                                   FILL, NCORES, 
+                                   EXPPRPATH){
+  
+  attrRename = gsub(" ", ",",paste(paste("expr_value", 0:3, sep="_"), c("col", "row", "year", "class"), collapse = ","))
+  
+  res = paste(" 
+              redimension(
+                          apply(
+                                attribute_rename(
+                                                 r_exec(
+                                                        redimension(
+                                                                    apply(
+                                                                          between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"),
+                                                                          dcol, double(col_id), drow, double(row_id), dyear, double(year_id)
+                                                                    ), 
+                                                                    ",INPUTSCHEMA,"
+                                                        ),
+                                                        'output_attrs=",4,"',
+                                                        'expr=
+                                                              output_attrs=",4,"
+                                                              FILL=",FILL,"
+                                                              NCORES=",NCORES,"
+                                                              PATTERNNAMES=c(\"",paste(PATTERNNAMES, collapse ="\",\"", sep=""), "\")
+                                                              source(\"",EXPPRPATH,"\")
+                                                              res'
+                                                  ),
+                                                  ",attrRename,"
+                                ),
+                                col_id,  int64(col),
+                                row_id,  int64(row),
+                                year_id, int64(year),
+                                class_id, int8(class)
+                          ),",OUTPUTSCHEMA,"
+              )", sep="")
+return(res)
+}
+
+

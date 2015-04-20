@@ -24,6 +24,61 @@ modisrasterFromSciDBArray = function(arrayname, slices, mincol, maxcol, minrow, 
                                      hostname, port, user, password, filepath, overwrite=FALSE)
 {
   projCRSSinu = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+  hoststring = unlist(strsplit(hostname, split="://"))
+  hostscidb = hoststring[length(hoststring)]
+  hostname = paste0("https://", hostscidb)
+  scidbconnect(host=hostscidb, port=port, username=user, password=password)
+  
+  # Remove existing temp array from scidb
+  if(any(scidblist()=="tmp_raster1"))
+    iquery("remove(tmp_raster1)", return=FALSE)
+  if(any(scidblist()=="tmp_raster2"))
+    iquery("remove(tmp_raster2)", return=FALSE)
+
+  cat("\nInsert array slice 1/",length(slices))
+  iquery(paste0("store(between(slice(",arrayname,", year_id,",slices[1],"),",mincol,",",minrow,",",maxcol,",",maxrow,"),tmp_raster1)"), return = FALSE) 
+  if(length(slices)>1)
+      lapply(slices[-1], function(year){
+              cat("\nInsert array slice ",which(slices==year),"/",length(slices))
+              iquery(paste0("store(join(",paste0("between(slice(",arrayname,", year_id, ",year,"),",mincol,",",minrow,",",maxcol,",",maxrow,")", collapse = ","), ",tmp_raster1),tmp_raster2)"), return=FALSE)
+              iquery("remove(tmp_raster1)", return=FALSE)
+              iquery("rename(tmp_raster2,tmp_raster1)", return=FALSE)
+      })
+  # Create raster from scidb array
+  aux = unlist(strsplit(schema(scidb("tmp_raster1")), split="\\["))
+  arraydim = paste(dimensions(scidb("tmp_raster1")), unlist(lapply(unlist(strsplit(aux[2], split="=")), function(i) unlist(strsplit(i, split=","))[1]))[-1], sep="=")
+  TMPSCHEMA = paste0(aux[1],paste0("[",arraydim[2],",1024,0,",arraydim[1],",1024,0]"))
+  iquery(paste0("store(redimension(tmp_raster1,",TMPSCHEMA,"),tmp_raster2)"))
+  tmpfile = paste(c(unlist(strsplit(filepath, split = "/")), "raster.tmp"), collapse = "/")
+  systemstring = paste("gdal_translate -of GTiff \"SCIDB:array=tmp_raster2 host=",hostname," port=",port," user=",user," password=",password,"\" ",tmpfile,sep="")
+  system(systemstring)
+  
+  # Remove temp array from scidb
+  if(any(scidblist()=="tmp_raster1"))
+    iquery("remove(tmp_raster1)", return=FALSE)
+  if(any(scidblist()=="tmp_raster2"))
+    iquery("remove(tmp_raster2)", return=FALSE)
+  
+  # Project raster
+  ceter_min_coords = modisColRowToLongLat(mincol, maxrow, h=NULL, v=NULL, pixelsize, projCRS=projCRSSinu)
+  min_coords = ceter_min_coords - pixelsize/2
+  ceter_max_coords = modisColRowToLongLat(maxcol, minrow, h=NULL, v=NULL, pixelsize, projCRS=projCRSSinu)
+  max_coords = ceter_max_coords + pixelsize/2
+  r_extent = extent(t(rbind(min_coords, max_coords)))
+  r2=brick(tmpfile, xmn=min_coords$longitude, xmx=max_coords$longitude, ymn=min_coords$latitude, ymx=max_coords$latitude, crs=projCRSSinu)
+  r2@extent = extent(t(rbind(min_coords, max_coords)))
+  names(r2) = paste(arrayname,slices, sep=".")
+  filename = paste(c(unlist(strsplit(filepath, split = "/")), paste(arrayname,".tif",sep="") ), collapse = "/")
+  res = writeRaster(x=r2, filename = filename, format = "GTiff", overwrite = overwrite)
+  system(paste("rm -rf ",tmpfile))
+  res
+}
+
+
+modisrasterFromSciDBArrayDTWValue = function(arrayname, slices, mincol, maxcol, minrow, maxrow, pixelsize, 
+                                     hostname, port, user, password, filepath, overwrite=FALSE)
+{
+  projCRSSinu = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
   TMPARRAY = "TMP_RASTER_ARRAY"
   hoststring = unlist(strsplit(hostname, split="://"))
   hostscidb = hoststring[length(hoststring)]
@@ -38,9 +93,9 @@ modisrasterFromSciDBArray = function(arrayname, slices, mincol, maxcol, minrow, 
   
   out = lapply(slices, function(year){
     cat("\nSaving slice ",which(slices==year),"/",length(slices))
-    TMPSCHEMA = paste("<",paste(paste(patternnames, collapse = ":double,"), ":double", sep=""),">",
-                      " [row_id=",minrow,":",maxrow,",256,0,col_id=",mincol,":",maxcol,",256,0]", sep="")
-    
+     TMPSCHEMA = paste("<",paste(paste(patternnames, collapse = ":double,"), ":double", sep=""),">",
+                       " [row_id=",minrow,":",maxrow,",256,0,col_id=",mincol,":",maxcol,",256,0]", sep="")
+     
     iquery(paste("store(
                  redimension(
                  slice(",arrayname,", year_id, ",year,"),
@@ -66,15 +121,13 @@ modisrasterFromSciDBArray = function(arrayname, slices, mincol, maxcol, minrow, 
     r_extent = extent(t(rbind(min_coords, max_coords)))
     r2=brick(tmpfile, xmn=min_coords$longitude, xmx=max_coords$longitude, ymn=min_coords$latitude, ymx=max_coords$latitude, crs=projCRSSinu)
     r2@extent = extent(t(rbind(min_coords, max_coords)))
-    names(r2) = paste("slice_",year,"_array_",arrayname,".",patternnames, sep="")
+    names(r2) = paste("slice_",slices,"_array_",arrayname,".",patternnames, sep="")
     filename = paste(c(unlist(strsplit(filepath, split = "/")), paste("slice_",year,"_array_",arrayname,".tif",sep="") ), collapse = "/")
     res = writeRaster(x=r2, filename = filename, format = "GTiff", overwrite = overwrite)
     system(paste("rm -rf ",tmpfile))
     res 
-  })
-  
+})
 }
-
 
 
 #' @title longitude and latitude to MODIS column and row. 
@@ -446,7 +499,7 @@ buildSciDBPostProcQuery = function(INPUTARRAY,
                                 col_id,  int64(col),
                                 row_id,  int64(row),
                                 year_id, int64(year),
-                                class_id, int8(class)
+                                class_id, uint8(class)
                           ),",OUTPUTSCHEMA,"
               )", sep="")
 return(res)

@@ -427,6 +427,21 @@ recoverMODISDates = function(years, frequency=16){
 }
 
 
+#' @title Recover dates from year and julian number
+#' 
+#' @description The function recovers the date from an year and 
+#' an julian  number. 
+#' 
+#' @param year An integers with the year.
+#' @param n An integer with the julian number.
+#' @docType methods
+#' @export
+recoverDatesFromJulian = function(years, n){
+  dates = seq(as.Date(paste0(year,"-01-01")), as.Date(paste0(year,"-12-31")), by=1)
+  N = as.numeric(format(dates, "%j"))
+  i = which(n==N)
+  return(dates[i])
+}
 
 
 #' @title Computes DTW distance

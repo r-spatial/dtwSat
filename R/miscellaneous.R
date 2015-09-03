@@ -701,3 +701,110 @@ buildSciDBPostProcSecVegetationQuery = function(INPUTARRAY,
               )", sep="")
 return(res)
 }
+
+
+#' @title Build SciDB 2 query (Faster)
+#' 
+#' @description The function builds the SciDB query for time 
+#' series analysis. 
+#' @param INPUTARRAY
+#' @param OUTPUTSCHEMA
+#' @param PATTERNNAMES
+#' @param XMIN
+#' @param XMAX
+#' @param YMIN
+#' @param YMAX
+#' @param TMIN
+#' @param TMAX
+#' @param COLIDS
+#' @param ROWIDS
+#' @param JUNKCOL
+#' @param JUNKROW
+#' @param THRESHOLD
+#' @param FILL
+#' @param NORMALIZE
+#' @param REALDAY
+#' @param METHOD
+#' @param THETA
+#' @param ALPHA
+#' @param BETA
+#' @param DELAY
+#' @param NCORES
+#' @param LIBRARYPATH
+#' @param EXPPRPATH
+#' @docType methods
+#' @export
+buildSciDBDTWQuery2 = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES, 
+                               XMIN, XMAX,
+                               YMIN, YMAX,
+                               TMIN, TMAX,
+                               COLIDS, ROWIDS,
+                               JUNKCOL, JUNKROW,
+                               THRESHOLD, FILL, NORMALIZE,
+                               REALDAY, METHOD,
+                               THETA, ALPHA,
+                               BETA, DELAY,
+                               NCORES,
+                               LIBRARYPATH, EXPPRPATH){
+  
+  rOut = 0:(length(PATTERNNAMES)+2)
+  attrRename = gsub(" ", ",",paste(paste("expr_value", rOut, sep="_"), c("col", "row", "year", PATTERNNAMES), collapse = ","))
+  
+  attrRedimension = paste(c("col_id", "row_id", "year_id", PATTERNNAMES), collapse = ",")
+  
+  res = paste("redimension(
+              project(
+              apply(
+              attribute_rename(
+              r_exec(
+              project(
+              apply(
+              redimension(
+              subarray(
+              apply(
+              between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"), 
+              icol, int64(col_id), irow, int64(row_id), itime, int64(time_id)
+              ), 
+              ",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"
+              ),
+              <evi:int16>[icol=",COLIDS,",",JUNKCOL,",0,irow=",ROWIDS,",",JUNKROW,",0,itime=",TMIN,":",TMAX,",",2*TMAX,",0]
+              ),
+              devi, double(evi), dcol, double(icol), drow, double(irow), dtime, double(itime)
+              ),
+              devi, dcol, drow, dtime
+              ),
+              'output_attrs=",length(rOut),"',
+              'expr=
+              output_attrs=",length(rOut),"
+              LIBRARYPATH=\"",LIBRARYPATH,"\"
+              FROM=\"",FROM,"\"
+              TO=\"",TO,"\"
+              THRESHOLD=",THRESHOLD,"
+              FILL=",FILL,"
+              TMIN=",TMIN,"
+              TMAX=",TMAX,"
+              NORMALIZE=",NORMALIZE,"
+              REALDAY=",REALDAY,"
+              METHOD=\"",METHOD,"\"
+              THETA=",THETA,"
+              ALPHA=",ALPHA,"
+              BETA=",BETA,"
+              DELAY=",DELAY,"
+              NCORES=",NCORES,"
+              source(\"",EXPPRPATH,"\")
+              res'
+              ),
+              ",attrRename,"
+              ),
+              col_id,  int64(col),
+              row_id,  int64(row),
+              year_id, int64(year)
+              ),",
+              attrRedimension,"
+              ),",
+              OUTPUTSCHEMA,"
+              )", sep="")
+  return(res)
+  
+}
+

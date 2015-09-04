@@ -485,8 +485,8 @@ computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
 #' @param TMAX
 #' @param COLIDS
 #' @param ROWIDS
-#' @param JUNKCOL
-#' @param JUNKROW
+#' @param CHUNKCOL
+#' @param CHUNKROW
 #' @param THRESHOLD
 #' @param FILL
 #' @param NORMALIZE
@@ -506,7 +506,7 @@ buildSciDBDTWQuery = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES,
                               YMIN, YMAX,
                               TMIN, TMAX,
                               COLIDS, ROWIDS,
-                              JUNKCOL, JUNKROW,
+                              CHUNKCOL, CHUNKROW,
                   			      THRESHOLD, FILL, NORMALIZE,
                   			      REALDAY, METHOD,
                   			      THETA, ALPHA,
@@ -528,7 +528,7 @@ res = paste(" redimension(
                                                               apply(
                                                                     redimension(
                                                                                 between(",INPUTARRAY,",",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"),
-                                                                                <evi:int16>[col_id=",COLIDS,",",JUNKCOL,",0,row_id=",ROWIDS,",",JUNKROW,",0,time_id=",TMIN,":",TMAX,",",2*TMAX,",0]
+                                                                                <evi:int16>[col_id=",COLIDS,",",CHUNKCOL,",0,row_id=",ROWIDS,",",CHUNKROW,",0,time_id=",TMIN,":",TMAX,",",2*TMAX,",0]
                                                                     ),
                                                                     devi, double(evi), dcol, double(col_id), drow, double(row_id), dtime, double(time_id)
                                                             ), 
@@ -718,8 +718,8 @@ return(res)
 #' @param TMAX
 #' @param COLIDS
 #' @param ROWIDS
-#' @param JUNKCOL
-#' @param JUNKROW
+#' @param CHUNKCOL
+#' @param CHUNKROW
 #' @param THRESHOLD
 #' @param FILL
 #' @param NORMALIZE
@@ -739,7 +739,7 @@ buildSciDBDTWQuery2 = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES,
                                YMIN, YMAX,
                                TMIN, TMAX,
                                COLIDS, ROWIDS,
-                               JUNKCOL, JUNKROW,
+                               CHUNKCOL, CHUNKROW,
                                THRESHOLD, FILL, NORMALIZE,
                                REALDAY, METHOD,
                                THETA, ALPHA,
@@ -767,7 +767,7 @@ buildSciDBDTWQuery2 = function(INPUTARRAY, OUTPUTSCHEMA, PATTERNNAMES,
               ), 
               ",XMIN,",",YMIN,",",TMIN,",",XMAX,",",YMAX,",",TMAX,"
               ),
-              <evi:int16>[icol=",COLIDS,",",JUNKCOL,",0,irow=",ROWIDS,",",JUNKROW,",0,itime=",TMIN,":",TMAX,",",2*TMAX,",0]
+              <evi:int16>[icol=",COLIDS,",",CHUNKCOL,",0,irow=",ROWIDS,",",CHUNKROW,",0,itime=",TMIN,":",TMAX,",",2*TMAX,",0]
               ),
               devi, double(evi), dcol, double(icol), drow, double(irow), dtime, double(itime)
               ),

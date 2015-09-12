@@ -48,7 +48,7 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
   timeline = timeline[I]
   template = zoo(, timeline)
   template = merge(x, template)
-  template = na.spline(template)
+  template = na.approx(template)
   template = template[timeline,]
     
   # Smoothing 

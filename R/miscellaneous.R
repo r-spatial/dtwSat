@@ -436,13 +436,32 @@ recoverMODISDates = function(years, frequency=16){
 #' @param n An integer with the julian number.
 #' @docType methods
 #' @export
-recoverDatesFromJulian = function(years, n){
+recoverDatesFromJulian = function(year, n){
   dates = seq(as.Date(paste0(year,"-01-01")), as.Date(paste0(year,"-12-31")), by=1)
   N = as.numeric(format(dates, "%j"))
   i = which(n==N)
   return(dates[i])
 }
 
+
+#' @title Recover MODIS time index from a date
+#' 
+#' @description The function recovers the MODIS time index 
+#' from a date
+#' 
+#' @param date 
+#' @docType methods 
+#' @export
+recoverMODISTimeIndex = function(d){
+  years = 2000:format(Sys.time(), "%Y")
+  dates = unlist(lapply(years, function(y){  
+    days = seq(from = 0, to = 365, by = 16)
+    as.Date(days, origin = as.Date(paste(y,"-01-01",sep="")))
+  }))
+  dates = as.Date(dates, origin="1970-01-01")
+  i = which.min(abs(dates-d))
+  return(i)
+}
 
 #' @title Computes DTW distance
 #' 

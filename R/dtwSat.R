@@ -239,13 +239,91 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
 }
 
 
+
+#' @title DTW multi-band satellite image time series analysis. 
+#' 
+#' @description This function applies an open boundary DTW analysis and 
+#' retrieves all possible alignments of a query within a template.
+#' 
+#' @param query A zoo object with the query time series.
+#' @param template A zoo object with the template time series. 
+#' It must be larger than the query. Template must have the same number of 
+#' bands than the query.
+#' @param method
+#' @param threshold A real. The DTW distance threshold, i.e. the maximum DTW
+#' distance for consideration. Default is Inf.
+#' @param normalize A logical. It divides the DTW distance by the pattern 
+#' length. Default is TRUE.
+#' @param theta A real. Parameter of lineartimeweight method. It is the slope 
+#' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
+#' number of days. Default is NULL.
+#' @param alpha A real. The steepness of logistictimeweight method. Default is NULL.
+#' @param beta A real. The midpoint of logistictimeweight method. Default is NULL.
+#' @param delay A real. Parameter of petitjean method. The maximum delay for the dtw 
+#' alignment. Default is NULL.
+#' @docType methods
+#' @export
+timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=Inf, normalize=TRUE, 
+                                       delay = NULL, theta=NULL, alpha=NULL, beta=NULL)
+{
+    if(!is.zoo(query))
+      stop("Missing zoo object. The query must be a zoo object.")
+    if(!is.zoo(template))
+      stop("Missing zoo object. The template must be a zoo object.")
+    if(ncol(query)!=ncol(template))
+      stop("Template must have the same number of columns than the query.")
+
+    tx = index(query)
+    x  = as.numeric(query)
+    ty = index(template)
+    y  = as.numeric(template)
+    
+    # Step 1. Compute the open boundary DTW between the query and the template
+    alignment = .dtwSat(query, template, method, delay, theta, alpha, beta, 
+                        step.matrix = symmetric1, window.function = noWindow)
+    # Step 2. Get the ending point of each path (minimum points in the last line of the accumulated cost matrix)
+    d = alignment$costMatrix[alignment$N,1:alignment$M]
+    NonNA = which(!is.na(d))
+    diffd = diff(d[NonNA])
+    endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
+    if(tail(diffd,1)<0)
+      endPoints = c(endPoints,length(d))
+    endPoints = endPoints[d[endPoints] <= threshold*length(tx)]
+    if( length(endPoints) < 1 )
+      return(NULL)
+    # Step 3. Map all low cost paths (k-th paths)
+    mapping = lapply(endPoints, function(b){
+      return(kthbacktrack(alignment, b))
+    }) # End mapping loop
+    
+    # Step 4. Get the starting point of each path
+    startPoints = unlist(lapply(mapping, function(map){
+      return(map$index2[1])
+    })) # End a loop
+    
+    # Step 5. Normalize and retrieve the results
+    dtwDist = d[endPoints]
+    if(normalize)
+      dtwDist = dtwDist / length(tx)
+    
+    return(data.frame(a = startPoints,
+                      b = endPoints,
+                      from = as.Date(ty[startPoints]),
+                      to = as.Date(ty[endPoints]),
+                      distance = dtwDist,
+                      stringsAsFactors = FALSE))
+    
+  }
+
+
+
 # DTW computation of the accumulated cost matrix and the direction matrix returns a dtw object
 .dtwSat =  function (query, template, method="dtw",
                      delay=NULL, theta=NULL, alpha=NULL, beta=NULL, 
                      step.matrix = symmetric1, window.function = noWindow)
 {
   delta = switch(method, 
-              dtw = proxy::dist(as.numeric(query), as.numeric(template), method="euclidean"),
+              dtw = proxy::dist(query, template, method="euclidean"),
               petitjean = .petitjeandtwCostMatrix(query, template, delay),
               lineartimeweight = .lntwdtwCostMatrix(query, template, theta),
               logistictimeweight = .logtwdtwCostMatrix(query, template, alpha, beta))
@@ -281,10 +359,8 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
 
 .petitjeandtwCostMatrix =  function (query, template, delay) 
 {
-  x  = as.numeric(query)
-  y  = as.numeric(template)
   phi = .timeCostMatrix(query, template)
-  delta = proxy::dist(x, y, method="euclidean")
+  delta = proxy::dist(query, template, method="euclidean")
   phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
   delta[phi>delay] = NA
   return(delta)
@@ -292,26 +368,37 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
 
 .lntwdtwCostMatrix =  function (query, template, theta) 
 {
-  x  = as.numeric(query)
-  y  = as.numeric(template)
   phi = .timeCostMatrix(query, template)
-  delta = proxy::dist(x, y, method="euclidean")
+  delta = proxy::dist(query, template, method="euclidean")
   delta = delta + theta*phi/366
   return(delta)
 }
 
 .logtwdtwCostMatrix =  function (query, template, alpha, beta)
 {
-  x  = as.numeric(query)
-  y  = as.numeric(template)
   phi = .timeCostMatrix(query, template)
-  delta = proxy::dist(x, y, method="euclidean")
+  delta = proxy::dist(query, template, method="euclidean")
   delta = delta + .logisticweight(phi, alpha, beta)
   return(delta)
 }
 
-.statTimeSat = function(y, ty, a, b){
 
+#' @title Function to compute phenological metrics. 
+#' 
+#' @description This compute phenological metrics from a time series.
+#' 
+#' @param y A zoo object with the query time series.
+#' @param a A vector. Indices in y of alignment starts.
+#' @param b A vector. Indices in y of alignment ends.
+#' @docType methods
+#' @export
+statTimeSat = function(y, a=NULL, b=NULL){
+  if(!is.zoo(y))
+    stop("Missing zoo object. The query must be a zoo object.")
+  ty = as.Date(index(y))
+  y  = as.numeric(y)
+  if(is.null(a)) a = 1
+  if(is.null(b)) b = length(y)
   out = do.call("rbind", lapply(seq_along(a), function(k){
     imax = which.max(y[a[k]:b[k]]) + a[k] - 1
     dy = diff(y[a[k]:b[k]])
@@ -357,19 +444,6 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
   }))
   
   return(out)
-}
-
-.localCostMatrix = function(query, template, theta){
-  tx = index(query)
-  x  = as.numeric(query)
-  ty = index(template)
-  y  = as.numeric(template)
-  tx = as.numeric(format(tx, "%j")) / 366
-  ty = as.numeric(format(ty, "%j")) / 366
-  lm = proxy::dist((1-theta)*x,(1-theta)*y,method="euclidean")
-  tm = proxy::dist(theta*tx,theta*ty,method="euclidean")
-  lm = lm + tm
-  return(lm)
 }
 
 

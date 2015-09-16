@@ -23,7 +23,7 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
                                method=c("wavelet",1))
 {
   if( missing(x) )
-    stop("Missing either a numeric vector or a zoo object.")     
+    stop("Missing either a numeric vector or a zoo object.")
   
   if(!is.zoo(x))
   {
@@ -66,180 +66,6 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 }
 
 
-
-#' @title Satellite image time series analysis. 
-#' 
-#' @description This function applies an open boundary DTW analysis and 
-#' retrieves all possible alignments of a query within a template.
-#' It also allows to compute some statistics for each dtw match.
-#' 
-#' @param query A zoo object with the query time series.
-#' @param template A zoo object with the template time series. 
-#' It must be larger than the query.
-#' @param theta A real between 1 and 0. It is a parameter for dtw local
-#' cost matrix computation. For theta equal 0 the function computes a 
-#' normal dtw, for greater values it includes the time cost in the local 
-#' matrix. Default is 0.
-#' @param span A real between 1 and 0. The span says how much the length 
-#' of a dtw match can be diferent from the length of the pattern. Default 
-#' is 2/3.
-#' @param normalize A logical, default is TRUE. Setting TRUE it divides 
-#' the DTW distance by the pattern length.
-#' @param satStat A logical, default is FALSE. Setting TRUE the function 
-#' also computes some statistics for each dtw match.
-#' @docType methods
-#' @export
-timeSeriesAnalysis = function(query, template, theta=0, span=2/3,
-                              normalize=TRUE, satStat=FALSE)
-{
-  
-  if(!is.zoo(query))
-    stop("Missing zoo object. The query must be a zoo object.")
-  if(!is.zoo(template))
-    stop("Missing zoo object. The template must be a zoo object.")
-  
-  if( span < 0 & 1 < span )
-    stop("Error: span must be a number between 0 and 1.")
-  
-  if( theta < 0 & 1 < theta )
-    stop("Error: theta must be a number between 0 and 1.")
-  
-  tx = index(query)
-  x  = as.numeric(query)
-  ty = index(template)
-  y  = as.numeric(template)
-  patternLength = abs(tx[length(tx)] - tx[1])
-  
-  # Step 1. Compute the open boundary DTW between the query and the template
-  alignment = .dtwSat(query, template, theta, step.matrix = symmetric1, window.function = noWindow) 
-
-  # Step 2. Retrieve the end point of each path (min points in the last line of the cost matrix) 
-  d = alignment$costMatrix[alignment$N,1:alignment$M]
-  NonNA = which(!is.na(d))
-  diffd = diff(d[NonNA])
-  minPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
-  
-#   gp = ggplot(data = data.frame(x=ty[NonNA], y=d[NonNA]), aes( x = as.Date(x), y = y )) + 
-#     ylim(c(0,10)) + 
-#     geom_line(size = .5, colour="black", fill="black") + 
-#     geom_point(data=data.frame(x=as.Date(ty[b]), y=d[b]), color="red") + 
-#     scale_x_date(labels = date_format("%Y"), breaks = date_breaks("year")) +
-#     xlab("Time") + 
-#     ylab("DTW distance") +
-#     ggtitle(paste("Pattern -",patternName)) + 
-#     theme(text=element_text(size = 10, family="Helvetica"), plot.title = element_text(size = 10),
-#           axis.text.x = element_text(size = 10, family="Helvetica"), axis.text.y = element_text(size = 10, family="Helvetica"))
-#   print(gp)
-#   
-  
-  out = do.call("rbind",lapply(minPoints, function(b){
-    # Step 3. Map whole possible min paths (k-th paths)
-    map = kthbacktrack(alignment, b)
-    # Step 4. Retriave the starts of each path
-    a = map$index2[1]
-    # Step 5. Remove tiny matches 
-    lengthDays = abs(ty[b] - ty[a])
-    validSubsec = (1 - span) * patternLength <= lengthDays & lengthDays <= (1+span) * patternLength
-    if(!validSubsec)
-      return(data.frame(dtw.a = NA, dtw.b = NA, dtw.from = as.Date(NA), dtw.to = as.Date(NA),
-                        dtw.cost = NA, dtw.timeCost = NA, stringsAsFactors = NA))
-    # Step 6. Compute the time cost of each path
-    t1 = as.numeric(format(tx[map$index1], "%j"))
-    t2 = as.numeric(format(ty[map$index2], "%j"))
-    timeCost = theta * sum(abs(t1 - t2)) / 366
-    dtwDist = d[b] - timeCost
-    if(normalize)
-      dtwDist = dtwDist / length(tx)
-    
-    return(data.frame(dtw.a = a, dtw.b = b, dtw.from = as.Date(ty[a]), dtw.to = as.Date(ty[b]),
-                      dtw.cost = dtwDist, dtw.timeCost = timeCost, stringsAsFactors = FALSE))
-    
-  })) # End mapping loop
-
-  # Remove null lines
-  nonnull = !apply(out, 1, is.na)[1,]
-  return(out[nonnull,])
-}
-
-
-
-
-#' @title Satellite image time series analysis. 
-#' 
-#' @description This function applies an open boundary DTW analysis and 
-#' retrieves all possible alignments of a query within a template.
-#' 
-#' @param query A zoo object with the query time series.
-#' @param template A zoo object with the template time series. 
-#' It must be larger than the query.
-#' @param method
-#' @param threshold A real. The DTW distance threshold, i.e. the maximum DTW
-#' distance for consideration. Default is Inf.
-#' @param normalize A logical. It divides the DTW distance by the pattern 
-#' length. Default is TRUE.
-#' @param theta A real. Parameter of lineartimeweight method. It is the slope 
-#' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
-#' number of days. Default is NULL.
-#' @param alpha A real. The steepness of logistictimeweight method. Default is NULL.
-#' @param beta A real. The midpoint of logistictimeweight method. Default is NULL.
-#' @param delay A real. Parameter of petitjean method. The maximum delay for the dtw 
-#' alignment. Default is NULL.
-#' @docType methods
-#' @export
-timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, normalize=TRUE, 
-                               delay = NULL, theta=NULL, alpha=NULL, beta=NULL)
-{
-  
-  if(!is.zoo(query))
-    stop("Missing zoo object. The query must be a zoo object.")
-  if(!is.zoo(template))
-    stop("Missing zoo object. The template must be a zoo object.")
-  
-  tx = index(query)
-  x  = as.numeric(query)
-  ty = index(template)
-  y  = as.numeric(template)
-  
-  # Step 1. Compute the open boundary DTW between the query and the template
-  alignment = .dtwSat(query, template, method, delay, theta, alpha, beta, 
-                      step.matrix = symmetric1, window.function = noWindow)
-
-  # Step 2. Get the ending point of each path (minimum points in the last line of the accumulated cost matrix)
-  d = alignment$costMatrix[alignment$N,1:alignment$M]
-  NonNA = which(!is.na(d))
-  diffd = diff(d[NonNA])
-  endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
-  endPoints = endPoints[d[endPoints] <= threshold*length(tx)]
-  if( length(endPoints) < 1 ) 
-    return(NULL)
-#   plot(d,type="l")
-#   points(endPoints, d[endPoints], col="red")
-  # Step 3. Map all low cost paths (k-th paths)
-  mapping = lapply(endPoints, function(b){
-    return(kthbacktrack(alignment, b))
-  }) # End mapping loop
-  
-  # Step 4. Get the starting point of each path
-  startPoints = unlist(lapply(mapping, function(map){
-    return(map$index2[1])
-  })) # End a loop
-
-  # Step 5. Normalize and retrieve the results
-  dtwDist = d[endPoints]
-  if(normalize)
-    dtwDist = dtwDist / length(tx)
-  
-  return(data.frame(a = startPoints,
-                    b = endPoints,
-                    from = as.Date(ty[startPoints]),
-                    to = as.Date(ty[endPoints]),
-                    distance = dtwDist,
-                    stringsAsFactors = FALSE))
-    
-}
-
-
-
 #' @title DTW multi-band satellite image time series analysis. 
 #' 
 #' @description This function applies an open boundary DTW analysis and 
@@ -254,11 +80,11 @@ timeSeriesAnalysis2 = function(query, template, method="dtw", threshold=Inf, nor
 #' distance for consideration. Default is Inf.
 #' @param normalize A logical. It divides the DTW distance by the pattern 
 #' length. Default is TRUE.
-#' @param theta A real. Parameter of lineartimeweight method. It is the slope 
+#' @param theta A real. Parameter of linearTWDTW method. It is the slope 
 #' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
 #' number of days. Default is NULL.
-#' @param alpha A real. The steepness of logistictimeweight method. Default is NULL.
-#' @param beta A real. The midpoint of logistictimeweight method. Default is NULL.
+#' @param alpha A real. The steepness of logTWDTW method. Default is NULL.
+#' @param beta A real. The midpoint of logTWDTW method. Default is NULL.
 #' @param delay A real. Parameter of petitjean method. The maximum delay for the dtw 
 #' alignment. Default is NULL.
 #' @docType methods
@@ -279,7 +105,7 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
     y  = as.numeric(template)
     
     # Step 1. Compute the open boundary DTW between the query and the template
-    alignment = .dtwSat(query, template, method, delay, theta, alpha, beta, 
+    alignment = dtwSat(query, template, method, delay, theta, alpha, beta, 
                         step.matrix = symmetric1, window.function = noWindow)
     # Step 2. Get the ending point of each path (minimum points in the last line of the accumulated cost matrix)
     d = alignment$costMatrix[alignment$N,1:alignment$M]
@@ -317,16 +143,38 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
 
 
 
-# DTW computation of the accumulated cost matrix and the direction matrix returns a dtw object
-.dtwSat =  function (query, template, method="dtw",
-                     delay=NULL, theta=NULL, alpha=NULL, beta=NULL, 
-                     step.matrix = symmetric1, window.function = noWindow)
+#' @title DTW multi-band satellite image time series analysis. 
+#' 
+#' @description This function applies an open boundary DTW analysis and 
+#' retrieves all possible alignments of a query within a template.
+#' 
+#' @param query A zoo object with the query time series.
+#' @param template A zoo object with the template time series. 
+#' It must be larger than the query. Template must have the same number of 
+#' bands than the query.
+#' @param method a character, linearTWDTW, logTWDTW or maxDelayDTW. 
+#' @param threshold A real. The DTW distance threshold, i.e. the maximum DTW
+#' distance for consideration. Default is Inf.
+#' @param normalize A logical. It divides the DTW distance by the pattern 
+#' length. Default is TRUE.
+#' @param theta A real. Parameter of linearTWDTW method. It is the slope 
+#' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
+#' number of days. Default is NULL.
+#' @param alpha A real. The steepness of logTWDTW method. Default is NULL.
+#' @param beta A real. The midpoint of logTWDTW method. Default is NULL.
+#' @param delay A real. Parameter of max delay method. The maximum delay for the dtw 
+#' alignment. Default is NULL.
+#' @docType methods
+#' @export
+dtwSat =  function (query, template, method="dtw",
+                   delay=NULL, theta=NULL, alpha=NULL, beta=NULL, 
+                   step.matrix = symmetric1, window.function = noWindow)
 {
   delta = switch(method, 
               dtw = proxy::dist(query, template, method="euclidean"),
-              petitjean = .petitjeandtwCostMatrix(query, template, delay),
-              lineartimeweight = .lntwdtwCostMatrix(query, template, theta),
-              logistictimeweight = .logtwdtwCostMatrix(query, template, alpha, beta))
+              maxDelayDTW = .maxDelayDTW(query, template, delay),
+              linearTWDTW = .linearTWDTW(query, template, theta),
+              logTWDTW = .logTWDTW(query, template, alpha, beta))
 
   delta = rbind(0, delta)
   n = nrow(delta)
@@ -345,6 +193,7 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
   return(out)
 }
 
+
 .logisticweight = function(x, alpha, beta){
   return( 1 / (1 + exp(1)^(-alpha*(x-beta))) )
 }
@@ -357,7 +206,7 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
     return(phi)
 }
 
-.petitjeandtwCostMatrix =  function (query, template, delay) 
+.maxDelayDTW =  function (query, template, delay) 
 {
   phi = .timeCostMatrix(query, template)
   delta = proxy::dist(query, template, method="euclidean")
@@ -366,7 +215,7 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
   return(delta)
 }
 
-.lntwdtwCostMatrix =  function (query, template, theta) 
+.linearTWDTW =  function (query, template, theta) 
 {
   phi = .timeCostMatrix(query, template)
   delta = proxy::dist(query, template, method="euclidean")
@@ -374,7 +223,7 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
   return(delta)
 }
 
-.logtwdtwCostMatrix =  function (query, template, alpha, beta)
+.logTWDTW =  function (query, template, alpha, beta)
 {
   phi = .timeCostMatrix(query, template)
   delta = proxy::dist(query, template, method="euclidean")

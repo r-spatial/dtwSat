@@ -143,39 +143,53 @@ timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=
 
 
 
-#' @title DTW multi-band satellite image time series analysis. 
+#' @title Multidimensional Time-Weighted DTW analysis. 
 #' 
-#' @description This function applies an open boundary DTW analysis and 
-#' retrieves all possible alignments of a query within a template.
+#' @description This function performs a multidimensional Time-Weighted DTW 
+#' analysis and retrieves one or more possible alignments of a query within 
+#' a time series.
 #' 
-#' @param query A zoo object with the query time series.
+#' @param query A zoo object with the multidimensional time series.
 #' @param template A zoo object with the template time series. 
-#' It must be larger than the query. Template must have the same number of 
-#' bands than the query.
-#' @param method a character, linearTWDTW, logTWDTW or maxDelayDTW. 
-#' @param threshold A real. The DTW distance threshold, i.e. the maximum DTW
-#' distance for consideration. Default is Inf.
-#' @param normalize A logical. It divides the DTW distance by the pattern 
-#' length. Default is TRUE.
-#' @param theta A real. Parameter of linearTWDTW method. It is the slope 
+#' It must be iguel or be equal or longer than the length of the query and 
+#' the same number of dimensions.
+#' @param weight A character. "linear" for linear weight or "logistic" 
+#' for logistic weight. Default is NULL that runs the original dtw method.
+#' @param dist.method A character. Method to derive the local cost matrix.
+#' Default is "Euclidean" See \code{\link[proxy]{dist}} in package 
+#' \pkg{proxy}
+#' @param theta A real. Parameter for linear weight. It is the slope 
 #' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
-#' number of days. Default is NULL.
-#' @param alpha A real. The steepness of logTWDTW method. Default is NULL.
-#' @param beta A real. The midpoint of logTWDTW method. Default is NULL.
-#' @param delay A real. Parameter of max delay method. The maximum delay for the dtw 
-#' alignment. Default is NULL.
+#' number of elapsed days. Default is NULL.
+#' @param alpha A real. The steepness of logistic method. Default is NULL.
+#' @param beta A real. The midpoint of logistic method. Default is NULL.
+#' @param alignments An integer. The maximun number of alignments to 
+#' perform. Default is NULL to return all possible alignment. 
+#' @param step.matrix see \code{\link{stepPattern}} in package \pkg{dtw}
+#' @param window.function see \code{window.type} in package \pkg{dtw}
 #' @docType methods
 #' @export
-dtwSat =  function (query, template, method="dtw",
-                   delay=NULL, theta=NULL, alpha=NULL, beta=NULL, 
-                   step.matrix = symmetric1, window.function = noWindow)
+twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
+                  theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
+                  step.matrix = symmetric1, window.function = noWindow)
 {
-  delta = switch(method, 
-              dtw = proxy::dist(query, template, method="euclidean"),
-              maxDelayDTW = .maxDelayDTW(query, template, delay),
-              linearTWDTW = .linearTWDTW(query, template, theta),
-              logTWDTW = .logTWDTW(query, template, alpha, beta))
-
+  if(!is.zoo(query))
+    stop("Missing zoo object. The query must be a zoo object.")
+  if(!is.zoo(template))
+    stop("Missing zoo object. The template must be a zoo object.")
+  if(ncol(query)!=ncol(template))
+    stop("Template must have the same number of columns than the query.")
+  
+  # Compute local cost matrix
+  if(is.null(weight)){
+    delta = proxy::dist(query, template, dist.method)
+  }else{
+    delta = switch(weight, 
+                   linear   = .linearTWDTW(query, template, theta, dist.method),
+                   logistic =    .logTWDTW(query, template, alpha, beta, dist.method))
+  }
+  
+  # Compute cost matrix
   delta = rbind(0, delta)
   n = nrow(delta)
   m = ncol(delta)
@@ -189,6 +203,43 @@ dtwSat =  function (query, template, method="dtw",
   out$stepPattern = step.matrix
   out$N = n-1
   out$M = m
+  out$query = query
+  out$template = template
+  
+  # Porform alignments 
+  d = out$costMatrix[out$N,1:out$M]
+  NonNA = which(!is.na(d))
+  diffd = diff(d[NonNA])
+  endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
+  if(tail(diffd,1) < 0)
+    endPoints = c(endPoints,length(d))
+  if( length(endPoints) < 1 ){
+    out$alignments = NULL
+  }else{
+    endPoints = sort(endPoints)
+    if(is.null(alignments))
+      alignments = length(endPoints)
+    if(length(endPoints) > alignments)
+      endPoints = endPoints[1:alignments]
+    # Map low cost paths (k-th paths)
+    mapping = lapply(endPoints, function(b){
+      return(kthbacktrack(out, b))
+    })
+    
+    # Get the starting point of each path
+    startPoints = unlist(lapply(mapping, function(map){
+      return(map$index2[1])
+    }))
+    
+    # Return the alignments
+    out$alignments = data.frame(from  = startPoints,
+                                to    = endPoints,
+                                distance           = d[endPoints],
+                                normalizedDistance = d[endPoints] / length(query),                      
+                                stringsAsFactors = FALSE)
+    out$mapping = mapping
+  }
+    
   class(out) = "dtw"
   return(out)
 }
@@ -198,35 +249,26 @@ dtwSat =  function (query, template, method="dtw",
   return( 1 / (1 + exp(1)^(-alpha*(x-beta))) )
 }
 
-.timeCostMatrix = function(query, template){ 
+.timeCostMatrix = function(query, template, dist.method){ 
     tx = as.numeric(format(index(query), "%j"))
     ty = as.numeric(format(index(template), "%j"))
-    phi = proxy::dist(tx, ty, method="euclidean")
+    phi = proxy::dist(tx, ty, method=dist.method)
     phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
     return(phi)
 }
 
-.maxDelayDTW =  function (query, template, delay) 
+.linearTWDTW =  function (query, template, theta, dist.method) 
 {
-  phi = .timeCostMatrix(query, template)
-  delta = proxy::dist(query, template, method="euclidean")
-  phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
-  delta[phi>delay] = NA
-  return(delta)
-}
-
-.linearTWDTW =  function (query, template, theta) 
-{
-  phi = .timeCostMatrix(query, template)
-  delta = proxy::dist(query, template, method="euclidean")
+  phi = .timeCostMatrix(query, template, dist.method)
+  delta = proxy::dist(query, template, method=dist.method)
   delta = delta + theta*phi/366
   return(delta)
 }
 
-.logTWDTW =  function (query, template, alpha, beta)
+.logTWDTW =  function (query, template, alpha, beta, dist.method)
 {
-  phi = .timeCostMatrix(query, template)
-  delta = proxy::dist(query, template, method="euclidean")
+  phi = .timeCostMatrix(query, template, dist.method)
+  delta = proxy::dist(query, template, dist.method)
   delta = delta + .logisticweight(phi, alpha, beta)
   return(delta)
 }

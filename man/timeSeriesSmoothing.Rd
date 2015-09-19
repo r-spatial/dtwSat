@@ -3,7 +3,7 @@
 \docType{methods}
 \name{timeSeriesSmoothing}
 \alias{timeSeriesSmoothing}
-\title{Satellite image time series smoothing.}
+\title{Satellite image time series smoothing}
 \usage{
 timeSeriesSmoothing(x, y = NULL, timeline, frequency, method = c("wavelet",
   1))

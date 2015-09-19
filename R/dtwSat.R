@@ -66,83 +66,6 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 }
 
 
-#' @title DTW multi-band satellite image time series analysis. 
-#' 
-#' @description This function applies an open boundary DTW analysis and 
-#' retrieves all possible alignments of a query within a template.
-#' 
-#' @param query A zoo object with the query time series.
-#' @param template A zoo object with the template time series. 
-#' It must be larger than the query. Template must have the same number of 
-#' bands than the query.
-#' @param method
-#' @param threshold A real. The DTW distance threshold, i.e. the maximum DTW
-#' distance for consideration. Default is Inf.
-#' @param normalize A logical. It divides the DTW distance by the pattern 
-#' length. Default is TRUE.
-#' @param theta A real. Parameter of linearTWDTW method. It is the slope 
-#' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
-#' number of days. Default is NULL.
-#' @param alpha A real. The steepness of logTWDTW method. Default is NULL.
-#' @param beta A real. The midpoint of logTWDTW method. Default is NULL.
-#' @param delay A real. Parameter of petitjean method. The maximum delay for the dtw 
-#' alignment. Default is NULL.
-#' @docType methods
-#' @export
-timeSeriesMultiBandAnalysis = function(query, template, method="dtw", threshold=Inf, normalize=TRUE, 
-                                       delay = NULL, theta=NULL, alpha=NULL, beta=NULL)
-{
-    if(!is.zoo(query))
-      stop("Missing zoo object. The query must be a zoo object.")
-    if(!is.zoo(template))
-      stop("Missing zoo object. The template must be a zoo object.")
-    if(ncol(query)!=ncol(template))
-      stop("Template must have the same number of columns than the query.")
-
-    tx = index(query)
-    x  = as.numeric(query)
-    ty = index(template)
-    y  = as.numeric(template)
-    
-    # Step 1. Compute the open boundary DTW between the query and the template
-    alignment = dtwSat(query, template, method, delay, theta, alpha, beta, 
-                        step.matrix = symmetric1, window.function = noWindow)
-    # Step 2. Get the ending point of each path (minimum points in the last line of the accumulated cost matrix)
-    d = alignment$costMatrix[alignment$N,1:alignment$M]
-    NonNA = which(!is.na(d))
-    diffd = diff(d[NonNA])
-    endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
-    if(tail(diffd,1)<0)
-      endPoints = c(endPoints,length(d))
-    endPoints = endPoints[d[endPoints] <= threshold*length(tx)]
-    if( length(endPoints) < 1 )
-      return(NULL)
-    # Step 3. Map all low cost paths (k-th paths)
-    mapping = lapply(endPoints, function(b){
-      return(kthbacktrack(alignment, b))
-    }) # End mapping loop
-    
-    # Step 4. Get the starting point of each path
-    startPoints = unlist(lapply(mapping, function(map){
-      return(map$index2[1])
-    })) # End a loop
-    
-    # Step 5. Normalize and retrieve the results
-    dtwDist = d[endPoints]
-    if(normalize)
-      dtwDist = dtwDist / length(tx)
-    
-    return(data.frame(a = startPoints,
-                      b = endPoints,
-                      from = as.Date(ty[startPoints]),
-                      to = as.Date(ty[endPoints]),
-                      distance = dtwDist,
-                      stringsAsFactors = FALSE))
-    
-  }
-
-
-
 #' @title Multidimensional Time-Weighted DTW analysis. 
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
@@ -180,16 +103,20 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   if(ncol(query)!=ncol(template))
     stop("Template must have the same number of columns than the query.")
   
-  # Compute local cost matrix
-  if(is.null(weight)){
-    delta = proxy::dist(query, template, dist.method)
-  }else{
-    delta = switch(weight, 
-                   linear   = .linearTWDTW(query, template, theta, dist.method),
-                   logistic =    .logTWDTW(query, template, alpha, beta, dist.method))
+  # Local cost
+  delta = proxy::dist(query, template, method=dist.method)
+  # Elapsed time
+  phi = 0
+  if(!is.null(weight)){
+    phi = .timeCostMatrix(query, template, dist.method)
+    phi = switch(weight, 
+                 linear   = .linearweight(phi, theta),
+                 logistic = .logisticweight(phi, alpha, beta)
+                 )
   }
+  delta = delta + phi
   
-  # Compute cost matrix
+  # Cost matrix
   delta = rbind(0, delta)
   n = nrow(delta)
   m = ncol(delta)
@@ -198,6 +125,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   wm = matrix(FALSE, nrow = n, ncol = m)
   wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
   out = .Call("computeCM_Call", PACKAGE="dtw", wm, delta, cm, step.matrix)
+  out$stepPattern = step.matrix
   out$costMatrix = out$costMatrix[-1,]
   out$directionMatrix = out$directionMatrix[-1,]
   out$stepPattern = step.matrix
@@ -205,7 +133,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   out$M = m
   out$query = query
   out$template = template
-  
+    
   # Porform alignments 
   d = out$costMatrix[out$N,1:out$M]
   NonNA = which(!is.na(d))
@@ -239,40 +167,68 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                                 stringsAsFactors = FALSE)
     out$mapping = mapping
   }
-    
-  class(out) = "dtw"
+  out$call = match.call()
+#   out$stepPattern = 
+  class(out) = "twdtw"
   return(out)
 }
 
+
+.timeCostMatrix = function(query, template, dist.method){ 
+  tx = as.numeric(format(index(query), "%j"))
+  ty = as.numeric(format(index(template), "%j"))
+  phi = proxy::dist(tx, ty, method=dist.method)
+  phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
+  return(phi)
+}
 
 .logisticweight = function(x, alpha, beta){
   return( 1 / (1 + exp(1)^(-alpha*(x-beta))) )
 }
 
-.timeCostMatrix = function(query, template, dist.method){ 
-    tx = as.numeric(format(index(query), "%j"))
-    ty = as.numeric(format(index(template), "%j"))
-    phi = proxy::dist(tx, ty, method=dist.method)
-    phi[phi>(366/2)] = abs(366 - phi[phi>(366/2)])
-    return(phi)
+.linearweight = function(x, theta){
+  return( theta * x / 366 )
 }
 
-.linearTWDTW =  function (query, template, theta, dist.method) 
-{
-  phi = .timeCostMatrix(query, template, dist.method)
-  delta = proxy::dist(query, template, method=dist.method)
-  delta = delta + theta*phi/366
-  return(delta)
+
+#' @title Plotting Time-Weighted DTW 
+#' 
+#' @description Methods for plotting Time-Weighted DTW objects 
+#' returned by twdtw.
+#' 
+#' @param x twdtw object
+#' @param n An integer. The alignment. Default is 1
+#' @param d An integer. The dimension for point-by-point 
+#' comparison, with matching lines \code{\link{dtwPlotThreeWay}} 
+#' in package \pkg{dtw}. Default is 1
+#' @param type see \code{\link{plot.dtw}} in package \pkg{dtw}. 
+#' Default is "density"
+#' @param ... see \code{plot.dtw} in package \pkg{dtw}
+#' @docType methods
+#' @export
+plotTwdtw = function(x, n=1, d=1, type="density", ...){
+  if(0 > n & n > length(x$mapping))
+    stop(paste("n must be an integer between 1 and the number of alignments:",length(x$mapping)))
+  if(0 > d & d > ncol(x$query) )
+    stop(paste("d must be an integer between 1 and the number of cols in the query:",ncol(x$query)))
+  obj = .dtwObj(x, n=1, d=1)
+  dtw::dtwPlot(obj, type="density", ...)
 }
 
-.logTWDTW =  function (query, template, alpha, beta, dist.method)
-{
-  phi = .timeCostMatrix(query, template, dist.method)
-  delta = proxy::dist(query, template, dist.method)
-  delta = delta + .logisticweight(phi, alpha, beta)
-  return(delta)
-}
+# PLOT ALL ALIGNMENTS IN THE SAME TERREAIN
+# RUN LIST OF PATTERNS AND RETRIENVE A DATA.FRAME
 
+.dtwObj = function(x, n=1, d=1){
+  if(class(x)!="twdtw")
+    stop("Missing a twdtw object.")
+  res = x
+  res$jmin      = x$alignments$to
+  res$index1    = x$mapping[[n]]$index1
+  res$index2    = x$mapping[[n]]$index2
+  res$query     = x$query[,d]
+  res$reference = x$template[,d]
+  return(res)
+}
 
 #' @title Function to compute phenological metrics. 
 #' 

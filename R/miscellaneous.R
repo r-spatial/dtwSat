@@ -1,21 +1,3 @@
-#' @title Splits the total number of processes
-#' 
-#' @description A recursive function to splits the total 
-#' number of processes according to the threads size.
-#' 
-#' @param n An integer for the total number of processes. 
-#' @param thread.size An integer for the thread size.
-#' @docType methods
-#' @export
-computeThreadsSize = function(n, thread.size){
-  if( n < 1.5*thread.size || thread.size < 1)
-    return(n)
-  return( c(thread.size, computeThreadsSize(n-thread.size, thread.size)) )
-}
-
-
-
-
 #' @title Computes DTW distance
 #' 
 #' @description The function computes the whole possible alignments 
@@ -33,8 +15,8 @@ computeDTWForAllPatterns = function(template, TemporalPatterns.list, ... ){
     x = as.numeric(TemporalPatterns.list[[j]][,2])
     tx = as.Date(TemporalPatterns.list[[j]][,1], origin="1970-01-01")
     query = zoo(x, tx)
-    out = timeSeriesAnalysis(query, template, theta=THETA, span=SPAN,
-                             normalize=NORMALIZE, satStat=SATSTAT)
+    out = timeSeriesAnalysis(query, template, theta=THETA, span=1,
+                             normalize=TRUE)
     return(out)
   })
   names(res) = names(TemporalPatterns.list)

@@ -5,7 +5,7 @@ Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analy
 
 dtwSat extends the dtw R package for multidimensional satellite image time series analysis. 
 
-<h3>To use the package:</h3>
+<h3>How to use the package:</h3>
 <ol>
 	<li>Open R</li>
 	<li>Install devtools <code>install.packages("devtools")</code></li>
@@ -13,7 +13,7 @@ dtwSat extends the dtw R package for multidimensional satellite image time serie
 	<li>Install the dtwSat package <code>install_github("vwmaus/dtwSat")</code></li>
 </ol>
 
-<h3>Usage examples:</h3>
+<h3>Examples:</h3>
 <ol>
 	<li>Load the dtwSat package: <code>library(dtwSat)</code></li>
 	<li>Class names: <code>names(query.list)</code></li>
@@ -23,7 +23,7 @@ dtwSat extends the dtw R package for multidimensional satellite image time serie
 </ol>
 ![alt text](alig_soy.png "Alignment plot")
 
-<h3>To build the package:</h3>
+<h3>How to build the package:</h3>
 <ol>
 	<li>Clone the project: <code>git clone https//github.com/vwmaus/dtwSat.git</code>.</li>
 	<li>Open Rstudio, go to File - Open Project and pick the file <code>dtwSat.Rproj</code>.</li>

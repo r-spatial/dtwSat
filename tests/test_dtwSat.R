@@ -14,7 +14,7 @@ alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1
 print(alig)
 
 # Plot twdtw object
-plot(alig, main="Soybean", show.dist = TRUE)
+plot(alig, ylab="Query (Time)", show.dist = TRUE)
 
 # Wavelet time series smoothing
 sy = timeSeriesSmoothing(template$evi, frequency=16, method=c("wavelet",1))

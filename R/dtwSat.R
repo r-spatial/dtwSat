@@ -92,7 +92,7 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' @param window.function see \code{window.type} in package \pkg{dtw}
 #' @docType methods
 #' @examples
-#' alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+#' alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
 #' alig
 #' @export
 twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
@@ -149,7 +149,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   if( length(endPoints) < 1 ){
     out$alignments = NULL
   }else{
-    endPoints = sort(endPoints)
+    endPoints = endPoints[order(d[endPoints])]
     if(is.null(alignments))
       alignments = length(endPoints)
     if(length(endPoints) > alignments)

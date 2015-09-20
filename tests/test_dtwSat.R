@@ -8,7 +8,7 @@ library(dtwSat)
 names(query.list)
 
 # Perform twdtw
-alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
+alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
 
 # Print twdtw object
 print(alig)

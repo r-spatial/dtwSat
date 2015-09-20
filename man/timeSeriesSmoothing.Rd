@@ -9,7 +9,7 @@ timeSeriesSmoothing(x, y = NULL, timeline, frequency, method = c("wavelet",
   1))
 }
 \arguments{
-\item{x}{Either a time line vector or a zoo object with the
+\item{x}{Either a vector of dates or a zoo object with the
 time series.}
 
 \item{y}{A numeric vector.}
@@ -28,5 +28,10 @@ discreat wavelet smoothing for different levels. This function
 only works for constant frequency data, then informa a constant
 frequency time series. If it is not the case, either informe a
 constant frequency time line or a frequency.
+}
+\examples{
+sy = timeSeriesSmoothing(template$evi, frequency=16, method=c("wavelet",1))
+plot(template$evi, xlab="Time", ylab="EVI")
+lines(sy, col="red")
 }
 

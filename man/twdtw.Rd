@@ -43,4 +43,8 @@ This function performs a multidimensional Time-Weighted DTW
 analysis and retrieves one or more possible alignments of a query within
 a time series.
 }
+\examples{
+alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+alig
+}
 

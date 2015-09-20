@@ -16,4 +16,7 @@ computeAccuracy(predicted, reference)
 This function retrieves the accuracy of classification
 based on the a given dataset of controll points.
 }
+\examples{
+##
+}
 

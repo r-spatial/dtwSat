@@ -19,6 +19,8 @@
 #' stepPattern object from package dtw, see ?stepPattern.
 #' @usage symmetric0 # see ?stepPattern
 #' @format symmetric0
+#' @examples
+#' # print(symmetric0)
 #' @export
 symmetric0 = dtw:::stepPattern(c(
   1,1,1,-1,

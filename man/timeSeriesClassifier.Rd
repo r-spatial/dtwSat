@@ -39,4 +39,7 @@ This function classify the time segments based on the
 open boundary DTW analysis results (i.e. results of timeSeriesAnalysis
 function).
 }
+\examples{
+##
+}
 

@@ -23,4 +23,8 @@
 Methods for plotting Time-Weighted DTW objects
 returned by twdtw.
 }
+\examples{
+alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
+plot(alig)
+}
 

@@ -21,4 +21,8 @@ the same number of dimensions}
 The function performs the Time-Weighted DTW for a list
 of queries
 }
+\examples{
+# alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+# alig
+}
 

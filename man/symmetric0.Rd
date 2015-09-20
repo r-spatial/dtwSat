@@ -12,5 +12,8 @@ symmetric0 # see ?stepPattern
 A symmetric step with normalization N.
 stepPattern object from package dtw, see ?stepPattern.
 }
+\examples{
+# print(symmetric0)
+}
 \keyword{datasets}
 

@@ -8,7 +8,7 @@
 #' frequency time series. If it is not the case, either informe a 
 #' constant frequency time line or a frequency.
 #' 
-#' @param x Either a time line vector or a zoo object with the 
+#' @param x Either a vector of dates or a zoo object with the 
 #' time series.
 #' @param y A numeric vector.
 #' @param timeline A time line vector for the output.
@@ -16,6 +16,10 @@
 #' @param method A character vector for the smoothing methods, either 
 #' wavelet and level, eg. c(''wavelet'',''1'').
 #' @docType methods
+#' @examples
+#' sy = timeSeriesSmoothing(template$evi, frequency=16, method=c("wavelet",1))
+#' plot(template$evi, xlab="Time", ylab="EVI")
+#' lines(sy, col="red")
 #' @export
 timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
                                method=c("wavelet",1))
@@ -87,6 +91,9 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' @param step.matrix see \code{\link{stepPattern}} in package \pkg{dtw}
 #' @param window.function see \code{window.type} in package \pkg{dtw}
 #' @docType methods
+#' @examples
+#' alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+#' alig
 #' @export
 twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
@@ -199,6 +206,9 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' @param show.dist Display dtw distance for each alignment 
 #' @param ... additional arguments passed to plotting functions 
 #' @docType methods
+#' @examples
+#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
+#' plot(alig)
 #' @export
 plot.twdtw = function(x, ylab="Pattern", xlab="Time series", show.dist=FALSE, ...){
   tx = index(x$template)
@@ -220,6 +230,9 @@ plot.twdtw = function(x, ylab="Pattern", xlab="Time series", show.dist=FALSE, ..
 #' 
 #' @param x an R object. See \code{\link[dtwSat]{twdtw}}
 #' @docType methods
+#' @examples
+#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
+#' is.twdtw(alig)
 #' @export
 is.twdtw = function(x){
   return(inherits(x,"twdtw"))
@@ -233,6 +246,9 @@ is.twdtw = function(x){
 #' @param ... additional arguments passed to print 
 #' 
 #' @docType methods
+#' @examples
+#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
+#' print(alig)
 #' @export
 print.twdtw = function(x,...){
   head = "Time-Weighted DTW alignment object\n"

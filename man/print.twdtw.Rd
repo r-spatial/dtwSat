@@ -15,4 +15,8 @@
 \description{
 Methods for Time-Weighted DTW objects
 }
+\examples{
+alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
+print(alig)
+}
 

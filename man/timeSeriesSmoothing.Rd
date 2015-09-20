@@ -19,16 +19,14 @@ time series.}
 \item{frequency}{A numeric with the frequency for output time series.}
 
 \item{method}{A character vector for the smoothing methods, either
-wavelet and level, eg. c("wavelet","1") or Savitzky–Golay, polynomial
-and a window size, e.g. c("sg", "2", "3").}
+wavelet and level, eg. c(''wavelet'',''1'').}
 }
 \description{
 This function applies a smoothing algorithm to
 the satellite image time series. It allows to compute the
-discreat wavelet smoothing for different levels and the
-Savitzky–Golay smoothing. This function only works for constant
-frequency data, then informa a constant frequency time series.
-If it is not the case, either informe a constant frequency time line
-or a frequency.
+discreat wavelet smoothing for different levels. This function
+only works for constant frequency data, then informa a constant
+frequency time series. If it is not the case, either informe a
+constant frequency time line or a frequency.
 }
 

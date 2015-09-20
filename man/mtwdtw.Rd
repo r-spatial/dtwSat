@@ -15,7 +15,7 @@ time series}
 It must be iguel or be equal or longer than the length of the query and
 the same number of dimensions}
 
-\item{...}{See \code{\link[proxy]{twdtw}}}
+\item{...}{See \code{\link[dtwSat]{twdtw}}}
 }
 \description{
 The function performs the Time-Weighted DTW for a list

@@ -8,7 +8,7 @@
 #' @param template A zoo object with the template time series. 
 #' It must be iguel or be equal or longer than the length of the query and 
 #' the same number of dimensions
-#' @param ... See \code{\link[proxy]{twdtw}}
+#' @param ... See \code{\link[dtwSat]{twdtw}}
 #' @docType methods
 #' @export
 mtwdtw = function(query, template, ...){

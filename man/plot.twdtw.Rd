@@ -5,12 +5,19 @@
 \alias{plot.twdtw}
 \title{Plotting Time-Weighted DTW}
 \usage{
-\method{plot}{twdtw}(x, ylab = "Pattern", xlab = "Time series", ...)
+\method{plot}{twdtw}(x, ylab = "Pattern", xlab = "Time series",
+  show.dist = FALSE, ...)
 }
 \arguments{
-\item{...}{additional arguments passed to plotting functions}
+\item{x}{\code{\link[dtwSat]{twdtw}} object}
 
-\item{obj}{twdtw object}
+\item{ylab}{A character, y axis label}
+
+\item{xlab}{A character, x axis label}
+
+\item{show.dist}{Display dtw distance for each alignment}
+
+\item{...}{additional arguments passed to plotting functions}
 }
 \description{
 Methods for plotting Time-Weighted DTW objects

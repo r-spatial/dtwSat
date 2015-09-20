@@ -3,7 +3,7 @@
 \docType{methods}
 \name{twdtw}
 \alias{twdtw}
-\title{Multidimensional Time-Weighted DTW analysis.}
+\title{Multidimensional Time-Weighted DTW analysis}
 \usage{
 twdtw(query, template, weight = NULL, dist.method = "Euclidean",
   theta = NULL, alpha = NULL, beta = NULL, alignments = NULL,
@@ -16,11 +16,11 @@ twdtw(query, template, weight = NULL, dist.method = "Euclidean",
 It must be iguel or be equal or longer than the length of the query and
 the same number of dimensions.}
 
-\item{weight}{A character. "linear" for linear weight or "logistic"
+\item{weight}{A character. ''linear'' for linear weight or ''logistic''
 for logistic weight. Default is NULL that runs the original dtw method.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
-Default is "Euclidean" See \code{\link[proxy]{dist}} in package
+Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package
 \pkg{proxy}}
 
 \item{theta}{A real. Parameter for linear weight. It is the slope

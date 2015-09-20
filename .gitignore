@@ -14,7 +14,7 @@
 # Man fileis
 #man/
 #.Rd
-#.Rd~
+.Rd~
 README.md~
 
 # Other files

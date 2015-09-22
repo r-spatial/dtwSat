@@ -15,6 +15,10 @@ Depends:
     roxygen2,
     dtw,
     zoo,
-    waveslim
+    waveslim,
+    ggplot2,
+    scales,
+    reshape
+Imports: graphics
 License: MIT + file LICENSE
 LazyData: true

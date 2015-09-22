@@ -7,7 +7,7 @@
 \usage{
 twdtw(query, template, weight = NULL, dist.method = "Euclidean",
   theta = NULL, alpha = NULL, beta = NULL, alignments = NULL,
-  step.matrix = symmetric1, window.function = noWindow)
+  step.matrix = symmetric1, window.function = noWindow, keep = FALSE)
 }
 \arguments{
 \item{query}{A zoo object with the multidimensional time series.}
@@ -37,6 +37,9 @@ perform. Default is NULL to return all possible alignment.}
 \item{step.matrix}{see \code{\link{stepPattern}} in package \pkg{dtw}}
 
 \item{window.function}{see \code{window.type} in package \pkg{dtw}}
+
+\item{keep}{preserve the cost matrix, inputs, and other internal structures.
+Default is FALSE}
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW
@@ -44,7 +47,7 @@ analysis and retrieves one or more possible alignments of a query within
 a time series.
 }
 \examples{
-alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
-alig
+#alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#alig
 }
 

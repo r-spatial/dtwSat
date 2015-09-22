@@ -14,9 +14,9 @@ time series.}
 
 \item{y}{A numeric vector.}
 
-\item{timeline}{A time line vector for the output.}
+\item{timeline}{A time line vector for the internalsput.}
 
-\item{frequency}{A numeric with the frequency for output time series.}
+\item{frequency}{A numeric with the frequency for internalsput time series.}
 
 \item{method}{A character vector for the smoothing methods, either
 wavelet and level, eg. c(''wavelet'',''1'').}

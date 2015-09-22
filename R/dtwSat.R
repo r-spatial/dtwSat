@@ -1,4 +1,3 @@
-
 #' @title Satellite image time series smoothing
 #' 
 #' @description This function applies a smoothing algorithm to
@@ -11,8 +10,8 @@
 #' @param x Either a vector of dates or a zoo object with the 
 #' time series.
 #' @param y A numeric vector.
-#' @param timeline A time line vector for the output.
-#' @param frequency A numeric with the frequency for output time series.
+#' @param timeline A time line vector for the internalsput.
+#' @param frequency A numeric with the frequency for internalsput time series.
 #' @param method A character vector for the smoothing methods, either 
 #' wavelet and level, eg. c(''wavelet'',''1'').
 #' @docType methods
@@ -90,14 +89,17 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' perform. Default is NULL to return all possible alignment. 
 #' @param step.matrix see \code{\link{stepPattern}} in package \pkg{dtw}
 #' @param window.function see \code{window.type} in package \pkg{dtw}
+#' @param keep preserve the cost matrix, inputs, and other internal structures. 
+#' Default is FALSE
 #' @docType methods
 #' @examples
-#' alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
-#' alig
+#' #alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#' #alig
 #' @export
 twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
-                  step.matrix = symmetric1, window.function = noWindow)
+                  step.matrix = symmetric1, window.function = noWindow,
+                  keep=FALSE)
 {
 
   if(!is.zoo(query))
@@ -128,26 +130,26 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   cm[1,] = 0
   wm = matrix(FALSE, nrow = n, ncol = m)
   wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
-  out = .Call("computeCM_Call", PACKAGE="dtw", wm, delta, cm, step.matrix)
-  out$call = match.call()
-  out$stepPattern = step.matrix
-  out$costMatrix = out$costMatrix[-1,]
-  out$directionMatrix = out$directionMatrix[-1,]
-  out$stepPattern = step.matrix
-  out$N = n-1
-  out$M = m
-  out$query = query
-  out$template = template
+  internals = .Call("computeCM_Call", PACKAGE="dtw", wm, delta, cm, step.matrix)
+  internals$stepPattern = step.matrix
+  internals$costMatrix = internals$costMatrix[-1,]
+  internals$directionMatrix = internals$directionMatrix[-1,]
+  internals$stepPattern = step.matrix
+  internals$N = n-1
+  internals$M = m
+  internals$query = query
+  internals$template = template
     
   # Porform alignments 
-  d = out$costMatrix[out$N,1:out$M]
+  d = internals$costMatrix[internals$N,1:internals$M]
   NonNA = which(!is.na(d))
   diffd = diff(d[NonNA])
   endPoints = NonNA[which(diffd[-length(diffd)] < 0 & diffd[-1] >= 0)] + 1
   if(tail(diffd,1) < 0)
     endPoints = c(endPoints,length(d))
   if( length(endPoints) < 1 ){
-    out$alignments = NULL
+    alignments = list(from=numeric(0), to=numeric(0), distance=numeric(0), normalizedDistance=numeric(0))
+    mapping = list(index1 = numeric(0), index2 = numeric(0))
   }else{
     endPoints = endPoints[order(d[endPoints])]
     if(is.null(alignments))
@@ -156,7 +158,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
       endPoints = endPoints[1:alignments]
     # Map low cost paths (k-th paths)
     mapping = lapply(endPoints, function(b){
-      return(.kthbacktrack(out, b))
+      return(.kthbacktrack(internals, b))
     })
     
     # Get the starting point of each path
@@ -165,16 +167,16 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
     }))
     
     # Return the alignments
-    out$alignments = data.frame(from  = startPoints,
-                                to    = endPoints,
-                                distance           = d[endPoints],
-                                normalizedDistance = d[endPoints] / length(query),                      
-                                stringsAsFactors = FALSE)
-    out$mapping = mapping
+    alignments = list(from  = startPoints,
+                      to    = endPoints,
+                      distance           = d[endPoints],
+                      normalizedDistance = d[endPoints] / length(query),                      
+                      stringsAsFactors = FALSE)
   }
+
+  if(keep) return(new("dtwSat", call=match.call(), alignments=alignments, mapping=mapping, internals=internals))
   
-  class(out) = "twdtw"
-  return(out)
+  return(new("dtwSat", call=match.call(), alignments=alignments, mapping=mapping))
 }
 
 
@@ -195,68 +197,6 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 }
 
 
-#' @title Plotting Time-Weighted DTW 
-#' 
-#' @description Methods for plotting Time-Weighted DTW objects 
-#' returned by twdtw.
-#' 
-#' @param x \code{\link[dtwSat]{twdtw}} object
-#' @param xlab A character, x axis label
-#' @param ylab A character, y axis label
-#' @param show.dist Display dtw distance for each alignment 
-#' @param ... additional arguments passed to plotting functions 
-#' @docType methods
-#' @examples
-#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
-#' plot(alig)
-#' @export
-plot.twdtw = function(x, ylab="Pattern", xlab="Time series", show.dist=FALSE, ...){
-  tx = index(x$template)
-  ty = index(x$query)
-  m = t(x$costMatrix)
-  image(m, col=terrain.colors(100), x=tx, y=ty, xlab=xlab, ylab=ylab, ...)
-  contour(m, x=tx, y=ty, add=TRUE)
-  for(i in 1:length(x$mapping)){
-    lines(tx[x$mapping[[i]]$index2], ty[x$mapping[[i]]$index1] ,col="red", lwd=2)
-    if(show.dist)
-      text(tail(tx[x$mapping[[i]]$index2],1) , tail(ty[x$mapping[[i]]$index1], 1), round(x$alignments$distance[[i]],2))
-  }
-}
-
-
-#' @title Method for Time-Weighted DTW 
-#' 
-#' @description Methods for Time-Weighted DTW objects 
-#' 
-#' @param x an R object. See \code{\link[dtwSat]{twdtw}}
-#' @docType methods
-#' @examples
-#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
-#' is.twdtw(alig)
-#' @export
-is.twdtw = function(x){
-  return(inherits(x,"twdtw"))
-}
-
-#' @title Method for Time-Weighted DTW 
-#' 
-#' @description Methods for Time-Weighted DTW objects 
-#' 
-#' @param x a \code{\link[dtwSat]{twdtw}} object 
-#' @param ... additional arguments passed to print 
-#' 
-#' @docType methods
-#' @examples
-#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
-#' print(alig)
-#' @export
-print.twdtw = function(x,...){
-  head = "Time-Weighted DTW alignment object\n"
-  size = sprintf("Alignment size (query x template): %d x %d\n", x$N, x$M)
-  alignments = sprintf("Number of alignment: %d\n", nrow(x$alignments))
-  call = sprintf("Call: %s\n", deparse(x$call))
-  cat(head,size,alignments,call)
-}
 
 
 #' @title DTW backtrack
@@ -268,7 +208,6 @@ print.twdtw = function(x,...){
 #' @param jmin An integer. The index of the last line in the 
 #' global cost matrix. 
 #' @docType methods
-#' @export
 .kthbacktrack = function(alignment, jmin=NULL) {
   
   dir = alignment$stepPattern
@@ -317,10 +256,10 @@ print.twdtw = function(x,...){
     j = jj[1]
   }
   
-  out = list()
-  out$index1 = ii
-  out$index2 = jj
-  return(out)
+  internals = list()
+  internals$index1 = ii
+  internals$index2 = jj
+  return(internals)
 }
 
 

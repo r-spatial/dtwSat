@@ -1,29 +1,67 @@
-#' @title Performs multiple Time-Weighted DTW 
+#' @title Satellite image time series smoothing
 #' 
-#' @description The function performs the Time-Weighted DTW for a list 
-#' of queries
+#' @description This function applies a smoothing algorithm to
+#' the satellite image time series. It allows to compute the 
+#' discreat wavelet smoothing for different levels. This function 
+#' only works for constant frequency data, then informa a constant 
+#' frequency time series. If it is not the case, either informe a 
+#' constant frequency time line or a frequency.
 #' 
-#' @param query A list of zoo objects with the multidimensional 
-#' time series
-#' @param template A zoo object with the template time series. 
-#' It must be iguel or be equal or longer than the length of the query and 
-#' the same number of dimensions
-#' @param ... See \code{\link[dtwSat]{twdtw}}
+#' @param x Either a vector of dates or a zoo object with the 
+#' time series.
+#' @param y A numeric vector.
+#' @param timeline A time line vector for the internalsput.
+#' @param frequency A numeric with the frequency for internalsput time series.
+#' @param method A character vector for the smoothing methods, either 
+#' wavelet and level, eg. c(''wavelet'',''1'').
 #' @docType methods
-#' @export
 #' @examples
-#' # alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
-#' # alig
-mtwdtw = function(query, template, ...){
-  if(!is.list(query))
-    stop("Missing a list of zoo objects. The query must be a list zoo objects.")
-  query.names = names(query)
-  if(is.null(query.names))
-    query.names = seq_along(query)
-  res = do.call("rbind", lapply(query.names, function(i){
-    data.frame(query=i, twdtw(query[[i]], template, ...)$alignments)
-  }))
-  return(res)
+#' sy = timeSeriesSmoothing(template$evi, frequency=16, method=c("wavelet",1))
+#' plot(template$evi, xlab="Time", ylab="EVI")
+#' lines(sy, col="red")
+#' @export
+timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
+                               method=c("wavelet",1))
+{
+  if( missing(x) )
+    stop("Missing either a numeric vector or a zoo object.")
+  
+  if(!is.zoo(x))
+  {
+    if( length(x)!= length(y) )
+      stop("Missing numeric vector. y must be a numeric vector the same size as x.")
+    I = which(!is.na(x) & !duplicated(x))
+    x = x[I]
+    y = y[I]
+    x = zoo(y, x)
+  }
+  
+  if(missing(timeline)){
+    if(missing(frequency)){
+      timeline = index(x)
+    }else{
+      timeline = seq(index(x)[1], index(x)[length(index(x))], by=frequency)
+    }
+  }
+  
+  # Linear interpolation of gaps
+  I = which(!is.na(timeline) & !duplicated(timeline))
+  timeline = timeline[I]
+  template = zoo(, timeline)
+  template = merge(x, template)
+  template = na.approx(template)
+  template = template[timeline,]
+  
+  # Smoothing 
+  if(method[1]=="wavelet"){
+    sy = mra(as.numeric(template), J=as.numeric(method[2]) ,boundary = "periodic")$S1
+    sty = index(template)[seq_along(sy)]
+  } else {
+    stop("Missing smoothing method. Please choose between discrete wavelet.")
+  }
+  
+  return(zoo(sy, sty))
+  
 }
 
 

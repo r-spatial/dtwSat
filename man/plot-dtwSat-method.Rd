@@ -8,13 +8,16 @@
 \S4method{plot}{dtwSat}(x, type = "path", ...)
 }
 \arguments{
-\item{x}{\code{\link[dtwSat]{twdtw}} object}
+\item{x}{\code{\link[dtwSat]{dtwSat}} object}
 
 \item{type}{A character for the plot type, "path" or "alignment".
 Default is "path"}
 
 \item{...}{additional arguments passed to plotting functions
 \code{\link[dtwSat]{plotPath}} and \code{\link[dtwSat]{plotAlignment}}}
+}
+\value{
+object of class \code{\link[ggplot2]{ggplot}}
 }
 \description{
 Plotting Time-Weighted DTW

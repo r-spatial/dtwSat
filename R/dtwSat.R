@@ -1,70 +1,3 @@
-#' @title Satellite image time series smoothing
-#' 
-#' @description This function applies a smoothing algorithm to
-#' the satellite image time series. It allows to compute the 
-#' discreat wavelet smoothing for different levels. This function 
-#' only works for constant frequency data, then informa a constant 
-#' frequency time series. If it is not the case, either informe a 
-#' constant frequency time line or a frequency.
-#' 
-#' @param x Either a vector of dates or a zoo object with the 
-#' time series.
-#' @param y A numeric vector.
-#' @param timeline A time line vector for the internalsput.
-#' @param frequency A numeric with the frequency for internalsput time series.
-#' @param method A character vector for the smoothing methods, either 
-#' wavelet and level, eg. c(''wavelet'',''1'').
-#' @docType methods
-#' @examples
-#' sy = timeSeriesSmoothing(template$evi, frequency=16, method=c("wavelet",1))
-#' plot(template$evi, xlab="Time", ylab="EVI")
-#' lines(sy, col="red")
-#' @export
-timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
-                               method=c("wavelet",1))
-{
-  if( missing(x) )
-    stop("Missing either a numeric vector or a zoo object.")
-  
-  if(!is.zoo(x))
-  {
-    if( length(x)!= length(y) )
-      stop("Missing numeric vector. y must be a numeric vector the same size as x.")
-    I = which(!is.na(x) & !duplicated(x))
-    x = x[I]
-    y = y[I]
-    x = zoo(y, x)
-  }
-  
-  if(missing(timeline)){
-    if(missing(frequency)){
-      timeline = index(x)
-    }else{
-      timeline = seq(index(x)[1], index(x)[length(index(x))], by=frequency)
-    }
-  }
-  
-  # Linear interpolation of gaps
-  I = which(!is.na(timeline) & !duplicated(timeline))
-  timeline = timeline[I]
-  template = zoo(, timeline)
-  template = merge(x, template)
-  template = na.approx(template)
-  template = template[timeline,]
-    
-  # Smoothing 
-  if(method[1]=="wavelet"){
-    sy = mra(as.numeric(template), J=as.numeric(method[2]) ,boundary = "periodic")$S1
-    sty = index(template)[seq_along(sy)]
-  } else {
-    stop("Missing smoothing method. Please choose between discrete wavelet.")
-  }
-  
-  return(zoo(sy, sty))
-
-}
-
-
 #' @title Multidimensional Time-Weighted DTW analysis
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
@@ -72,9 +5,11 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' a time series.
 #' 
 #' @param query A zoo object with the multidimensional time series.
-#' @param template A zoo object with the template time series. 
+#' @param template A zoo object with the template time series. The index of 
+#' the zoo object must be of class \code{\link[base]{Date}}.
 #' It must be iguel or be equal or longer than the length of the query and 
-#' the same number of dimensions.
+#' the same number of dimensions. The index of the zoo object must be of 
+#' class \code{\link[base]{Date}}.
 #' @param weight A character. ''linear'' for linear weight or ''logistic'' 
 #' for logistic weight. Default is NULL that runs the original dtw method.
 #' @param dist.method A character. Method to derive the local cost matrix.
@@ -87,28 +22,76 @@ timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
 #' @param beta A real. The midpoint of logistic method. Default is NULL.
 #' @param alignments An integer. The maximun number of alignments to 
 #' perform. Default is NULL to return all possible alignment. 
-#' @param step.matrix see \code{\link{stepPattern}} in package \pkg{dtw}
-#' @param window.function see \code{window.type} in package \pkg{dtw}
+#' @param step.matrix see \code{\link[dtw]{stepPattern}} in package \pkg{dtw}
+#' @param window.function see parameter window.type in \code{\link[dtw]{dtw}} 
 #' @param keep preserve the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE
+#' @param ... other parameters
 #' @docType methods
+#' @return object of class \code{\link[dtwSat]{dtwSat}} 
 #' @examples
-#' #alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
-#' #alig
+#' names(query.list)
+#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#' alig
 #' @export
 twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
                   step.matrix = symmetric1, window.function = noWindow,
-                  keep=FALSE)
+                  keep=FALSE, ...)
 {
 
   if(!is.zoo(query))
-    stop("Missing zoo object. The query must be a zoo object.")
+    stop("query should be of class zoo.")
   if(!is.zoo(template))
-    stop("Missing zoo object. The template must be a zoo object.")
+    stop("template should be of class zoo")
   if(ncol(query)!=ncol(template))
-    stop("Template must have the same number of columns than the query.")
+    stop("Number of columns in query and in template don't match.")
+  if(!is(index(query),"Date"))
+    stop("Index in query should be of class Date.")
+  if(!is(index(template),"Date"))
+    stop("Index in template should be of class Date.")
+
+  .twdtw(query, template, weight, dist.method, theta, alpha, 
+         beta, alignments, step.matrix, window.function, keep, ...)
   
+}
+
+#' @title Performs multiple Time-Weighted DTW 
+#' 
+#' @description The function performs the Time-Weighted DTW for a list 
+#' of queries
+#' 
+#' @param query A zoo object with the multidimensional time series.
+#' @param template A zoo object with the template time series. The index of 
+#' the zoo object must be of class \code{\link[base]{Date}}.
+#' It must be iguel or be equal or longer than the length of the query and 
+#' the same number of dimensions. The index of the zoo object must be of 
+#' class \code{\link[base]{Date}}.
+#' @param ... see \code{\link[dtwSat]{dtwSat}}
+#' @docType methods
+#' @export
+#' @examples
+#' alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+#' alig
+#' @return data.frame see \code{\link[dtwSat]{dtwSat-class}}
+mtwdtw = function(query, template, ...){
+  if(!is.list(query))
+    stop("Missing a list of zoo objects. The query must be a list zoo objects.")
+  query.names = names(query)
+  if(is.null(query.names))
+    query.names = seq_along(query)
+  res = do.call("rbind", lapply(query.names, function(i){
+    data.frame(query=i, twdtw(query[[i]], template)@alignments)
+  }))
+  return(res)
+}
+
+.twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
+                  theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
+                  step.matrix = symmetric1, window.function = noWindow,
+                  keep=FALSE, ...)
+{
+
   # Local cost
   delta = proxy::dist(query, template, method=dist.method)
   # Elapsed time
@@ -118,7 +101,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
     phi = switch(weight, 
                  linear   = .linearweight(phi, theta),
                  logistic = .logisticweight(phi, alpha, beta)
-                 )
+    )
   }
   delta = delta + phi
   
@@ -139,7 +122,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   internals$M = m
   internals$query = query
   internals$template = template
-    
+  
   # Porform alignments 
   d = internals$costMatrix[internals$N,1:internals$M]
   NonNA = which(!is.na(d))
@@ -148,7 +131,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
   if(tail(diffd,1) < 0)
     endPoints = c(endPoints,length(d))
   if( length(endPoints) < 1 ){
-    alignments = list(from=numeric(0), to=numeric(0), distance=numeric(0), normalizedDistance=numeric(0))
+    alignments = list(quey=numeric(0),from=numeric(0), to=numeric(0), distance=numeric(0), normalizedDistance=numeric(0))
     mapping = list(index1 = numeric(0), index2 = numeric(0))
   }else{
     endPoints = endPoints[order(d[endPoints])]
@@ -166,19 +149,17 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
       return(map$index2[1])
     }))
     
-    # Return the alignments
     alignments = list(from  = startPoints,
                       to    = endPoints,
                       distance           = d[endPoints],
                       normalizedDistance = d[endPoints] / length(query),                      
                       stringsAsFactors = FALSE)
   }
-
+  
   if(keep) return(new("dtwSat", call=match.call(), alignments=alignments, mapping=mapping, internals=internals))
   
   return(new("dtwSat", call=match.call(), alignments=alignments, mapping=mapping))
 }
-
 
 .timeCostMatrix = function(query, template, dist.method){ 
   tx = as.numeric(format(index(query), "%j"))

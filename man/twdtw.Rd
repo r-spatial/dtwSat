@@ -7,14 +7,16 @@
 \usage{
 twdtw(query, template, weight = NULL, dist.method = "Euclidean",
   theta = NULL, alpha = NULL, beta = NULL, alignments = NULL,
-  step.matrix = symmetric1, window.function = noWindow, keep = FALSE)
+  step.matrix = symmetric1, window.function = noWindow, keep = FALSE, ...)
 }
 \arguments{
 \item{query}{A zoo object with the multidimensional time series.}
 
-\item{template}{A zoo object with the template time series.
+\item{template}{A zoo object with the template time series. The index of
+the zoo object must be of class \code{\link[base]{Date}}.
 It must be iguel or be equal or longer than the length of the query and
-the same number of dimensions.}
+the same number of dimensions. The index of the zoo object must be of
+class \code{\link[base]{Date}}.}
 
 \item{weight}{A character. ''linear'' for linear weight or ''logistic''
 for logistic weight. Default is NULL that runs the original dtw method.}
@@ -34,12 +36,17 @@ number of elapsed days. Default is NULL.}
 \item{alignments}{An integer. The maximun number of alignments to
 perform. Default is NULL to return all possible alignment.}
 
-\item{step.matrix}{see \code{\link{stepPattern}} in package \pkg{dtw}}
+\item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw}}
 
-\item{window.function}{see \code{window.type} in package \pkg{dtw}}
+\item{window.function}{see parameter window.type in \code{\link[dtw]{dtw}}}
 
 \item{keep}{preserve the cost matrix, inputs, and other internal structures.
 Default is FALSE}
+
+\item{...}{other parameters}
+}
+\value{
+object of class \code{\link[dtwSat]{dtwSat}}
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW
@@ -47,7 +54,8 @@ analysis and retrieves one or more possible alignments of a query within
 a time series.
 }
 \examples{
-#alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
-#alig
+names(query.list)
+alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+alig
 }
 

@@ -18,6 +18,8 @@ Depends:
     waveslim,
     ggplot2,
     scales,
+    grid,
+    gridExtra,
     reshape
 Imports: graphics
 License: MIT + file LICENSE

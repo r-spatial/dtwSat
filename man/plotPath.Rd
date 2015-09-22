@@ -5,46 +5,27 @@
 \alias{plotPath}
 \title{Plotting Time-Weighted DTW}
 \usage{
-plotPath(x, ylab = "Pattern", xlab = "Time series",
-  legend.title = "Warp cost", map.colours = terrain.colors(100),
-  x.breaks = NULL, y.breaks = NULL, x.labels = NULL, y.labels = NULL,
-  normalize = FALSE, show.dist = FALSE)
+plotPath(x, normalize = FALSE, show.dist = FALSE)
 }
 \arguments{
 \item{x}{\code{\link[dtwSat]{twdtw}} object}
 
-\item{ylab}{A character, y axis label. Default is "Time series"}
-
-\item{xlab}{A character, x axis label. Default is "Pattern"}
-
-\item{legend.title}{A character, the legend for the colour map.
-Default is "Warp cost"}
-
-\item{map.colours}{Colours for the matrix values.
-Default is terrain.colors(100)}
-
-\item{x.breaks}{see y.breaks}
-
-\item{y.breaks}{control the breaks in the guide, see
-\code{\link[ggplot2]{continuous_scale}} in package \pkg{ggplot2}}
-
-\item{x.labels}{see y.labels}
-
-\item{y.labels}{a character vector the same length as breaks, see
-\code{\link[ggplot2]{continuous_scale}} in package \pkg{ggplot2}}
-
 \item{normalize}{Normalized distance. Default is FALSE}
 
 \item{show.dist}{Display dtw distance for each alignment}
-
-\item{...}{additional arguments passed to plotting functions}
+}
+\value{
+object of class \code{\link[ggplot2]{ggplot}}
 }
 \description{
 Methods for plotting Time-Weighted DTW objects
 returned by twdtw.
 }
 \examples{
-#alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
-#plot(alig)
+names(query.list)
+alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+gp = plot(alig, normalize=TRUE, show.dist=TRUE)
+gp = gp + ggtitle("Soybean alignments")
+gp
 }
 

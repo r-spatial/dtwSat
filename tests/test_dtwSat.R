@@ -8,7 +8,7 @@ library(dtwSat)
 names(query.list)
 
 # Perform twdtw
-alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
 is(alig, "dtwSat")
 
 # # 
@@ -17,8 +17,9 @@ alig
 
 # 
 # # Plot twdtw object
-
-plot(alig, normalize=TRUE, show.dist = TRUE)
+gp = plot(alig, normalize=TRUE, show.dist = TRUE)
+gp
+# ggsave("alig_soy.png", plot=gp, width = 8.9, height=5.9, units="in", family="Helvetica")
 
 #
 # # Wavelet time series smoothing
@@ -31,15 +32,21 @@ ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
   ylab("EVI")
 
 
-# 
-# # Perform twdtw to a query list 
-# alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
-# alig
-# 
-# # Plot alignment for all classese
-# par(mfrow=c(3,1))
-# query.names = names(query.list)
-# for(p in query.names){
-#   alig = twdtw(query.list[[p]], template, weight = "logistic", alpha = 0.1, beta = 50)
-#   plot(alig, ylab=p, show.dist = TRUE)
-# }
+
+# Perform twdtw to a query list 
+malig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+class(malig)
+dim(malig)
+malig
+
+# Plot alignment for all classese
+gp.list = lapply(query.list, function(query){
+  alig = twdtw(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+  plot(alig, normalize = TRUE, show.dist = TRUE)  
+})
+grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank(), legend.position="none"),
+                         gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank(), legend.position="none"),
+                         gp.list[[3]] + ggtitle(names(query.list)[3]) + theme(legend.position="none"),
+                         nrow=3))
+
+

@@ -19,6 +19,12 @@ alig
 # # Plot twdtw object
 gp = plot(alig, normalize=TRUE, show.dist = TRUE)
 gp
+gp1 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
+gp2 = plot(alig, type="alignment", dimension="evi", alignment=2, shift=0.5)
+grid.arrange(arrangeGrob(gp1 + theme(axis.title.x=element_blank(), legend.position="none"),
+                         gp2 + theme(axis.title.x=element_blank(), legend.position="none"),
+                         nrow=2))
+
 # ggsave("alig_soy.png", plot=gp, width = 8.9, height=5.9, units="in", family="Helvetica")
 
 #

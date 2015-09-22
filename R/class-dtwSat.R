@@ -104,14 +104,6 @@ setMethod("show",
 #' names(query.list)
 #' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
 #' alig
-#' gp.list = lapply(query.list, function(query){
-#'      alig = twdtw(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-#'      plot(alig, normalize = TRUE, show.dist = TRUE)  
-#' })
-#' grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank(), legend.position="none"),
-#'                          gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank(), legend.position="none"),
-#'                          gp.list[[3]] + ggtitle(names(query.list)[3]) + theme(legend.position="none"),
-#'                          nrow=3))
 #' @export
 setGeneric("dtwSat", 
            function(query, template, ...) {
@@ -140,15 +132,15 @@ setMethod("plot",
             pt = pmatch(type,c("path","alignment"))
             switch(pt,
                    plotPath(x, ...),
-                   image(t(x@internals$costMatrix), col=terrain.colors(100))
-            )
+                   plotAlignment(x, ...)
+                   )
           } 
 )
 
-#' @title Plotting Time-Weighted DTW 
+#' @title Plotting Time-Weighted DTW paths
 #' 
 #' @description Methods for plotting Time-Weighted DTW objects 
-#' returned by twdtw.
+#' returned by dtwSat.
 #' 
 #' @param x \code{\link[dtwSat]{twdtw}} object
 #' @param normalize Normalized distance. Default is FALSE
@@ -156,10 +148,18 @@ setMethod("plot",
 #' @docType methods
 #' @examples
 #' names(query.list)
-#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-#' gp = plot(alig, normalize=TRUE, show.dist=TRUE)
-#' gp = gp + ggtitle("Soybean alignments") 
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+#' gp = plot(alig, normalize=TRUE, show.dist = TRUE)
 #' gp
+#' ## Crate a list of dtwSat objects and plot them 
+#' gp.list = lapply(query.list, function(query){
+#'      alig = dtwSat(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+#'      plot(alig, normalize = TRUE, show.dist = TRUE)  
+#' })
+#' grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank(), legend.position="none"),
+#'                          gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank(), legend.position="none"),
+#'                          gp.list[[3]] + ggtitle(names(query.list)[3]) + theme(legend.position="none"),
+#'                          nrow=3))
 #' @return object of class \code{\link[ggplot2]{ggplot}}
 #' @export
 plotPath = function(x, normalize=FALSE, show.dist=FALSE){
@@ -219,34 +219,68 @@ plotPath = function(x, normalize=FALSE, show.dist=FALSE){
 
 
 
-#' @title Plotting Time-Weighted DTW 
+#' @title Plotting Time-Weighted DTW alignment 
 #' 
 #' @description Methods for plotting Time-Weighted DTW objects 
-#' returned by twdtw.
+#' returned by dtwSat.
 #' 
 #' @param x \code{\link[dtwSat]{twdtw}} object
-#' @param xlab A character, x axis label
-#' @param ylab A character, y axis label
-#' @param show.dist Display dtw distance for each alignment 
-#' @param ... additional arguments passed to plotting functions 
+#' @param alignment An integer, the index of the alignment
+#' @param dimension An integer or a character with the name of the 
+#' column in query and template use in the plot
+#' @param shift A number, it shifts the pattern position.
+#' Default is 0.5
 #' @docType methods
 #' @examples
-#' #alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50)
-#' #plot(alig)
+#' names(query.list)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+#' gp1 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
+#' gp2 = plot(alig, type="alignment", dimension="evi", alignment=2, shift=0.5)
+#' grid.arrange(arrangeGrob(gp1 + theme(axis.title.x=element_blank(), legend.position="none"),
+#'                          gp2 + theme(axis.title.x=element_blank(), legend.position="none"),
+#'                                                   nrow=2))
 #' @export
-plotAlignment = function(x, ylab="Pattern", xlab="Time series", show.dist=FALSE, ...){
-  if(length(x@internals)==0)
-    stop("plot.dtwSat requires dtwSat internals (set keep=TRUE on twdtw() call)")
+plotAlignment = function(x, alignment, dimension, shift=0.5){
   
-  m = t(x@internals$costMatrix)
   tx = index(x@internals$template)
   ty = index(x@internals$query)
   
-  image(m, col=terrain.colors(100), x=tx, y=ty, xlab=xlab, ylab=ylab, ...)
-  contour(m, x=tx, y=ty, add=TRUE)
-  for(i in 1:length(x@mapping)){
-    lines(tx[x@mapping[[i]]$index2], ty[x@mapping[[i]]$index1], col="red", lwd=2)
-    #               if(show.dist)
-    #                 text(tail(tx[x$mapping[[i]]$index2],1) , tail(ty[x$mapping[[i]]$index1], 1), round(x$alignments$distance[[i]],2))
-  }
+  xx = x@internals$template[,dimension]
+  yy = x@internals$query[,dimension]
+  
+  map = data.frame(x@mapping[[alignment]])
+
+  delay = tx[map$index2[1]]-ty[1]
+  if(delay>0)
+    delay = delay + diff(range(ty))*shift
+  if(delay<0)
+    delay = delay - diff(range(ty))*shift
+  
+  y.labels = pretty_breaks()(range(xx))
+  y.breaks = y.labels
+
+  df.ts = data.frame(Time=tx, value=xx)
+  
+  df.pt = data.frame(Time=ty[map$index1]+delay, value=yy[map$index1]+max(xx))
+  
+  df.match.pt = df.pt
+  df.match.pt$p = p=1:nrow(map)
+  df.match.ts = df.ts[map$index2,]
+  df.match.ts$p = p=1:nrow(map)
+  df.match = rbind(df.match.pt, df.match.ts)
+  
+  gp = ggplot(data=df.ts, aes_string(x='Time', y='value')) +
+    geom_line() +
+    geom_line(data=df.pt, aes_string(x='Time', y='value'), col="red") + 
+    geom_line(data=df.match, linetype = 2, colour = "grey", aes_string(x='Time', y='value', group='p')) + 
+    scale_y_continuous(breaks=y.breaks, labels=y.labels) +
+    scale_x_date(breaks=waiver(), labels=waiver()) +
+    ylab(toupper(dimension)) + 
+    xlab("Time")
+  gp
 }
+
+
+
+
+

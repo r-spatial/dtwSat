@@ -17,6 +17,7 @@ alig
 
 # 
 # # Plot twdtw object
+
 plot(alig, normalize=TRUE, show.dist = TRUE)
 
 #

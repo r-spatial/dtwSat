@@ -26,6 +26,15 @@ grid.arrange(arrangeGrob(gp1 + ggtitle("Alignment 1") + theme(axis.title.x=eleme
                          gp2 + ggtitle("Alignment 2") + theme(axis.title.x=element_blank(), legend.position="none"),
                          nrow=2))
 
+# Plot alignment for all classese
+gp.list = lapply(query.list, function(query){
+  alig = twdtw(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+  plot(alig, normalize = TRUE, show.dist = TRUE)  
+})
+grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank()),
+                         gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank()),
+                         gp.list[[3]] + ggtitle(names(query.list)[3]) ,
+                         nrow=3))
 
 #
 # # Wavelet filter
@@ -51,14 +60,6 @@ class(malig)
 dim(malig)
 malig
 
-# Plot alignment for all classese
-gp.list = lapply(query.list, function(query){
-  alig = twdtw(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-  plot(alig, normalize = TRUE, show.dist = TRUE)  
-})
-grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank()),
-                         gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank()),
-                         gp.list[[3]] + ggtitle(names(query.list)[3]) ,
-                         nrow=3))
+
 
 

@@ -123,9 +123,6 @@ mtwdtw = function(query, template, ...){
   internals$query = query
   internals$template = template
   
-  
-  # WRITE FUNCTION FOR MINIMUM POINTS 
-  
   # Porform alignments 
   d = internals$costMatrix[internals$N,1:internals$M]
   NonNA = which(!is.na(d))
@@ -179,8 +176,6 @@ mtwdtw = function(query, template, ...){
 .linearweight = function(x, theta){
   return( theta * x / 366 )
 }
-
-
 
 
 #' @title DTW backtrack

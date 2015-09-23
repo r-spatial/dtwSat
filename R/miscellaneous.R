@@ -221,36 +221,3 @@ timeSeriesClassifier = function(dtwResults, from, to, by=12,
 }
 
 
-
-
-#' @title Classification accuracy  
-#' 
-#' @description This function retrieves the accuracy of classification
-#' based on the a given dataset of controll points.
-#' 
-#' @param predicted A vector of prediction. 
-#' @param reference A vector of reference for the predicted classes. 
-#' @docType methods
-#' @examples
-#' ##
-#' @export
-computeAccuracy = function(predicted, reference)
-{
-  
-  if( length(predicted)!=length(reference) )
-    stop("The vectors 'predicted and 'reference' must have the same length.")
-  
-  factorLevels = unique( c(reference,predicted) )
-  
-  # Global accuracy
-  global_accuracy = sum(predicted==reference) / length(reference)
-  
-  a = factor(predicted, levels = factorLevels)
-  b = factor(reference, levels = factorLevels)
-  
-  # Check predicted classes against reference class labels
-  confusion_table = table(predicted=a, reference=b)
-  
-  return(list(global_accuracy = global_accuracy, 
-              confusion_table = confusion_table))
-}

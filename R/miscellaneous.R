@@ -1,67 +1,67 @@
-#' @title Satellite image time series smoothing
+#' @title Wavelet filter
 #' 
-#' @description This function applies a smoothing algorithm to
-#' the satellite image time series. It allows to compute the 
-#' discreat wavelet smoothing for different levels. This function 
-#' only works for constant frequency data, then informa a constant 
-#' frequency time series. If it is not the case, either informe a 
-#' constant frequency time line or a frequency.
+#' @description This function performs a smoothing algorithm to
+#' the time series. It computes the a discreat wavelet 
+#' smoothing for each dimension in the imput time series.
 #' 
-#' @param x Either a vector of dates or a zoo object with the 
-#' time series.
-#' @param y A numeric vector.
-#' @param timeline A time line vector for the internalsput.
-#' @param frequency A numeric with the frequency for internalsput time series.
-#' @param method A character vector for the smoothing methods, either 
-#' wavelet and level, eg. c(''wavelet'',''1'').
+#' @param x A zoo object with the time series
+#' @param timeline A time line vector for the internalsput
+#' @param frequency A numeric with the frequency for internalsput time series
+#' @param wf Name of the wavelet filter to use in the decomposition. 
+#' Default is "la8"
+#' @param J Specifies the depth of the decomposition. This must be a number 
+#' less than or equal to log(length(x),2). Default is 1
+#' @param boundary Character string specifying the boundary condition. 
+#' Default is "periodic"
+#' @param ... see parameters of \code{\link[waveslim]{mra}} in the 
+#' packege \pkg{waveslim}
 #' @docType methods
 #' @examples
-#' sy = timeSeriesSmoothing(template$evi, frequency=16, method=c("wavelet",1))
-#' plot(template$evi, xlab="Time", ylab="EVI")
-#' lines(sy, col="red")
+#' # Wavelet filter
+#' sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, boundary = "periodic")
+#' # Plot raw EVI and filtered EVI
+#' df.y = melt(data.frame(Time=index(template), Raw=template$evi), id="Time")
+#' df.sy = melt(data.frame(Time=index(sy), Wavelet=sy$evi), id="Time")
+#' df = rbind(df.y, df.sy)
+#' ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+#'   geom_line() + 
+#'     ylab("EVI")
+#'     
+#' # Plot all filter bands
+#' df = melt(data.frame(Time=index(sy), sy), id="Time")
+#' ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+#'   geom_line() 
 #' @export
-timeSeriesSmoothing = function(x, y=NULL, timeline, frequency,
-                               method=c("wavelet",1))
+waveletSmoothing = function(x, timeline=NULL, frequency=NULL, 
+                            wf = "la8", J=1, boundary = "periodic", ...)
 {
   if( missing(x) )
     stop("Missing either a numeric vector or a zoo object.")
+  if(!is(x, "zoo"))
+    stop("x is not a zoo object")
   
-  if(!is.zoo(x))
-  {
-    if( length(x)!= length(y) )
-      stop("Missing numeric vector. y must be a numeric vector the same size as x.")
-    I = which(!is.na(x) & !duplicated(x))
-    x = x[I]
-    y = y[I]
-    x = zoo(y, x)
-  }
-  
-  if(missing(timeline)){
-    if(missing(frequency)){
+  if(is.null(timeline)){
+    if(is.null(frequency)){
       timeline = index(x)
     }else{
-      timeline = seq(index(x)[1], index(x)[length(index(x))], by=frequency)
+      timeline = seq(min(index(x)), max(index(x)), by=frequency)
     }
   }
   
   # Linear interpolation of gaps
   I = which(!is.na(timeline) & !duplicated(timeline))
   timeline = timeline[I]
-  template = zoo(, timeline)
-  template = merge(x, template)
-  template = na.approx(template)
-  template = template[timeline,]
-  
+  xx = zoo(, timeline)
+  xx = merge(x, xx)
+  xx = na.approx(xx)
+  xx = xx[timeline,]
+
   # Smoothing 
-  if(method[1]=="wavelet"){
-    sy = mra(as.numeric(template), J=as.numeric(method[2]) ,boundary = "periodic")$S1
-    sty = index(template)[seq_along(sy)]
-  } else {
-    stop("Missing smoothing method. Please choose between discrete wavelet.")
-  }
-  
-  return(zoo(sy, sty))
-  
+  df = lapply(as.list(xx), function(d){
+    mra(x=as.numeric(d), wf=wf, J=J, boundary=boundary)[[paste0("S",J)]]
+  })
+  res = zoo(data.frame(df), index(xx))
+  res
 }
 
 

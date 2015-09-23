@@ -27,25 +27,34 @@ Default is "periodic"}
 \item{...}{see parameters of \code{\link[waveslim]{mra}} in the
 packege \pkg{waveslim}}
 }
+\value{
+object of class \code{\link[zoo]{zoo}}
+}
 \description{
 This function performs a smoothing algorithm to
 the time series. It computes the a discreat wavelet
 smoothing for each dimension in the imput time series.
 }
 \examples{
-# Wavelet filter
-sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, boundary = "periodic")
-# Plot raw EVI and filtered EVI
-df.y = melt(data.frame(Time=index(template), Raw=template$evi), id="Time")
-df.sy = melt(data.frame(Time=index(sy), Wavelet=sy$evi), id="Time")
-df = rbind(df.y, df.sy)
-ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
-  geom_line() +
-    ylab("EVI")
+## Wavelet filter
+sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1,
+     boundary = "periodic")
+## Plot raw EVI and filtered EVI
+# require(ggplot2)
+#df = data.frame(Time=index(template), value=template$evi, variable="Raw")
+#df = rbind( df, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
+#ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+#        geom_line() +
+#       ylab("EVI")
 
-# Plot all filter bands
-df = melt(data.frame(Time=index(sy), sy), id="Time")
-ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
-  geom_line()
+## Plot all filter bands
+# require(ggplot2)
+# require(reshape2)
+#df = melt(data.frame(Time=index(sy), sy), id="Time")
+#ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+#       geom_line()
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

@@ -11,15 +11,19 @@ getAlignments(object)
 \item{object}{A \link[dtwSat]{dtwSat} object}
 }
 \value{
-object of class data.frame
+An object of class data.frame
 }
 \description{
 This function retrieves the results of the alignments in the object
-\link[dtwSat]{dtwSat}.
+\link[dtwSat]{dtwSat}
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
+             alpha = 0.1, beta = 50, alignments=4)
 getAlignments(alig)
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

@@ -4,7 +4,7 @@
 \name{dtwSat}
 \alias{dtwSat}
 \alias{dtwSat-class}
-\title{dtwSat class}
+\title{dtwSat-class}
 \usage{
 dtwSat(query, template, ...)
 
@@ -34,25 +34,30 @@ a time series.
 \section{Slots }{
 
 \describe{
-\item{\code{call}:}{Object of class \code{call} see
-\code{\link[base]{match.call}}}
-\item{\code{alignments}:}{Object of class \code{list}. Each node of
-the list has one attribute, whose lengths are identical to the number of
-alignments. \code{from} the alignment starts, \code{to} the alignment ends,
-\code{distance} the DTW distance, \code{normalizedDistance} the
-normalized DTW distance}
-\item{\code{mapping}:}{Object of class \code{list}. Each node of the list has
-the matching points of the query to the template time series.}
-\item{\code{internals}:}{Object of class \code{list} similar to
-\code{\link[dtw]{dtw}} class from package \pkg{dtw}}
+	\item{\code{call}:}{Object of class \code{call} see
+	\code{\link[base]{match.call}}.}
+	\item{\code{alignments}:}{Object of class \code{list} where each node of
+	the list has one attribute, whose lengths are identical to the number of
+	alignments. The attributes are:}
+	  \item{\code{from}}{ the alignment starts, }
+	  \item{\code{to}}{ the alignment ends, }
+	  \item{\code{distance}}{ the DTW distance, and}
+	  \item{\code{normalizedDistance}}{ the normalized DTW distance.}
+	\item{\code{mapping}:}{ Object of class \code{list}. Each node of the list has
+	the matching points of the query to the template time series.}
+	\item{\code{internals}:}{ Object of class \code{list} similar to
+	\code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
 }
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
+       alpha = 0.1, beta = 50, alignments=4)
 alig
 }
 \author{
-Victor Maus
+Victor Maus, \email{vwmaus1@gmail.com}
+
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

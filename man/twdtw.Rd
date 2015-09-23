@@ -55,7 +55,11 @@ a time series.
 }
 \examples{
 names(query.list)
-alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+alig = twdtw(query.list[["Soybean"]], template, weight = "logistic",
+       alpha = 0.1, beta = 50, alignments=4)
 alig
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

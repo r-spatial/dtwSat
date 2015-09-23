@@ -34,6 +34,9 @@ returns the lowest dtw for each class. Default is TRUE.}
 \item{aggregateByClass}{A logical. Aggregate results by common class.
 Default is TRUE}
 }
+\value{
+object of class \code{\link[base]{data.frame}}
+}
 \description{
 This function classify the time segments based on the
 open boundary DTW analysis results (i.e. results of timeSeriesAnalysis
@@ -41,5 +44,8 @@ function).
 }
 \examples{
 ##
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

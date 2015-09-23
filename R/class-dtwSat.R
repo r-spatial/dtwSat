@@ -1,26 +1,37 @@
-#' dtwSat class
+#' @title dtwSat-class
+#'   
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
-#' Class for Multidimensional Time-Weighted DTW
+#' @description Class for Multidimensional Time-Weighted DTW
+#' 
+#' @import methods
+#' @import dtw
+#' @import zoo
+#' @importFrom proxy dist
+#' @importFrom reshape2 melt
+#' @importFrom graphics plot
+#' @importFrom waveslim mra
+#' @importFrom ggplot2 ggplot geom_line geom_point geom_path geom_raster xlab ylab scale_x_continuous scale_y_continuous scale_x_date scale_y_date annotate scale_fill_gradientn aes_string waiver
+#' @importFrom scales pretty_breaks
+#' @useDynLib dtwSat computeCM
 #'
-#'
-#'@section Slots :
+#' @section Slots :
 #' \describe{
-#' \item{\code{call}:}{Object of class \code{call} see 
-#' \code{\link[base]{match.call}}}
-#' \item{\code{alignments}:}{Object of class \code{list}. Each node of 
-#' the list has one attribute, whose lengths are identical to the number of 
-#' alignments. \code{from} the alignment starts, \code{to} the alignment ends, 
-#' \code{distance} the DTW distance, \code{normalizedDistance} the 
-#' normalized DTW distance}
-#' \item{\code{mapping}:}{Object of class \code{list}. Each node of the list has 
-#' the matching points of the query to the template time series.}
-#' \item{\code{internals}:}{Object of class \code{list} similar to 
-#' \code{\link[dtw]{dtw}} class from package \pkg{dtw}}
+#' 	\item{\code{call}:}{Object of class \code{call} see 
+#' 	\code{\link[base]{match.call}}.}
+#' 	\item{\code{alignments}:}{Object of class \code{list} where each node of 
+#' 	the list has one attribute, whose lengths are identical to the number of 
+#' 	alignments. The attributes are:} 
+#' 	  \item{\code{from}}{ the alignment starts, }
+#' 	  \item{\code{to}}{ the alignment ends, }
+#' 	  \item{\code{distance}}{ the DTW distance, and}
+#' 	  \item{\code{normalizedDistance}}{ the normalized DTW distance.}
+#' 	\item{\code{mapping}:}{ Object of class \code{list}. Each node of the list has 
+#' 	the matching points of the query to the template time series.}
+#' 	\item{\code{internals}:}{ Object of class \code{list} similar to 
+#' 	\code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
 #' }
-#' @name dtwSat
 #' @aliases dtwSat-class
-#' @exportClass dtwSat
-#' @author Victor Maus
 dtwSat = setClass(
   Class = "dtwSat",
   slots = c(
@@ -47,6 +58,20 @@ dtwSat = setClass(
 )
 
 
+#' @title dtwSat-initialize
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description Initialize object of class dtwSat
+#'
+#' @description Show object of class dtwSat
+#' @param .Object A character "dtwSat"
+#' @param call Object of class \code{call} see \code{\link[base]{match.call}}
+#' @param internals Object of class \code{list}
+#' @param alignments Object of class \code{list}
+#' @param mapping Object of class \code{list}
+#' 
+#' @docType methods
+#' 
 setMethod("initialize",
   signature = "dtwSat",
   definition = 
@@ -75,16 +100,18 @@ setMethod("initialize",
 )
 
 #' @title Get alignments from dtwSat object
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the results of the alignments in the object 
-#' \link[dtwSat]{dtwSat}.
+#' \link[dtwSat]{dtwSat}
 #' 
-#' @param object A \link[dtwSat]{dtwSat} object 
+#' @param object A \link[dtwSat]{dtwSat} object
 #' @docType methods
-#' @return object of class data.frame 
+#' @return An object of class data.frame
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'              alpha = 0.1, beta = 50, alignments=4)
 #' getAlignments(alig)
 #' @export
 setGeneric("getAlignments", 
@@ -94,16 +121,18 @@ setGeneric("getAlignments",
 )
 
 #' @title Get matching points from dtwSat object
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the matching points from the alignments 
-#' in the object \link[dtwSat]{dtwSat}.
+#' @description This function retrieves the matching points 
+#' from the alignments in the object \link[dtwSat]{dtwSat}
 #' 
-#' @param object A \link[dtwSat]{dtwSat} object 
+#' @param object A \link[dtwSat]{dtwSat} object
 #' @docType methods
 #' @return object of class data.frame 
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50, alignments=4)
 #' getMatches(alig)
 #' @export
 setGeneric("getMatches", 
@@ -112,6 +141,14 @@ setGeneric("getMatches",
            }
 )
 
+
+#' @title dtwSat-show
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description Show object of class dtwSat
+#' @param object A \link[dtwSat]{dtwSat} object
+#' @docType methods
+#' 
 setMethod("show", 
           signature = signature(object="dtwSat"),
           definition = function(object){
@@ -124,6 +161,7 @@ setMethod("show",
 
 
 #' @title Multidimensional Time-Weighted DTW analysis
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
 #' analysis and retrieves one or more possible alignments of a query within 
@@ -140,9 +178,11 @@ setMethod("show",
 #' @return object of class \code{\link[dtwSat]{dtwSat}} 
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50, alignments=4)
 #' alig
 #' @export
+#' @name dtwSat
 setGeneric("dtwSat", 
            function(query, template, ...) {
                 twdtw(query, template, ...)

@@ -18,17 +18,21 @@ column in query and template use in the plot}
 \item{shift}{A number, it shifts the pattern position.
 Default is 0.5}
 }
+\value{
+object of class \code{\link[ggplot2]{ggplot}}
+}
 \description{
 Methods for plotting Time-Weighted DTW objects
 returned by dtwSat.
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
-gp1 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
-gp2 = plot(alig, type="alignment", dimension="evi", alignment=2, shift=0.5)
-grid.arrange(arrangeGrob(gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
-                         gp2 + ggtitle("Alignment 2") + theme(axis.title.x=element_blank(), legend.position="none"),
-                                                  nrow=2))
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
+       alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
+gp = plotAlignment(alig, dimension="evi", alignment=1, shift=0.5)
+gp
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

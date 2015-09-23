@@ -1,0 +1,38 @@
+###############################################################
+#                                                             #
+#   (c) Toni Giorgino <toni.giorgino gmail.com>               #
+#       Istituto di Ingegneria Biomedica (ISIB-CNR)           #
+#       Consiglio Nazionale delle Ricerche                    #
+#       www.isib.cnr.it                                       #
+#                                                             #
+#   $Id: Makevars 320 2013-06-04 16:25:35Z tonig $
+#                                                             #
+###############################################################
+
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"`
+
+
+# Preserve the R makefile default target
+.PHONY:
+all: $(SHLIB)
+
+
+# To check, build and install:
+#  R CMD check pkg
+#  R CMD build pkg && R CMD INSTALL -l /tmp/ dtw_1.15.tar.gz 
+#  library(dtw,lib.loc="/tmp/")
+
+
+clean:
+	-rm computeCM.o dtw.o test_computeCM
+
+# Allow building a stand alone executable with test main method
+# Usage: make -f Makevars test_computeCM
+
+# You may want to undefine  DMALLOC below
+TEST_UNIT_CFLAGS=-std=gnu99 -g -O2 -DTEST_UNIT -Wall -pedantic
+TEST_UNIT_LOADLIBES=
+
+test_computeCM: computeCM.c 
+	$(CC) $(TEST_UNIT_CFLAGS) $< -o $@  $(TEST_UNIT_LOADLIBES)
+

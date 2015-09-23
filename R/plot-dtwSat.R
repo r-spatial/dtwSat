@@ -1,5 +1,6 @@
 
 #' @title Plotting Time-Weighted DTW 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @param ... additional arguments passed to plotting functions
 #' \code{\link[dtwSat]{plotPath}} and \code{\link[dtwSat]{plotAlignment}}
@@ -7,7 +8,19 @@
 #' @param type A character for the plot type, "path" or "alignment". 
 #' Default is "path"
 #' @return object of class \code{\link[ggplot2]{ggplot}}
-#' @importFrom graphics plot
+#' @examples 
+#' names(query.list)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+#' 
+#' ## Plot path
+#' gp1 = plot(alig, type="path", normalize=TRUE, show.dist = TRUE)
+#' gp1
+#' 
+#' ## Plot alignment
+#' gp2 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
+#' gp2
+#' 
 #' @export
 setMethod("plot", 
           signature(x = "dtwSat"),
@@ -25,6 +38,7 @@ setMethod("plot",
 )
 
 #' @title Plotting Time-Weighted DTW paths
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Methods for plotting Time-Weighted DTW objects 
 #' returned by dtwSat.
@@ -33,21 +47,14 @@ setMethod("plot",
 #' @param normalize Normalized distance. Default is FALSE
 #' @param show.dist Display dtw distance for each alignment 
 #' @docType methods
+#' @return object of class \code{\link[ggplot2]{ggplot}}
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-#' gp = plot(alig, normalize=TRUE, show.dist = TRUE)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+#' gp = plotPath(alig, normalize=TRUE, show.dist = TRUE)
 #' gp
-#' ## Crate a list of dtwSat objects and plot them 
-#' gp.list = lapply(query.list, function(query){
-#'      alig = dtwSat(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-#'      plot(alig, normalize = TRUE, show.dist = TRUE)  
-#' })
-#' grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank(), legend.position="none"),
-#'                          gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank(), legend.position="none"),
-#'                          gp.list[[3]] + ggtitle(names(query.list)[3]) + theme(legend.position="none"),
-#'                          nrow=3))
-#' @return object of class \code{\link[ggplot2]{ggplot}}
+#' 
 #' @export
 plotPath = function(x, normalize=FALSE, show.dist=FALSE){
   ## Get data
@@ -55,6 +62,7 @@ plotPath = function(x, normalize=FALSE, show.dist=FALSE){
   ty = index(x@internals$query)
   m = x@internals$costMatrix
   df.m = melt(m)
+
   if(normalize)
     df.m$value = df.m$value/nrow(m)
   df.path = do.call("rbind", lapply(seq_along(x@mapping), function(i){
@@ -62,27 +70,21 @@ plotPath = function(x, normalize=FALSE, show.dist=FALSE){
   }))
   
   ## Set axis breaks and labels 
-  #   r_x = diff(range(df$Var2)) / as.numeric(diff(range(tx[df$Var2])))
-  #   x.labels = pretty.breaks()(range(tx[df$Var2]))
-  #   x.breaks = r_x*abs(as.numeric(tx[df$Var2][1] - x.labels))
-  #   r_y = diff(range(df$Var1)) / as.numeric(diff(range(ty[df$Var1])))
-  #   y.labels = pretty.breaks()(range(ty[df$Var1]))
-  #   y.breaks = r_y*abs(as.numeric(ty[df$Var1][1] - y.labels))
-  x.labels = pretty_breaks()(range(tx[df.m$X2]))
-  timeline = unique( c(tx[df.m$X2], x.labels) )
-  x.breaks = zoo( c(unique(df.m$X2), rep(NA, length(x.labels))), timeline )
+  x.labels = pretty_breaks()(range(tx[df.m$Var2]))
+  timeline = unique( c(tx[df.m$Var2], x.labels) )
+  x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
   x.breaks = na.approx(x.breaks)
   x.breaks = x.breaks[x.labels]
-  y.labels = pretty_breaks()(range(ty[df.m$X1]))
-  timeline = unique( c(ty[df.m$X1], y.labels) )
-  y.breaks = zoo( c(unique(df.m$X1), rep(NA, length(y.labels))), timeline )
+  y.labels = pretty_breaks()(range(ty[df.m$Var1]))
+  timeline = unique( c(ty[df.m$Var1], y.labels) )
+  y.breaks = zoo( c(unique(df.m$Var1), rep(NA, length(y.labels))), timeline )
   y.breaks = na.approx(y.breaks)
   y.breaks = y.breaks[y.labels]
-  
+
   ## Plot matrix and paths
-  gp = ggplot(data=df.m, aes_string(y='X1', x='X2')) +
+  gp = ggplot(data=df.m, aes_string(y='Var1', x='Var2')) +
     geom_raster(aes_string(fill='value')) + 
-    scale_fill_gradientn(name = "Warp cost", colours = terrain.colors(100)) +
+    scale_fill_gradientn(name = 'Warp cost', colours = terrain.colors(100)) +
     geom_path(data=df.path, aes_string(y='index1', x='index2', group='alignment')) + 
     scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=names(y.labels)) +
     scale_x_continuous(expand = c(0, 0), breaks=x.breaks, labels=names(x.labels)) +
@@ -107,6 +109,7 @@ plotPath = function(x, normalize=FALSE, show.dist=FALSE){
 
 
 #' @title Plotting Time-Weighted DTW alignment 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Methods for plotting Time-Weighted DTW objects 
 #' returned by dtwSat.
@@ -118,14 +121,14 @@ plotPath = function(x, normalize=FALSE, show.dist=FALSE){
 #' @param shift A number, it shifts the pattern position.
 #' Default is 0.5
 #' @docType methods
+#' @return object of class \code{\link[ggplot2]{ggplot}}
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
-#' gp1 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
-#' gp2 = plot(alig, type="alignment", dimension="evi", alignment=2, shift=0.5)
-#' grid.arrange(arrangeGrob(gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
-#'                          gp2 + ggtitle("Alignment 2") + theme(axis.title.x=element_blank(), legend.position="none"),
-#'                                                   nrow=2))
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
+#' gp = plotAlignment(alig, dimension="evi", alignment=1, shift=0.5)
+#' gp
+#' 
 #' @export
 plotAlignment = function(x, alignment, dimension, shift=0.5){
   

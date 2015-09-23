@@ -1,4 +1,5 @@
 #' @title Wavelet filter
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a smoothing algorithm to
 #' the time series. It computes the a discreat wavelet 
@@ -16,21 +17,26 @@
 #' @param ... see parameters of \code{\link[waveslim]{mra}} in the 
 #' packege \pkg{waveslim}
 #' @docType methods
+#' @return object of class \code{\link[zoo]{zoo}} 
 #' @examples
-#' # Wavelet filter
-#' sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, boundary = "periodic")
-#' # Plot raw EVI and filtered EVI
-#' df.y = melt(data.frame(Time=index(template), Raw=template$evi), id="Time")
-#' df.sy = melt(data.frame(Time=index(sy), Wavelet=sy$evi), id="Time")
-#' df = rbind(df.y, df.sy)
-#' ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
-#'   geom_line() + 
-#'     ylab("EVI")
+#' ## Wavelet filter
+#' sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
+#'      boundary = "periodic")
+#' ## Plot raw EVI and filtered EVI
+#' # require(ggplot2)
+#' #df = data.frame(Time=index(template), value=template$evi, variable="Raw")
+#' #df = rbind( df, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
+#' #ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+#' #        geom_line() +
+#' #       ylab("EVI")
 #'     
-#' # Plot all filter bands
-#' df = melt(data.frame(Time=index(sy), sy), id="Time")
-#' ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
-#'   geom_line() 
+#' ## Plot all filter bands
+#' # require(ggplot2)
+#' # require(reshape2)
+#' #df = melt(data.frame(Time=index(sy), sy), id="Time")
+#' #ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+#' #       geom_line() 
+#'   
 #' @export
 waveletSmoothing = function(x, timeline=NULL, frequency=NULL, 
                             wf = "la8", J=1, boundary = "periodic", ...)
@@ -58,7 +64,7 @@ waveletSmoothing = function(x, timeline=NULL, frequency=NULL,
 
   # Smoothing 
   df = lapply(as.list(xx), function(d){
-    mra(x=as.numeric(d), wf=wf, J=J, boundary=boundary)[[paste0("S",J)]]
+    waveslim::mra(x=as.numeric(d), wf=wf, J=J, boundary=boundary)[[paste0("S",J)]]
   })
   res = zoo(data.frame(df), index(xx))
   res
@@ -66,6 +72,7 @@ waveletSmoothing = function(x, timeline=NULL, frequency=NULL,
 
 
 #' @title Satellite image time series classification. 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function classify the time segments based on the 
 #' open boundary DTW analysis results (i.e. results of timeSeriesAnalysis 
@@ -89,8 +96,10 @@ waveletSmoothing = function(x, timeline=NULL, frequency=NULL,
 #' @param aggregateByClass A logical. Aggregate results by common class. 
 #' Default is TRUE
 #' @docType methods
+#' @return object of class \code{\link[base]{data.frame}} 
 #' @examples
 #' ##
+#' 
 #' @export
 timeSeriesClassifier = function(dtwResults, from, to, by=12,
                                 overlapping=0.4, threshold=4.0, 

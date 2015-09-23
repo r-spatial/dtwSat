@@ -1,4 +1,5 @@
 #' @title Multidimensional Time-Weighted DTW analysis
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
 #' analysis and retrieves one or more possible alignments of a query within 
@@ -31,8 +32,10 @@
 #' @return object of class \code{\link[dtwSat]{dtwSat}} 
 #' @examples
 #' names(query.list)
-#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50, alignments=4)
 #' alig
+#' 
 #' @export
 twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
@@ -57,6 +60,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 }
 
 #' @title Performs multiple Time-Weighted DTW 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description The function performs the Time-Weighted DTW for a list 
 #' of queries
@@ -69,11 +73,14 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' class \code{\link[base]{Date}}.
 #' @param ... see \code{\link[dtwSat]{dtwSat}}
 #' @docType methods
-#' @export
+#' @return obaject of class \code{\link[base]{data.frame}} see with attributes 
+#' from the slot alignment of the objeact \code{\link[dtwSat]{dtwSat}}
 #' @examples
-#' alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+#' alig = mtwdtw(query.list, template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50)
 #' alig
-#' @return data.frame see \code{\link[dtwSat]{dtwSat-class}}
+#' 
+#' @export
 mtwdtw = function(query, template, ...){
   if(!is.list(query))
     stop("Missing a list of zoo objects. The query must be a list zoo objects.")
@@ -85,6 +92,7 @@ mtwdtw = function(query, template, ...){
   }))
   return(res)
 }
+
 
 .twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
@@ -113,7 +121,7 @@ mtwdtw = function(query, template, ...){
   cm[1,] = 0
   wm = matrix(FALSE, nrow = n, ncol = m)
   wm[window.function(row(wm), col(wm), query.size = n, reference.size = m)] = TRUE
-  internals = .Call("computeCM_Call", PACKAGE="dtw", wm, delta, cm, step.matrix)
+  internals = .computeCM(wm, delta, cm, step.matrix)
   internals$stepPattern = step.matrix
   internals$costMatrix = internals$costMatrix[-1,]
   internals$directionMatrix = internals$directionMatrix[-1,]
@@ -177,17 +185,10 @@ mtwdtw = function(query, template, ...){
   return( theta * x / 366 )
 }
 
+# .computeCM = function(...) .Call("computeCM_Call", PACKAGE="dtw", ...)
+.computeCM = function(...) .Call("computeCM_Call", PACKAGE="dtwSat", ...)
 
-#' @title DTW backtrack
-#' 
-#' @description This function preforms the backtrack starting from  
-#' a given index of the last line in the global cost matrix. 
-#' 
-#' @param alignment A twdtw or dtw alignment object. 
-#' @param jmin An integer. The index of the last line in the 
-#' global cost matrix. 
-#' @docType methods
-.kthbacktrack = function(alignment, jmin=NULL) {
+.kthbacktrack = function(alignment, jmin=NULL){
   
   dir = alignment$stepPattern
   npat = attr(dir,"npat")

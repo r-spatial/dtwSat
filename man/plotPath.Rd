@@ -23,17 +23,12 @@ returned by dtwSat.
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-gp = plot(alig, normalize=TRUE, show.dist = TRUE)
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
+       alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+gp = plotPath(alig, normalize=TRUE, show.dist = TRUE)
 gp
-## Crate a list of dtwSat objects and plot them
-gp.list = lapply(query.list, function(query){
-     alig = dtwSat(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
-     plot(alig, normalize = TRUE, show.dist = TRUE)
-})
-grid.arrange(arrangeGrob(gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank(), legend.position="none"),
-                         gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank(), legend.position="none"),
-                         gp.list[[3]] + ggtitle(names(query.list)[3]) + theme(legend.position="none"),
-                         nrow=3))
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

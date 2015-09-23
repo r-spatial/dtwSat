@@ -14,12 +14,16 @@ getMatches(object)
 object of class data.frame
 }
 \description{
-This function retrieves the matching points from the alignments
-in the object \link[dtwSat]{dtwSat}.
+This function retrieves the matching points
+from the alignments in the object \link[dtwSat]{dtwSat}
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4)
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
+       alpha = 0.1, beta = 50, alignments=4)
 getMatches(alig)
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

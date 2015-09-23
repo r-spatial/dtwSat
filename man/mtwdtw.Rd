@@ -19,14 +19,19 @@ class \code{\link[base]{Date}}.}
 \item{...}{see \code{\link[dtwSat]{dtwSat}}}
 }
 \value{
-data.frame see \code{\link[dtwSat]{dtwSat-class}}
+obaject of class \code{\link[base]{data.frame}} see with attributes
+from the slot alignment of the objeact \code{\link[dtwSat]{dtwSat}}
 }
 \description{
 The function performs the Time-Weighted DTW for a list
 of queries
 }
 \examples{
-alig = mtwdtw(query.list, template, weight = "logistic", alpha = 0.1, beta = 50)
+alig = mtwdtw(query.list, template, weight = "logistic",
+       alpha = 0.1, beta = 50)
 alig
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
 }
 

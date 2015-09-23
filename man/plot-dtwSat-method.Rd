@@ -22,4 +22,20 @@ object of class \code{\link[ggplot2]{ggplot}}
 \description{
 Plotting Time-Weighted DTW
 }
+\examples{
+names(query.list)
+alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
+       alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+
+## Plot path
+gp1 = plot(alig, type="path", normalize=TRUE, show.dist = TRUE)
+gp1
+
+## Plot alignment
+gp2 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
+gp2
+}
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}
 

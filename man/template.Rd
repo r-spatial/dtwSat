@@ -4,13 +4,9 @@
 \name{template}
 \alias{template}
 \title{Template time series}
-\format{\preformatted{‘zoo’ series from 2009-08-05 to 2013-07-31
-  Data: num [1:93, 1:7] 0.317 0.261 0.179 0.279 0.177 ...
- - attr(*, "dimnames")=List of 2
-  ..$ : chr [1:93] "218" "219" "220" "221" ...
-  ..$ : chr [1:7] "ndvi" "evi" "red" "nir" ...
-  Index:  Date[1:93], format: "2009-08-05" "2009-08-28" "2009-09-13" "2009-09-28" ...
-}}
+\format{A zoo objects with index of class Date and
+6 attributes: "ndvi", "evi", "red", "nir", "blue", "mir",
+and "evi2".}
 \usage{
 template
 }

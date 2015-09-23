@@ -8,6 +8,10 @@
 #' using Generalized Additive Models (GAM), see 
 #' package \link[mgcv]{gam}.
 #' @docType data
+#' @format A named list of 3 zoo objects. Each node "Soybean", 
+#' "Cotton", and "Maize" has a zoo object with index of class Date
+#' and 6 attributes: "ndvi", "evi", "red", "nir", "blue", "mir",
+#' and "evi2".
 "query.list"
 
 
@@ -19,6 +23,9 @@
 #' R client for Web Time Series Service
 #' \url{https://github.com/albhasan/rwtss.git}.
 #' @docType data
+#' @format A zoo objects with index of class Date and 
+#' 6 attributes: "ndvi", "evi", "red", "nir", "blue", "mir",
+#' and "evi2".
 "template"
 
 

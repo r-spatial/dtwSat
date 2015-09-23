@@ -21,7 +21,7 @@ dtwSat extends the dtw R package for multidimensional satellite image time serie
 	<li>Print twdtw object: <code>print(alig)</code></li>
 	<li>Plot twdtw object: <code>plot(alig)</code></li>
 </ol>
-![alt text](alig_soy.png "Alignment plot")
+![alt text](path.pdf "Alignment plot")
 
 <h3>How to build the package:</h3>
 <ol>

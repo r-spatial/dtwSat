@@ -53,10 +53,13 @@ sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1,
 # Plot raw EVI and filtered EVI
 df = data.frame(Time=index(template), value=template$evi, variable="Raw")
 df = rbind( df, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
-ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
-  geom_line() +
+gp = ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+  geom_line() + 
+  theme(legend.position="bottom") +
   ylab("EVI")
-
+gp
+# ggsave("filter.png", plot=gp, width = 8.9, height=5.9/1.5, units="in",
+#         family="Helvetica")
 
 # Plot all filtered bands
 df = melt(data.frame(Time=index(sy), sy), id="Time")
@@ -75,6 +78,7 @@ malig
 
 # ## Other plot examples 
 # library(gridExtra)
+# library(grid)
 # 
 # # Plot alignments
 # gp1 = plotAlignment(alig, dimension="evi", alignment=1, shift=0.5)

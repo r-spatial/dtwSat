@@ -22,7 +22,7 @@ This package provides functions for mult-band TWDTW alignments and visualization
 	<li>Plot dtwSat object: <code>plot(alig)</code></li>
 </ol>
 
-<h3>Plot examples:</h3>
+<h3>Other plot examples:</h3>
 <ol>
  	<li>Plot alignment for all classese:
  		<code>

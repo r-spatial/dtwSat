@@ -3,17 +3,17 @@
 \docType{methods}
 \name{plotAlignment}
 \alias{plotAlignment}
-\title{Plotting Time-Weighted DTW alignment}
+\title{Plotting alignments of dtwSat object}
 \usage{
 plotAlignment(x, alignment, dimension, shift = 0.5)
 }
 \arguments{
-\item{x}{\code{\link[dtwSat]{twdtw}} object}
+\item{x}{\code{\link[dtwSat]{dtwSat-class}} object}
 
 \item{alignment}{An integer, the index of the alignment}
 
 \item{dimension}{An integer or a character with the name of the
-column in query and template use in the plot}
+column in query and template to use in the plot}
 
 \item{shift}{A number, it shifts the pattern position.
 Default is 0.5}
@@ -22,8 +22,8 @@ Default is 0.5}
 object of class \code{\link[ggplot2]{ggplot}}
 }
 \description{
-Methods for plotting Time-Weighted DTW objects
-returned by dtwSat.
+Method for plotting the alignments in the cost
+matrix of the \code{\link[dtwSat]{dtwSat-class}} objects.
 }
 \examples{
 names(query.list)
@@ -34,5 +34,9 @@ gp
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
+\code{\link[dtwSat]{plotPath}}
 }
 

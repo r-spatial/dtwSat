@@ -3,23 +3,28 @@
 \docType{methods}
 \name{plotPath}
 \alias{plotPath}
-\title{Plotting Time-Weighted DTW paths}
+\title{Plotting paths of dtwSat object}
 \usage{
-plotPath(x, normalize = FALSE, show.dist = FALSE)
+plotPath(x, normalize = FALSE, show.dist = FALSE, shift = c(-4, -1))
 }
 \arguments{
-\item{x}{\code{\link[dtwSat]{twdtw}} object}
+\item{x}{\code{\link[dtwSat]{dtwSat-class}} object}
 
 \item{normalize}{Normalized distance. Default is FALSE}
 
 \item{show.dist}{Display dtw distance for each alignment}
+
+\item{shift}{A vector whose values shift the position of the text
+in the plot. Argument Used with show.dist.}
 }
 \value{
 object of class \code{\link[ggplot2]{ggplot}}
+
+#'
 }
 \description{
-Methods for plotting Time-Weighted DTW objects
-returned by dtwSat.
+Method for plotting the paths in the cost matrix
+of the \code{\link[dtwSat]{dtwSat-class}} objects.
 }
 \examples{
 names(query.list)
@@ -30,5 +35,9 @@ gp
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
+\code{\link[dtwSat]{plotAlignment}}
 }
 

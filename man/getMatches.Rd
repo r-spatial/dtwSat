@@ -11,11 +11,11 @@ getMatches(object)
 \item{object}{A \link[dtwSat]{dtwSat} object}
 }
 \value{
-object of class data.frame
+object of class \code{list}
 }
 \description{
 This function retrieves the matching points
-from the alignments in the object \link[dtwSat]{dtwSat}
+for each alignment between the \code{query} and the \code{template}.
 }
 \examples{
 names(query.list)
@@ -25,5 +25,8 @@ getMatches(alig)
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
 }
 

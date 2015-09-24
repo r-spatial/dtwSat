@@ -1,8 +1,48 @@
+###############################################################
+#                                                             #
+#   (c) Victor Maus <vwmaus1@gmail.com>                       #
+#       Institute for Geoinformatics (IFGI)                   #
+#       University of Münster (WWU), Germany                  #
+#                                                             #
+#       Earth System Science Center (CCST)                    #
+#       National Institute for Space Research (INPE), Brazil  #
+#                                                             #
+#                                                             #
+#   R Package dtwSat - 2015-09-01                             #
+#                                                             #
+###############################################################
+
+
+###############################################################
+#### dtwSat CLASS AND METHODS
+
 #' @title dtwSat-class
-#'   
+#' @name dtwSat-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for Multidimensional Time-Weighted DTW
+#' 
+#' 
+#' @section Slots :
+#' \describe{
+#'  \item{\code{call}:}{Object of class \code{call} see 
+#'  \code{\link[base]{match.call}}.}
+#'  \item{\code{alignments}:}{A named \code{list} where each node has one 
+#'      attribute whose lengths are identical to the number of 
+#' 	    alignments. The attributes are:  
+#' 	    \code{from} the alignment starts,
+#' 	    \code{to} the alignment ends,
+#' 	    \code{distance} the DTW distance, and
+#' 	    \code{normalizedDistance} the normalized DTW distance.
+#'  }
+#'  \item{\code{mapping}:}{ Object of class \code{list} where each node 
+#'  has the matching points between the query and the template time series.}
+#' 	\item{\code{internals}:}{ Object of class \code{list} similar to 
+#' 	the \code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
+#' }
+#' 
+#' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}, 
+#' \code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}
 #' 
 #' @import methods
 #' @import dtw
@@ -14,24 +54,10 @@
 #' @importFrom ggplot2 ggplot geom_line geom_point geom_path geom_raster xlab ylab scale_x_continuous scale_y_continuous scale_x_date scale_y_date annotate scale_fill_gradientn aes_string waiver
 #' @importFrom scales pretty_breaks
 #' @useDynLib dtwSat computeCM
+#' @importFrom grDevices terrain.colors
+#' @importFrom utils tail
 #'
-#' @section Slots :
-#' \describe{
-#' 	\item{\code{call}:}{Object of class \code{call} see 
-#' 	\code{\link[base]{match.call}}.}
-#' 	\item{\code{alignments}:}{Object of class \code{list} where each node of 
-#' 	the list has one attribute, whose lengths are identical to the number of 
-#' 	alignments. The attributes are:} 
-#' 	  \item{\code{from}}{ the alignment starts, }
-#' 	  \item{\code{to}}{ the alignment ends, }
-#' 	  \item{\code{distance}}{ the DTW distance, and}
-#' 	  \item{\code{normalizedDistance}}{ the normalized DTW distance.}
-#' 	\item{\code{mapping}:}{ Object of class \code{list}. Each node of the list has 
-#' 	the matching points of the query to the template time series.}
-#' 	\item{\code{internals}:}{ Object of class \code{list} similar to 
-#' 	\code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
-#' }
-#' @aliases dtwSat-class
+NULL
 dtwSat = setClass(
   Class = "dtwSat",
   slots = c(
@@ -57,21 +83,6 @@ dtwSat = setClass(
   }
 )
 
-
-#' @title dtwSat-initialize
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Initialize object of class dtwSat
-#'
-#' @description Show object of class dtwSat
-#' @param .Object A character "dtwSat"
-#' @param call Object of class \code{call} see \code{\link[base]{match.call}}
-#' @param internals Object of class \code{list}
-#' @param alignments Object of class \code{list}
-#' @param mapping Object of class \code{list}
-#' 
-#' @docType methods
-#' 
 setMethod("initialize",
   signature = "dtwSat",
   definition = 
@@ -99,15 +110,67 @@ setMethod("initialize",
   }
 )
 
+setMethod("show", 
+          signature = signature(object="dtwSat"),
+          definition = function(object){
+            cat("Time-Weighted DTW alignment object\n")
+            cat("Alignments:\n")
+            print(getAlignments(object))
+            invisible(NULL)
+          }
+)
+
+
+
+
+###############################################################
+#### GENERIC METHODS
+
+
+#' @title Multidimensional Time-Weighted DTW Alignment
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function performs a multidimensional Time-Weighted DTW 
+#' analysis and retrieves one or more possible alignments of a query within 
+#' a time series.
+#' 
+#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
+#' @param template A \link[zoo]{zoo} object with the template time series similar 
+#' to \code{query}. The \code{template} must have the same number of attributes
+#' and be equal or longer than the \code{query}, 
+#' \emph{i.e.} \code{nrow(query)<=nrow(template)}.
+#' @param ... see \code{\link[dtwSat]{twdtw}}
+#' @docType methods
+#' @return object of class \code{\link[dtwSat]{dtwSat-class}} 
+#'  
+#' @seealso \code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{mtwdtw}}
+#' 
+#' @examples
+#' names(query.list)
+#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 50, alignments=4)
+#' alig
+#' @export
+#' @name dtwSat
+setGeneric("dtwSat", 
+           function(query, template, ...) {
+             twdtw(query, template, ...)
+           }
+)
+
+
 #' @title Get alignments from dtwSat object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the results of the alignments in the object 
-#' \link[dtwSat]{dtwSat}
+#' @description This function retrieves the alignments 
+#' in the object \link[dtwSat]{dtwSat}
 #' 
 #' @param object A \link[dtwSat]{dtwSat} object
 #' @docType methods
-#' @return An object of class data.frame
+#' @return An object of class \code{data.frame}
+#' 
+#' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+#' 
 #' @examples
 #' names(query.list)
 #' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
@@ -124,11 +187,14 @@ setGeneric("getAlignments",
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the matching points 
-#' from the alignments in the object \link[dtwSat]{dtwSat}
+#' for each alignment between the \code{query} and the \code{template}.
 #' 
 #' @param object A \link[dtwSat]{dtwSat} object
 #' @docType methods
-#' @return object of class data.frame 
+#' @return object of class \code{list}
+#' 
+#' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+#' 
 #' @examples
 #' names(query.list)
 #' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
@@ -138,54 +204,6 @@ setGeneric("getAlignments",
 setGeneric("getMatches", 
            function(object) {
              object@mapping
-           }
-)
-
-
-#' @title dtwSat-show
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Show object of class dtwSat
-#' @param object A \link[dtwSat]{dtwSat} object
-#' @docType methods
-#' 
-setMethod("show", 
-          signature = signature(object="dtwSat"),
-          definition = function(object){
-            cat("Time-Weighted DTW alignment object\n")
-            cat("Alignments:\n")
-            print(getAlignments(object))
-            invisible(NULL)
-          }
-)
-
-
-#' @title Multidimensional Time-Weighted DTW analysis
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description This function performs a multidimensional Time-Weighted DTW 
-#' analysis and retrieves one or more possible alignments of a query within 
-#' a time series.
-#' 
-#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
-#' @param template A \link[zoo]{zoo} object with the template time series. The index of 
-#' the zoo object must be of class \code{\link[base]{Date}}.
-#' It must be iguel or be equal or longer than the length of the query and 
-#' the same number of dimensions. The index of the zoo object must be of 
-#' class \code{\link[base]{Date}}.
-#' @param ... see \code{\link[dtwSat]{twdtw}}
-#' @docType methods
-#' @return object of class \code{\link[dtwSat]{dtwSat}} 
-#' @examples
-#' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
-#'        alpha = 0.1, beta = 50, alignments=4)
-#' alig
-#' @export
-#' @name dtwSat
-setGeneric("dtwSat", 
-           function(query, template, ...) {
-                twdtw(query, template, ...)
            }
 )
 

@@ -3,24 +3,25 @@
 \docType{methods}
 \name{plot,dtwSat-method}
 \alias{plot,dtwSat-method}
-\title{Plotting Time-Weighted DTW}
+\title{Plotting dtwSat objects}
 \usage{
 \S4method{plot}{dtwSat}(x, type = "path", ...)
 }
 \arguments{
-\item{x}{\code{\link[dtwSat]{dtwSat}} object}
+\item{x}{\code{\link[dtwSat]{dtwSat-class}} object}
 
-\item{type}{A character for the plot type, "path" or "alignment".
-Default is "path"}
+\item{type}{A character for the plot type, "path" or "alignment"}
 
 \item{...}{additional arguments passed to plotting functions
-\code{\link[dtwSat]{plotPath}} and \code{\link[dtwSat]{plotAlignment}}}
+\code{\link[dtwSat]{plotPath}} and \code{\link[dtwSat]{plotAlignment}}
+Default is "path"}
 }
 \value{
 object of class \code{\link[ggplot2]{ggplot}}
 }
 \description{
-Plotting Time-Weighted DTW
+Methods for plotting the results of the
+Time-Weighted DTW analsys
 }
 \examples{
 names(query.list)
@@ -37,5 +38,9 @@ gp2
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
+\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}
 }
 

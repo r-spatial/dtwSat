@@ -3,42 +3,41 @@
 \docType{methods}
 \name{twdtw}
 \alias{twdtw}
-\title{Multidimensional Time-Weighted DTW analysis}
+\title{Multidimensional Time-Weighted DTW Alignment}
 \usage{
 twdtw(query, template, weight = NULL, dist.method = "Euclidean",
   theta = NULL, alpha = NULL, beta = NULL, alignments = NULL,
   step.matrix = symmetric1, window.function = noWindow, keep = FALSE, ...)
 }
 \arguments{
-\item{query}{A zoo object with the multidimensional time series.}
+\item{query}{A \link[zoo]{zoo} object with the multidimensional time series.}
 
-\item{template}{A zoo object with the template time series. The index of
-the zoo object must be of class \code{\link[base]{Date}}.
-It must be iguel or be equal or longer than the length of the query and
-the same number of dimensions. The index of the zoo object must be of
-class \code{\link[base]{Date}}.}
+\item{template}{A \link[zoo]{zoo} object with the template time series similar
+to \code{query}. The \code{template} must have the same number of attributes
+and be equal or longer than the \code{query},
+\emph{i.e.} \code{nrow(query)<=nrow(template)}.}
 
 \item{weight}{A character. ''linear'' for linear weight or ''logistic''
-for logistic weight. Default is NULL that runs the original dtw method.}
+for logistic weight. Default is NULL that runs the original dtw method,
+\emph{i.e.} without time weight.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package
-\pkg{proxy}}
+\pkg{proxy}.}
 
-\item{theta}{A real. Parameter for linear weight. It is the slope
-of the linear TWDTW. For theta equal 1 the time weight is equal to the
-number of elapsed days. Default is NULL.}
+\item{theta}{A number. Parameter for ''linear'' time weight. For \code{theta=1}
+the time weight is equal to the number of elapsed days.}
 
-\item{alpha}{A real. The steepness of logistic method. Default is NULL.}
+\item{alpha}{A number. The steepness of logistic weight.}
 
-\item{beta}{A real. The midpoint of logistic method. Default is NULL.}
+\item{beta}{A number. The midpoint of logistic weight.}
 
 \item{alignments}{An integer. The maximun number of alignments to
-perform. Default is NULL to return all possible alignment.}
+perform. NULL will return all possible alignments.}
 
 \item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw}}
 
-\item{window.function}{see parameter window.type in \code{\link[dtw]{dtw}}}
+\item{window.function}{see parameter \code{window.type} in \code{\link[dtw]{dtw}}}
 
 \item{keep}{preserve the cost matrix, inputs, and other internal structures.
 Default is FALSE}
@@ -46,12 +45,11 @@ Default is FALSE}
 \item{...}{other parameters}
 }
 \value{
-object of class \code{\link[dtwSat]{dtwSat}}
+object of class \code{\link[dtwSat]{dtwSat-class}}
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW
-analysis and retrieves one or more possible alignments of a query within
-a time series.
+analysis and retrieves the alignments of a query within a time series.
 }
 \examples{
 names(query.list)
@@ -61,5 +59,8 @@ alig
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{mtwdtw}}, \code{\link[dtwSat]{dtwSat-class}}
 }
 

@@ -1,2 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
+# Other files
+^.*\.png
+^.*\.pdf
+^.*\.eps
+README.md
+corinho.R
+.git
+.gitignore

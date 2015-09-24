@@ -3,51 +3,27 @@
 \docType{methods}
 \name{dtwSat}
 \alias{dtwSat}
-\alias{dtwSat-class}
-\title{dtwSat-class}
+\title{Multidimensional Time-Weighted DTW Alignment}
 \usage{
-dtwSat(query, template, ...)
-
 dtwSat(query, template, ...)
 }
 \arguments{
 \item{query}{A \link[zoo]{zoo} object with the multidimensional time series.}
 
-\item{template}{A \link[zoo]{zoo} object with the template time series. The index of
-the zoo object must be of class \code{\link[base]{Date}}.
-It must be iguel or be equal or longer than the length of the query and
-the same number of dimensions. The index of the zoo object must be of
-class \code{\link[base]{Date}}.}
+\item{template}{A \link[zoo]{zoo} object with the template time series similar
+to \code{query}. The \code{template} must have the same number of attributes
+and be equal or longer than the \code{query},
+\emph{i.e.} \code{nrow(query)<=nrow(template)}.}
 
 \item{...}{see \code{\link[dtwSat]{twdtw}}}
 }
 \value{
-object of class \code{\link[dtwSat]{dtwSat}}
+object of class \code{\link[dtwSat]{dtwSat-class}}
 }
 \description{
-Class for Multidimensional Time-Weighted DTW
-
 This function performs a multidimensional Time-Weighted DTW
 analysis and retrieves one or more possible alignments of a query within
 a time series.
-}
-\section{Slots }{
-
-\describe{
-	\item{\code{call}:}{Object of class \code{call} see
-	\code{\link[base]{match.call}}.}
-	\item{\code{alignments}:}{Object of class \code{list} where each node of
-	the list has one attribute, whose lengths are identical to the number of
-	alignments. The attributes are:}
-	  \item{\code{from}}{ the alignment starts, }
-	  \item{\code{to}}{ the alignment ends, }
-	  \item{\code{distance}}{ the DTW distance, and}
-	  \item{\code{normalizedDistance}}{ the normalized DTW distance.}
-	\item{\code{mapping}:}{ Object of class \code{list}. Each node of the list has
-	the matching points of the query to the template time series.}
-	\item{\code{internals}:}{ Object of class \code{list} similar to
-	\code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
-}
 }
 \examples{
 names(query.list)
@@ -57,7 +33,8 @@ alig
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
-
-Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{mtwdtw}}
 }
 

@@ -9,11 +9,12 @@ waveletSmoothing(x, timeline = NULL, frequency = NULL, wf = "la8",
   J = 1, boundary = "periodic", ...)
 }
 \arguments{
-\item{x}{A zoo object with the time series}
+\item{x}{A \code{zoo} object with the time series}
 
-\item{timeline}{A time line vector for the internalsput}
+\item{timeline}{A vector od dates for the output time series.
+It must have regular frequency.}
 
-\item{frequency}{A numeric with the frequency for internalsput time series}
+\item{frequency}{The frequncy for the output time series}
 
 \item{wf}{Name of the wavelet filter to use in the decomposition.
 Default is "la8"}
@@ -22,7 +23,7 @@ Default is "la8"}
 less than or equal to log(length(x),2). Default is 1}
 
 \item{boundary}{Character string specifying the boundary condition.
-Default is "periodic"}
+Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.}
 
 \item{...}{see parameters of \code{\link[waveslim]{mra}} in the
 packege \pkg{waveslim}}
@@ -39,6 +40,9 @@ smoothing for each dimension in the imput time series.
 ## Wavelet filter
 sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1,
      boundary = "periodic")
+plot(template$evi, ylab="EVI", xlab="Time")
+lines(sy$evi, col="red")
+
 ## Plot raw EVI and filtered EVI
 # require(ggplot2)
 #df = data.frame(Time=index(template), value=template$evi, variable="Raw")
@@ -56,5 +60,8 @@ sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1,
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\link[waveslim]{mra}
 }
 

@@ -3,21 +3,28 @@
 \docType{data}
 \name{template}
 \alias{template}
-\title{Template time series}
-\format{A zoo objects with index of class Date and
-6 attributes: "ndvi", "evi", "red", "nir", "blue", "mir",
-and "evi2".}
+\title{Data: template time series}
+\format{A \link[zoo]{zoo} object, whose indices are Dates in the
+format "yyyy-mm-dd". Each node has 6 attributes: "ndvi",
+"evi", "red", "nir", "blue", "mir", and "evi2".}
 \usage{
 template
 }
 \description{
 This dataset has a template time series based on the
-MODIS product MOD13Q1 250 m 16 days. See package pkg{rwtss} that is an
-R client for Web Time Series Service
-\url{https://github.com/albhasan/rwtss.git}.
+MODIS product MOD13Q1 250 m 16 days. It is an irregular time series
+using the real day of each pixel from "2009-08-05" "2013-07-31".
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\link[dtwSat]{query.list}
+
+Package \pkg{rwtss} provides a client for Web Time
+Series Service \url{https://github.com/albhasan/rwtss.git}.
+
+MOD13Q1 documentation: \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
 }
 \keyword{datasets}
 

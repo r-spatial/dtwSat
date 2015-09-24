@@ -11,11 +11,11 @@ getAlignments(object)
 \item{object}{A \link[dtwSat]{dtwSat} object}
 }
 \value{
-An object of class data.frame
+An object of class \code{data.frame}
 }
 \description{
-This function retrieves the results of the alignments in the object
-\link[dtwSat]{dtwSat}
+This function retrieves the alignments
+in the object \link[dtwSat]{dtwSat}
 }
 \examples{
 names(query.list)
@@ -25,5 +25,8 @@ getAlignments(alig)
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
 }
 

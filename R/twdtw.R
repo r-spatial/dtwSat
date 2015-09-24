@@ -1,35 +1,55 @@
-#' @title Multidimensional Time-Weighted DTW analysis
+###############################################################
+#                                                             #
+#   (c) Victor Maus <vwmaus1@gmail.com>                       #
+#       Institute for Geoinformatics (IFGI)                   #
+#       University of Münster (WWU), Germany                  #
+#                                                             #
+#       Earth System Science Center (CCST)                    #
+#       National Institute for Space Research (INPE), Brazil  #
+#                                                             #
+#                                                             #
+#   R Package dtwSat - 2015-09-01                             #
+#                                                             #
+###############################################################
+
+
+###############################################################
+#### TWDTW ALIGNMENT
+
+
+#' @title Multidimensional Time-Weighted DTW Alignment
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
-#' analysis and retrieves one or more possible alignments of a query within 
-#' a time series.
+#' analysis and retrieves the alignments of a query within a time series.
 #' 
-#' @param query A zoo object with the multidimensional time series.
-#' @param template A zoo object with the template time series. The index of 
-#' the zoo object must be of class \code{\link[base]{Date}}.
-#' It must be iguel or be equal or longer than the length of the query and 
-#' the same number of dimensions. The index of the zoo object must be of 
-#' class \code{\link[base]{Date}}.
+#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
+#' @param template A \link[zoo]{zoo} object with the template time series similar 
+#' to \code{query}. The \code{template} must have the same number of attributes
+#' and be equal or longer than the \code{query}, 
+#' \emph{i.e.} \code{nrow(query)<=nrow(template)}.
 #' @param weight A character. ''linear'' for linear weight or ''logistic'' 
-#' for logistic weight. Default is NULL that runs the original dtw method.
+#' for logistic weight. Default is NULL that runs the original dtw method,
+#' \emph{i.e.} without time weight.
 #' @param dist.method A character. Method to derive the local cost matrix.
 #' Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
-#' \pkg{proxy}
-#' @param theta A real. Parameter for linear weight. It is the slope 
-#' of the linear TWDTW. For theta equal 1 the time weight is equal to the 
-#' number of elapsed days. Default is NULL.
-#' @param alpha A real. The steepness of logistic method. Default is NULL.
-#' @param beta A real. The midpoint of logistic method. Default is NULL.
+#' \pkg{proxy}.
+#' @param theta A number. Parameter for ''linear'' time weight. For \code{theta=1} 
+#' the time weight is equal to the number of elapsed days.
+#' @param alpha A number. The steepness of logistic weight.
+#' @param beta A number. The midpoint of logistic weight.
 #' @param alignments An integer. The maximun number of alignments to 
-#' perform. Default is NULL to return all possible alignment. 
+#' perform. NULL will return all possible alignments. 
 #' @param step.matrix see \code{\link[dtw]{stepPattern}} in package \pkg{dtw}
-#' @param window.function see parameter window.type in \code{\link[dtw]{dtw}} 
+#' @param window.function see parameter \code{window.type} in \code{\link[dtw]{dtw}} 
 #' @param keep preserve the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE
 #' @param ... other parameters
 #' @docType methods
-#' @return object of class \code{\link[dtwSat]{dtwSat}} 
+#' @return object of class \code{\link[dtwSat]{dtwSat-class}} 
+#'  
+#' @seealso \code{\link[dtwSat]{mtwdtw}}, \code{\link[dtwSat]{dtwSat-class}}
+#' 
 #' @examples
 #' names(query.list)
 #' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", 
@@ -65,16 +85,19 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' @description The function performs the Time-Weighted DTW for a list 
 #' of queries
 #' 
-#' @param query A zoo object with the multidimensional time series.
-#' @param template A zoo object with the template time series. The index of 
-#' the zoo object must be of class \code{\link[base]{Date}}.
-#' It must be iguel or be equal or longer than the length of the query and 
-#' the same number of dimensions. The index of the zoo object must be of 
-#' class \code{\link[base]{Date}}.
-#' @param ... see \code{\link[dtwSat]{dtwSat}}
+#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
+#' @param template A \link[zoo]{zoo} object with the template time series similar 
+#' to \code{query}. The \code{template} must have the same number of attributes
+#' and be equal or longer than the \code{query}, 
+#' \emph{i.e.} \code{nrow(query)<=nrow(template)}.
+#' @param ... see \code{\link[dtwSat]{twdtw}}
 #' @docType methods
-#' @return obaject of class \code{\link[base]{data.frame}} see with attributes 
-#' from the slot alignment of the objeact \code{\link[dtwSat]{dtwSat}}
+#' @return obaject of class \code{data.frame} with alignment attributes
+#'  
+#' @seealso \code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{dtwSat-class}}
+#' @seealso This function calls a C code to compute the cost mtrix. The C 
+#' function is internal in the R package \code{\link[dtw]{dtw}} developed 
+#' by Toni Giorgino. 
 #' @examples
 #' alig = mtwdtw(query.list, template, weight = "logistic", 
 #'        alpha = 0.1, beta = 50)
@@ -83,14 +106,19 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' @export
 mtwdtw = function(query, template, ...){
   if(!is.list(query))
-    stop("Missing a list of zoo objects. The query must be a list zoo objects.")
+    stop("query is not a list.")
+  if(!any(unlist(lapply(query, is, "zoo"))))
+    stop("query is not a list of zoo objects.")
+  
   query.names = names(query)
   if(is.null(query.names))
     query.names = seq_along(query)
+  
   res = do.call("rbind", lapply(query.names, function(i){
     data.frame(query=i, twdtw(query[[i]], template)@alignments)
   }))
-  return(res)
+  
+  res
 }
 
 
@@ -185,10 +213,18 @@ mtwdtw = function(query, template, ...){
   return( theta * x / 366 )
 }
 
-# .computeCM = function(...) .Call("computeCM_Call", PACKAGE="dtw", ...)
-.computeCM = function(...) .Call("computeCM_Call", PACKAGE="dtwSat", ...)
+
+.computeCM = function(...){
+  # This function calls a C code to compute the cost mtrix. The C function 
+  # is internal in the R package dtw developed by Toni Giorgino. The C code 
+  # is included in the src folder of dtwSat Package. 
+  .Call("computeCM_Call", PACKAGE="dtwSat", ...)
+}
+
 
 .kthbacktrack = function(alignment, jmin=NULL){
+  # This function was adaptaded from the internal function 
+  # 'backtrack' in the R package dtw developed by Toni Giorgino
   
   dir = alignment$stepPattern
   npat = attr(dir,"npat")

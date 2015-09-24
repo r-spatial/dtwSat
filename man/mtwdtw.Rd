@@ -8,19 +8,17 @@
 mtwdtw(query, template, ...)
 }
 \arguments{
-\item{query}{A zoo object with the multidimensional time series.}
+\item{query}{A \link[zoo]{zoo} object with the multidimensional time series.}
 
-\item{template}{A zoo object with the template time series. The index of
-the zoo object must be of class \code{\link[base]{Date}}.
-It must be iguel or be equal or longer than the length of the query and
-the same number of dimensions. The index of the zoo object must be of
-class \code{\link[base]{Date}}.}
+\item{template}{A \link[zoo]{zoo} object with the template time series similar
+to \code{query}. The \code{template} must have the same number of attributes
+and be equal or longer than the \code{query},
+\emph{i.e.} \code{nrow(query)<=nrow(template)}.}
 
-\item{...}{see \code{\link[dtwSat]{dtwSat}}}
+\item{...}{see \code{\link[dtwSat]{twdtw}}}
 }
 \value{
-obaject of class \code{\link[base]{data.frame}} see with attributes
-from the slot alignment of the objeact \code{\link[dtwSat]{dtwSat}}
+obaject of class \code{data.frame} with alignment attributes
 }
 \description{
 The function performs the Time-Weighted DTW for a list
@@ -33,5 +31,12 @@ alig
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\seealso{
+\code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{dtwSat-class}}
+
+This function calls a C code to compute the cost mtrix. The C
+function is internal in the R package \code{\link[dtw]{dtw}} developed
+by Toni Giorgino.
 }
 

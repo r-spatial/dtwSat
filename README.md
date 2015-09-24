@@ -1,13 +1,13 @@
 dtwSat
 =====
 
-Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis
+Time-Weighted Dynamic Time Warping (TWDTW) for remote sensing time series analysis
 
-dtwSat extends the dtw R package for multidimensional satellite image time series analysis. 
+This package provides functions for mult-band TWDTW alignments and visualization.
 
 <h3>How to use the package:</h3>
 <ol>
-	<li>Open R</li>
+  <li>Open R</li>
 	<li>Install devtools <code>install.packages("devtools")</code></li>
 	<li>Load devtools <code>library(devtools)</code></li>
 	<li>Install the dtwSat package <code>install_github("vwmaus/dtwSat")</code></li>
@@ -30,11 +30,12 @@ dtwSat extends the dtw R package for multidimensional satellite image time serie
   				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
   				plot(alig, normalize = TRUE, show.dist = TRUE)  
 			})
-			grid.arrange(arrangeGrob(
+			gp = arrangeGrob(
 				gp.list[[1]] + ggtitle(names(query.list)[1]) + theme(axis.title.x=element_blank()),
                          	gp.list[[2]] + ggtitle(names(query.list)[2]) + theme(axis.title.x=element_blank()),
                          	gp.list[[3]] + ggtitle(names(query.list)[3]) ,
-                         	nrow=3))
+                        	nrow=3)
+                        gp
                 </code>
         </li>
 </ol>
@@ -44,16 +45,31 @@ dtwSat extends the dtw R package for multidimensional satellite image time serie
   <li>Plot alignments: <code>
   	gp1 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
 	gp2 = plot(alig, type="alignment", dimension="evi", alignment=2, shift=0.5)
-	grid.arrange(arrangeGrob(
+	arrangeGrob(
 		gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
-                gp2 + ggtitle("Alignment 2") + theme(axis.title.x=element_blank(), legend.position="none"),
-                nrow=2))
+                gp2 + ggtitle("Alignment 2") + theme(legend.position="none"),
+        nrow=2)
+        gp
         </code>
    </li>
 </ol>
   
 ![alt text](alig.png "Alignment plot")
 
+<ol>
+  <li>Plot alignments: <code>
+	df = data.frame(Time=index(template), value=template$evi, variable="Raw")
+	df = rbind( df, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
+	gp = ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
+  		geom_line() + 
+  		theme(legend.position="bottom") +
+  		ylab("EVI")
+	gp
+        </code>
+   </li>
+</ol>
+  
+![alt text](filter.png "Alignment plot")
 
 <h3>How to build the package:</h3>
 <ol>

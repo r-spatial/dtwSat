@@ -90,7 +90,7 @@ malig
 #                       theme(legend.position="none"),
 #                 nrow=2)
 # gp
-# ggsave("alig.eps", plot=gp, width = 8.9, height=5.9, units="in",
+# ggsave("alig.png", plot=gp, width = 8.9, height=5.9, units="in",
 #         family="Helvetica")
 # 
 # # Crate a list of dtwSat objects and plot the paths
@@ -112,5 +112,5 @@ malig
 #                                         plot.margin = unit(c(0.1,0.1,0,0), "cm")),
 #              nrow=3)
 # 
-# ggsave("path.eps", plot=gp, width = 8.9, height=5.9, units="in",
+# ggsave("path.png", plot=gp, width = 8.9, height=5.9, units="in",
 #        family="Helvetica")

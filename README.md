@@ -39,7 +39,7 @@ This package provides functions for mult-band TWDTW alignments and visualization
                 </code>
         </li>
 </ol>
-![alt text](path_soy.png "Path plot")
+![alt text](path.png "Path plot")
 
 <ol>
   <li>Plot alignments: <code>

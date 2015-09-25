@@ -1,9 +1,10 @@
 dtwSat
 =====
 
-Time-Weighted Dynamic Time Warping (TWDTW) for remote sensing time series analysis
-
-This package provides functions for mult-band TWDTW alignments and visualization.
+<h3>Time-Weighted Dynamic Time Warping for remote sensing time series analysis</h3>
+<ol>
+The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. This package provides methods for visualization of minimum cost paths and time series alignment.
+</ol>
 
 <h3>How to use the package:</h3>
 <ol>

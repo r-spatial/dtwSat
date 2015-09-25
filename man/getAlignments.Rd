@@ -8,25 +8,24 @@
 getAlignments(object)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{dtwSat} object}
+\item{object}{A \link[dtwSat]{dtwSat-class} object}
 }
 \value{
-An object of class \code{data.frame}
+An object of class \link[base]{data.frame}
 }
 \description{
 This function retrieves the alignments
-in the object \link[dtwSat]{dtwSat}
+in the object \link[dtwSat]{dtwSat-class}
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
-             alpha = 0.1, beta = 50, alignments=4)
+alig = dtwSat(query.list[["Soybean"]], template)
 getAlignments(alig)
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{dtwSat}} and \code{\link[dtwSat]{twdtw}}
 }
 

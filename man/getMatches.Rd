@@ -8,10 +8,15 @@
 getMatches(object)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{dtwSat} object}
+\item{object}{A \link[dtwSat]{dtwSat-class} object}
 }
 \value{
-object of class \code{list}
+An object of class \code{\link[base]{list}} whose
+ elements have the matching points for each alignment between
+ the query and the template time series.
+ Each element has two vectors:
+      \cr\code{index1}: matching points of the query, and
+      \cr\code{index2}: matching points of the template.
 }
 \description{
 This function retrieves the matching points
@@ -19,8 +24,7 @@ for each alignment between the \code{query} and the \code{template}.
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
-       alpha = 0.1, beta = 50, alignments=4)
+alig = dtwSat(query.list[["Soybean"]], template)
 getMatches(alig)
 }
 \author{

@@ -8,17 +8,16 @@
 dtwSat(query, template, ...)
 }
 \arguments{
-\item{query}{A \link[zoo]{zoo} object with the multidimensional time series.}
+\item{query}{A \link[zoo]{zoo} object with a query time series.}
 
-\item{template}{A \link[zoo]{zoo} object with the template time series similar
+\item{template}{A \link[zoo]{zoo} object with a template time series similar
 to \code{query}. The \code{template} must have the same number of attributes
-and be equal or longer than the \code{query},
-\emph{i.e.} \code{nrow(query)<=nrow(template)}.}
+and be equal to or longer than the \code{query},}
 
-\item{...}{see \code{\link[dtwSat]{twdtw}}}
+\item{...}{additional arguments passed to \code{\link[dtwSat]{twdtw}}}
 }
 \value{
-object of class \code{\link[dtwSat]{dtwSat-class}}
+An object of class \link[dtwSat]{dtwSat-class}
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW
@@ -27,14 +26,13 @@ a time series.
 }
 \examples{
 names(query.list)
-alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
-       alpha = 0.1, beta = 50, alignments=4)
+alig = dtwSat(query.list[["Soybean"]], template)
 alig
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{mtwdtw}}
+\code{\link[dtwSat]{twdtw}} and \code{\link[dtwSat]{mtwdtw}}
 }
 

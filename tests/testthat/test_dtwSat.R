@@ -41,12 +41,12 @@ gp1
 
 
 # Plot alignment
-gp2 = plot(alig, type="alignment", dimension="evi", alignment=1, shift=0.5)
+gp2 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
 gp2
 
 
 # Wavelet filter
-sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
+sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
                       boundary = "periodic")
 
 
@@ -81,8 +81,8 @@ malig
 # library(grid)
 # 
 # # Plot alignments
-# gp1 = plotAlignment(alig, dimension="evi", alignment=1, shift=0.5)
-# gp2 = plotAlignment(alig, dimension="evi", alignment=2, shift=0.5)
+# gp1 = plotAlignment(alig, attribute="evi", alignment=1, shift=0.5)
+# gp2 = plotAlignment(alig, attribute="evi", alignment=2, shift=0.5)
 # gp = arrangeGrob(gp1 + ggtitle("Alignment 1") + 
 #                       theme(axis.title.x=element_blank(),
 #                       legend.position="none"),

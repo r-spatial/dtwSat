@@ -20,29 +20,44 @@
 #' @name dtwSat-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
-#' @description Class for Multidimensional Time-Weighted DTW
+#' @description Class for Multidimensional Time-Weighted DTW alignments
 #' 
 #' 
 #' @section Slots :
 #' \describe{
-#'  \item{\code{call}:}{Object of class \code{call} see 
+#'  \item{\code{call}:}{An object of class \code{\link[base]{call}}, see 
 #'  \code{\link[base]{match.call}}.}
-#'  \item{\code{alignments}:}{A named \code{list} where each node has one 
-#'      attribute whose lengths are identical to the number of 
-#' 	    alignments. The attributes are:  
-#' 	    \code{from} the alignment starts,
-#' 	    \code{to} the alignment ends,
-#' 	    \code{distance} the DTW distance, and
-#' 	    \code{normalizedDistance} the normalized DTW distance.
-#'  }
-#'  \item{\code{mapping}:}{ Object of class \code{list} where each node 
-#'  has the matching points between the query and the template time series.}
-#' 	\item{\code{internals}:}{ Object of class \code{list} similar to 
-#' 	the \code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
+#'  \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements 
+#'  have length identical to the number of alignments.
+#'  The elements are:  
+#'       \cr\code{from}: starting indices,
+#'       \cr\code{to}: ending indices,
+#' 	     \cr\code{distance}: TWDTW distances, and
+#' 	     \cr\code{normalizedDistance}: normalized DTW distances.
+#'        }
+#'  \item{\code{mapping}:}{An object of class \code{\link[base]{list}} whose 
+#'  elements have the matching points for each alignment between 
+#'  the query and the template time series. 
+#'  Each element has two vectors: 
+#'       \cr\code{index1}: matching points of the query, and
+#'       \cr\code{index2}: matching points of the template.
+#'       }
+#' 	\item{\code{internals}:}{An object of class \code{\link[base]{list}} whose 
+#'   elements have the internal structures used by \code{\link[dtwSat]{twdtw}}. 
+#'   The elements are: 
+#'       \cr\code{costMatrix}: the cumulative cost matrix,
+#'       \cr\code{stepPattern}: the \code{\link[dtw]{stepPattern}} used for the 
+#'       computation, see package \code{\link[dtw]{dtw}},
+#'       \cr\code{N}: query length
+#'       \cr\code{M}: reference length
+#'       \cr\code{query}: the query time series, and
+#'       \cr\code{template}: the reference time series.
+#'       }
 #' }
 #' 
 #' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}
+#' \code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}},
+#' \code{\link[dtw]{stepPattern}}, and \code{\link[dtw]{dtw}}.
 #' 
 #' @import methods
 #' @import dtw
@@ -134,21 +149,19 @@ setMethod("show",
 #' analysis and retrieves one or more possible alignments of a query within 
 #' a time series.
 #' 
-#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
-#' @param template A \link[zoo]{zoo} object with the template time series similar 
+#' @param query A \link[zoo]{zoo} object with a query time series.
+#' @param template A \link[zoo]{zoo} object with a template time series similar 
 #' to \code{query}. The \code{template} must have the same number of attributes
-#' and be equal or longer than the \code{query}, 
-#' \emph{i.e.} \code{nrow(query)<=nrow(template)}.
-#' @param ... see \code{\link[dtwSat]{twdtw}}
+#' and be equal to or longer than the \code{query}, 
+#' @param ... additional arguments passed to \code{\link[dtwSat]{twdtw}}
 #' @docType methods
-#' @return object of class \code{\link[dtwSat]{dtwSat-class}} 
+#' @return An object of class \link[dtwSat]{dtwSat-class}
 #'  
-#' @seealso \code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{mtwdtw}}
+#' @seealso \code{\link[dtwSat]{twdtw}} and \code{\link[dtwSat]{mtwdtw}}
 #' 
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
-#'        alpha = 0.1, beta = 50, alignments=4)
+#' alig = dtwSat(query.list[["Soybean"]], template)
 #' alig
 #' @export
 #' @name dtwSat
@@ -163,18 +176,17 @@ setGeneric("dtwSat",
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the alignments 
-#' in the object \link[dtwSat]{dtwSat}
+#' in the object \link[dtwSat]{dtwSat-class}
 #' 
-#' @param object A \link[dtwSat]{dtwSat} object
+#' @param object A \link[dtwSat]{dtwSat-class} object
 #' @docType methods
-#' @return An object of class \code{data.frame}
+#' @return An object of class \link[base]{data.frame}
 #' 
-#' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+#' @seealso \code{\link[dtwSat]{dtwSat}} and \code{\link[dtwSat]{twdtw}}
 #' 
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
-#'              alpha = 0.1, beta = 50, alignments=4)
+#' alig = dtwSat(query.list[["Soybean"]], template)
 #' getAlignments(alig)
 #' @export
 setGeneric("getAlignments", 
@@ -189,16 +201,20 @@ setGeneric("getAlignments",
 #' @description This function retrieves the matching points 
 #' for each alignment between the \code{query} and the \code{template}.
 #' 
-#' @param object A \link[dtwSat]{dtwSat} object
+#' @param object A \link[dtwSat]{dtwSat-class} object
 #' @docType methods
-#' @return object of class \code{list}
+#' @return An object of class \code{\link[base]{list}} whose 
+#'  elements have the matching points for each alignment between 
+#'  the query and the template time series. 
+#'  Each element has two vectors: 
+#'       \cr\code{index1}: matching points of the query, and
+#'       \cr\code{index2}: matching points of the template.
 #' 
 #' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
 #' 
 #' @examples
 #' names(query.list)
-#' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
-#'        alpha = 0.1, beta = 50, alignments=4)
+#' alig = dtwSat(query.list[["Soybean"]], template)
 #' getMatches(alig)
 #' @export
 setGeneric("getMatches", 

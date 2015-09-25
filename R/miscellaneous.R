@@ -22,14 +22,14 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a smoothing algorithm to
-#' the time series. It computes the a discreat wavelet 
+#' the time series. It computes a discreat wavelet 
 #' smoothing for each dimension in the imput time series.
 #' 
-#' @param x A \code{zoo} object with the time series
-#' @param timeline A vector od dates for the output time series.
-#' It must have regular frequency. 
+#' @param x A \code{\link[zoo]{zoo}} object with the time series
+#' @param timeline A vector of dates for the output time series.
+#' It must have a regular frequency. 
 #' @param frequency The frequncy for the output time series
-#' @param wf Name of the wavelet filter to use in the decomposition. 
+#' @param wf Name of the wavelet filter used in the decomposition. 
 #' Default is "la8"
 #' @param J Specifies the depth of the decomposition. This must be a number 
 #' less than or equal to log(length(x),2). Default is 1

@@ -23,10 +23,10 @@
 #' @description This function performs a multidimensional Time-Weighted DTW 
 #' analysis and retrieves the alignments of a query within a time series.
 #' 
-#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
-#' @param template A \link[zoo]{zoo} object with the template time series similar 
+#' @param query A \link[zoo]{zoo} object with a query time series.
+#' @param template A \link[zoo]{zoo} object with a template time series similar 
 #' to \code{query}. The \code{template} must have the same number of attributes
-#' and be equal or longer than the \code{query}, 
+#' and be equal to or longer than the \code{query}, 
 #' \emph{i.e.} \code{nrow(query)<=nrow(template)}.
 #' @param weight A character. ''linear'' for linear weight or ''logistic'' 
 #' for logistic weight. Default is NULL that runs the original dtw method,
@@ -42,11 +42,11 @@
 #' perform. NULL will return all possible alignments. 
 #' @param step.matrix see \code{\link[dtw]{stepPattern}} in package \pkg{dtw}
 #' @param window.function see parameter \code{window.type} in \code{\link[dtw]{dtw}} 
-#' @param keep preserve the cost matrix, inputs, and other internal structures. 
+#' @param keep preserves the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE
 #' @param ... other parameters
 #' @docType methods
-#' @return object of class \code{\link[dtwSat]{dtwSat-class}} 
+#' @return An object of class \code{\link[dtwSat]{dtwSat-class}} 
 #'  
 #' @seealso \code{\link[dtwSat]{mtwdtw}}, \code{\link[dtwSat]{dtwSat-class}}
 #' 
@@ -85,17 +85,16 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' @description The function performs the Time-Weighted DTW for a list 
 #' of queries
 #' 
-#' @param query A \link[zoo]{zoo} object with the multidimensional time series.
-#' @param template A \link[zoo]{zoo} object with the template time series similar 
+#' @param query A \link[zoo]{zoo} object with a query time series.
+#' @param template A \link[zoo]{zoo} object with a template time series similar 
 #' to \code{query}. The \code{template} must have the same number of attributes
-#' and be equal or longer than the \code{query}, 
-#' \emph{i.e.} \code{nrow(query)<=nrow(template)}.
-#' @param ... see \code{\link[dtwSat]{twdtw}}
+#' and be equal to or longer than the \code{query}, 
+#' @param ... additional arguments passed to \code{\link[dtwSat]{twdtw}}
 #' @docType methods
-#' @return obaject of class \code{data.frame} with alignment attributes
+#' @return An object of class \link[base]{data.frame} with alignment attributes
 #'  
 #' @seealso \code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{dtwSat-class}}
-#' @seealso This function calls a C code to compute the cost mtrix. The C 
+#' @seealso This function calls a C code to compute a cost matrix. The C 
 #' function is internal in the R package \code{\link[dtw]{dtw}} developed 
 #' by Toni Giorgino. 
 #' @examples
@@ -152,7 +151,7 @@ mtwdtw = function(query, template, ...){
   internals = .computeCM(wm, delta, cm, step.matrix)
   internals$stepPattern = step.matrix
   internals$costMatrix = internals$costMatrix[-1,]
-  internals$directionMatrix = internals$directionMatrix[-1,]
+#   internals$directionMatrix = internals$directionMatrix[-1,]
   internals$stepPattern = step.matrix
   internals$N = n-1
   internals$M = m

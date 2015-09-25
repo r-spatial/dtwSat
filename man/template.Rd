@@ -4,7 +4,7 @@
 \name{template}
 \alias{template}
 \title{Data: template time series}
-\format{A \link[zoo]{zoo} object, whose indices are Dates in the
+\format{A \link[zoo]{zoo} object, whose indices are dates in the
 format "yyyy-mm-dd". Each node has 6 attributes: "ndvi",
 "evi", "red", "nir", "blue", "mir", and "evi2".}
 \usage{
@@ -13,7 +13,7 @@ template
 \description{
 This dataset has a template time series based on the
 MODIS product MOD13Q1 250 m 16 days. It is an irregular time series
-using the real day of each pixel from "2009-08-05" "2013-07-31".
+using the real date of each pixel from "2009-08-05" "2013-07-31".
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

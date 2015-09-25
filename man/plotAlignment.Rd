@@ -5,38 +5,38 @@
 \alias{plotAlignment}
 \title{Plotting alignments of dtwSat object}
 \usage{
-plotAlignment(x, alignment, dimension, shift = 0.5)
+plotAlignment(x, alignment, attribute = 1, shift = 0.5)
 }
 \arguments{
-\item{x}{\code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
 
-\item{alignment}{An integer, the index of the alignment}
+\item{alignment}{An integer, the index of the alignment to plot}
 
-\item{dimension}{An integer or a character with the name of the
-column in query and template to use in the plot}
+\item{attribute}{An integer or a character indicating the attribute
+for plotting, \emph{i.e.} the column of the \code{query}. Default is 1}
 
-\item{shift}{A number, it shifts the pattern position.
-Default is 0.5}
+\item{shift}{A number, it shifts the pattern position in the \code{x}
+direction. Default is 0.5}
 }
 \value{
-object of class \code{\link[ggplot2]{ggplot}}
+object of class \link[ggplot2]{ggplot}
 }
 \description{
-Method for plotting the alignments in the cost
-matrix of the \code{\link[dtwSat]{dtwSat-class}} objects.
+Method for plotting the alignments of
+Time-Weighted DTW analysis.
 }
 \examples{
 names(query.list)
 alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
        alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
-gp = plotAlignment(alig, dimension="evi", alignment=1, shift=0.5)
+gp = plotAlignment(alig, attribute="evi", alignment=1, shift=0.5)
 gp
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}, and
 \code{\link[dtwSat]{plotPath}}
 }
 

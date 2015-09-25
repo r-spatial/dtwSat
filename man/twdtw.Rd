@@ -10,11 +10,11 @@ twdtw(query, template, weight = NULL, dist.method = "Euclidean",
   step.matrix = symmetric1, window.function = noWindow, keep = FALSE, ...)
 }
 \arguments{
-\item{query}{A \link[zoo]{zoo} object with the multidimensional time series.}
+\item{query}{A \link[zoo]{zoo} object with a query time series.}
 
-\item{template}{A \link[zoo]{zoo} object with the template time series similar
+\item{template}{A \link[zoo]{zoo} object with a template time series similar
 to \code{query}. The \code{template} must have the same number of attributes
-and be equal or longer than the \code{query},
+and be equal to or longer than the \code{query},
 \emph{i.e.} \code{nrow(query)<=nrow(template)}.}
 
 \item{weight}{A character. ''linear'' for linear weight or ''logistic''
@@ -39,13 +39,13 @@ perform. NULL will return all possible alignments.}
 
 \item{window.function}{see parameter \code{window.type} in \code{\link[dtw]{dtw}}}
 
-\item{keep}{preserve the cost matrix, inputs, and other internal structures.
+\item{keep}{preserves the cost matrix, inputs, and other internal structures.
 Default is FALSE}
 
 \item{...}{other parameters}
 }
 \value{
-object of class \code{\link[dtwSat]{dtwSat-class}}
+An object of class \code{\link[dtwSat]{dtwSat-class}}
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW

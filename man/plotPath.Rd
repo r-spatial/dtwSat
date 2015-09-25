@@ -8,14 +8,15 @@
 plotPath(x, normalize = FALSE, show.dist = FALSE, shift = c(-4, -1))
 }
 \arguments{
-\item{x}{\code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
 
-\item{normalize}{Normalized distance. Default is FALSE}
+\item{normalize}{Plot normalized distance. Default is FALSE}
 
 \item{show.dist}{Display dtw distance for each alignment}
 
-\item{shift}{A vector whose values shift the position of the text
-in the plot. Argument Used with show.dist.}
+\item{shift}{A vector of length 2. These values shift the position
+of the text in \code{x} and \code{y}, respectively. Argument used
+with show.dist.}
 }
 \value{
 object of class \code{\link[ggplot2]{ggplot}}
@@ -23,8 +24,8 @@ object of class \code{\link[ggplot2]{ggplot}}
 #'
 }
 \description{
-Method for plotting the paths in the cost matrix
-of the \code{\link[dtwSat]{dtwSat-class}} objects.
+Method for plotting the minimum paths in the
+cost matrix of Time-Weighted DTW.
 }
 \examples{
 names(query.list)

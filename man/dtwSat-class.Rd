@@ -4,25 +4,39 @@
 \alias{dtwSat-class}
 \title{dtwSat-class}
 \description{
-Class for Multidimensional Time-Weighted DTW
+Class for Multidimensional Time-Weighted DTW alignments
 }
 \section{Slots }{
 
 \describe{
- \item{\code{call}:}{Object of class \code{call} see
+ \item{\code{call}:}{An object of class \code{\link[base]{call}}, see
  \code{\link[base]{match.call}}.}
- \item{\code{alignments}:}{A named \code{list} where each node has one
-     attribute whose lengths are identical to the number of
-	    alignments. The attributes are:
-	    \code{from} the alignment starts,
-	    \code{to} the alignment ends,
-	    \code{distance} the DTW distance, and
-	    \code{normalizedDistance} the normalized DTW distance.
- }
- \item{\code{mapping}:}{ Object of class \code{list} where each node
- has the matching points between the query and the template time series.}
-	\item{\code{internals}:}{ Object of class \code{list} similar to
-	the \code{\link[dtw]{dtw}} class from package \pkg{dtw}.}
+ \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements
+ have length identical to the number of alignments.
+ The elements are:
+      \cr\code{from}: starting indices,
+      \cr\code{to}: ending indices,
+	     \cr\code{distance}: TWDTW distances, and
+	     \cr\code{normalizedDistance}: normalized DTW distances.
+       }
+ \item{\code{mapping}:}{An object of class \code{\link[base]{list}} whose
+ elements have the matching points for each alignment between
+ the query and the template time series.
+ Each element has two vectors:
+      \cr\code{index1}: matching points of the query, and
+      \cr\code{index2}: matching points of the template.
+      }
+	\item{\code{internals}:}{An object of class \code{\link[base]{list}} whose
+  elements have the internal structures used by \code{\link[dtwSat]{twdtw}}.
+  The elements are:
+      \cr\code{costMatrix}: the cumulative cost matrix,
+      \cr\code{stepPattern}: the \code{\link[dtw]{stepPattern}} used for the
+      computation, see package \code{\link[dtw]{dtw}},
+      \cr\code{N}: query length
+      \cr\code{M}: reference length
+      \cr\code{query}: the query time series, and
+      \cr\code{template}: the reference time series.
+      }
 }
 }
 \author{
@@ -30,6 +44,7 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
-\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}
+\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}},
+\code{\link[dtw]{stepPattern}}, and \code{\link[dtw]{dtw}}.
 }
 

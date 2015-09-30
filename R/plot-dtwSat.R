@@ -26,11 +26,10 @@
 #' 
 #' @param x A \code{\link[dtwSat]{dtwSat-class}} object
 #' @param type A character for the plot type, ''path'', ''alignment'', or 
-#' ''classify''
+#' ''classify''. Default is "path"
 #' @param ... additional arguments passed to plotting functions
 #' \code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}, and 
 #' \code{\link[dtwSat]{plotClassify}}
-#' Default is "path"
 #' 
 #' @return object of class \link[ggplot2]{ggplot}
 #' 
@@ -88,11 +87,11 @@ setMethod("plot",
 #' @param show.dist Display dtw distance for each alignment 
 #' @param shift A vector of length 2. These values shift the position
 #' of the text in \code{x} and \code{y}, respectively. Argument used 
-#' with show.dist.
+#' with show.dist
 #' @docType methods
 #' @return object of class \code{\link[ggplot2]{ggplot}}
 #' 
-#' #' @seealso  \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{plotAlignment}}, 
+#' @seealso  \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{plotAlignment}}, 
 #' and \code{\link[dtwSat]{plotClassify}}
 #' 
 #' @examples
@@ -242,11 +241,12 @@ plotAlignment = function(x, alignment, attribute=1, shift=0.5){
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Method for plotting the classification of 
-#' intervals
+#' time intervals
 #' 
 #' @param x An \code{\link[dtwSat]{dtwSat-class}} object
-#' @param attribute An integer or a character indicating the attribute 
-#' for plotting, \emph{i.e.} the column of the \code{query}. Default is 1
+#' @param attr A vector with of integer or a character indicating 
+#' the attributes for plotting, \emph{i.e.} the column of the \code{query}. 
+#' Default is 1
 #' @param ... additional arguments passed to \code{\link[dtwSat]{classfyIntervals}}
 #' 
 #' @return object of class \link[ggplot2]{ggplot}
@@ -258,25 +258,29 @@ plotAlignment = function(x, alignment, attribute=1, shift=0.5){
 #' malig = mtwdtw(query.list, template, weight = "logistic", 
 #'                alpha = 0.1, beta = 100)
 #' 
-#' gp = plotClassify(x=malig, attribute="evi", from=as.Date("2009-09-01"),  
+#' gp = plotClassify(x=malig, attr=c("ndvi","evi"), from=as.Date("2009-09-01"),  
 #'              to=as.Date("2013-09-01"), by = "6 month",
 #'              normalized=TRUE, overlap=.7)
 #' gp
 #' 
 #' @export
-plotClassify = function(x, attribute=1, ...){
+plotClassify = function(x, attr=NULL, ...){
   
   ## Get data
   internals = getInternals(x)
   best_class = classfyIntervals(x, ...)
-  
   tx = index(internals$template)
   
-  xx = internals$template[,attribute]
+  xx = internals$template
+  if(!is.null(attr))
+    xx = internals$template[,attr]
+  df.ts = melt(data.frame(Time=index(xx), xx), id="Time")
+  if(is.null(df.ts$variable))
+    df.ts$variable = names(internals$template)[attr]
+  if(length(attr)==1 | any(is.na(df.ts$variable)))
+    df.ts$variable = attr
   
-  df.ts = data.frame(Time=tx, value=xx)
-
-  y.labels = pretty_breaks()(range(xx))
+  y.labels = pretty_breaks()(range(df.ts$value))
   y.breaks = y.labels
   df.pol = do.call("rbind", lapply(1:nrow(best_class), function(i){
     data.frame(
@@ -287,18 +291,15 @@ plotClassify = function(x, attribute=1, ...){
   }))
   df.pol$Group = factor(df.pol$Group)
   df.pol$Query = factor(df.pol$Query)
-
-  if(!is(attribute,"character"))
-    attribute="Value"
-
+    
   gp = ggplot() +
     geom_polygon(data=df.pol, aes_string(x='Time', y='value', 
                                          group='Group', fill='Query'), alpha=.7) +
     scale_fill_brewer(palette="Set3") + 
-    geom_line(data=df.ts, aes_string(x='Time', y='value')) +
+    geom_line(data=df.ts, aes_string(x='Time', y='value', colour='variable')) +
     scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=y.labels) +
     scale_x_date(breaks=waiver(), labels=waiver()) +
-    ylab(toupper(attribute)) + 
+    ylab("Value") + 
     xlab("Time")
   gp
 }

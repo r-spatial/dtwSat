@@ -30,6 +30,7 @@
 #'  \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements 
 #'  have length identical to the number of alignments.
 #'  The elements are:  
+#'       \cr\code{query}: a query identification,
 #'       \cr\code{from}: starting dates,
 #'       \cr\code{to}: ending dates,
 #' 	     \cr\code{distance}: TWDTW distances, and
@@ -104,6 +105,7 @@ setMethod("initialize",
     function(.Object, call, internals, alignments, mapping){
       .Object@call = new("call")
       .Object@alignments = list(
+                                query=numeric(0), 
                                 from=numeric(0), 
                                 to=numeric(0), 
                                 distance=numeric(0), 
@@ -156,10 +158,10 @@ setMethod("show",
 #' analysis and retrieves one or more possible alignments of a query within 
 #' a time series.
 #' 
-#' @param query A \link[zoo]{zoo} object with a query time series.
+#' @param query A \link[zoo]{zoo} object with a query time series
 #' @param template A \link[zoo]{zoo} object with a template time series similar 
 #' to \code{query}. The \code{template} must have the same number of attributes
-#' and be equal to or longer than the \code{query}, 
+#' and be equal to or longer than the \code{query}
 #' @param ... additional arguments passed to \code{\link[dtwSat]{twdtw}}
 #' @docType methods
 #' @return An object of class \link[dtwSat]{dtwSat-class}
@@ -206,16 +208,16 @@ setGeneric("getAlignments",
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the matching points 
-#' for each alignment between the \code{query} and the \code{template}.
+#' for each alignment between the \code{query} and the \code{template}
 #' 
 #' @param object A \link[dtwSat]{dtwSat-class} object
 #' @docType methods
 #' @return An object of class \code{\link[base]{list}} whose 
 #'  elements have the matching points for each alignment between 
-#'  the query and the template time series. 
+#'  the query and the template time series.
 #'  Each element has two vectors: 
 #'       \cr\code{index1}: matching points of the query, and
-#'       \cr\code{index2}: matching points of the template.
+#'       \cr\code{index2}: matching points of the template
 #' 
 #' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
 #' 

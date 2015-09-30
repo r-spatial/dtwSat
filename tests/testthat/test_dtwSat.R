@@ -83,13 +83,10 @@ best_class
 malig = mtwdtw(query.list, template, weight = "logistic", 
                alpha = 0.1, beta = 100)
  
-gp = plotClassify(x=malig, attribute="evi", from=as.Date("2009-09-01"),  
+gp = plotClassify(x=malig, from=as.Date("2009-09-01"),  
               to=as.Date("2013-09-01"), by = "6 month",
               normalized=TRUE, overlap=.7) 
 gp
-# library(grid)
-# gp$theme$legend.position = "bottom"
-# gp$plot.margin = unit(c(0.1,0.1,0,0), "cm")
 # ggsave("classify.png", plot=gp, width = 8.9, height=5.9/1.5, units="in",
 #         family="Helvetica", type = "cairo-png")
 

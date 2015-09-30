@@ -128,7 +128,7 @@ createTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16){
 
 #' @title Get dates from year and day of the year
 #' 
-#' @description The function retrieves the date corresponding to year 
+#' @description This function retrieves the date corresponding to year 
 #' and day of the year
 #' 
 #' @param year An vector with the years
@@ -195,7 +195,7 @@ getModisTimeIndex = function(date, frequency=16){
 #' @param from A \code{\link[base]{Date}} object
 #' @param by A character with the intevals size, \emph{e.g.} ''6 month''
 #' @param to A \code{\link[base]{Date}} object
-#' @param breaks A \code{\link[base]{Date}} object
+#' @param breaks A vector of class \code{\link[base]{Date}}
 #' @param normalized Use normalized TWDTW distance. Default is TRUE
 #' @param overlap A number between 0 and 1. The minimum overlapping 
 #' between the one alignment and the interval of classification. 
@@ -203,7 +203,8 @@ getModisTimeIndex = function(date, frequency=16){
 #' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
 #' cost for consideration. Default is \code{Inf}
 #' @docType methods
-#' @return object of class \code{\link[base]{data.frame}} 
+#' @return object of class \code{\link[base]{data.frame}} with the best alignment 
+#' for each interval
 #' @examples
 #' malig = mtwdtw(query.list, template, weight = "logistic", 
 #'          alpha = 0.1, beta = 100)

@@ -83,13 +83,13 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' @title Performs multiple Time-Weighted DTW 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description The function performs the Time-Weighted DTW for a list 
+#' @description This function performs the Time-Weighted DTW for a list 
 #' of queries
 #' 
-#' @param query A \link[zoo]{zoo} object with a query time series.
+#' @param query A \link[zoo]{zoo} object with a query time series
 #' @param template A \link[zoo]{zoo} object with a template time series similar 
 #' to \code{query}. The \code{template} must have the same number of attributes
-#' and be equal to or longer than the \code{query}, 
+#' and be equal to or longer than the \code{query}
 #' @param ... additional arguments passed to \code{\link[dtwSat]{twdtw}}
 #' @docType methods
 #' @return An object of class \link[dtwSat]{dtwSat-class} without \code{internals} 

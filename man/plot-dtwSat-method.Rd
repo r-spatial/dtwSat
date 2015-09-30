@@ -10,10 +10,12 @@
 \arguments{
 \item{x}{A \code{\link[dtwSat]{dtwSat-class}} object}
 
-\item{type}{A character for the plot type, "path" or "alignment"}
+\item{type}{A character for the plot type, ''path'', ''alignment'', or
+''classify''}
 
 \item{...}{additional arguments passed to plotting functions
-\code{\link[dtwSat]{plotPath}} and \code{\link[dtwSat]{plotAlignment}}.
+\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}, and
+\code{\link[dtwSat]{plotClassify}}
 Default is "path"}
 }
 \value{
@@ -26,7 +28,7 @@ Time-Weighted DTW analysis
 \examples{
 names(query.list)
 alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
-       alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+       alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
 
 ## Plot path
 gp1 = plot(alig, type="path", normalize=TRUE, show.dist = TRUE)
@@ -35,12 +37,19 @@ gp1
 ## Plot alignment
 gp2 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
 gp2
+
+## Plot classification
+gp = plot(alig, type="classify", attribute="evi",
+         from=as.Date("2009-09-01"),  to=as.Date("2013-09-01"),
+         by = "6 month", normalized=TRUE, overlap=.7)
+gp
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
-\code{\link[dtwSat]{plotPath}}, and \code{\link[dtwSat]{plotAlignment}}
+\code{\link[dtwSat]{dtwSat-class}}, \code{\link[dtwSat]{dtwSat}},
+\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}, and
+\code{\link[dtwSat]{plotClassify}}
 }
 

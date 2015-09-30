@@ -44,7 +44,7 @@
 #' @param window.function see parameter \code{window.type} in \code{\link[dtw]{dtw}} 
 #' @param keep preserves the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE
-#' @param ... other parameters
+#' @param query.name A query identification.
 #' @docType methods
 #' @return An object of class \code{\link[dtwSat]{dtwSat-class}} 
 #'  
@@ -52,15 +52,16 @@
 #' 
 #' @examples
 #' names(query.list)
-#' alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", 
-#'        alpha = 0.1, beta = 50, alignments=4)
+#' query.name = "Soybean"
+#' alig = twdtw(query.list[[query.name]], template, weight = "logistic", 
+#'        alpha = 0.1, beta = 100, alignments=4, query.name=query.name)
 #' alig
 #' 
 #' @export
 twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
                   step.matrix = symmetric1, window.function = noWindow,
-                  keep=FALSE, ...)
+                  keep=FALSE, query.name=NULL)
 {
 
   if(!is.zoo(query))
@@ -75,7 +76,7 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
     stop("Index in template should be of class Date.")
 
   .twdtw(query, template, weight, dist.method, theta, alpha, 
-         beta, alignments, step.matrix, window.function, keep, ...)
+         beta, alignments, step.matrix, window.function, keep, query.name)
   
 }
 
@@ -91,15 +92,13 @@ twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
 #' and be equal to or longer than the \code{query}, 
 #' @param ... additional arguments passed to \code{\link[dtwSat]{twdtw}}
 #' @docType methods
-#' @return An object of class \link[base]{data.frame} with alignment attributes
-#'  
+#' @return An object of class \link[dtwSat]{dtwSat-class} without \code{internals} 
+#' or \code{mapping}
+#'
 #' @seealso \code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{dtwSat-class}}
-#' @seealso This function calls a C code to compute a cost matrix. The C 
-#' function is internal in the R package \code{\link[dtw]{dtw}} developed 
-#' by Toni Giorgino. 
 #' @examples
 #' alig = mtwdtw(query.list, template, weight = "logistic", 
-#'        alpha = 0.1, beta = 50)
+#'        alpha = 0.1, beta = 100)
 #' alig
 #' 
 #' @export
@@ -109,14 +108,16 @@ mtwdtw = function(query, template, ...){
   if(!any(unlist(lapply(query, is, "zoo"))))
     stop("query is not a list of zoo objects.")
   
-  query.names = names(query)
-  if(is.null(query.names))
-    query.names = seq_along(query)
+  query_names = names(query)
+  if(is.null(query_names))
+    query_names = seq_along(query)
   
-  res = do.call("rbind", lapply(query.names, function(i){
-    data.frame(query=i, twdtw(query[[i]], template)@alignments)
+  res = new("dtwSat")
+  res@internals$template = template
+  res@alignments = do.call("rbind", lapply(query_names, function(i){
+    alig = twdtw(query=query[[i]], template=template, query.name=i, ...)
+    getAlignments(alig)
   }))
-  
   res
 }
 
@@ -124,7 +125,7 @@ mtwdtw = function(query, template, ...){
 .twdtw =  function(query, template, weight=NULL, dist.method="Euclidean",
                   theta=NULL, alpha=NULL, beta=NULL, alignments=NULL, 
                   step.matrix = symmetric1, window.function = noWindow,
-                  keep=FALSE, ...)
+                  keep=FALSE, query.name=NULL)
 {
 
   # Local cost
@@ -151,7 +152,6 @@ mtwdtw = function(query, template, ...){
   internals = .computeCM(wm, delta, cm, step.matrix)
   internals$stepPattern = step.matrix
   internals$costMatrix = internals$costMatrix[-1,]
-#   internals$directionMatrix = internals$directionMatrix[-1,]
   internals$stepPattern = step.matrix
   internals$N = n-1
   internals$M = m
@@ -183,9 +183,13 @@ mtwdtw = function(query, template, ...){
     startPoints = unlist(lapply(mapping, function(map){
       return(map$index2[1])
     }))
+
+    if(is.null(query.name))
+      query.name = 1
     
-    alignments = list(from  = startPoints,
-                      to    = endPoints,
+    alignments = list(query = query.name,
+                      from  = index(template)[startPoints],
+                      to    = index(template)[endPoints],
                       distance           = d[endPoints],
                       normalizedDistance = d[endPoints] / length(query),                      
                       stringsAsFactors = FALSE)

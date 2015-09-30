@@ -30,8 +30,8 @@
 #'  \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements 
 #'  have length identical to the number of alignments.
 #'  The elements are:  
-#'       \cr\code{from}: starting indices,
-#'       \cr\code{to}: ending indices,
+#'       \cr\code{from}: starting dates,
+#'       \cr\code{to}: ending dates,
 #' 	     \cr\code{distance}: TWDTW distances, and
 #' 	     \cr\code{normalizedDistance}: normalized DTW distances.
 #'        }
@@ -66,11 +66,11 @@
 #' @importFrom reshape2 melt
 #' @importFrom graphics plot
 #' @importFrom waveslim mra
-#' @importFrom ggplot2 ggplot geom_line geom_point geom_path geom_raster xlab ylab scale_x_continuous scale_y_continuous scale_x_date scale_y_date annotate scale_fill_gradientn aes_string waiver
+#' @importFrom ggplot2 ggplot geom_line geom_point geom_path geom_raster geom_polygon xlab ylab scale_x_continuous scale_y_continuous scale_x_date scale_y_date scale_fill_brewer annotate scale_fill_gradientn aes_string waiver
 #' @importFrom scales pretty_breaks
 #' @useDynLib dtwSat computeCM
 #' @importFrom grDevices terrain.colors
-#' @importFrom utils tail
+#' @importFrom utils tail head
 #'
 NULL
 dtwSat = setClass(
@@ -111,7 +111,14 @@ setMethod("initialize",
       .Object@mapping =    list(
                                 index1 = numeric(0), 
                                 index2 = numeric(0))
-      .Object@internals =  list()
+      .Object@internals =  list(
+                                costMatrix = matrix(0),
+                                stepPattern = numeric(0),
+                                N = numeric(0),
+                                M = numeric(0),
+                                query = numeric(0),
+                                template = numeric(0)
+                                )
       if(!missing(call))
         .Object@call = call
       if(!missing(alignments))
@@ -130,7 +137,7 @@ setMethod("show",
           definition = function(object){
             cat("Time-Weighted DTW alignment object\n")
             cat("Alignments:\n")
-            print(getAlignments(object))
+            print(head(getAlignments(object)))
             invisible(NULL)
           }
 )
@@ -224,5 +231,36 @@ setGeneric("getMatches",
 )
 
 
+
+#' @title Get internals from dtwSat object
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function retrieves cost matrix, inputs, and other 
+#' internal structures from dtwSat-class object
+#' 
+#' @param object A \link[dtwSat]{dtwSat-class} object
+#' @docType methods
+#' @return An object of class \code{\link[base]{list}} whose 
+#'  elements are internals from \link[dtwSat]{dtwSat-class} object 
+#'       \cr\code{costMatrix}: the cumulative cost matrix,
+#'       \cr\code{stepPattern}: the \code{\link[dtw]{stepPattern}} used for the 
+#'       computation, see package \code{\link[dtw]{dtw}},
+#'       \cr\code{N}: query length
+#'       \cr\code{M}: reference length
+#'       \cr\code{query}: the query time series, and
+#'       \cr\code{template}: the reference time series.
+#' 
+#' @seealso \code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+#' 
+#' @examples
+#' names(query.list)
+#' alig = dtwSat(query.list[["Soybean"]], template, keep=TRUE)
+#' getInternals(alig)
+#' @export
+setGeneric("getInternals", 
+           function(object){
+             object@internals
+           }
+)
 
 

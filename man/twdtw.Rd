@@ -7,7 +7,8 @@
 \usage{
 twdtw(query, template, weight = NULL, dist.method = "Euclidean",
   theta = NULL, alpha = NULL, beta = NULL, alignments = NULL,
-  step.matrix = symmetric1, window.function = noWindow, keep = FALSE, ...)
+  step.matrix = symmetric1, window.function = noWindow, keep = FALSE,
+  query.name = NULL)
 }
 \arguments{
 \item{query}{A \link[zoo]{zoo} object with a query time series.}
@@ -42,7 +43,7 @@ perform. NULL will return all possible alignments.}
 \item{keep}{preserves the cost matrix, inputs, and other internal structures.
 Default is FALSE}
 
-\item{...}{other parameters}
+\item{query.name}{A query identification.}
 }
 \value{
 An object of class \code{\link[dtwSat]{dtwSat-class}}
@@ -53,8 +54,9 @@ analysis and retrieves the alignments of a query within a time series.
 }
 \examples{
 names(query.list)
-alig = twdtw(query.list[["Soybean"]], template, weight = "logistic",
-       alpha = 0.1, beta = 50, alignments=4)
+query.name = "Soybean"
+alig = twdtw(query.list[[query.name]], template, weight = "logistic",
+       alpha = 0.1, beta = 100, alignments=4, query.name=query.name)
 alig
 }
 \author{

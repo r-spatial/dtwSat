@@ -5,12 +5,16 @@
 \alias{plotPath}
 \title{Plotting paths of dtwSat object}
 \usage{
-plotPath(x, normalize = FALSE, show.dist = FALSE, shift = c(-4, -1))
+plotPath(x, normalize = FALSE, alignments = NULL, show.dist = FALSE,
+  shift = c(-4, -1))
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
 
 \item{normalize}{Plot normalized distance. Default is FALSE}
+
+\item{alignments}{A vector. The alignment indices to
+plot. NULL will plot all possible alignments}
 
 \item{show.dist}{Display dtw distance for each alignment}
 
@@ -25,12 +29,12 @@ object of class \code{\link[ggplot2]{ggplot}}
 }
 \description{
 Method for plotting the minimum paths in the
-cost matrix of Time-Weighted DTW.
+cost matrix of Time-Weighted DTW
 }
 \examples{
 names(query.list)
 alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic",
-       alpha = 0.1, beta = 50, alignments = 4, keep = TRUE)
+       alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
 gp = plotPath(alig, normalize=TRUE, show.dist = TRUE)
 gp
 }
@@ -38,7 +42,7 @@ gp
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}},
-\code{\link[dtwSat]{plotAlignment}}
+\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{plotAlignment}},
+and \code{\link[dtwSat]{plotClassify}}
 }
 

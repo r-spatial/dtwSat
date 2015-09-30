@@ -23,7 +23,7 @@ object of class \link[ggplot2]{ggplot}
 }
 \description{
 Method for plotting the alignments of
-Time-Weighted DTW analysis.
+Time-Weighted DTW analysis
 }
 \examples{
 names(query.list)
@@ -36,7 +36,8 @@ gp
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}, and
-\code{\link[dtwSat]{plotPath}}
+\code{\link[dtwSat]{dtwSat}},
+\code{\link[dtwSat]{plotPath}}, and
+\code{\link[dtwSat]{plotClassify}}
 }
 

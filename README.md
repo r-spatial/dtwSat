@@ -43,6 +43,22 @@ The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to me
 ![alt text](path.png "Path plot")
 
 <ol>
+   <li>Plot classification:
+ 		<code>
+			malig = mtwdtw(query.list, template, weight = "logistic", 
+               alpha = 0.1, beta = 100)
+ 
+      gp = plot(x=malig, type="classify", attribute="evi", from=as.Date("2009-09-01"),  
+              to=as.Date("2013-09-01"), by = "6 month",
+              normalized=TRUE, overlap=.7) 
+      gp
+      </code>
+  </li>
+</ol>
+![alt text](path.png "Classification plot")
+
+
+<ol>
   <li>Plot alignments: <code>
   	gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
 	gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5)
@@ -70,7 +86,7 @@ The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to me
    </li>
 </ol>
   
-![alt text](filter.png "Alignment plot")
+![alt text](filter.png "Smoothing plot")
 
 <h3>How to build the package:</h3>
 <ol>

@@ -14,8 +14,8 @@ Class for Multidimensional Time-Weighted DTW alignments
  \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements
  have length identical to the number of alignments.
  The elements are:
-      \cr\code{from}: starting indices,
-      \cr\code{to}: ending indices,
+      \cr\code{from}: starting dates,
+      \cr\code{to}: ending dates,
 	     \cr\code{distance}: TWDTW distances, and
 	     \cr\code{normalizedDistance}: normalized DTW distances.
        }

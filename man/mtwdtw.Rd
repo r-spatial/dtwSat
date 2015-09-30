@@ -17,7 +17,8 @@ and be equal to or longer than the \code{query},}
 \item{...}{additional arguments passed to \code{\link[dtwSat]{twdtw}}}
 }
 \value{
-An object of class \link[base]{data.frame} with alignment attributes
+An object of class \link[dtwSat]{dtwSat-class} without \code{internals}
+or \code{mapping}
 }
 \description{
 The function performs the Time-Weighted DTW for a list
@@ -25,7 +26,7 @@ of queries
 }
 \examples{
 alig = mtwdtw(query.list, template, weight = "logistic",
-       alpha = 0.1, beta = 50)
+       alpha = 0.1, beta = 100)
 alig
 }
 \author{
@@ -33,9 +34,5 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw}}, \code{\link[dtwSat]{dtwSat-class}}
-
-This function calls a C code to compute a cost matrix. The C
-function is internal in the R package \code{\link[dtw]{dtw}} developed
-by Toni Giorgino.
 }
 

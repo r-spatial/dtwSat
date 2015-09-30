@@ -25,6 +25,20 @@ The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to me
 
 <h3>Plot examples:</h3>
 <ol>
+  <li>Plot alignments: <code>
+  	gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
+	gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5)
+	arrangeGrob(
+		gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
+                gp2 + ggtitle("Alignment 2") + theme(legend.position="none"),
+        nrow=2)
+        gp
+        </code>
+   </li>
+</ol>
+![alt text](alig.png "Alignment plot")
+
+<ol>
  	<li>Plot path for all classese:
  		<code>
 			gp.list = lapply(query.list, function(query){
@@ -57,21 +71,6 @@ The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to me
 </ol>
 ![alt text](classify.png "Classification plot")
 
-
-<ol>
-  <li>Plot alignments: <code>
-  	gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
-	gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5)
-	arrangeGrob(
-		gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
-                gp2 + ggtitle("Alignment 2") + theme(legend.position="none"),
-        nrow=2)
-        gp
-        </code>
-   </li>
-</ol>
-  
-![alt text](alig.png "Alignment plot")
 
 <ol>
   <li>Plot alignments: <code>

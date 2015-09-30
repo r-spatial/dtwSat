@@ -55,7 +55,7 @@ The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to me
       </code>
   </li>
 </ol>
-![alt text](path.png "Classification plot")
+![alt text](classify.png "Classification plot")
 
 
 <ol>

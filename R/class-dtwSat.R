@@ -138,7 +138,7 @@ setMethod("show",
           signature = signature(object="dtwSat"),
           definition = function(object){
             cat("Time-Weighted DTW alignment object\n")
-            cat("Alignments:\n")
+            cat("Number of alignments:",nrow(getAlignments(object)),"\n")
             print(head(getAlignments(object)))
             invisible(NULL)
           }

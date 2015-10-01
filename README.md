@@ -40,7 +40,7 @@ print(alig)
 
 ```
 ## Time-Weighted DTW alignment object
-## Alignments:
+## Number of alignments: 4 
 ##   query       from         to distance normalizedDistance
 ## 1     1 2011-10-04 2012-01-28 3.956483         0.03140066
 ## 2     1 2012-10-06 2013-02-15 4.008838         0.03181617
@@ -140,16 +140,11 @@ df2 = melt(data.frame(Time=index(sy), sy), id="Time")
 gp2 = ggplot(df2, aes(x=Time, y=value, group=variable, colour=variable)) +
    		geom_line() + 
   		ylab("Value") 
-gp2
-```
 
-![plot of chunk define-demo-plot-smoothing](figure/define-demo-plot-smoothing-1.png) 
-
-```r
 grid.arrange(gp1,gp2,nrow=2)
 ```
 
-![plot of chunk define-demo-plot-smoothing](figure/define-demo-plot-smoothing-2.png) 
+![plot of chunk define-demo-plot-smoothing](figure/define-demo-plot-smoothing-1.png) 
 
 
 

@@ -104,7 +104,6 @@ df2 = melt(data.frame(Time=index(sy), sy), id="Time")
 gp2 = ggplot(df2, aes(x=Time, y=value, group=variable, colour=variable)) +
    		geom_line() + 
   		ylab("Value") 
-gp2
 
 grid.arrange(gp1,gp2,nrow=2)
 ```

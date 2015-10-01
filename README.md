@@ -35,7 +35,7 @@ names(query.list)
 
 ```r
 alig = twdtw(query.list[["Soybean"]], template, 
-             weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
+             weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE) 
 print(alig)
 ```
 
@@ -50,7 +50,8 @@ print(alig)
 ```
 
 ```r
-plot(alig)
+gp = plot(alig) 
+gp + coord_fixed()
 ```
 
 ![plot of chunk define-demo-code](figure/define-demo-code-1.png) 

@@ -26,9 +26,10 @@ Run the dtwSat alignment and show the results
 library(dtwSat)
 names(query.list)
 alig = twdtw(query.list[["Soybean"]], template, 
-             weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
+             weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE) 
 print(alig)
-plot(alig)
+gp = plot(alig) 
+gp + coord_fixed()
 ```
 
 

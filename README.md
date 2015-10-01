@@ -22,6 +22,7 @@ devtools::install_github("vwmaus/dtwSat")
 ### Quick demo
 
 
+
 <h3>Plot examples:</h3>
 <ol>
   <li>Plot alignments: <code>

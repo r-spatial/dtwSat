@@ -4,30 +4,29 @@ output:
     variant: markdown_github
 ---
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 dtwSat
 =====
 
-<h3>Time-Weighted Dynamic Time Warping for remote sensing time series analysis</h3>
-<ol>
-The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. This package provides methods for visualization of minimum cost paths and time series alignment.
-</ol>
+### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
+The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. This package provides methods for visualization of minimum cost paths, time series alignment, and time intervals classification.
 
-<h3>How to use the package:</h3>
-<ol>
-  <li>Open R</li>
-	<li>Install devtools <code>install.packages("devtools")</code></li>
-	<li>Load devtools <code>library(devtools)</code></li>
-	<li>Install the dtwSat package <code>install_github("vwmaus/dtwSat")</code></li>
-</ol>
+### Install
+'''{r installation, eval = FALSE}
+devtools::install_github("vwmaus/dtwSat")
+'''
 
-<h3>Examples:</h3>
-<ol>
-	<li>Load the dtwSat package: <code>library(dtwSat)</code></li>
-	<li>Query names: <code>names(query.list)</code></li>
-	<li>Run twdtw alignment for one query: <code>alig = twdtw(query.list[["Soybean"]], template, weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)</code></li>
-	<li>Print dtwSat object: <code>print(alig)</code></li>
-	<li>Plot dtwSat object: <code>plot(alig)</code></li>
-</ol>
+
+### Quick demo
+'''{r define-demo-code, include = FALSE}
+library(dtwSat)
+names(query.list)
+alig = twdtw(query.list[["Soybean"]], template, 
+             weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
+print(alig)
+plot(alig)
+'''
 
 <h3>Plot examples:</h3>
 <ol>

@@ -25,6 +25,36 @@ This dome performs a dtwSat analysis and show the results.
 
 ```r
 library(dtwSat)
+```
+
+```
+## Loading required package: dtw
+## Loading required package: proxy
+## 
+## Attaching package: 'proxy'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     as.dist, dist
+## 
+## The following object is masked from 'package:base':
+## 
+##     as.matrix
+## 
+## Loaded dtw v1.18-1. See ?dtw for help, citation("dtw") for use in publication.
+## 
+## Loading required package: zoo
+## 
+## Attaching package: 'zoo'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
+## 
+## Loaded dtwSat v0.0.1. See ?dtwSat for help, citation("dtwSat") for use in publication.
+```
+
+```r
 names(query.list)
 ```
 

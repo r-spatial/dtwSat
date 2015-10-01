@@ -22,7 +22,7 @@ devtools::install_github("vwmaus/dtwSat")
 
 Run the dtwSat alignment and show the results 
 
-```{r define-demo-code, include = FALSE}
+```{r define-demo-code, include = TRUE}
 library(dtwSat)
 names(query.list)
 alig = twdtw(query.list[["Soybean"]], template, 

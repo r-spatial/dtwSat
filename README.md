@@ -24,6 +24,36 @@ devtools::install_github("vwmaus/dtwSat")
 Run the dtwSat alignment and show the results 
 
 
+```r
+library(dtwSat)
+names(query.list)
+```
+
+```
+## [1] "Soybean" "Cotton"  "Maize"
+```
+
+```r
+alig = twdtw(query.list[["Soybean"]], template, 
+             weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
+print(alig)
+```
+
+```
+## Time-Weighted DTW alignment object
+## Alignments:
+##   query       from         to distance normalizedDistance
+## 1     1 2011-10-04 2012-01-28 3.956483         0.03140066
+## 2     1 2012-10-06 2013-02-15 4.008838         0.03181617
+## 3     1 2009-09-13 2010-03-05 4.539202         0.03602541
+## 4     1 2010-10-20 2011-03-18 5.528445         0.04387655
+```
+
+```r
+plot(alig)
+```
+
+![plot of chunk define-demo-code](figure/define-demo-code-1.png) 
 
 
 

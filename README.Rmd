@@ -13,20 +13,20 @@ dtwSat
 The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. This package provides methods for visualization of minimum cost paths, time series alignment, and time intervals classification.
 
 ### Install
-'''{r installation, eval = FALSE}
+```{r installation, eval = FALSE}
 devtools::install_github("vwmaus/dtwSat")
-'''
+```
 
 
 ### Quick demo
-'''{r define-demo-code, include = FALSE}
+```{r define-demo-code, include = FALSE}
 library(dtwSat)
 names(query.list)
 alig = twdtw(query.list[["Soybean"]], template, 
              weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE)
 print(alig)
 plot(alig)
-'''
+```
 
 <h3>Plot examples:</h3>
 <ol>

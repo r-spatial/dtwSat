@@ -2,7 +2,7 @@
 #                                                             #
 #   (c) Victor Maus <vwmaus1@gmail.com>                       #
 #       Institute for Geoinformatics (IFGI)                   #
-#       University of Münster (WWU), Germany                  #
+#       University of Muenster (WWU), Germany                 #
 #                                                             #
 #       Earth System Science Center (CCST)                    #
 #       National Institute for Space Research (INPE), Brazil  #
@@ -252,7 +252,7 @@ classfyIntervals = function(x, from, to, by, breaks=NULL,
       return(NA)
     i
   })
-
+  
   # Find lowest cost alignment
   in_interval = unlist(in_interval)
   i_min = which.min(x$distance[in_interval])
@@ -271,14 +271,6 @@ classfyIntervals = function(x, from, to, by, breaks=NULL,
   res = data.frame(res)
   res
 }
-
-
-#### CREATE DATASET FOR CLASSIFICATION
-#### CREATE A SMALL CLASSIFIED MAP
-#### FROM PAPER IEEE (Small cut of Proto dos gauchos)
-
-
-
 
 
 

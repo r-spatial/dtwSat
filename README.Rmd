@@ -103,4 +103,10 @@ The dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to me
 </ol> 
 
 
-
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```

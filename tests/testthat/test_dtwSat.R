@@ -2,7 +2,7 @@
 #                                                             #
 #   (c) Victor Maus <vwmaus1@gmail.com>                       #
 #       Institute for Geoinformatics (IFGI)                   #
-#       University of Münster (WWU), Germany                  #
+#       University of Muenster (WWU), Germany                 #
 #                                                             #
 #       Earth System Science Center (CCST)                    #
 #       National Institute for Space Research (INPE), Brazil  #
@@ -41,7 +41,7 @@ gp1
 
 
 # Plot alignment
-gp2 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
+gp2 = plot(alig, type="alignment", attributeibute="evi", alignment=1, shift=0.5)
 gp2
 
 
@@ -95,8 +95,8 @@ gp
 # library(grid)
 # 
 # # Plot alignments
-# gp1 = plotAlignment(alig, attribute="evi", alignment=1, shift=0.5)
-# gp2 = plotAlignment(alig, attribute="evi", alignment=2, shift=0.5)
+# gp1 = plotAlignment(alig, attributeibute="evi", alignment=1, shift=0.5)
+# gp2 = plotAlignment(alig, attributeibute="evi", alignment=2, shift=0.5)
 # gp = arrangeGrob(gp1 + ggtitle("Alignment 1") + 
 #                       theme(axis.title.x=element_blank(),
 #                       legend.position="none"),

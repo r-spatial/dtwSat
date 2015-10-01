@@ -2,7 +2,7 @@
 #                                                             #
 #   (c) Victor Maus <vwmaus1@gmail.com>                       #
 #       Institute for Geoinformatics (IFGI)                   #
-#       University of Münster (WWU), Germany                  #
+#       University of Muenster (WWU), Germany                 #
 #                                                             #
 #       Earth System Science Center (CCST)                    #
 #       National Institute for Space Research (INPE), Brazil  #
@@ -51,10 +51,10 @@
 #' gp2
 #' 
 #' ## Plot classification
-#' gp = plot(alig, type="classify", attribute="evi", 
+#' gp3 = plot(alig, type="classify", attribute="evi", 
 #'          from=as.Date("2009-09-01"),  to=as.Date("2013-09-01"), 
 #'          by = "6 month", normalized=TRUE, overlap=.7)
-#' gp
+#' gp3
 #' 
 #' @export
 setMethod("plot", 
@@ -170,7 +170,7 @@ plotPath = function(x, normalize=FALSE, alignments=NULL,
 #' 
 #' @param x An \code{\link[dtwSat]{dtwSat-class}} object
 #' @param alignment An integer, the index of the alignment to plot
-#' @param attribute An integer or a character indicating the attribute 
+#' @param attributeibute An integer or a character indicating the attributeibute 
 #' for plotting, \emph{i.e.} the column of the \code{query}. Default is 1
 #' @param shift A number, it shifts the pattern position in the \code{x}
 #' direction. Default is 0.5
@@ -185,11 +185,11 @@ plotPath = function(x, normalize=FALSE, alignments=NULL,
 #' names(query.list)
 #' alig = dtwSat(query.list[["Soybean"]], template, weight = "logistic", 
 #'        alpha = 0.1, beta = 100, alignments = 4, keep = TRUE)
-#' gp = plotAlignment(alig, attribute="evi", alignment=1, shift=0.5)
+#' gp = plotAlignment(alig, attributeibute="evi", alignment=1, shift=0.5)
 #' gp
 #' 
 #' @export
-plotAlignment = function(x, alignment, attribute=1, shift=0.5){
+plotAlignment = function(x, alignment, attributeibute=1, shift=0.5){
   
   ## Get data
   internals = getInternals(x)
@@ -199,8 +199,8 @@ plotAlignment = function(x, alignment, attribute=1, shift=0.5){
   tx = index(internals$template)
   ty = index(internals$query)
   
-  xx = internals$template[,attribute]
-  yy = internals$query[,attribute]
+  xx = internals$template[,attributeibute]
+  yy = internals$query[,attributeibute]
   
   map = data.frame(mapping[[alignment]])
   
@@ -222,15 +222,15 @@ plotAlignment = function(x, alignment, attribute=1, shift=0.5){
   df.match.ts = df.ts[map$index2,]
   df.match.ts$p = p=1:nrow(map)
   df.match = rbind(df.match.pt, df.match.ts)
-  if(!is(attribute,"character"))
-    attribute="Value"
+  if(!is(attributeibute,"character"))
+    attributeibute="Value"
   gp = ggplot(data=df.ts, aes_string(x='Time', y='value')) +
     geom_line() +
     geom_line(data=df.pt, aes_string(x='Time', y='value'), col="red") + 
     geom_line(data=df.match, linetype = 2, colour = "grey", aes_string(x='Time', y='value', group='p')) + 
     scale_y_continuous(breaks=y.breaks, labels=y.labels) +
     scale_x_date(breaks=waiver(), labels=waiver()) +
-    ylab(toupper(attribute)) + 
+    ylab(toupper(attributeibute)) + 
     xlab("Time")
   gp
 }
@@ -244,8 +244,8 @@ plotAlignment = function(x, alignment, attribute=1, shift=0.5){
 #' time intervals
 #' 
 #' @param x An \code{\link[dtwSat]{dtwSat-class}} object
-#' @param attr A vector with of integer or a character indicating 
-#' the attributes for plotting, \emph{i.e.} the column of the \code{query}. 
+#' @param attribute A vector with of integer or a character indicating 
+#' the attributeibutes for plotting, \emph{i.e.} the column of the \code{query}. 
 #' Default is 1
 #' @param ... additional arguments passed to \code{\link[dtwSat]{classfyIntervals}}
 #' 
@@ -258,13 +258,13 @@ plotAlignment = function(x, alignment, attribute=1, shift=0.5){
 #' malig = mtwdtw(query.list, template, weight = "logistic", 
 #'                alpha = 0.1, beta = 100)
 #' 
-#' gp = plotClassify(x=malig, attr=c("ndvi","evi"), from=as.Date("2009-09-01"),  
+#' gp = plotClassify(x=malig, attribute=c("ndvi","evi"), from=as.Date("2009-09-01"),  
 #'              to=as.Date("2013-09-01"), by = "6 month",
 #'              normalized=TRUE, overlap=.7)
 #' gp
 #' 
 #' @export
-plotClassify = function(x, attr=NULL, ...){
+plotClassify = function(x, attribute=NULL, ...){
   
   ## Get data
   internals = getInternals(x)
@@ -272,13 +272,13 @@ plotClassify = function(x, attr=NULL, ...){
   tx = index(internals$template)
   
   xx = internals$template
-  if(!is.null(attr))
-    xx = internals$template[,attr]
+  if(!is.null(attribute))
+    xx = internals$template[,attribute]
   df.ts = melt(data.frame(Time=index(xx), xx), id="Time")
   if(is.null(df.ts$variable))
-    df.ts$variable = names(internals$template)[attr]
-  if(length(attr)==1 | any(is.na(df.ts$variable)))
-    df.ts$variable = attr
+    df.ts$variable = names(internals$template)[attribute]
+  if(length(attribute)==1 | any(is.na(df.ts$variable)))
+    df.ts$variable = attribute
   
   y.labels = pretty_breaks()(range(df.ts$value))
   y.breaks = y.labels

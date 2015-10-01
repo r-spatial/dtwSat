@@ -2,10 +2,11 @@
 ^\.Rproj\.user$
 
 # Other files
-^.*\.png
-^.*\.pdf
-^.*\.eps
 README.md
 corinho.R
 .git
 .gitignore
+^README\.Rmd$
+^README-.*\.png$
+^cran-comments\.md
+^NEWS\.md$

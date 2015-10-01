@@ -21,36 +21,52 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
-Run the dtwSat alignment and show the results 
-
+This dome performs a dtwSat analysis and show the results.
 
 ```r
 library(dtwSat)
 names(query.list)
+```
+
+```
+## [1] "Soybean" "Cotton"  "Maize"
+```
+
+```r
 alig = twdtw(query.list[["Soybean"]], template, 
              weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE) 
 print(alig)
-gp = plot(alig) 
-gp 
 ```
 
+```
+## Time-Weighted DTW alignment object
+## Alignments:
+##   query       from         to distance normalizedDistance
+## 1     1 2011-10-04 2012-01-28 3.956483         0.03140066
+## 2     1 2012-10-06 2013-02-15 4.008838         0.03181617
+## 3     1 2009-09-13 2010-03-05 4.539202         0.03602541
+## 4     1 2010-10-20 2011-03-18 5.528445         0.04387655
+```
+
+### Plot examples
+
+Plot alignments
+
+```r
+library(dtwSat)
+library(gridExtra)
+gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5) + 
+          ggtitle("Alignment 1") +
+		      theme(axis.title.x=element_blank())
+gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5) +
+          ggtitle("Alignment 2") + 
+          theme(legend.position="none")
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+![plot of chunk define-demo-plot-alignments](figure/define-demo-plot-alignments-1.png) 
 
 
-
-
-<h3>Plot examples:</h3>
-<ol>
-  <li>Plot alignments: <code>
-  	gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
-	gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5)
-	arrangeGrob(
-		gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
-                gp2 + ggtitle("Alignment 2") + theme(legend.position="none"),
-        nrow=2)
-        gp
-        </code>
-   </li>
-</ol>
 ![alt text](README-alig.png "Alignment plot")
 
 <ol>

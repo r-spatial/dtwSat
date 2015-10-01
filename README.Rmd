@@ -20,35 +20,31 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
-Run the dtwSat alignment and show the results 
-
-```{r define-demo-code, eval=FALSE, include = TRUE}
+This dome performs a dtwSat analysis and show the results.
+```{r define-demo-code, eval=TRUE, include = TRUE}
 library(dtwSat)
 names(query.list)
 alig = twdtw(query.list[["Soybean"]], template, 
              weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE) 
 print(alig)
-gp = plot(alig) 
-gp 
+```
+
+### Plot examples
+
+Plot alignments
+```{r define-demo-plot-alignments, eval=TRUE, include = TRUE}
+library(dtwSat)
+library(gridExtra)
+gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5) + 
+          ggtitle("Alignment 1") +
+		      theme(axis.title.x=element_blank())
+gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5) +
+          ggtitle("Alignment 2") + 
+          theme(legend.position="none")
+grid.arrange(gp1,gp2,nrow=2)
 ```
 
 
-
-
-
-<h3>Plot examples:</h3>
-<ol>
-  <li>Plot alignments: <code>
-  	gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5)
-	gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5)
-	arrangeGrob(
-		gp1 + ggtitle("Alignment 1") + theme(axis.title.x=element_blank(), legend.position="none"),
-                gp2 + ggtitle("Alignment 2") + theme(legend.position="none"),
-        nrow=2)
-        gp
-        </code>
-   </li>
-</ol>
 ![alt text](README-alig.png "Alignment plot")
 
 <ol>

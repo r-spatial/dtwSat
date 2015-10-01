@@ -54,6 +54,7 @@ Plot alignments
 
 ```r
 library(dtwSat)
+library(ggplot2)
 library(gridExtra)
 gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5) + 
           ggtitle("Alignment 1") +
@@ -71,63 +72,85 @@ Plot path for all classese
 
 ```r
 library(dtwSat)
+library(ggplot)
+```
+
+```
+## Error in library(ggplot): there is no package called 'ggplot'
+```
+
+```r
 library(gridExtra)
 gp.list = lapply(query.list, function(query){
-  				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, beta = 50,
-  				             alignments = 4, keep = TRUE)
+  				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, 
+  				             beta = 100, alignments = 4, keep = TRUE)
   				plot(alig, normalize = TRUE, show.dist = TRUE) + 
-  				  ggtitle(names(query.list)[2]) +   
   				  theme(axis.title.x=element_blank(),
   				        legend.position="none")
 })
-grid.arrange(gp.list[[1]],
-             gp.list[[2]],
-             gp.list[[3]],
+grid.arrange(gp.list[[1]] + ggtitle(names(query.list)[1]),
+             gp.list[[2]] + ggtitle(names(query.list)[2]),
+             gp.list[[3]] + ggtitle(names(query.list)[3]),
              nrow=3)
 ```
 
 ![plot of chunk define-demo-plot-paths](figure/define-demo-plot-paths-1.png) 
 
+Plot classification
 
-<ol>
-   <li>Plot classification:
- 		<code>
-			malig = mtwdtw(query.list, template, weight = "logistic", 
-               alpha = 0.1, beta = 100)
+```r
+library(dtwSat)
+library(ggplot2)
+library(gridExtra)
+malig = mtwdtw(query.list, template, weight = "logistic", 
+        alpha = 0.1, beta = 100)
  
-      gp = plot(x=malig, type="classify", attribute="evi", from=as.Date("2009-09-01"),  
-              to=as.Date("2013-09-01"), by = "6 month",
-              normalized=TRUE, overlap=.7) 
-      gp
-      </code>
-  </li>
-</ol>
-![alt text](README-classify.png "Classification plot")
+gp1 = plot(x=malig, type="classify", from=as.Date("2009-09-01"),  
+     to=as.Date("2013-09-01"), by = "6 month",
+     normalized=TRUE, overlap=.7) 
+
+gp2 = plot(x=malig, type="classify", attribute = c("evi","ndvi"),
+           from=as.Date("2009-09-01"), to=as.Date("2013-09-01"), 
+           by = "6 month", normalized=TRUE, overlap=.7)
+
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+![plot of chunk define-demo-plot-classification](figure/define-demo-plot-classification-1.png) 
 
 
-<ol>
-  <li>Plot alignments: <code>
-	df = data.frame(Time=index(template), value=template$evi, variable="Raw")
-	df = rbind( df, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
-	gp = ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +
-  		geom_line() + 
-  		theme(legend.position="bottom") +
+
+Plot wavelet smoothing
+
+```r
+library(dtwSat)
+library(ggplot2)
+library(reshape2)
+library(gridExtra)
+sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
+                      boundary = "periodic")
+df1 = data.frame(Time=index(template), value=template$evi, variable="Raw")
+df1 = rbind(df1, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
+gp1 = ggplot(df1, aes(x=Time, y=value, group=variable, colour=variable)) +
+   		geom_line() + 
+  		# theme(legend.position="bottom") +
   		ylab("EVI")
-	gp
-        </code>
-   </li>
-</ol>
-  
-![alt text](README-filter.png "Smoothing plot")
 
-<h3>How to build the package:</h3>
-<ol>
-	<li>Clone the project: <code>git clone https//github.com/vwmaus/dtwSat.git</code>.</li>
-	<li>Open Rstudio, go to File - Open Project and pick the file <code>dtwSat.Rproj</code>.</li>
-	<li>Install the required packages <code>install.packages(c("roxygen2", "testthat"))</code>.</li>
-	<li>Go to the <i>Build</i> tab in the upper-right panel and press the button <i>Build & Reload</i>. After this the package is ready to use.</li>
-	<li>You can also create a source package: Go to the <i>Build</i> tab, display the menu <i>More</i> and select the option <i>Build Source Package</i>.</li>
-</ol> 
+df2 = melt(data.frame(Time=index(sy), sy), id="Time")
+gp2 = ggplot(df2, aes(x=Time, y=value, group=variable, colour=variable)) +
+   		geom_line() + 
+  		ylab("Value") 
+gp2
+```
+
+![plot of chunk define-demo-plot-smoothing](figure/define-demo-plot-smoothing-1.png) 
+
+```r
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+![plot of chunk define-demo-plot-smoothing](figure/define-demo-plot-smoothing-2.png) 
+
 
 
 

@@ -51,6 +51,7 @@ sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1,
 
 
 # Plot raw EVI and filtered EVI
+
 df = data.frame(Time=index(template), value=template$evi, variable="Raw")
 df = rbind( df, data.frame(Time=index(sy), value=sy$evi, variable="Wavelet filter") )
 gp = ggplot(df, aes(x=Time, y=value, group=variable, colour=variable)) +

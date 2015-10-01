@@ -21,6 +21,12 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
+Run the dtwSat alignment and show the results 
+
+
+
+
+
 
 
 <h3>Plot examples:</h3>

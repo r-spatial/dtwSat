@@ -20,6 +20,8 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
+Run the dtwSat alignment and show the results 
+
 ```{r define-demo-code, include = FALSE}
 library(dtwSat)
 names(query.list)
@@ -28,6 +30,10 @@ alig = twdtw(query.list[["Soybean"]], template,
 print(alig)
 plot(alig)
 ```
+
+
+
+
 
 <h3>Plot examples:</h3>
 <ol>

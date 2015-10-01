@@ -24,10 +24,7 @@ devtools::install_github("vwmaus/dtwSat")
 This dome performs a dtwSat analysis and show the results.
 
 ```r
-library(dtwSat)
-```
-
-```r
+library(dtwSat, quietly = TRUE)
 names(query.list)
 ```
 
@@ -53,49 +50,37 @@ print(alig)
 
 ### Plot examples
 
-Load libraries
-
-```r
-library(dtwSat)
-library(ggplot2)
-library(reshape2)
-library(gridExtra)
-```
-
 Plot alignments
 
 ```r
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5) + 
           ggtitle("Alignment 1") +
 		      theme(axis.title.x=element_blank())
-```
-
-```
-## Error in eval(expr, envir, enclos): could not find function "ggtitle"
-```
-
-```r
 gp2 = plot(alig, type="alignment", attribute="evi", alignment=2, shift=0.5) +
           ggtitle("Alignment 2") + 
           theme(legend.position="none")
-```
-
-```
-## Error in eval(expr, envir, enclos): could not find function "ggtitle"
-```
-
-```r
 grid.arrange(gp1,gp2,nrow=2)
 ```
 
-```
-## Error in eval(expr, envir, enclos): could not find function "grid.arrange"
-```
+![plot of chunk define-demo-plot-alignments](figure/define-demo-plot-alignments-1.png) 
 
 
 Plot path for all classese
 
 ```r
+library(dtwSat, quietly = TRUE)
+library(ggplot, quietly = TRUE)
+```
+
+```
+## Error in library(ggplot, quietly = TRUE): there is no package called 'ggplot'
+```
+
+```r
+library(gridExtra, quietly = TRUE)
 gp.list = lapply(query.list, function(query){
   				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, 
   				             beta = 100, alignments = 4, keep = TRUE)
@@ -103,26 +88,20 @@ gp.list = lapply(query.list, function(query){
   				  theme(axis.title.x=element_blank(),
   				        legend.position="none")
 })
-```
-
-```
-## Error in FUN(X[[i]], ...): could not find function "theme"
-```
-
-```r
 grid.arrange(gp.list[[1]] + ggtitle(names(query.list)[1]),
              gp.list[[2]] + ggtitle(names(query.list)[2]),
              gp.list[[3]] + ggtitle(names(query.list)[3]),
              nrow=3)
 ```
 
-```
-## Error in eval(expr, envir, enclos): could not find function "grid.arrange"
-```
+![plot of chunk define-demo-plot-paths](figure/define-demo-plot-paths-1.png) 
 
 Plot classification
 
 ```r
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 malig = mtwdtw(query.list, template, weight = "logistic", 
         alpha = 0.1, beta = 100)
  
@@ -137,15 +116,17 @@ gp2 = plot(x=malig, type="classify", attribute = c("evi","ndvi"),
 grid.arrange(gp1,gp2,nrow=2)
 ```
 
-```
-## Error in eval(expr, envir, enclos): could not find function "grid.arrange"
-```
+![plot of chunk define-demo-plot-classification](figure/define-demo-plot-classification-1.png) 
 
 
 
 Plot wavelet smoothing
 
 ```r
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(reshape2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
                       boundary = "periodic")
 df1 = data.frame(Time=index(template), value=template$evi, variable="Raw")
@@ -154,37 +135,16 @@ gp1 = ggplot(df1, aes(x=Time, y=value, group=variable, colour=variable)) +
    		geom_line() + 
   		# theme(legend.position="bottom") +
   		ylab("EVI")
-```
 
-```
-## Error in eval(expr, envir, enclos): could not find function "ggplot"
-```
-
-```r
 df2 = melt(data.frame(Time=index(sy), sy), id="Time")
-```
-
-```
-## Error in eval(expr, envir, enclos): could not find function "melt"
-```
-
-```r
 gp2 = ggplot(df2, aes(x=Time, y=value, group=variable, colour=variable)) +
    		geom_line() + 
   		ylab("Value") 
-```
 
-```
-## Error in eval(expr, envir, enclos): could not find function "ggplot"
-```
-
-```r
 grid.arrange(gp1,gp2,nrow=2)
 ```
 
-```
-## Error in eval(expr, envir, enclos): could not find function "grid.arrange"
-```
+![plot of chunk define-demo-plot-smoothing](figure/define-demo-plot-smoothing-1.png) 
 
 
 

@@ -21,10 +21,8 @@ devtools::install_github("vwmaus/dtwSat")
 ### Quick demo
 
 This dome performs a dtwSat analysis and show the results.
-```{r load-dtwSat, eval=FALSE, include = TRUE}
-library(dtwSat)
-```
 ```{r define-demo-code, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
 names(query.list)
 alig = twdtw(query.list[["Soybean"]], template, 
              weight = "logistic", alpha = 0.1, beta = 50, alignments=4, keep=TRUE) 
@@ -33,16 +31,11 @@ print(alig)
 
 ### Plot examples
 
-Load libraries
-```{r load-libs, eval=FALSE, include = TRUE}
-library(dtwSat)
-library(ggplot2)
-library(reshape2)
-library(gridExtra)
-```
-
 Plot alignments
 ```{r define-demo-plot-alignments, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 gp1 = plot(alig, type="alignment", attribute="evi", alignment=1, shift=0.5) + 
           ggtitle("Alignment 1") +
 		      theme(axis.title.x=element_blank())
@@ -55,6 +48,9 @@ grid.arrange(gp1,gp2,nrow=2)
 
 Plot path for all classese
 ```{r define-demo-plot-paths, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 gp.list = lapply(query.list, function(query){
   				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, 
   				             beta = 100, alignments = 4, keep = TRUE)
@@ -70,6 +66,9 @@ grid.arrange(gp.list[[1]] + ggtitle(names(query.list)[1]),
 
 Plot classification
 ```{r define-demo-plot-classification, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 malig = mtwdtw(query.list, template, weight = "logistic", 
         alpha = 0.1, beta = 100)
  
@@ -88,6 +87,10 @@ grid.arrange(gp1,gp2,nrow=2)
 
 Plot wavelet smoothing
 ```{r define-demo-plot-smoothing, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(reshape2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
 sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
                       boundary = "periodic")
 df1 = data.frame(Time=index(template), value=template$evi, variable="Raw")

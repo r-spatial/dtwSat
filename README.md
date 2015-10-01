@@ -72,14 +72,7 @@ Plot path for all classese
 
 ```r
 library(dtwSat, quietly = TRUE)
-library(ggplot, quietly = TRUE)
-```
-
-```
-## Error in library(ggplot, quietly = TRUE): there is no package called 'ggplot'
-```
-
-```r
+library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
 gp.list = lapply(query.list, function(query){
   				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, 

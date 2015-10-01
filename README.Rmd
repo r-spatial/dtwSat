@@ -49,7 +49,7 @@ grid.arrange(gp1,gp2,nrow=2)
 Plot path for all classese
 ```{r define-demo-plot-paths, eval=TRUE, include = TRUE}
 library(dtwSat, quietly = TRUE)
-library(ggplot, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
 gp.list = lapply(query.list, function(query){
   				alig = twdtw(query, template, weight = "logistic", alpha = 0.1, 

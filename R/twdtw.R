@@ -195,7 +195,7 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
     if(length(endPoints) > n.alignments)
       endPoints = endPoints[1:n.alignments]
     # Trace low cost paths (k-th paths)
-    mapping = .traceback(dm=internals$directionMatrix, step.matrix=step.matrix, 
+    mapping = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, 
                          jmin=endPoints, ...)
     # Get starting point of each path
     startPoints = unlist(lapply(mapping, function(map){
@@ -255,7 +255,7 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
 }
 
 
-.traceback = function(dm, step.matrix, jmin, ...){
+.tracepath = function(dm, step.matrix, jmin, ...){
   n = nrow(dm)
   m = ncol(dm)
   if(is.null(jmin))

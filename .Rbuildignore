@@ -12,3 +12,4 @@ corinho.R
 ^README-.*\.png$
 ^cran-comments\.md
 ^NEWS\.md$
+^src$

@@ -8,7 +8,7 @@
 twdtw(query, timeseries = NULL, template = NULL, weight = NULL,
   theta = NULL, alpha = NULL, beta = NULL, dist.method = "Euclidean",
   step.matrix = symmetric1, n.alignments = NULL, span = NULL,
-  query.name = NULL, keep = FALSE)
+  query.name = NULL, keep = FALSE, ...)
 }
 \arguments{
 \item{query}{A \link[zoo]{zoo} object with a query time series.}
@@ -47,6 +47,8 @@ interval between two alignments, for details see [1]}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures.
 Default is FALSE}
+
+\item{...}{additional arguments passed to \code{twdtw}}
 }
 \value{
 An object of class \code{\link[dtwSat]{dtwSat-class}}

@@ -47,6 +47,7 @@
 #' @param keep preserves the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE
 #' @param template is deprecated, please use \code{timeseries} instead
+#' @param ...	additional arguments passed to \code{twdtw}
 #' 
 #' @docType methods
 #' @return An object of class \code{\link[dtwSat]{dtwSat-class}}
@@ -71,7 +72,8 @@
 twdtw =  function(query, timeseries=NULL, template=NULL,
                   weight=NULL, theta=NULL, alpha=NULL, beta=NULL, 
                   dist.method="Euclidean", step.matrix = symmetric1, 
-                  n.alignments=NULL, span=NULL, query.name=NULL, keep=FALSE)
+                  n.alignments=NULL, span=NULL, query.name=NULL, keep=FALSE,
+                  ...)
 {
 
   
@@ -91,7 +93,7 @@ twdtw =  function(query, timeseries=NULL, template=NULL,
 
   res = .twdtw(query, timeseries, weight, theta, alpha, beta, 
          dist.method, step.matrix, n.alignments, span, 
-         query.name, keep)
+         query.name, keep, ...)
   res
 }
 

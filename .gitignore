@@ -19,3 +19,5 @@ README.md~
 
 # Other files
 corinho.R
+*.o
+*.so

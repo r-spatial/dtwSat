@@ -1,0 +1,28 @@
+Package: dtwSat
+Type: Package
+Title: Time-Weighted Dynamic Time Warping for Remote Sensing Time Series Analysis
+Version: 0.1.0.9000
+Date: 2015-10-10
+Authors@R: c(person("Victor", "Maus", role = c("aut", "cre"), email = "vwmaus1@gmail.com"))
+Description: 
+    Provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. This package provides methods for visualization of minimum cost paths, time series alignment, and time intervals classification.
+Depends: 
+    R (>= 3.0.0),
+    methods,
+    dtw,
+    zoo
+Imports: 
+    proxy,
+    waveslim, 
+    graphics, 
+    ggplot2, 
+    scales, 
+    reshape2, 
+    grDevices,
+    utils
+Suggests: 
+    testthat
+License: GPL (>= 2) | file LICENSE
+Author: Victor Maus [aut, cre]
+Maintainer: Victor Maus <vwmaus1@gmail.com>
+LazyData: true

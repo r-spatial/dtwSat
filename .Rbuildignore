@@ -1,0 +1,14 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+
+# Other files
+README.md
+corinho.R
+.git
+.gitignore
+^README\.Rmd$
+^figure$
+^.*\.png$
+^README-.*\.png$
+^cran-comments\.md
+^NEWS\.md$

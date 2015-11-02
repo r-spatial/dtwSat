@@ -1,0 +1,144 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- 
+# Edit and run 
+library(knitr)
+knit(input="README.Rmd", output = "README.md")
+-->
+
+dtwSat
+=====
+
+### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
+dtwSat package provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. This package provides methods for visualization of minimum cost paths, time series alignment, and time intervals classification.
+
+### Install
+```{r installation, eval = FALSE}
+devtools::install_github("vwmaus/dtwSat")
+```
+
+
+### Quick demo
+
+This dome performs a dtwSat analysis and show the results.
+```{r define-demo-plot-dtwSat, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+names(query.list)
+alig = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+             weight = "logistic", alpha = 0.1, beta = 50, span=180, keep=TRUE) 
+is(alig, "dtwSat")
+print(alig)
+```
+
+### Plot examples
+
+Plot alignments
+```{r define-demo-plot-alignments, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+alig = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+             weight = "logistic", alpha = 0.1, beta = 50, span=180, keep=TRUE) 
+gp1 = plot(alig, type="alignment", n=1, attr="evi", shift=0.5) + 
+          ggtitle("Alignment 1") +
+		      theme(axis.title.x=element_blank())
+gp2 = plot(alig, type="alignment", n=2, attr="evi", shift=0.5) +
+          ggtitle("Alignment 2") + 
+          theme(legend.position="none")
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+
+Plot path for DTW and TWDTW
+```{r define-demo-twdtw-x-dtw, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+alig1 = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+              weight = NULL, span=180, keep = TRUE)
+gp1 = plot(alig1, show.dist = TRUE) + 
+  				  theme(axis.title.x=element_blank(), legend.position="none")
+alig2 = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+              weight = "linear", theta = 1, span=180, keep = TRUE)
+gp2 = plot(alig2, show.dist = TRUE) + 
+  				  theme(axis.title.x=element_blank(), legend.position="none")
+alig3 = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+              weight = "logistic", alpha = 0.1, beta = 100, span=180, keep = TRUE)
+gp3 = plot(alig3, show.dist = TRUE) + 
+  				  theme(axis.title.x=element_blank(), legend.position="none")
+
+grid.arrange(gp1 + ggtitle("DTW"),
+             gp2 + ggtitle("TWDTW - Linear weight"),
+             gp3 + ggtitle("TWDTW - Nonlinear weight"),
+             nrow=3)
+```
+
+Plot path for all classese
+```{r define-demo-plot-paths, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+gp.list = lapply(seq_along(query.list), function(i){
+  				alig = twdtw(query.list[[i]], waveletSmoothing(template), 
+  				             weight = "logistic", alpha = 0.1, 
+  				             beta = 100, span=180, keep = TRUE)
+  				plot(alig, show.dist = TRUE) + 
+  				                      ggtitle(names(query.list)[i]) + 
+  				                      theme(axis.title.x=element_blank(), 
+  				                      legend.position="none")
+})
+grid.arrange(grobs=gp.list, nrow=3)
+```
+
+Plot classification
+```{r define-demo-plot-classification, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+malig = mtwdtw(query.list, waveletSmoothing(template), 
+               normalize = TRUE, query.length = 23,
+               weight = "logistic", alpha = 0.1, beta = 100)
+ 
+gp1 = plot(x=malig, type="classify", from=as.Date("2009-09-01"),  
+     to=as.Date("2013-09-01"), by = "6 month", overlap=.3) 
+
+gp2 = plot(x=malig, type="classify", attr = c("evi","ndvi"),
+           from=as.Date("2009-09-01"), to=as.Date("2013-09-01"), 
+           by = "6 month", overlap=.3)
+
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+
+
+Plot wavelet smoothing
+```{r define-demo-plot-smoothing, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(reshape2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+sy = waveletSmoothing(timeseries=template, frequency=8, wf = "la8", J=1, 
+                      boundary = "periodic")
+
+gp1 = autoplot(sy, facets = NULL) + xlab("Time")
+
+evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
+
+gp2 = autoplot(evi, facets = NULL) + xlab("Time")
+
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```

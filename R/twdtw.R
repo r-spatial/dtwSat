@@ -156,11 +156,11 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
 
 .twdtw =  function(query, timeseries, weight, theta, alpha, beta, 
                    dist.method, step.matrix, n.alignments, span,
-                   query.name, keep)
+                   query.name, keep, ...)
 {
-  # Align query and template by name if names not null
-  if(!is.null(names(query)) & !is.null(names(template)))
-    template = template[,names(query)]
+  # Align query and timeseries by name if names not null
+  if(!is.null(names(query)) & !is.null(names(timeseries)))
+    timeseries = timeseries[,names(query)]
   # Local cost
   phi = dist(query, timeseries, method=dist.method)
   # Elapsed time
@@ -173,41 +173,41 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
     )
   }
   cm = phi + psi
-  internals = .computecost(cm, step.matrix)
+  # Compute cost matris 
+  internals = .computecost(cm, step.matrix, ...)
   internals$timeWeight = matrix(psi, nrow = nrow(psi))
   internals$localMatrix = matrix(cm, nrow = nrow(cm))
   internals$query = query
   internals$timeseries = timeseries
-
-  #alignments = list(quey=numeric(0),from=numeric(0), to=numeric(0), distance=numeric(0), normalizedDistance=numeric(0))  
-  alignments = list(quey=numeric(0),from=numeric(0), to=numeric(0), distance=numeric(0))
-  mapping = list(index1 = numeric(0), index2 = numeric(0))
+  
   d = internals$costMatrix[internals$N,1:internals$M]
   endPoints = .findMin(d, index(timeseries), span=span)
-  if(length(endPoints)>0){
+  
+  if(length(endPoints)<1){
+    alignments = list(quey=numeric(0), from=numeric(0), to=numeric(0), distance=numeric(0))
+    mapping = list(index1 = numeric(0), index2 = numeric(0))
+  }else{
     endPoints = endPoints[order(d[endPoints])]
     if(is.null(n.alignments))
       n.alignments = length(endPoints)
     if(length(endPoints) > n.alignments)
       endPoints = endPoints[1:n.alignments]
-    # Map low cost paths (k-th paths)
-    mapping = lapply(endPoints, function(b){
-      return(.traceback(internals, b))
-    })
-    # Get the starting point of each path
+    # Trace low cost paths (k-th paths)
+    mapping = .traceback(dm=internals$directionMatrix, step.matrix=step.matrix, 
+                         jmin=endPoints, ...)
+    # Get starting point of each path
     startPoints = unlist(lapply(mapping, function(map){
       return(map$index2[1])
     }))
-
+    
     if(is.null(query.name))
       query.name = 1
     
     alignments = list(query = query.name,
                       from  = index(timeseries)[startPoints],
                       to    = index(timeseries)[endPoints],
-                      distance           = d[endPoints])
-                      #normalizedDistance = d[endPoints] / length(query),                      
-                      #stringsAsFactors = FALSE)
+                      distance = d[endPoints],
+                      stringsAsFactors = FALSE)
   }
   
   if(keep) return(new("dtwSat", call=match.call(), alignments=alignments, mapping=mapping, internals=internals))
@@ -252,62 +252,60 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
   theta * x / (366/2)
 }
 
-.traceback = function(alignment, jmin=NULL){
-  
-  dir = alignment$stepPattern
-  ns = attr(dir,"npat")
-  
-  n = nrow(alignment$costMatrix)
-  m = ncol(alignment$costMatrix)
-  
-  i = n
-  j = jmin
+
+.traceback = function(dm, step.matrix, jmin, ...){
+  n = nrow(dm)
+  m = ncol(dm)
   if(is.null(jmin))
-    j = alignment$jmin
+    jmin = m
   
-  nullrows = dir[,2]==0 & dir[,3]==0
-  tmp = dir[!nullrows,,drop=FALSE]
-  
-  steps.list = lapply(1:ns, function(k){
-    sbs = tmp[,1]==k  
-    spl = tmp[sbs,-1,drop=FALSE]
-    nr = nrow(spl)
-    spl[nr:1,,drop=FALSE]
-  })
-  
-  I = c(i)
-  J = c(j)
-  
-  repeat {
-    if(i==1)
-      break	
-    s = alignment$directionMatrix[i,j]
-    if(is.na(s))
-      break
+  res = lapply(jmin, function(j){
+    i = n
+    dir = step.matrix
+    ns = attr(dir,"npat")
     
-    steps = steps.list[[s]]
-    ns = nrow(steps)
+    nullrows = dir[,2]==0 & dir[,3]==0
+    tmp = dir[!nullrows,,drop=FALSE]
     
-    trash = lapply(1:ns, function(k){
-      if(i-steps[k,1] > 0) {
-        I <<- c(i-steps[k,1],I)
-        J <<- c(j-steps[k,2],J)
-      }   
-      return(NULL)
+    steps.list = lapply(1:ns, function(k){
+      sbs = tmp[,1]==k  
+      spl = tmp[sbs,-1,drop=FALSE]
+      nr = nrow(spl)
+      spl[nr:1,,drop=FALSE]
     })
     
-    i = I[1]
-    j = J[1]
-  }
-  
-  res = list()
-  res$index1 = I
-  res$index2 = J
+    I = c(i)
+    J = c(j)
+    
+    repeat{
+      if(i==1)
+        break     
+      s = dm[i,j]
+      if(is.na(s))
+        break
+      
+      steps = steps.list[[s]]
+      ns = nrow(steps)
+      
+      trash = lapply(1:ns, function(k){
+        if(i-steps[k,1] > 0){
+          I <<- c(i-steps[k,1],I)
+          J <<- c(j-steps[k,2],J)
+        }   
+        NULL
+      })
+      
+      i = I[1]
+      j = J[1]
+    }
+    out = list(index1 = I, index2 = J)
+    out
+  })
   res
 }
 
 
-.computecost = function(cm, step.matrix){
+.computecost = function(cm, step.matrix, ...){
 
   cm = rbind(0, cm)
   n = nrow(cm)

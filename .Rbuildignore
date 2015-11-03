@@ -4,6 +4,7 @@
 # Other files
 README.md
 corinho.R
+nearrealtime.f
 .git
 .gitignore
 ^README\.Rmd$

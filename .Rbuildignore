@@ -5,6 +5,7 @@
 README.md
 corinho.R
 nearrealtime.f
+nearrealtime.o
 .git
 .gitignore
 ^README\.Rmd$

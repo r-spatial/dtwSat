@@ -86,8 +86,10 @@ twdtw =  function(query, timeseries=NULL, template=NULL,
     stop("query should be of class zoo")
   if(!is(timeseries, "zoo"))
     stop("timeseries should be of class zoo")
+  if(!is.null(names(query)) & !is.null(names(timeseries)))
+    timeseries = timeseries[,names(query), drop = FALSE]
   if(ncol(query)!=ncol(timeseries))
-    stop("Number of columns in query and in timeseries don't match")
+    stop("Number of columns in query and in timeseries don't match.")
   if (!is(step.matrix, "stepPattern"))
     stop("step.matrix is no stepPattern object")
 
@@ -125,7 +127,8 @@ twdtw =  function(query, timeseries=NULL, template=NULL,
 #' alig
 #' 
 #' @export
-mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.length=NULL, ...){
+mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, 
+                  query.length=NULL, ...){
 
   
   if (!missing(template)){
@@ -160,9 +163,7 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
                    dist.method, step.matrix, n.alignments, span,
                    query.name, keep, ...)
 {
-  # Align query and timeseries by name if names not null
-  if(!is.null(names(query)) & !is.null(names(timeseries)))
-    timeseries = timeseries[,names(query)]
+  
   # Local cost
   phi = dist(query, timeseries, method=dist.method)
   # Elapsed time

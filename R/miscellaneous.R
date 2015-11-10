@@ -46,7 +46,7 @@
 #' 
 #' @examples
 #' ## Wavelet filter
-#' sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
+#' sy = waveletSmoothing(timeseries=template, frequency=16, wf = "la8", J=1, 
 #'      boundary = "periodic")
 #' plot(template$evi, xlab="Time", ylab="EVI")
 #' lines(sy$evi, col="red")
@@ -272,7 +272,7 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
   d = res$distance
   I = d>threshold
   if(any(I)){
-    res$query[I] = "unclassified"
+    res$query[I] = "Unclassified"
     res$distance[I] = Inf 
   }
   res
@@ -341,7 +341,7 @@ classfyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=
   d = res$distance
   I = d>threshold
   if(any(I)){
-    res$query[I] = "unclassified"
+    res$query[I] = "Unclassified"
     res$distance[I] = Inf 
   }
   res
@@ -361,7 +361,7 @@ classfyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=
   I = unlist(I)
   
   res = list()
-  res$query = "unclassified"
+  res$query = "Unclassified"
   res$from = start
   res$to = end - 1
   res$distance = Inf
@@ -373,7 +373,7 @@ classfyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=
     res$to = end - 1
     res$distance = x$distance[I][i_min]
   }
-  res = data.frame(res)
+  res = data.frame(res, stringsAsFactors = FALSE)
   res
 }
 
@@ -405,7 +405,7 @@ normalizeQuery = function(..., query = list(...), query.length=NULL){
   res = lapply(query, function(q){
     freq = as.numeric(diff(range(index(q))))/(query.length-1)
     timeline = seq(min(index(q), na.rm = TRUE), max(index(q), na.rm = TRUE), by=freq)
-    na.spline(q, xout = timeline)
+    zoo(data.frame(na.spline(q)), timeline)
   })
   res
 }

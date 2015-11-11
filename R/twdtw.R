@@ -69,25 +69,24 @@
 #' alig
 #' 
 #' @export
-twdtw =  function(query, timeseries=NULL, template=NULL,
+twdtw =  function(query, template, timeseries=template,
                   weight=NULL, theta=NULL, alpha=NULL, beta=NULL, 
                   dist.method="Euclidean", step.matrix = symmetric1, 
                   n.alignments=NULL, span=NULL, query.name=NULL, keep=FALSE,
                   ...)
 {
 
-  
-  if (!missing(template)){
+  # To remove 
+  if (!missing(template))
     warning("argument template is deprecated, please use timeseries instead", call. = FALSE)
-    timeseries = template
-  }
+  
   
   if(!is(query, "zoo"))
     stop("query should be of class zoo")
   if(!is(timeseries, "zoo"))
     stop("timeseries should be of class zoo")
   if(!is.null(names(query)) & !is.null(names(timeseries)))
-    timeseries = timeseries[,names(query), drop = FALSE]
+    timeseries = timeseries[,names(query), drop=FALSE]
   if(ncol(query)!=ncol(timeseries))
     stop("Number of columns in query and in timeseries don't match.")
   if (!is(step.matrix, "stepPattern"))
@@ -127,15 +126,16 @@ twdtw =  function(query, timeseries=NULL, template=NULL,
 #' alig
 #' 
 #' @export
-mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, 
-                  query.length=NULL, ...){
+mtwdtw = function(query, template, timeseries=template, 
+                  normalize=FALSE, query.length=NULL, ...){
 
   
-  if (!missing(template)){
+  # To remove 
+  if (!missing(template))
     warning("argument template is deprecated, please use timeseries instead", call. = FALSE)
-    timeseries = template
-  }
+
   
+    
   if(!is(query, "list"))
     stop("query should be a list of zoo objects")
   
@@ -238,15 +238,6 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE,
   res
 }
 
-.g = function(query, timeseries, dist.method){
-  tx = as.numeric(format(index(query), "%j"))
-  ty = as.numeric(format(index(timeseries), "%j"))
-  psi = dist(tx, ty, method=dist.method)
-  psi[psi>(366/2)] = abs(366 - psi[psi>(366/2)])
-  psi
-}
-
-
 .logisticweight = function(x, alpha, beta){
   1 / (1 + exp(1)^(-alpha*(x-beta)))
 }
@@ -255,3 +246,10 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE,
   theta * x / (366/2)
 }
 
+.g = function(query, timeseries, dist.method){
+  tx = as.numeric(format(index(query), "%j"))
+  ty = as.numeric(format(index(timeseries), "%j"))
+  psi = dist(tx, ty, method=dist.method)
+  psi[psi>(366/2)] = abs(366 - psi[psi>(366/2)])
+  psi
+}

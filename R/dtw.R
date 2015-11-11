@@ -14,8 +14,8 @@
 
 
 #' @useDynLib dtwSat computecost
-.computecost = function(cm, step.matrix, ...){
-  if(!exists("fast")) fast = TRUE
+.computecost = function(cm, step.matrix, fast){
+  if(missing("fast")) fast = TRUE
       
   cm = rbind(0, cm)
   n = nrow(cm)
@@ -80,8 +80,8 @@
 
 
 #' @useDynLib dtwSat tracepath
-.tracepath = function(dm, step.matrix, jmin, ...){
-    if(!exists("fast")) fast = TRUE
+.tracepath = function(dm, step.matrix, jmin, fast){
+    if(missing("fast")) fast = TRUE
     
     n = nrow(dm)
     m = ncol(dm)

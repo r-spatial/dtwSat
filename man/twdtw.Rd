@@ -5,20 +5,20 @@
 \alias{twdtw}
 \title{Multidimensional Time-Weighted DTW Alignment}
 \usage{
-twdtw(query, timeseries = NULL, template = NULL, weight = NULL,
-  theta = NULL, alpha = NULL, beta = NULL, dist.method = "Euclidean",
+twdtw(query, template, timeseries = template, weight = NULL, theta = NULL,
+  alpha = NULL, beta = NULL, dist.method = "Euclidean",
   step.matrix = symmetric1, n.alignments = NULL, span = NULL,
   query.name = NULL, keep = FALSE, ...)
 }
 \arguments{
 \item{query}{A \link[zoo]{zoo} object with a query time series.}
 
+\item{template}{is deprecated, please use \code{timeseries} instead}
+
 \item{timeseries}{A \link[zoo]{zoo} object with a time series similar
 to \code{query}. \code{timeseries} must have the same number of attributes
 and be equal to or longer than the \code{query},
 \emph{i.e.} \code{nrow(query)<=nrow(timeseries)}.}
-
-\item{template}{is deprecated, please use \code{timeseries} instead}
 
 \item{weight}{A character. ''linear'' for linear weight or ''logistic''
 for logistic weight. Default is NULL that runs the original dtw method,

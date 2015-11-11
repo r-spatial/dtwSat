@@ -328,8 +328,8 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
 #'
 #' @examples
 #' new.query.list = normalizeQuery(query = query.list, query.length = 23)
-#' lapply(query.list, nrow)
-#' lapply(new.query.list, nrow)
+#' sapply(query.list, nrow)
+#' sapply(new.query.list, nrow)
 #' 
 #' @export
 #' 

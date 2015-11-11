@@ -21,7 +21,7 @@
 names(query.list)
 
 # Perform twdtw alignment
-alig = twdtw(query.list[["Soybean"]], timeseries=template, dist.method = "Euclidean",
+alig = twdtw(query.list[["Soybean"]], timeseries=template, step.matrix = symmetric1, dist.method = "Euclidean",
              weight = "logistic", alpha = 0.1, beta = 100, span=180, keep=TRUE)
 
 is(alig, "dtwSat")
@@ -45,17 +45,17 @@ sy = waveletSmoothing(timeseries = template, frequency=8, wf = "la8", J=1,
 
 
 # Plot raw EVI and filtered EVI
-gp = autoplot(sy, facets = NULL) + xlab("Time")
+gp = autoplot(sy, facets = NULL)
 gp
 
 # Plot all filtered bands
 evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
-gp = autoplot(evi, facets = NULL) + xlab("Time")
+gp = autoplot(evi, facets = NULL)
 gp
 
 # Normalize queries length
 new.query.list = normalizeQuery(query = query.list, query.length = 23)
-data.frame(Old.Length=unlist(lapply(query.list, nrow)), New.length=unlist(lapply(new.query.list, nrow)))
+data.frame(Old.Length=sapply(query.list, nrow), New.length=sapply(new.query.list, nrow))
 
 # Perform twdtw to query list 
 malig = mtwdtw(query.list, timeseries=template, weight = "logistic", 
@@ -77,7 +77,7 @@ gp
 
 
 # Perform twdtw to query list 
-malig = mtwdtw(query.list, template.list[[2]], weight = "logistic", 
+malig = mtwdtw(query.list, timeseries = template.list[[2]], weight = "logistic", 
                alpha = 0.1, beta = 100, normalize=TRUE, query.length = 23)
 
 # Classify interval

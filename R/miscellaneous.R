@@ -46,7 +46,7 @@
 #' 
 #' @examples
 #' ## Wavelet filter
-#' sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
+#' sy = waveletSmoothing(timeserie=template, frequency=16, wf = "la8", J=1, 
 #'      boundary = "periodic")
 #' plot(template$evi, xlab="Time", ylab="EVI")
 #' lines(sy$evi, col="red")
@@ -63,15 +63,17 @@
 #' #gp
 #' 
 #' @export
-waveletSmoothing = function(x=NULL, timeseries=NULL, timeline=NULL, frequency=NULL, 
+waveletSmoothing = function(x, timeseries=x, timeline=NULL, frequency=NULL, 
                             wf = "la8", J=1, boundary = "periodic", ...)
 {
   
-  if (!missing(x)){
-    warning("argument x is deprecated, please use timeseries instead", call. = FALSE)
-    timeseries = x
-  }
   
+  # To remove 
+  if (!missing(x))
+    warning("argument x is deprecated, please use timeseries instead", call. = FALSE)
+
+  
+    
   if(!is(timeseries, "zoo"))
     stop("timeseries is not a zoo object")
   
@@ -249,9 +251,11 @@ getModisTimeIndex = function(date, frequency=16){
 #' @export
 classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=Inf, normalized)
 {
+  
+  # To remove 
   if (!missing(normalized))
-    warning("argument normalized is deprecated and is scheduled to be removed in the next version", 
-            call. = FALSE)
+    warning("argument normalized is deprecated and is scheduled to be removed in the next version", call. = FALSE)
+  
   
   if(is(x, "dtwSat"))
     x = getAlignments(x)
@@ -272,76 +276,7 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
   d = res$distance
   I = d>threshold
   if(any(I)){
-    res$query[I] = "unclassified"
-    res$distance[I] = Inf 
-  }
-  res
-}
-
-
-#' @title Classify time intervals
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description This function retrieves the best alignment within each 
-#' interval of classification based on the TWDTW distance
-#' 
-#' @param x A \code{\link[dtwSat]{dtwSat}} object or 
-#' a \code{\link[base]{data.frame}} similar to the slot \code{alignments} in 
-#' object \code{\link[dtwSat]{dtwSat-class}} 
-#' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param to A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param by A character with the intevals size, \emph{e.g.} ''6 month''
-#' @param breaks A vector of class \code{\link[base]{Dates}}
-#' @param overlap A number between 0 and 1. The minimum overlapping 
-#' between the one alignment and the interval of classification. 
-#' Default is 1, \emph{i.e.} 100\%
-#' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
-#' cost for consideration. Default is \code{Inf}
-#' @param normalized Use normalized TWDTW distance. Default is TRUE
-#' @docType methods
-#' @return object of class \code{\link[base]{data.frame}} with the best alignment 
-#' for each interval
-#' @examples
-#' malig = mtwdtw(query.list, timeseries=template, weight = "logistic", 
-#'          normalize=TRUE, query.length=23, alpha = 0.1, beta = 100)
-#'          
-#' # Classify interval
-#' from = as.Date("2009-09-01")
-#' to = as.Date("2013-09-01")
-#' best_class = classifyIntervals(x=malig, from=from, to=to, by = "6 month",
-#'              overlap=.3, threshold=Inf)
-#' best_class
-#' 
-#' 
-#' @export
-classfyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=Inf, normalized)
-{
-  .Deprecated("classifyIntervals")
-  
-  if (!missing(normalized))
-    warning("argument normalized is deprecated and is scheduled to be removed in the next version", 
-            call. = FALSE)
-  
-  if(is(x, "dtwSat"))
-    x = getAlignments(x)
-  
-  if(!is(x, "data.frame"))
-    stop("x is not a data.frame or dtwSat class")
-  
-  if( overlap < 0 & 1 < overlap )
-    stop("overlap out of range, it must be a number between 0 and 1")
-  
-  if(is.null(breaks))
-    breaks = seq(as.Date(from), as.Date(to), by=by)
-  
-  res = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
-    .bestInterval(x, start=breaks[i-1], end=breaks[i], overlap)
-  }))
-  
-  d = res$distance
-  I = d>threshold
-  if(any(I)){
-    res$query[I] = "unclassified"
+    res$query[I] = "Unclassified"
     res$distance[I] = Inf 
   }
   res
@@ -361,7 +296,7 @@ classfyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=
   I = unlist(I)
   
   res = list()
-  res$query = "unclassified"
+  res$query = "Unclassified"
   res$from = start
   res$to = end - 1
   res$distance = Inf
@@ -373,7 +308,7 @@ classfyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=
     res$to = end - 1
     res$distance = x$distance[I][i_min]
   }
-  res = data.frame(res)
+  res = data.frame(res, stringsAsFactors = FALSE)
   res
 }
 
@@ -405,7 +340,9 @@ normalizeQuery = function(..., query = list(...), query.length=NULL){
   res = lapply(query, function(q){
     freq = as.numeric(diff(range(index(q))))/(query.length-1)
     timeline = seq(min(index(q), na.rm = TRUE), max(index(q), na.rm = TRUE), by=freq)
-    na.spline(q, xout = timeline)
+    res = zoo(data.frame(na.spline(q, xout = timeline)), timeline)
+    names(res) = names(q)
+    res
   })
   res
 }

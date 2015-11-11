@@ -5,18 +5,18 @@
 \alias{mtwdtw}
 \title{Performs multiple Time-Weighted DTW}
 \usage{
-mtwdtw(query, timeseries = NULL, template = NULL, normalize = FALSE,
+mtwdtw(query, template, timeseries = template, normalize = FALSE,
   query.length = NULL, ...)
 }
 \arguments{
 \item{query}{A \link[zoo]{zoo} object with a query time series.}
 
+\item{template}{is deprecated, please use \code{timeseries} instead}
+
 \item{timeseries}{A \link[zoo]{zoo} object with a time series similar
 to \code{query}. \code{timeseries} must have the same number of attributes
 and be equal to or longer than the \code{query},
 \emph{i.e.} \code{nrow(query)<=nrow(timeseries)}.}
-
-\item{template}{is deprecated, please use \code{timeseries} instead}
 
 \item{normalize}{Normalize queries length. Default is FALSE}
 

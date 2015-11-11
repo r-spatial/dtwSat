@@ -5,8 +5,8 @@
 \alias{waveletSmoothing}
 \title{Wavelet filter}
 \usage{
-waveletSmoothing(x = NULL, timeseries = NULL, timeline = NULL,
-  frequency = NULL, wf = "la8", J = 1, boundary = "periodic", ...)
+waveletSmoothing(x, timeseries = x, timeline = NULL, frequency = NULL,
+  wf = "la8", J = 1, boundary = "periodic", ...)
 }
 \arguments{
 \item{x}{is deprecated, please use \code{timeseries} instead}
@@ -40,7 +40,7 @@ smoothing for each dimension in the imput time series.
 }
 \examples{
 ## Wavelet filter
-sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1,
+sy = waveletSmoothing(timeserie=template, frequency=16, wf = "la8", J=1,
      boundary = "periodic")
 plot(template$evi, xlab="Time", ylab="EVI")
 lines(sy$evi, col="red")

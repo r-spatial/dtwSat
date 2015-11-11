@@ -69,25 +69,26 @@
 #' alig
 #' 
 #' @export
-twdtw =  function(query, timeseries=NULL, template=NULL,
+twdtw =  function(query, template, timeseries=template,
                   weight=NULL, theta=NULL, alpha=NULL, beta=NULL, 
                   dist.method="Euclidean", step.matrix = symmetric1, 
                   n.alignments=NULL, span=NULL, query.name=NULL, keep=FALSE,
                   ...)
 {
 
-  
-  if (!missing(template)){
+  # To remove 
+  if (!missing(template))
     warning("argument template is deprecated, please use timeseries instead", call. = FALSE)
-    timeseries = template
-  }
+  
   
   if(!is(query, "zoo"))
     stop("query should be of class zoo")
   if(!is(timeseries, "zoo"))
     stop("timeseries should be of class zoo")
+  if(!is.null(names(query)) & !is.null(names(timeseries)))
+    timeseries = timeseries[,names(query), drop=FALSE]
   if(ncol(query)!=ncol(timeseries))
-    stop("Number of columns in query and in timeseries don't match")
+    stop("Number of columns in query and in timeseries don't match.")
   if (!is(step.matrix, "stepPattern"))
     stop("step.matrix is no stepPattern object")
 
@@ -125,14 +126,16 @@ twdtw =  function(query, timeseries=NULL, template=NULL,
 #' alig
 #' 
 #' @export
-mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.length=NULL, ...){
+mtwdtw = function(query, template, timeseries=template, 
+                  normalize=FALSE, query.length=NULL, ...){
 
   
-  if (!missing(template)){
+  # To remove 
+  if (!missing(template))
     warning("argument template is deprecated, please use timeseries instead", call. = FALSE)
-    timeseries = template
-  }
+
   
+    
   if(!is(query, "list"))
     stop("query should be a list of zoo objects")
   
@@ -160,9 +163,7 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
                    dist.method, step.matrix, n.alignments, span,
                    query.name, keep, ...)
 {
-  # Align query and timeseries by name if names not null
-  if(!is.null(names(query)) & !is.null(names(timeseries)))
-    timeseries = timeseries[,names(query)]
+  
   # Local cost
   phi = dist(query, timeseries, method=dist.method)
   # Elapsed time
@@ -237,15 +238,6 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
   res
 }
 
-.g = function(query, timeseries, dist.method){
-  tx = as.numeric(format(index(query), "%j"))
-  ty = as.numeric(format(index(timeseries), "%j"))
-  psi = dist(tx, ty, method=dist.method)
-  psi[psi>(366/2)] = abs(366 - psi[psi>(366/2)])
-  psi
-}
-
-
 .logisticweight = function(x, alpha, beta){
   1 / (1 + exp(1)^(-alpha*(x-beta)))
 }
@@ -254,112 +246,10 @@ mtwdtw = function(query, timeseries=NULL, template=NULL, normalize=FALSE, query.
   theta * x / (366/2)
 }
 
-
-.tracepath = function(dm, step.matrix, jmin, ...){
-  n = nrow(dm)
-  m = ncol(dm)
-  if(is.null(jmin))
-    jmin = m
-  
-  res = lapply(jmin, function(j){
-    i = n
-    dir = step.matrix
-    ns = attr(dir,"npat")
-    
-    nullrows = dir[,2]==0 & dir[,3]==0
-    tmp = dir[!nullrows,,drop=FALSE]
-    
-    steps.list = lapply(1:ns, function(k){
-      sbs = tmp[,1]==k  
-      spl = tmp[sbs,-1,drop=FALSE]
-      nr = nrow(spl)
-      spl[nr:1,,drop=FALSE]
-    })
-    
-    I = c(i)
-    J = c(j)
-    
-    repeat{
-      if(i==1)
-        break     
-      s = dm[i,j]
-      if(is.na(s))
-        break
-      
-      steps = steps.list[[s]]
-      ns = nrow(steps)
-      
-      trash = lapply(1:ns, function(k){
-        if(i-steps[k,1] > 0){
-          I <<- c(i-steps[k,1],I)
-          J <<- c(j-steps[k,2],J)
-        }   
-        NULL
-      })
-      
-      i = I[1]
-      j = J[1]
-    }
-    out = list(index1 = I, index2 = J)
-    out
-  })
-  res
+.g = function(query, timeseries, dist.method){
+  tx = as.numeric(format(index(query), "%j"))
+  ty = as.numeric(format(index(timeseries), "%j"))
+  psi = dist(tx, ty, method=dist.method)
+  psi[psi>(366/2)] = abs(366 - psi[psi>(366/2)])
+  psi
 }
-
-
-.computecost = function(cm, step.matrix, ...){
-
-  cm = rbind(0, cm)
-  n = nrow(cm)
-  m = ncol(cm)
-  lm = matrix(NA, nrow=n, ncol=m)
-  lm[1,] = 0
-  
-  nsteps = dim(step.matrix)[1]
-  lm[1,1] = cm[1,1]
-  sm = matrix(NA, nrow=n, ncol=m)
-
-  dir = step.matrix
-  ns = attr(dir,"npat")
-  trash = lapply(1:m, function(j){
-    trash = lapply(1:n, function(i){
-      if(!is.na(lm[i,j]))
-        return(NULL)
-      
-      clist = numeric(ns)+NA
-      for(k in 1:nsteps){
-        p = dir[k,1]
-        I = i-dir[k,2]
-        J = j-dir[k,3]
-        if(I>=1 && J>=1) {
-          w = dir[k,4]
-          if(w == -1) {
-            clist[p] = lm[I,J]
-          }else{
-            clist[p] = clist[p]+w*cm[I,J]
-          }
-        }
-      }
-      minc = which.min(clist)
-      if(length(minc) > 0){
-        lm[i,j] <<- clist[minc]
-        sm[i,j] <<- minc
-      }
-    })
-  })
-  
-  res = list()
-  res$costMatrix = lm[-1,]
-  res$directionMatrix = sm[-1,]
-  res$stepPattern = step.matrix
-  res$N = n-1
-  res$M = m
-  res
-}
-
-
-
-
-
-
-

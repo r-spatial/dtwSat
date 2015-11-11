@@ -40,7 +40,7 @@ gp2
 
 
 # Wavelet filter
-sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
+sy = waveletSmoothing(timeseries = template, frequency=8, wf = "la8", J=1, 
                       boundary = "periodic")
 
 
@@ -59,7 +59,8 @@ data.frame(Old.Length=unlist(lapply(query.list, nrow)), New.length=unlist(lapply
 
 # Perform twdtw to query list 
 malig = mtwdtw(query.list, timeseries=template, weight = "logistic", 
-               alpha = 0.1, beta = 100, normalize=TRUE, query.length = 23)
+               alpha = 0.1, beta = 100, normalize=TRUE, 
+               query.length = 23, keep=TRUE, fast=TRUE)
 # Classify interval
 best_class = classifyIntervals(x=malig, from=as.Date("2009-09-01"), 
                               to=as.Date("2013-09-01"), by = "6 month",
@@ -104,4 +105,18 @@ gp
  
 gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
 gp
+
+
+# Test bands order 
+query.list2 = lapply(query.list, function(qq) qq[,c("evi"),drop=FALSE])
+malig = mtwdtw(query = query.list2, timeseries = template.list[[2]], weight = "logistic", 
+               alpha = 0.1, beta = 100, normalize=TRUE, query.length = 23, keep=TRUE)
+# Classify interval
+best_class = classifyIntervals(x=malig, from=as.Date("2007-09-01"), 
+                               to=as.Date("2013-09-01"), by = "6 month",
+                               overlap=.3, threshold=Inf)
+best_class
+
+
+
 

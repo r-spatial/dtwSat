@@ -19,4 +19,6 @@ README.md~
 
 # Other files
 corinho.R
-src/
+nearrealtime.f
+*.o
+*.so

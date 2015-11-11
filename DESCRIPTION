@@ -2,7 +2,7 @@ Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Remote Sensing Time Series
     Analysis
-Version: 0.1.0.9000
+Version: 0.2.0.9000
 Date: 2015-10-10
 Authors@R: c(person("Victor", "Maus", role = c("aut", "cre"), email = "vwmaus1@gmail.com"))
 Description: Provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm

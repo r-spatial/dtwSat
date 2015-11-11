@@ -1,3 +1,9 @@
+# dtwSat v0.2.0 Release Notes
+
+* Include Fortran optimization 
+
+* Remove dtw package dependency 
+
 # dtwSat v0.1.1 Release Notes
 
 * New features

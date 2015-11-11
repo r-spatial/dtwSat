@@ -28,8 +28,10 @@ This dome performs a dtwSat analysis and show the results.
 ```{r define-demo-plot-dtwSat, eval=TRUE, include = TRUE}
 library(dtwSat, quietly = TRUE)
 names(query.list)
-alig = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
-             weight = "logistic", alpha = 0.1, beta = 50, span=180, keep=TRUE) 
+alig = twdtw(query=query.list[["Soybean"]], 
+             timeseries=waveletSmoothing(timeseries=template), 
+             weight = "logistic", alpha = 0.1, beta = 50, 
+             span=180, keep=TRUE) 
 is(alig, "dtwSat")
 print(alig)
 ```
@@ -41,8 +43,10 @@ Plot alignments
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-alig = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
-             weight = "logistic", alpha = 0.1, beta = 50, span=180, keep=TRUE) 
+alig = twdtw(query=query.list[["Soybean"]], 
+             timeseries=waveletSmoothing(timeseries=template), 
+             weight = "logistic", alpha = 0.1, beta = 50, 
+             span=180, keep=TRUE) 
 gp1 = plot(alig, type="alignment", n=1, attr="evi", shift=0.5) + 
           ggtitle("Alignment 1") +
 		      theme(axis.title.x=element_blank())
@@ -58,16 +62,20 @@ Plot path for DTW and TWDTW
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-alig1 = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+alig1 = twdtw(query=query.list[["Soybean"]], 
+              timeseries=waveletSmoothing(timeseries=template), 
               weight = NULL, span=180, keep = TRUE)
 gp1 = plot(alig1, show.dist = TRUE) + 
   				  theme(axis.title.x=element_blank(), legend.position="none")
-alig2 = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
+alig2 = twdtw(query=query.list[["Soybean"]], 
+              timeseries=waveletSmoothing(timeseries=template), 
               weight = "linear", theta = 1, span=180, keep = TRUE)
 gp2 = plot(alig2, show.dist = TRUE) + 
   				  theme(axis.title.x=element_blank(), legend.position="none")
-alig3 = twdtw(query.list[["Soybean"]], waveletSmoothing(template), 
-              weight = "logistic", alpha = 0.1, beta = 100, span=180, keep = TRUE)
+alig3 = twdtw(query=query.list[["Soybean"]], 
+              timeseries=waveletSmoothing(timeseries=template), 
+              weight = "logistic", alpha = 0.1, beta = 100, 
+              span=180, keep = TRUE)
 gp3 = plot(alig3, show.dist = TRUE) + 
   				  theme(axis.title.x=element_blank(), legend.position="none")
 
@@ -83,7 +91,8 @@ library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
 gp.list = lapply(seq_along(query.list), function(i){
-  				alig = twdtw(query.list[[i]], waveletSmoothing(template), 
+  				alig = twdtw(query=query.list[[i]], 
+  				             timeseries=waveletSmoothing(timeseries=template), 
   				             weight = "logistic", alpha = 0.1, 
   				             beta = 100, span=180, keep = TRUE)
   				plot(alig, show.dist = TRUE) + 
@@ -99,7 +108,8 @@ Plot classification
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-malig = mtwdtw(query.list, waveletSmoothing(template), 
+malig = mtwdtw(query=query.list, 
+               timeseries=waveletSmoothing(timeseries=template), 
                normalize = TRUE, query.length = 23,
                weight = "logistic", alpha = 0.1, beta = 100)
  

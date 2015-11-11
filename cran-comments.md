@@ -4,6 +4,12 @@
 
 ## REVIEWS
 
+# v0.2.0
+
+* Include Fortran optimization 
+
+* Remove dtw package dependency 
+
 # v0.1.1
 
 * Documentation update

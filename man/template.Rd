@@ -19,7 +19,7 @@ using the real date of each pixel from "2009-08-05" "2013-07-31".
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\link[dtwSat]{query.list}
+\link[dtwSat]{patterns.list}
 
 Package \pkg{rwtss} provides a client for Web Time 
 Series Service \url{https://github.com/albhasan/rwtss.git}.

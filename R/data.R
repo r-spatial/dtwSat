@@ -17,7 +17,7 @@
 #### DATASET DOCUMENTATION
 
 
-#' @title Data: query time series
+#' @title Data: patterns time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This dataset has a list of queries form the crops: Soybean,
@@ -33,8 +33,7 @@
 #' @seealso \link[dtwSat]{template}
 #' @seealso MOD13Q1 documentation: See 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
-"query.list"
-
+"patterns.list"
 
 #' @title Data: template time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
@@ -46,7 +45,7 @@
 #' @format A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}} 
 #' in the format "yyyy-mm-dd". Each node has 6 attributes: "ndvi", 
 #' "evi", "red", "nir", "blue", and "mir".
-#' @seealso \link[dtwSat]{query.list}
+#' @seealso \link[dtwSat]{patterns.list}
 #' @seealso Package \pkg{rwtss} provides a client for Web Time 
 #' Series Service \url{https://github.com/albhasan/rwtss.git}.
 #' @seealso MOD13Q1 documentation: 
@@ -65,7 +64,7 @@
 #' @format Each element in the \link[base]{list} has a \link[zoo]{zoo} object, 
 #' whose indices are \code{\link[base]{Dates}} in the format "yyyy-mm-dd". 
 #' Each node has 6 attributes: "ndvi", "evi", "red", "nir", "blue", and "mir".
-#' @seealso \link[dtwSat]{query.list}
+#' @seealso \link[dtwSat]{patterns.list}
 #' @seealso Package \pkg{rwtss} provides a client for Web Time 
 #' Series Service \url{https://github.com/albhasan/rwtss.git}.
 #' @seealso MOD13Q1 documentation: 

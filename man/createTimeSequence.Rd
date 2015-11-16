@@ -14,7 +14,7 @@ is form 2000 to the system time year \code{format(Sys.time(), ''\%Y'')}}
 \item{frequency}{An integer with the frequency in days. Default is 16 days}
 }
 \value{
-vector of class \code{\link[base]{Dates}}
+A vector of \code{\link[base]{Dates}}
 }
 \description{
 This function creates a sequence of dates for 

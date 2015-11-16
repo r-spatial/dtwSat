@@ -5,19 +5,18 @@
 \alias{classifyIntervals}
 \title{Classify time intervals}
 \usage{
-classifyIntervals(x, from, to, by, breaks = NULL, overlap = 0.5,
-  threshold = Inf, normalized)
+classifyIntervals(x, from, to, by, breaks, overlap = 0.3, threshold = Inf,
+  ...)
 }
 \arguments{
-\item{x}{A \code{\link[dtwSat]{dtwSat}} object or 
-a \code{\link[base]{data.frame}} similar to the slot \code{alignments} in 
-object \code{\link[dtwSat]{dtwSat-class}}}
+\item{x}{A \code{\link[dtwSat]{dtwSat-class}} object or 
+a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
-\item{to}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
+\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
-\item{by}{A character with the intevals size, \emph{e.g.} ''6 month''}
+\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''}
 
 \item{breaks}{A vector of class \code{\link[base]{Dates}}}
 
@@ -28,10 +27,10 @@ Default is 1, \emph{i.e.} 100\%}
 \item{threshold}{A number. The TWDTW threshold, i.e. the maximum TWDTW 
 cost for consideration. Default is \code{Inf}}
 
-\item{normalized}{Use normalized TWDTW distance. Default is TRUE}
+\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
 \value{
-object of class \code{\link[base]{data.frame}} with the best alignment 
+A \code{\link[base]{data.frame}} with the best alignment 
 for each interval
 }
 \description{
@@ -39,15 +38,22 @@ This function retrieves the best alignment within each
 interval of classification based on the TWDTW distance
 }
 \examples{
-malig = mtwdtw(query.list, timeseries=template, weight = "logistic", 
-         normalize=TRUE, query.length=23, alpha = 0.1, beta = 100)
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+        normalize=TRUE, patterns.length=23)
          
 # Classify interval
 from = as.Date("2009-09-01")
 to = as.Date("2013-09-01")
-best_class = classifyIntervals(x=malig, from=from, to=to, by = "6 month",
+by = "6 month"
+
+# All classes
+classifyIntervals(x=alig, from=from, to=to, by = by,
              overlap=.3, threshold=Inf)
-best_class
+
+# Cotton and Maize 
+classifyIntervals(x=alig, from=from, to=to, by = by,
+             overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 
 
 }

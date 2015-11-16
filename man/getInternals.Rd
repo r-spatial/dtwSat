@@ -5,14 +5,16 @@
 \alias{getInternals}
 \title{Get internals from dtwSat object}
 \usage{
-getInternals(object)
+getInternals(object, ...)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{dtwSat-class} object}
+
+\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
 \value{
-An object of class \code{\link[base]{list}} whose 
-  elements have the internal structures used by \code{\link[dtwSat]{twdtw}}. 
+A \code{\link[base]{list}} whose 
+  elements have the internal structures used used in \code{\link[dtwSat]{twdtw}}. 
   The elements are: 
       \cr\code{timeWeight}: time weight matrix,
       \cr\code{localMatrix}: local cost matrix,
@@ -20,24 +22,36 @@ An object of class \code{\link[base]{list}} whose
       \cr\code{directionMatrix}: directions of steps that would be taken in the alignments,
       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
       computation, see package \code{\link[dtw]{dtw}}
-      \cr\code{query}: query time series, 
+      \cr\code{pattern}: pattern time series, 
       \cr\code{timeseries}: satellite image time series,
-      \cr\code{N}: \code{query} length, and 
+      \cr\code{N}: \code{pattern} length, and 
       \cr\code{M}: \code{timeseries} length.
 }
 \description{
 This function retrieves cost matrix, inputs, and other 
-internal structures from dtwSat-class object
+internal structures from \link[dtwSat]{dtwSat-class} object
 }
 \examples{
-names(query.list)
-alig = dtwSat(query.list[["Soybean"]], timeseries=template, keep=TRUE)
-getInternals(alig)
+
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, keep=TRUE)
+
+a = getInternals(alig)
+names(a) 
+
+a = getInternals(alig, p.names="Maize")
+names(a) 
+
+a = getInternals(alig, p.names=c(1,2))
+names(a) 
+
+
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw}}
 }
 

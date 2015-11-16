@@ -14,31 +14,31 @@ Class for Multidimensional Time-Weighted DTW alignments
  \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements 
  have length identical to the number of alignments.
  The elements are:  
-      \cr\code{query}: query identification,
-      \cr\code{from}: starting dates,
-      \cr\code{to}: ending dates, and
-	     \cr\code{distance}: TWDTW distances.
-      }
- \item{\code{mapping}:}{An object of class \code{\link[base]{list}} whose 
- elements have the matching points for each alignment between 
- the query and the time series. 
- Each element has two vectors: 
-      \cr\code{index1}: matching points of the query, and
-      \cr\code{index2}: matching points of the time series.
+      \cr\code{pattern}: pattern identification,
+      \cr\code{from}: starting date,
+      \cr\code{to}: ending date, 
+	     \cr\code{distance}: TWDTW distance, and
+	     \cr\code{K}: the number of alignments of the pattern.
       }
 	\item{\code{internals}:}{An object of class \code{\link[base]{list}} whose 
   elements have the internal structures used by \code{\link[dtwSat]{twdtw}}. 
   The elements are: 
-      \cr\code{timeWeight}: time weight matrix,
-      \cr\code{localMatrix}: local cost matrix,
       \cr\code{costMatrix}: cumulative cost matrix,
       \cr\code{directionMatrix}: directions of steps that would be taken in the alignments,
       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
       computation, see package \code{\link[dtw]{dtw}}
-      \cr\code{query}: query time series, 
+      \cr\code{N}: \code{pattern} length, 
+      \cr\code{M}: \code{timeseries} length, 
+      \cr\code{timeWeight}: time weight matrix,
+      \cr\code{localMatrix}: local cost matrix,
+      \cr\code{patterns}: temporal pattern, 
       \cr\code{timeseries}: satellite image time series,
-      \cr\code{N}: \code{query} length, and 
-      \cr\code{M}: \code{timeseries} length.
+      }
+	\item{\code{matching}:}{An object of class \code{\link[base]{list}} whose 
+  elements have the matching points for each alignment between the 
+  \code{pattern} and the \code{timeseries}, such that
+      \cr\code{index1}: matching points of the temporal pattern, and
+      \cr\code{index2}: matching points of the time series.
       }
 }
 }
@@ -46,8 +46,10 @@ Class for Multidimensional Time-Weighted DTW alignments
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}, 
-\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}},
-\code{\link[dtw]{stepPattern}}, and \code{\link[dtw]{dtw}}.
+\code{\link[dtwSat]{twdtw}}, 
+\code{\link[dtwSat]{getPatternNames}},
+\code{\link[dtwSat]{getAlignments}},
+\code{\link[dtwSat]{getMatches}}, and 
+\code{\link[dtwSat]{getInternals}}
 }
 

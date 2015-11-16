@@ -10,46 +10,62 @@
 \arguments{
 \item{x}{A \code{\link[dtwSat]{dtwSat-class}} object}
 
-\item{type}{A character for the plot type, ''path'', ''alignment'', or 
-''classify''. Default is "path"}
+\item{type}{A character for the plot type, ''path'', ''match'', 
+''alignment'', ''group'', ''cost''. Default is ''path''}
 
 \item{...}{additional arguments passed to plotting functions
-\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}, and 
-\code{\link[dtwSat]{plotClassify}}}
+\code{\link[dtwSat]{dtwSat-class}}, \code{\link[dtwSat]{twdtw}}, 
+\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotCostMatrix}},
+\code{\link[dtwSat]{plotAlignment}}, \code{\link[dtwSat]{plotMatch}}, and
+\code{\link[dtwSat]{plotGroup}}}
 }
 \value{
-object of class \link[ggplot2]{ggplot}
+A \link[gtable]{gtable} object for methods: ''path'' and 
+''cost'', or a \link[ggplot2]{ggplot} object for methods: ''match'', 
+''alignment'', and ''group''
 }
 \description{
 Methods for plotting the results of the 
 Time-Weighted DTW analysis
 }
 \examples{
-names(query.list)
-alig = dtwSat(query.list[["Soybean"]], timeseries=template, weight = "logistic", 
-       alpha = 0.1, beta = 100, n.alignments = 4, keep = TRUE)
 
-## Plot path
-gp1 = plot(alig, type="path", show.dist = TRUE)
-gp1
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+        normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 
-## Plot alignment
-gp2 = plot(alig, type="alignment", n=1, attr="evi", shift=0.5)
+# Plot paths
+gp1 = plot(alig, type="path", n.alignments=1:4, show.dist = TRUE)
+grid.arrange(gp1)
+
+# Plot matches 
+gp2 = plot(alig, type="match", attr=1)
 gp2
 
-## Plot classification
-gp3 = plot(alig, type="classify", attr="evi", 
-         from=as.Date("2009-09-01"),  to=as.Date("2013-09-01"), 
-         by = "6 month", overlap=.7)
+# Plot alignments 
+gp3 = plot(alig, type="alignment", attr=c("ndvi","evi"), threshold=4)
 gp3
+
+## Plot classification
+gp4 = plot(alig, type="group", attr="evi", from=as.Date("2009-09-01"),  
+           to=as.Date("2013-09-01"), by = "6 month", overlap=.3)
+gp4
+
+# Plot cost matrix
+gp5 = plot(alig, type="cost", matrix.name="costMatrix")
+grid.arrange(gp5)
 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, \code{\link[dtwSat]{dtwSat}}, 
-\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}}, and 
-\code{\link[dtwSat]{plotClassify}}
+\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw}}, 
+\code{\link[dtwSat]{plotPath}}, 
+\code{\link[dtwSat]{plotCostMatrix}},
+\code{\link[dtwSat]{plotAlignment}},
+\code{\link[dtwSat]{plotMatch}}, and
+\code{\link[dtwSat]{plotGroup}}
 }
 

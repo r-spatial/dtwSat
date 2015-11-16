@@ -5,33 +5,41 @@
 \alias{getAlignments}
 \title{Get alignments from dtwSat object}
 \usage{
-getAlignments(object)
+getAlignments(object, ...)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{dtwSat-class} object}
+
+\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
 \value{
-An object of class \code{\link[base]{list}} whose 
-elements have length identical to the number of alignments.
-The elements are:  
-      \cr\code{query}: query identification,
-      \cr\code{from}: starting dates,
-      \cr\code{to}: ending dates, and
+A \link[base]{data.frame} with the following columns:  
+      \cr\code{pattern}: the pattern identification,
+      \cr\code{from}: starting date,
+      \cr\code{to}: ending date, and
 	     \cr\code{distance}: TWDTW distances.
 }
 \description{
 This function retrieves the alignments 
-in the object \link[dtwSat]{dtwSat-class}
+from the object \link[dtwSat]{dtwSat-class}
 }
 \examples{
-names(query.list)
-alig = dtwSat(query.list[["Soybean"]], timeseries=template)
+
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
+
 getAlignments(alig)
+
+getAlignments(alig, p.names="Soybean")
+
+getAlignments(alig, p.names=c(2,3))
+
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}} and \code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw}}
 }
 

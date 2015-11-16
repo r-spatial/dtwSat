@@ -40,7 +40,7 @@
 #' @param x is deprecated, please use \code{timeseries} instead
 #' 
 #' @docType methods
-#' @return object of class \code{\link[zoo]{zoo}} 
+#' @return A \code{\link[zoo]{zoo}} object
 #' 
 #' @seealso \link[waveslim]{mra}
 #' 
@@ -48,19 +48,15 @@
 #' ## Wavelet filter
 #' sy = waveletSmoothing(timeserie=template, frequency=16, wf = "la8", J=1, 
 #'      boundary = "periodic")
-#' plot(template$evi, xlab="Time", ylab="EVI")
-#' lines(sy$evi, col="red")
 #' 
 #' ## Plot raw EVI and filtered EVI
-#' #require(ggplot2)
-#' #evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
-#' #gp = autoplot(evi, facets = NULL) + xlab("Time")
-#' #gp
+#' evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
+#' gp = autoplot(evi, facets = NULL)
+#' gp
 #'     
-#' ## Plot all filter bands
-#' #require(ggplot2)
-#' #gp = autoplot(sy, facets = NULL) + xlab("Time")
-#' #gp
+#' ## Plot all bands
+#' gp = autoplot(sy, facets = NULL)
+#' gp
 #' 
 #' @export
 waveletSmoothing = function(x, timeseries=x, timeline=NULL, frequency=NULL, 
@@ -112,7 +108,7 @@ waveletSmoothing = function(x, timeseries=x, timeline=NULL, frequency=NULL,
 #' @param frequency An integer with the frequency in days. Default is 16 days
 #' @docType methods
 #' 
-#' @return vector of class \code{\link[base]{Dates}} 
+#' @return A vector of \code{\link[base]{Dates}} 
 #' 
 #' @seealso \link[dtwSat]{getDatesFromDOY} and \link[dtwSat]{getModisTimeIndex}
 #' 
@@ -140,7 +136,7 @@ createTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16){
 #' @param frequency An integer with the frequency in days. Default is 16 days
 #' @docType methods
 #' 
-#' @return vector of class \code{\link[base]{Dates}} 
+#' @return A vector of \code{\link[base]{Dates}} 
 #' 
 #' @seealso \link[dtwSat]{getDatesFromDOY} and \link[dtwSat]{getModisTimeIndex}
 #' 
@@ -166,7 +162,7 @@ getModisTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16
 #' @param doy An vector with the day of the year
 #' @docType methods
 #' 
-#' @return object of class \code{\link[base]{Dates}} 
+#' @return A \code{\link[base]{Dates}} object
 #' 
 #' @seealso \link[dtwSat]{getModisTimeSequence} and \link[dtwSat]{getModisTimeIndex}
 #' 
@@ -195,7 +191,7 @@ getDatesFromDOY = function(year, doy){
 #' 
 #' @docType methods 
 #' 
-#' @return An integer 
+#' @return An \code{\link[base]{integer}} object 
 #' 
 #' @seealso \link[dtwSat]{getModisTimeSequence} and \link[dtwSat]{getDatesFromDOY}
 #' 
@@ -220,45 +216,50 @@ getModisTimeIndex = function(date, frequency=16){
 #' @description This function retrieves the best alignment within each 
 #' interval of classification based on the TWDTW distance
 #' 
-#' @param x A \code{\link[dtwSat]{dtwSat}} object or 
-#' a \code{\link[base]{data.frame}} similar to the slot \code{alignments} in 
-#' object \code{\link[dtwSat]{dtwSat-class}} 
+#' @param x A \code{\link[dtwSat]{dtwSat-class}} object or 
+#' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}} 
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param to A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param by A character with the intevals size, \emph{e.g.} ''6 month''
+#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
+#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''
 #' @param breaks A vector of class \code{\link[base]{Dates}}
 #' @param overlap A number between 0 and 1. The minimum overlapping 
 #' between the one alignment and the interval of classification. 
 #' Default is 1, \emph{i.e.} 100\%
 #' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
 #' cost for consideration. Default is \code{Inf}
-#' @param normalized Use normalized TWDTW distance. Default is TRUE
+#' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
+#' 
 #' @docType methods
-#' @return object of class \code{\link[base]{data.frame}} with the best alignment 
+#' @return A \code{\link[base]{data.frame}} with the best alignment 
 #' for each interval
 #' @examples
-#' malig = mtwdtw(query.list, timeseries=template, weight = "logistic", 
-#'          normalize=TRUE, query.length=23, alpha = 0.1, beta = 100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#'         normalize=TRUE, patterns.length=23)
 #'          
 #' # Classify interval
 #' from = as.Date("2009-09-01")
 #' to = as.Date("2013-09-01")
-#' best_class = classifyIntervals(x=malig, from=from, to=to, by = "6 month",
+#' by = "6 month"
+#' 
+#' # All classes
+#' classifyIntervals(x=alig, from=from, to=to, by = by,
 #'              overlap=.3, threshold=Inf)
-#' best_class
+#' 
+#' # Cotton and Maize 
+#' classifyIntervals(x=alig, from=from, to=to, by = by,
+#'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 #' 
 #' 
 #' @export
-classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold=Inf, normalized)
+classifyIntervals = function(x, from, to, by, breaks, overlap=.3, 
+                             threshold=Inf, ...)
 {
   
-  # To remove 
-  if (!missing(normalized))
-    warning("argument normalized is deprecated and is scheduled to be removed in the next version", call. = FALSE)
-  
+  p.names = getPatternNames(x, ...)
   
   if(is(x, "dtwSat"))
-    x = getAlignments(x)
+    x = getAlignments(x, p.names)
 
   if(!is(x, "data.frame"))
     stop("x is not a data.frame or dtwSat class")
@@ -266,7 +267,7 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
   if( overlap < 0 & 1 < overlap )
     stop("overlap out of range, it must be a number between 0 and 1")
 
-  if(is.null(breaks))
+  if(missing(breaks))
     breaks = seq(as.Date(from), as.Date(to), by=by)
 
   res = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
@@ -276,7 +277,7 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
   d = res$distance
   I = d>threshold
   if(any(I)){
-    res$query[I] = "Unclassified"
+    res$pattern[I] = "Unclassified"
     res$distance[I] = Inf 
   }
   res
@@ -296,14 +297,14 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
   I = unlist(I)
   
   res = list()
-  res$query = "Unclassified"
+  res$pattern = "Unclassified"
   res$from = start
   res$to = end - 1
   res$distance = Inf
   
   if(!is.null(I)){
     i_min = which.min(x$distance[I])
-    res$query = x$query[I][i_min]
+    res$pattern = x$pattern[I][i_min]
     res$from = start
     res$to = end - 1
     res$distance = x$distance[I][i_min]
@@ -313,32 +314,32 @@ classifyIntervals = function(x, from, to, by, breaks=NULL, overlap=.5, threshold
 }
 
 
-#' @title Normalize query length 
+#' @title Normalize patterns length 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function normalize the length of a query or 
-#' list of queries
+#' @description This function normalizes the length of a pattern or 
+#' list of patterns
 #' 
 #' @param ... \link[zoo]{zoo} objects
-#' @param query a list of \link[zoo]{zoo} objects
-#' @param query.length An integer. Default is the length of the longest query
+#' @param patterns a list of \link[zoo]{zoo} objects
+#' @param patterns.length An integer. Default is the length of the longest pattern
 #' @docType methods
 #' @return A \link[base]{list} of \link[zoo]{zoo} objects with normalized 
 #' length 
 #'
 #' @examples
-#' new.query.list = normalizeQuery(query = query.list, query.length = 23)
-#' sapply(query.list, nrow)
-#' sapply(new.query.list, nrow)
+#' new.patterns.list = normalizePatterns(patterns = patterns.list, patterns.length = 23)
+#' sapply(patterns.list, nrow)
+#' sapply(new.patterns.list, nrow)
 #' 
 #' @export
 #' 
-normalizeQuery = function(..., query = list(...), query.length=NULL){
-  if(is.null(query.length))
-    query.length = max(unlist(lapply(query, nrow)), na.rm=TRUE)
+normalizePatterns = function(..., patterns = list(...), patterns.length=NULL){
+  if(is.null(patterns.length))
+    patterns.length = max(unlist(lapply(patterns, nrow)), na.rm=TRUE)
 
-  res = lapply(query, function(q){
-    freq = as.numeric(diff(range(index(q))))/(query.length-1)
+  res = lapply(patterns, function(q){
+    freq = as.numeric(diff(range(index(q))))/(patterns.length-1)
     timeline = seq(min(index(q), na.rm = TRUE), max(index(q), na.rm = TRUE), by=freq)
     res = zoo(data.frame(na.spline(q, xout = timeline)), timeline)
     names(res) = names(q)

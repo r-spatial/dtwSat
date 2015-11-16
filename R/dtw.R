@@ -14,14 +14,13 @@
 
 
 #' @useDynLib dtwSat computecost
-.computecost = function(cm, step.matrix, fast){
-  if(missing("fast")) fast = TRUE
-      
+.computecost = function(cm, step.matrix){
+  
   cm = rbind(0, cm)
   n = nrow(cm)
   m = ncol(cm)
   
-  if(fast & is.loaded("computecost", PACKAGE = "dtwSat", type = "Fortran")){
+  if(is.loaded("computecost", PACKAGE = "dtwSat", type = "Fortran")){
         out = .Fortran("computecost", 
                 CM = matrix(as.double(cm), n, m),
                 DM = matrix(as.integer(0), n, m),
@@ -80,15 +79,14 @@
 
 
 #' @useDynLib dtwSat tracepath
-.tracepath = function(dm, step.matrix, jmin, fast){
-    if(missing("fast")) fast = TRUE
-    
+.tracepath = function(dm, step.matrix, jmin){
+
     n = nrow(dm)
     m = ncol(dm)
     if(is.null(jmin))
       jmin = m
     
-    if(fast & is.loaded("tracepath", PACKAGE = "dtwSat", type = "Fortran")){
+    if(is.loaded("tracepath", PACKAGE = "dtwSat", type = "Fortran")){
           aloc = length(jmin)*10*n
           paths = .Fortran("tracepath", 
                 DM   = matrix(as.integer(dm), n, m),

@@ -5,31 +5,29 @@
 \alias{twdtw}
 \title{Multidimensional Time-Weighted DTW Alignment}
 \usage{
-twdtw(query, template, timeseries = template, weight = NULL, theta = NULL,
-  alpha = NULL, beta = NULL, dist.method = "Euclidean",
-  step.matrix = symmetric1, n.alignments = NULL, span = NULL,
-  query.name = NULL, keep = FALSE, ...)
+twdtw(..., patterns = list(...), timeseries = NULL,
+  normalize.patterns = FALSE, patterns.length = NULL, weight.fun,
+  dist.method = "Euclidean", step.matrix = symmetric1,
+  n.alignments = NULL, span = NULL, keep = FALSE)
 }
 \arguments{
-\item{query}{A \link[zoo]{zoo} object with a query time series.}
+\item{...}{\link[zoo]{zoo} objects}
 
-\item{template}{is deprecated, please use \code{timeseries} instead}
+\item{patterns}{a list of \link[zoo]{zoo} objects}
 
 \item{timeseries}{A \link[zoo]{zoo} object with a time series similar 
-to \code{query}. \code{timeseries} must have the same number of attributes
-and be equal to or longer than the \code{query}, 
-\emph{i.e.} \code{nrow(query)<=nrow(timeseries)}.}
+to \code{patterns}. \code{timeseries} must have the same number of attributes
+and be equal to or longer than the \code{patterns}, 
+\emph{i.e.} \code{nrow(patterns)<=nrow(timeseries)}}
 
-\item{weight}{A character. ''linear'' for linear weight or ''logistic'' 
-for logistic weight. Default is NULL that runs the original dtw method,
-\emph{i.e.} without time weight.}
+\item{normalize.patterns}{Normalize queries length. Default is FALSE}
 
-\item{theta}{A number. Parameter for ''linear'' time weight. For \code{theta=1} 
-the time weight is equal to the number of elapsed days.}
+\item{patterns.length}{An integer. Queries length used with normalize. If not declared 
+the length of the output queries will be the length of the longest patterns}
 
-\item{alpha}{A number. The steepness of logistic weight.}
-
-\item{beta}{A number. The midpoint of logistic weight.}
+\item{weight.fun}{A function to be applied to each element of the cost matrix.
+If not declared the time weight is zero, \emph{i.e.} it runs the original dtw method. 
+See \link[dtwSat]{logisticWeight} function for a logistic time weight}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
@@ -38,44 +36,47 @@ Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package
 \item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2]}
 
 \item{n.alignments}{An integer. The maximun number of alignments to 
-perform. NULL will return all possible alignments.}
+perform. NULL will return all possible alignments}
 
 \item{span}{Span between two points of minimum in days, \emph{i.e.} the minimum
-interval between two alignments, for details see [1]}
-
-\item{query.name}{A query identification}
+interval between two alignments, for details see [3]}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE}
-
-\item{...}{additional arguments passed to \code{twdtw}}
 }
 \value{
-An object of class \code{\link[dtwSat]{dtwSat-class}}
+A \code{\link[dtwSat]{dtwSat-class}} object
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW 
-analysis and retrieves the alignments of a query within a time series.
+analysis and retrieves the alignments between the temporal patterns and 
+the time series.
 }
 \examples{
-names(query.list)
-query.name = "Soybean"
-alig = twdtw(query.list[[query.name]], timeseries=template, weight = "logistic", 
-       alpha = 0.1, beta = 100, n.alignments=4, query.name=query.name)
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
 alig
+
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+             keep=TRUE)
+getPatternNames(alig)
+getAlignments(alig)
+getMatches(alig)
+getInternals(alig)
+
 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \references{
-[1] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
-and Motion (pp. 79-84). London: Springer London, Limited.
-
-[2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
+[1] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
 The dtw Package. Journal of Statistical Software, 31, 1-24.
+
+[2] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
+and Motion (pp. 79-84). London: Springer London, Limited.
 }
 \seealso{
-\code{\link[dtwSat]{mtwdtw}}, \code{\link[dtwSat]{dtwSat-class}}
+\code{\link[dtwSat]{dtwSat-class}}
 }
 

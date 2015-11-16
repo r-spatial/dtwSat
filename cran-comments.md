@@ -10,6 +10,8 @@
 
 * Remove dtw package dependency 
 
+* Extend dtwSat class to set of alignments 
+
 # v0.1.1
 
 * Documentation update

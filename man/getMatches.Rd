@@ -5,32 +5,43 @@
 \alias{getMatches}
 \title{Get matching points from dtwSat object}
 \usage{
-getMatches(object)
+getMatches(object, ...)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{dtwSat-class} object}
+
+\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
 \value{
-An object of class \code{\link[base]{list}} whose 
+A \code{\link[base]{list}} whose 
  elements have the matching points for each alignment between 
- the query and the time series. 
+ the temporal pattern and the time series. 
  Each element has two vectors: 
-      \cr\code{index1}: matching points of the query, and
+      \cr\code{index1}: matching points of the pattern, and
       \cr\code{index2}: matching points of the time series.
 }
 \description{
 This function retrieves the matching points 
-for each alignment between the \code{query} and the \code{timeseries}
+for each alignment between the \code{pattern} and the 
+\code{timeseries}
 }
 \examples{
-names(query.list)
-alig = dtwSat(query.list[["Soybean"]], timeseries=template)
+
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
+
 getMatches(alig)
+
+getMatches(alig, p.names="Maize")
+
+getMatches(alig, p.names=1)
+
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw}}
 }
 

@@ -31,7 +31,7 @@ Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.}
 packege \pkg{waveslim}}
 }
 \value{
-object of class \code{\link[zoo]{zoo}}
+A \code{\link[zoo]{zoo}} object
 }
 \description{
 This function performs a smoothing algorithm to
@@ -42,19 +42,15 @@ smoothing for each dimension in the imput time series.
 ## Wavelet filter
 sy = waveletSmoothing(timeserie=template, frequency=16, wf = "la8", J=1, 
      boundary = "periodic")
-plot(template$evi, xlab="Time", ylab="EVI")
-lines(sy$evi, col="red")
 
 ## Plot raw EVI and filtered EVI
-#require(ggplot2)
-#evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
-#gp = autoplot(evi, facets = NULL) + xlab("Time")
-#gp
+evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
+gp = autoplot(evi, facets = NULL)
+gp
     
-## Plot all filter bands
-#require(ggplot2)
-#gp = autoplot(sy, facets = NULL) + xlab("Time")
-#gp
+## Plot all bands
+gp = autoplot(sy, facets = NULL)
+gp
 
 }
 \author{

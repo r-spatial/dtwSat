@@ -4,7 +4,7 @@
 \alias{plotCostMatrix}
 \title{Plotting cost matrices}
 \usage{
-plotCostMatrix(x, matrix.name = "costMatrix")
+plotCostMatrix(x, matrix.name = "costMatrix", p.names)
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
@@ -12,34 +12,51 @@ plotCostMatrix(x, matrix.name = "costMatrix")
 \item{matrix.name}{A character. The name of the matrix to plot,
 "costMatrix", "localMatrix", or "timeWeight". 
 Default is "costMatrix"}
+
+\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+will plot the matrices for all patterns}
 }
 \value{
-object of class \link[ggplot2]{ggplot}
+A \link[gtable]{gtable} object
 }
 \description{
 Method for plotting the internal matrices
 }
 \examples{
-names(query.list)
-alig = twdtw(query.list[["Soybean"]], timeseries=template, weight = "logistic", 
-               alpha = 0.1, beta = 100, keep=TRUE)
 
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+        normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+
+# Plot local cost for all patterns
 gp = plotCostMatrix(x=alig, matrix.name="localMatrix")
-gp
+grid.arrange(gp)
 
+# Plot time weight for all patterns
 gp = plotCostMatrix(x=alig, matrix.name="timeWeight")
-gp
+grid.arrange(gp)
 
+# Plot accumulated cost for all patterns
 gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
-gp
+grid.arrange(gp)
+
+# Plot accumulated cost for Cotton and Soybean
+gp = plotCostMatrix(x=alig, matrix.name="costMatrix", 
+     p.names=c("Cotton","Soybean"))
+grid.arrange(gp)
+
 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, 
-\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotAlignment}},
-and \code{\link[dtwSat]{plotClassify}}
+\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw}}, 
+\code{\link[dtwSat]{plotPath}}, 
+\code{\link[dtwSat]{plotAlignment}},
+\code{\link[dtwSat]{plotMatch}}, and
+\code{\link[dtwSat]{plotGroup}}
 }
 

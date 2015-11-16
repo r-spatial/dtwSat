@@ -3,45 +3,54 @@
 \docType{methods}
 \name{plotPath}
 \alias{plotPath}
-\title{Plotting paths of dtwSat object}
+\title{Plotting paths of twdtw alignments}
 \usage{
-plotPath(x, n.alignments = NULL, show.dist = FALSE, shift = c(-4, -1),
-  normalized)
+plotPath(x, p.names, n.alignments = NULL, show.dist = FALSE, shift = c(-4,
+  -1))
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
 
-\item{n.alignments}{A vector. The alignment indices to 
-plot. NULL will plot all possible alignments}
+\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+will plot the paths for all patterns}
+
+\item{n.alignments}{An \link[base]{integer} vector. The alignment indices 
+to plot. If not declared the function will plot all possible alignments}
 
 \item{show.dist}{Display dtw distance for each alignment}
 
 \item{shift}{A vector of length 2. These values shift the position
 of the text in \code{x} and \code{y}, respectively. Argument used 
 with show.dist}
-
-\item{normalized}{Use normalized TWDTW distance. Default is TRUE}
 }
 \value{
-object of class \code{\link[ggplot2]{ggplot}}
+A \link[gtable]{gtable} object
 }
 \description{
 Method for plotting the minimum paths in the 
 cost matrix of Time-Weighted DTW
 }
 \examples{
-names(query.list)
-alig = dtwSat(query.list[["Soybean"]], timeseries=template, weight = "logistic", 
-       alpha = 0.1, beta = 100, n.alignments = 4, keep = TRUE)
-gp = plotPath(alig, show.dist = TRUE)
-gp
+
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+        normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+       
+gp = plotPath(alig, n.alignments=1:4)
+
+grid.arrange(gp)
 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat}}, \code{\link[dtwSat]{plotAlignment}}, 
-\code{\link[dtwSat]{plotClassify}}, and \code{\link[dtwSat]{plotCostMatrix}}
+\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw}}, 
+\code{\link[dtwSat]{plotCostMatrix}},
+\code{\link[dtwSat]{plotAlignment}},
+\code{\link[dtwSat]{plotMatch}}, and
+\code{\link[dtwSat]{plotGroup}}
 }
 

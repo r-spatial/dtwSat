@@ -13,7 +13,7 @@ getDatesFromDOY(year, doy)
 \item{doy}{An vector with the day of the year}
 }
 \value{
-object of class \code{\link[base]{Dates}}
+A \code{\link[base]{Dates}} object
 }
 \description{
 This function retrieves the date corresponding to year 

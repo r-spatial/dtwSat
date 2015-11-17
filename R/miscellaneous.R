@@ -233,7 +233,7 @@ getModisTimeIndex = function(date, frequency=16){
 #' @return A \code{\link[base]{data.frame}} with the best alignment 
 #' for each interval
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize=TRUE, patterns.length=23)
 #'          

@@ -27,7 +27,7 @@ for each alignment between the \code{pattern} and the
 }
 \examples{
 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
+weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
 
 getMatches(alig)

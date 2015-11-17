@@ -1,27 +1,27 @@
-# ###############################################################
-# #                                                             #
-# #   (c) Victor Maus <vwmaus1@gmail.com>                       #
-# #       Institute for Geoinformatics (IFGI)                   #
-# #       University of Muenster (WWU), Germany                 #
-# #                                                             #
-# #       Earth System Science Center (CCST)                    #
-# #       National Institute for Space Research (INPE), Brazil  #
-# #                                                             #
-# #                                                             #
-# #   R Package dtwSat - 2015-09-01                             #
-# #                                                             #
-# ###############################################################
-# 
-# 
-# ###############################################################
-# #### dtwSat TESTS
-# 
-# 
-# # Show pattern names
+###############################################################
+#                                                             #
+#   (c) Victor Maus <vwmaus1@gmail.com>                       #
+#       Institute for Geoinformatics (IFGI)                   #
+#       University of Muenster (WWU), Germany                 #
+#                                                             #
+#       Earth System Science Center (CCST)                    #
+#       National Institute for Space Research (INPE), Brazil  #
+#                                                             #
+#                                                             #
+#   R Package dtwSat - 2015-09-01                             #
+#                                                             #
+###############################################################
+
+
+###############################################################
+#### dtwSat TESTS
+
+
+# Show pattern names
 names(patterns.list)
 
 # Perform twdtw alignment
-weight.fun = function(x) 0.1*x
+weight.fun = function(x, y) 0.1*x
 alig = twdtw(patterns=patterns.list["Soybean"], timeseries=template, step.matrix = symmetric1, 
              dist.method = "Euclidean", weight.fun = weight.fun, keep=TRUE)
 
@@ -59,7 +59,7 @@ new.patterns.list = normalizePatterns(patterns = patterns.list, patterns.length 
 data.frame(Old.Length=sapply(patterns.list, nrow), New.length=sapply(new.patterns.list, nrow))
 
 # Perform twdtw to patterns list 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
+weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 malig = twdtw(patterns=new.patterns.list, timeseries=template,
               weight.fun = weight.fun, keep=TRUE)
 
@@ -73,52 +73,58 @@ gp = plotGroup(x=malig, from=as.Date("2009-09-01"),
               to=as.Date("2013-09-01"), by = "6 month",
               overlap=.3)
 gp
-# # ggsave("classify.png", plot=gp, width = 8.9, height=5.9/1.5, units="in",
-# #         family="Helvetica", type = "cairo-png")
-# 
-# 
-# 
-# # Perform twdtw to patterns list 
-# malig = mtwdtw(patterns.list, timeseries = template.list[[2]], weight.fun = "logistic", 
-#                alpha = 0.1, beta = 100, normalize.patterns=TRUE, patterns.length = 23)
-# 
-# # Classify interval
-# best_class = classifyIntervals(x=malig, from=as.Date("2007-09-01"), 
-#                                to=as.Date("2013-09-01"), by = "6 month",
-#                                overlap=.3, threshold=Inf)
-# best_class
-# 
-# gp = plotClassify(x=malig, from=as.Date("2007-09-01"),  
-#                   to=as.Date("2013-09-01"), by = "6 month",
-#                   overlap=.3)
-# gp
-# 
-# 
-# # Plot cost matrix 
-# alig = twdtw(patterns.list[["Soybean"]], timeseries=template, weight.fun = "logistic", 
-#              alpha = 0.1, beta = 100, keep=TRUE)
-#  
-# 
-# gp = plotCostMatrix(x=alig, matrix.name="timeWeight")
-# gp
-# 
-# gp = plotCostMatrix(x=alig, matrix.name="localMatrix")
-# gp
-#  
-# gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
-# gp
-# 
-# 
-# # Test bands order 
-# patterns.list2 = lapply(patterns.list, function(qq) qq[,c("evi"),drop=FALSE])
-# malig = mtwdtw(patterns = patterns.list2, timeseries = template.list[[2]], weight.fun = "logistic", 
-#                alpha = 0.1, beta = 100, normalize.query=TRUE, query.length = 23, keep=TRUE)
-# # Classify interval
-# best_class = classifyIntervals(x=malig, from=as.Date("2007-09-01"), 
-#                                to=as.Date("2013-09-01"), by = "6 month",
-#                                overlap=.3, threshold=Inf)
-# best_class
-# 
-# 
-# 
-# 
+# ggsave("classify.png", plot=gp, width = 8.9, height=5.9/1.5, units="in",
+#         family="Helvetica", type = "cairo-png")
+
+
+
+# Perform twdtw to patterns list 
+malig = twdtw(patterns = patterns.list, timeseries = template.list[[2]], 
+              weight.fun = weight.fun, normalize.patterns=TRUE, patterns.length = 23,
+              keep=TRUE)
+
+# Classify interval
+best_class = classifyIntervals(x=malig, from=as.Date("2007-09-01"), 
+                               to=as.Date("2013-09-01"), by = "6 month",
+                               overlap=.3, threshold=Inf)
+best_class
+
+gp = plotGroup(x=malig, from=as.Date("2007-09-01"),  
+               to=as.Date("2013-09-01"), by = "6 month",
+               overlap=.3)
+gp
+
+
+# Plot cost matrix 
+alig = twdtw(patterns.list[["Soybean"]], timeseries=template, weight.fun = weight.fun, 
+             keep=TRUE)
+ 
+
+gp = plotCostMatrix(x=alig, matrix.name="timeWeight")
+grid.arrange(gp)
+
+gp = plotCostMatrix(x=alig, matrix.name="localMatrix")
+grid.arrange(gp)
+ 
+gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
+grid.arrange(gp)
+
+ 
+# Test bands order 
+patterns.list2 = lapply(patterns.list, function(qq) qq[,c("evi"), drop=FALSE])
+malig = twdtw(patterns = patterns.list2, timeseries = template.list[[2]], 
+              weight.fun = weight.fun, normalize.query=TRUE, query.length = 23, keep=TRUE)
+# Classify interval
+best_class = classifyIntervals(x=malig, from=as.Date("2007-09-01"), 
+                               to=as.Date("2013-09-01"), by = "6 month",
+                               overlap=.3, threshold=Inf)
+best_class
+
+gp = plotGroup(x=malig, from=as.Date("2007-09-01"),  
+               to=as.Date("2013-09-01"), by = "6 month",
+               overlap=.3)
+gp
+
+
+
+

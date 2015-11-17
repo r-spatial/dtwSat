@@ -5,22 +5,26 @@
 \alias{logisticWeight}
 \title{Logistic weight function}
 \usage{
-logisticWeight(alpha, beta)
+logisticWeight(alpha, beta, theta)
 }
 \arguments{
 \item{alpha}{numeric. The steepness of logistic weight}
 
 \item{beta}{numeric. The midpoint of logistic weight}
+
+\item{theta}{numeric between 0 and 1. The weight of the time 
+for the TWDTW computation. Use \code{theta=0} to cancel the time weight, 
+\emph{i.e.} to run the original DTW algorithm}
 }
 \value{
 An \code{\link[base]{expression}} object
 }
 \description{
 This function builds a logistic time weight 
-function
+function to compute the TWDTW local cost matrix
 }
 \examples{
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
+weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 weight.fun
 
 }

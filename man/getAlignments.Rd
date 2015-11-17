@@ -25,7 +25,7 @@ from the object \link[dtwSat]{dtwSat-class}
 }
 \examples{
 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
+weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
 
 getAlignments(alig)

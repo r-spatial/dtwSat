@@ -206,7 +206,7 @@ setGeneric("getPatternNames",
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
 #' 
 #' getAlignments(alig)
@@ -271,7 +271,7 @@ setGeneric("getAlignments",
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
 #' 
 #' getMatches(alig)
@@ -324,7 +324,7 @@ setGeneric("getMatches",
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, keep=TRUE)
 #' 
 #' a = getInternals(alig)

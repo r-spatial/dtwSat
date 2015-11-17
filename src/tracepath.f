@@ -15,7 +15,7 @@ C
 C     DM   - Direction matrix 
 C     SM   - Matrix of step patterns 
 C     JMIN - Positions o the minimum points 
-C     IND1 - Alignment indices in the query
+C     IND1 - Alignment indices in the pattern
 C     IND2 - Alignment indices in the template
 C     POS  - Starting points in IND1 and IND2 
 C     N    - Number of rows in DM 

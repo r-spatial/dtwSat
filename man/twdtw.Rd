@@ -25,9 +25,9 @@ and be equal to or longer than the \code{patterns},
 \item{patterns.length}{An integer. Queries length used with normalize. If not declared 
 the length of the output queries will be the length of the longest patterns}
 
-\item{weight.fun}{A function to be applied to each element of the cost matrix.
-If not declared the time weight is zero, \emph{i.e.} it runs the original dtw method. 
-See \link[dtwSat]{logisticWeight} function for a logistic time weight}
+\item{weight.fun}{A function to be applied to each element of the local cost matrix 
+\code{x} and the time cost matrix \code{y}. If not declared the time weight is zero, 
+\emph{i.e.} \code{weight.fun = function(x, y) 1*x + 0*y}. See 'Details'}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
@@ -52,8 +52,15 @@ This function performs a multidimensional Time-Weighted DTW
 analysis and retrieves the alignments between the temporal patterns and 
 the time series.
 }
+\details{
+\code{weight.fun} must have two matrices as arguments. The first is a distance 
+matrix that comes from the difference in the bands values pont-to-point between the 
+pattern and the time series. The second matrix is the difference in days pont-to-point 
+between the pattern and the time series. For a logistic time weight 
+see \link[dtwSat]{logisticWeight} function.
+}
 \examples{
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
+weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
 alig
 

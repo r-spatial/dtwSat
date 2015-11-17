@@ -48,7 +48,7 @@
 #' 
 #' @examples 
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
@@ -123,7 +123,7 @@ setMethod("plot",
 #'  
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #'        
@@ -203,6 +203,8 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
     gp
   })
 
+  if(length(gp.list)==1)
+    return(gp.list[[1]])
   # grid.arrange(grobs = gp.list, nrow=length(p.names))
   arrangeGrob(grobs = gp.list, nrow=length(p.names))
 }
@@ -244,7 +246,7 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
@@ -366,7 +368,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
@@ -462,7 +464,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
 #' \code{\link[dtwSat]{classifyIntervals}}
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
@@ -558,7 +560,7 @@ plotGroup = function(x, attr, ...){
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
@@ -638,6 +640,8 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
     
   })
   
+  if(length(gp.list)==1)
+    return(gp.list[[1]])
   # grid.arrange(grobs = gp.list, nrow=length(p.names))
   arrangeGrob(grobs = gp.list, nrow=length(p.names))
  

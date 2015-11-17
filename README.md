@@ -71,8 +71,10 @@ summary(alig)
 ```
 
 ```
-## Length  Class   Mode 
-##      1 dtwSat     S4
+##         N.Alig   Min. X1st.Qu. Median   Mean X3rd.Qu.   Max.
+## Soybean      4 1.0560   1.1000 1.1720 1.1660   1.2380  1.262
+## Cotton       5 0.9536   1.1650 1.4270 3.6310   1.7730 12.840
+## Maize        4 0.6661   0.7131 0.7645 0.7898   0.8412  0.964
 ```
 
 ### Plot examples
@@ -129,6 +131,13 @@ alig2 = twdtw(patterns=patterns.list, timeseries=template,
 
 gp1 = plot(alig1, p.name="Soybean", show.dist = TRUE) + ggtitle("DTW") 
 gp2 = plot(alig3, p.name="Soybean", show.dist = TRUE) + ggtitle("TWDTW") 
+```
+
+```
+## Error in plot(alig3, p.name = "Soybean", show.dist = TRUE): error in evaluating the argument 'x' in selecting a method for function 'plot': Error: object 'alig3' not found
+```
+
+```r
 grid.arrange(gp1, gp2, ncol=1)
 ```
 

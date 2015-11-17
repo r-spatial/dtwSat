@@ -3,7 +3,7 @@
 \docType{methods}
 \name{twdtw}
 \alias{twdtw}
-\title{Multidimensional Time-Weighted DTW Alignment}
+\title{Perform Time-Weighted Dynamic Time Warping alignment}
 \usage{
 twdtw(..., patterns = list(...), timeseries = NULL,
   normalize.patterns = FALSE, patterns.length = NULL, weight.fun,
@@ -45,7 +45,7 @@ interval between two alignments, for details see [3]}
 Default is FALSE}
 }
 \value{
-A \code{\link[dtwSat]{dtwSat-class}} object
+A \code{\link[dtwSat]{twdtw-class}} object
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW 
@@ -84,6 +84,6 @@ The dtw Package. Journal of Statistical Software, 31, 1-24.
 and Motion (pp. 79-84). London: Springer London, Limited.
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}
+\code{\link[dtwSat]{twdtw-class}}
 }
 

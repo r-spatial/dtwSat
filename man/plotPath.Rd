@@ -9,7 +9,7 @@ plotPath(x, p.names, n.alignments = NULL, show.dist = FALSE, shift = c(-4,
   -1))
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{An \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{p.names}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
@@ -46,7 +46,7 @@ grid.arrange(gp)
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignment}},

@@ -7,7 +7,7 @@
 plotGroup(x, attr, ...)
 }
 \arguments{
-\item{x}{A \code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{A \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 
 indicating the attribute for plotting, \emph{i.e.} a column of the \code{timeseries}. 
@@ -47,7 +47,7 @@ gp
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
 \code{\link[dtwSat]{plotPath}}, 
 \code{\link[dtwSat]{plotCostMatrix}},

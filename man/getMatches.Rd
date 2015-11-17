@@ -3,12 +3,12 @@
 \docType{methods}
 \name{getMatches}
 \alias{getMatches}
-\title{Get matching points from dtwSat object}
+\title{Get matching points from twdtw object}
 \usage{
 getMatches(object, ...)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{dtwSat-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object}
 
 \item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
@@ -41,7 +41,7 @@ getMatches(alig, p.names=1)
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw-class}}, and
 \code{\link[dtwSat]{twdtw}}
 }
 

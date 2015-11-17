@@ -14,12 +14,12 @@
 
 
 ###############################################################
-#### dtwSat CLASS AND METHODS
-#' @title dtwSat-class
-#' @name dtwSat-class
+#### twdtw CLASS AND METHODS
+#' @title twdtw-class
+#' @name twdtw-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
-#' @description Class for Multidimensional Time-Weighted DTW alignments
+#' @description Class for Time-Weighted Dynamic Time Warping alignments
 #' 
 #' 
 #' @section Slots :
@@ -65,25 +65,25 @@
 #' \code{\link[dtwSat]{getInternals}}
 #' 
 NULL
-dtwSat = setClass(
-  Class = "dtwSat",
+twdtw = setClass(
+  Class = "twdtw",
   slots = c(
     call = "call",
     alignments = "list"
   ),
   validity = function(object){
     if(!is(object@call, "call")){
-      stop("[dtwSat: validation] Invalid call object, class different from call.")
+      stop("[twdtw: validation] Invalid call object, class different from call.")
     }else{}
     if(!is(object@alignments, "list")){
-      stop("[dtwSat: validation] Invalid TWDTW alignments, class different from data.frema.")
+      stop("[twdtw: validation] Invalid TWDTW alignments, class different from data.frema.")
     }else{}
     return(TRUE)
   }
 )
 
 setMethod("initialize",
-  signature = "dtwSat",
+  signature = "twdtw",
   definition = 
     function(.Object, call, alignments){
       .Object@call = new("call")
@@ -111,7 +111,7 @@ setMethod("initialize",
 
 
 setMethod("show", 
-          signature = signature(object="dtwSat"),
+          signature = signature(object="twdtw"),
           definition = function(object){
             cat("Time-Weighted DTW alignment object\n")
             cat("Number of alignments:",nrow(getAlignments(object)),"\n")
@@ -120,13 +120,13 @@ setMethod("show",
           }
 )
 
-#' @title Summary method for dtwSat-class
+#' @title Summary method for twdtw-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Summary the alignments for each pattern in the 
-#' dtwSat-class object 
+#' twdtw-class object 
 #' 
-#' @param object An \code{\link[dtwSat]{dtwSat-class}} object
+#' @param object An \code{\link[dtwSat]{twdtw-class}} object
 #' @param ... additional arguments passed to summary
 #' 
 #' @docType methods
@@ -135,7 +135,7 @@ setMethod("show",
 #' for each pattern 
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, and 
+#' \code{\link[dtwSat]{twdtw-class}}, and 
 #' \code{\link[dtwSat]{twdtw}}
 #'  
 #' @examples
@@ -147,13 +147,13 @@ setMethod("show",
 #' 
 #' @export
 setMethod("summary", 
-          signature(object = "dtwSat"),
+          signature(object = "twdtw"),
           function(object, ...){
-            .summary.dtwSat(object, ...)
+            .summary.twdtw(object, ...)
           }
 )
 
-.summary.dtwSat = function(object, ...){
+.summary.twdtw = function(object, ...){
     res1 = do.call("rbind", lapply(object@alignments, function(pattern){
       c(N.Alig=length(pattern$distance), summary(pattern$distance))
     }))
@@ -164,13 +164,13 @@ setMethod("summary",
 #### GENERIC METHODS
 
 
-#' @title Get pattern names from dtwSat object
+#' @title Get pattern names from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves pattern names in the 
-#' \link[dtwSat]{dtwSat-class} object
+#' \link[dtwSat]{twdtw-class} object
 #' 
-#' @param object A \link[dtwSat]{dtwSat-class} object
+#' @param object A \link[dtwSat]{twdtw-class} object
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the names for all patterns 
@@ -181,7 +181,7 @@ setMethod("summary",
 #' or \code{\link[base]{numeric}} vector 
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, and
+#' \code{\link[dtwSat]{twdtw-class}}, and
 #' \code{\link[dtwSat]{twdtw}}
 #' 
 #' @examples
@@ -212,13 +212,13 @@ setGeneric("getPatternNames",
   all_names[p.names]
 }
 
-#' @title Get alignments from dtwSat object
+#' @title Get alignments from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the alignments 
-#' from the object \link[dtwSat]{dtwSat-class}
+#' from the object \link[dtwSat]{twdtw-class}
 #' 
-#' @param object A \link[dtwSat]{dtwSat-class} object
+#' @param object A \link[dtwSat]{twdtw-class} object
 #' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
 #' 
 #' @docType methods
@@ -229,7 +229,7 @@ setGeneric("getPatternNames",
 #' 	     \cr\code{distance}: TWDTW distances.
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, and
+#' \code{\link[dtwSat]{twdtw-class}}, and
 #' \code{\link[dtwSat]{twdtw}}
 #' 
 #' @examples
@@ -275,14 +275,14 @@ setGeneric("getAlignments",
 
 
 
-#' @title Get matching points from dtwSat object
+#' @title Get matching points from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the matching points 
 #' for each alignment between the \code{pattern} and the 
 #' \code{timeseries}
 #' 
-#' @param object A \link[dtwSat]{dtwSat-class} object
+#' @param object A \link[dtwSat]{twdtw-class} object
 #' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
 #' 
 #' @docType methods
@@ -294,7 +294,7 @@ setGeneric("getAlignments",
 #'       \cr\code{index2}: matching points of the time series.
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, and
+#' \code{\link[dtwSat]{twdtw-class}}, and
 #' \code{\link[dtwSat]{twdtw}}
 #' 
 #' @examples
@@ -322,13 +322,13 @@ setGeneric("getMatches",
   lapply(p.names, function(p) object@alignments[[p]]$matching)
 }
 
-#' @title Get internals from dtwSat object
+#' @title Get internals from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves cost matrix, inputs, and other 
-#' internal structures from \link[dtwSat]{dtwSat-class} object
+#' internal structures from \link[dtwSat]{twdtw-class} object
 #' 
-#' @param object A \link[dtwSat]{dtwSat-class} object
+#' @param object A \link[dtwSat]{twdtw-class} object
 #' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
 #' 
 #' @docType methods
@@ -347,7 +347,7 @@ setGeneric("getMatches",
 #'       \cr\code{M}: \code{timeseries} length.
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, and
+#' \code{\link[dtwSat]{twdtw-class}}, and
 #' \code{\link[dtwSat]{twdtw}}
 #' 
 #' @examples

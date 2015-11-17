@@ -3,12 +3,12 @@
 \docType{methods}
 \name{getPatternNames}
 \alias{getPatternNames}
-\title{Get pattern names from dtwSat object}
+\title{Get pattern names from twdtw object}
 \usage{
 getPatternNames(object, p.names)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{dtwSat-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object}
 
 \item{p.names}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
@@ -20,7 +20,7 @@ or \code{\link[base]{numeric}} vector
 }
 \description{
 This function retrieves pattern names in the 
-\link[dtwSat]{dtwSat-class} object
+\link[dtwSat]{twdtw-class} object
 }
 \examples{
 
@@ -37,7 +37,7 @@ getPatternNames(alig, p.names="Maize")
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw-class}}, and
 \code{\link[dtwSat]{twdtw}}
 }
 

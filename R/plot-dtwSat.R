@@ -14,21 +14,21 @@
 
 
 ###############################################################
-#### dtwSat PLOT METHODS
+#### twdtw PLOT METHODS
 
 
-#' @title Plotting dtwSat objects
+#' @title Plotting twdtw objects
 #' 
 #' @description Methods for plotting the results of the 
 #' Time-Weighted DTW analysis
 #' 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @param x A \code{\link[dtwSat]{dtwSat-class}} object
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object
 #' @param type A character for the plot type, ''path'', ''match'', 
 #' ''alignment'', ''group'', ''cost''. Default is ''path''
 #' @param ... additional arguments passed to plotting functions
-#' \code{\link[dtwSat]{dtwSat-class}}, \code{\link[dtwSat]{twdtw}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignment}}, \code{\link[dtwSat]{plotMatch}}, and
 #' \code{\link[dtwSat]{plotGroup}}
@@ -38,7 +38,7 @@
 #' ''alignment'', and ''group''
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPath}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
@@ -75,12 +75,12 @@
 #' 
 #' @export
 setMethod("plot", 
-          signature(x = "dtwSat"),
+          signature(x = "twdtw"),
           function(x, type="path", ...){
-            if(!is(x,"dtwSat"))
-              stop("x is not a dtwSat object.")
+            if(!is(x,"twdtw"))
+              stop("x is not a twdtw object.")
             if(length(getInternals(x))==0)
-              stop("plot method requires dtwSat internals (set keep.internals=TRUE on dtw() call)")
+              stop("plot method requires twdtw internals (set keep.internals=TRUE on dtw() call)")
             pt = pmatch(type,c("path","match","alignment","group","cost"))
             switch(pt,
                    plotPath(x, ...),
@@ -99,7 +99,7 @@ setMethod("plot",
 #' @description Method for plotting the minimum paths in the 
 #' cost matrix of Time-Weighted DTW
 #' 
-#' @param x An \code{\link[dtwSat]{dtwSat-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' will plot the paths for all patterns 
@@ -114,7 +114,7 @@ setMethod("plot",
 #' @return A \link[gtable]{gtable} object
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignment}},
@@ -147,7 +147,7 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
     ## Get data
     internals  = getInternals(x, p)
     if(is.null(internals))
-      stop("plot methods requires dtwSat internals, set keep=TRUE on twdtw() call")
+      stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
     matching   = getMatches(x, p)
 
     tx = index(internals[[p]]$timeseries)
@@ -217,14 +217,14 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
 #' @description Method for plotting the matching points of 
 #' Time-Weighted DTW alignments
 #' 
-#' @param x An \code{\link[dtwSat]{dtwSat-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object
 #' @param p.names A \link[base]{character} or \link[base]{integer}
 #' vector with the patterns identification. If not declared the function 
 #' will plot one alignment for each pattern in the 
-#' \code{\link[dtwSat]{dtwSat-class}} object
+#' \code{\link[dtwSat]{twdtw-class}} object
 #' @param n An \link[base]{integer} vector the same length as \code{p.names}.
 #' The indices of the alignments for plotting. The alignments in the 
-#' \code{\link[dtwSat]{dtwSat-class}} object are ordered by TWDTW distance in 
+#' \code{\link[dtwSat]{twdtw-class}} object are ordered by TWDTW distance in 
 #' ascending order. If not declared the function will plot the best alignment 
 #' for each pattern
 #' @param attr An \link[base]{integer} or \link[base]{character} vector 
@@ -237,7 +237,7 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
 #' @return A \link[ggplot2]{ggplot} object
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPath}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
@@ -281,7 +281,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
   ## Get data
   internals  = getInternals(x, p.names)
   if(is.null(internals))
-    stop("plot methods requires dtwSat internals, set keep=TRUE on twdtw() call")
+    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
   matching   = getMatches(x, p.names)
   alignments = getAlignments(x, p.names)
   
@@ -344,11 +344,11 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
 #' distances 
 #' 
 #' 
-#' @param x An \code{\link[dtwSat]{dtwSat-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object
 #' @param p.names A \link[base]{character} or \link[base]{integer}
 #' vector with the patterns identification. If not declared the function 
 #' will plot alignments for all patterna in the 
-#' \code{\link[dtwSat]{dtwSat-class}} object
+#' \code{\link[dtwSat]{twdtw-class}} object
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
 #' indicating the attribute for plotting, \emph{i.e.} a column of the \code{pattern}. 
 #' Default is 1
@@ -359,7 +359,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
 #' @return A \link[ggplot2]{ggplot} object
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPath}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
@@ -394,7 +394,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
   ## Get data
   internals = getInternals(x, 1)[[1]]
   if(is.null(internals))
-    stop("plot methods requires dtwSat internals, set keep=TRUE on twdtw() call")
+    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
   
   alignments = getAlignments(x, p.names)
   
@@ -446,7 +446,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
 #' @description Method for plotting the group of each 
 #' time intervals based on \code{\link[dtwSat]{twdtw}} analysis 
 #' 
-#' @param x A \code{\link[dtwSat]{dtwSat-class}} object
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
 #' indicating the attribute for plotting, \emph{i.e.} a column of the \code{timeseries}. 
 #' If not declared the function will plot all attributes
@@ -455,7 +455,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
 #' @return A \link[ggplot2]{ggplot} object
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPath}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
@@ -489,7 +489,7 @@ plotGroup = function(x, attr, ...){
   ## Get data
   internals = getInternals(x, 1)[[1]]
   if(is.null(internals))
-    stop("plot methods requires dtwSat internals, set keep=TRUE on twdtw() call")
+    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
   
   best_class = classifyIntervals(x, ...)
   # best_class = classifyIntervals(x, from=from, to=to, by=by, overlap=.3, threshold=Inf)
@@ -540,7 +540,7 @@ plotGroup = function(x, attr, ...){
 #' 
 #' @description Method for plotting the internal matrices
 #' 
-#' @param x An \code{\link[dtwSat]{dtwSat-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object
 #' @param matrix.name A character. The name of the matrix to plot,
 #' "costMatrix", "localMatrix", or "timeWeight". 
 #' Default is "costMatrix"
@@ -551,7 +551,7 @@ plotGroup = function(x, attr, ...){
 #' @return A \link[gtable]{gtable} object 
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{dtwSat-class}}, 
+#' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPath}}, 
 #' \code{\link[dtwSat]{plotAlignment}},
@@ -602,7 +602,7 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
     ## Get data
     internals  = getInternals(x, p)
     if(is.null(internals))
-      stop("plot methods requires dtwSat internals, set keep=TRUE on twdtw() call")
+      stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
     
     tx = index(internals[[p]]$timeseries)
     ty = index(internals[[p]]$pattern)

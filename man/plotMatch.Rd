@@ -8,16 +8,16 @@
 plotMatch(x, p.names, n, attr = 1, shift = 0.5)
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{An \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{p.names}{A \link[base]{character} or \link[base]{integer}
 vector with the patterns identification. If not declared the function 
 will plot one alignment for each pattern in the 
-\code{\link[dtwSat]{dtwSat-class}} object}
+\code{\link[dtwSat]{twdtw-class}} object}
 
 \item{n}{An \link[base]{integer} vector the same length as \code{p.names}.
 The indices of the alignments for plotting. The alignments in the 
-\code{\link[dtwSat]{dtwSat-class}} object are ordered by TWDTW distance in 
+\code{\link[dtwSat]{twdtw-class}} object are ordered by TWDTW distance in 
 ascending order. If not declared the function will plot the best alignment 
 for each pattern}
 
@@ -59,7 +59,7 @@ gp
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
 \code{\link[dtwSat]{plotPath}}, 
 \code{\link[dtwSat]{plotCostMatrix}},

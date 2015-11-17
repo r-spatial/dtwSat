@@ -216,7 +216,7 @@ getModisTimeIndex = function(date, frequency=16){
 #' @description This function retrieves the best alignment within each 
 #' interval of classification based on the TWDTW distance
 #' 
-#' @param x A \code{\link[dtwSat]{dtwSat-class}} object or 
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object or 
 #' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}} 
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
@@ -258,11 +258,11 @@ classifyIntervals = function(x, from, to, by, breaks, overlap=.3,
   
   p.names = getPatternNames(x, ...)
   
-  if(is(x, "dtwSat"))
+  if(is(x, "twdtw"))
     x = getAlignments(x, p.names)
 
   if(!is(x, "data.frame"))
-    stop("x is not a data.frame or dtwSat class")
+    stop("x is not a data.frame or twdtw-class")
   
   if( overlap < 0 & 1 < overlap )
     stop("overlap out of range, it must be a number between 0 and 1")

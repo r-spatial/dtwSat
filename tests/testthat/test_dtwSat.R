@@ -25,10 +25,10 @@ weight.fun = function(x, y) 0.1*x
 alig = twdtw(patterns=patterns.list["Soybean"], timeseries=template, step.matrix = symmetric1, 
              dist.method = "Euclidean", weight.fun = weight.fun, keep=TRUE)
 
-is(alig, "dtwSat")
+is(alig, "twdtw")
 show(alig)
 print(alig)
-
+summary(alig)
 
 # Plot cost matrix paths
 gp1 = plot(x=alig, type="path", show.dist=TRUE)

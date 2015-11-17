@@ -9,7 +9,7 @@ classifyIntervals(x, from, to, by, breaks, overlap = 0.3, threshold = Inf,
   ...)
 }
 \arguments{
-\item{x}{A \code{\link[dtwSat]{dtwSat-class}} object or 
+\item{x}{A \code{\link[dtwSat]{twdtw-class}} object or 
 a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}

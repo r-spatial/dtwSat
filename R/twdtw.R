@@ -17,7 +17,7 @@
 #### TWDTW ALIGNMENT
 
 
-#' @title Multidimensional Time-Weighted DTW Alignment
+#' @title Perform Time-Weighted Dynamic Time Warping alignment
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
@@ -54,7 +54,7 @@
 #' see \link[dtwSat]{logisticWeight} function. 
 #' 
 #' @docType methods
-#' @return A \code{\link[dtwSat]{dtwSat-class}} object
+#' @return A \code{\link[dtwSat]{twdtw-class}} object
 #' 
 ### @references 
 ### [1] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
@@ -68,7 +68,7 @@
 #' [2] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 #' and Motion (pp. 79-84). London: Springer London, Limited. 
 #' 
-#' @seealso \code{\link[dtwSat]{dtwSat-class}}
+#' @seealso \code{\link[dtwSat]{twdtw-class}}
 #' 
 #' @examples
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
@@ -201,7 +201,7 @@ logisticWeight = function(alpha, beta, theta){
     }
     alignments
   })
-  new("dtwSat", call=match.call(), alignments=res)
+  new("twdtw", call=match.call(), alignments=res)
 }
 
 .findMin = function(x, timeline, span=NULL){

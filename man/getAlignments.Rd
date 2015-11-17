@@ -3,12 +3,12 @@
 \docType{methods}
 \name{getAlignments}
 \alias{getAlignments}
-\title{Get alignments from dtwSat object}
+\title{Get alignments from twdtw object}
 \usage{
 getAlignments(object, ...)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{dtwSat-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object}
 
 \item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
@@ -21,7 +21,7 @@ A \link[base]{data.frame} with the following columns:
 }
 \description{
 This function retrieves the alignments 
-from the object \link[dtwSat]{dtwSat-class}
+from the object \link[dtwSat]{twdtw-class}
 }
 \examples{
 
@@ -39,7 +39,7 @@ getAlignments(alig, p.names=c(2,3))
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw-class}}, and
 \code{\link[dtwSat]{twdtw}}
 }
 

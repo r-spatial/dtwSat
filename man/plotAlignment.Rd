@@ -8,12 +8,12 @@
 plotAlignment(x, p.names, attr = 1, threshold = Inf)
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{An \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{p.names}{A \link[base]{character} or \link[base]{integer}
 vector with the patterns identification. If not declared the function 
 will plot alignments for all patterna in the 
-\code{\link[dtwSat]{dtwSat-class}} object}
+\code{\link[dtwSat]{twdtw-class}} object}
 
 \item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 
 indicating the attribute for plotting, \emph{i.e.} a column of the \code{pattern}. 
@@ -50,7 +50,7 @@ gp
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
 \code{\link[dtwSat]{plotPath}}, 
 \code{\link[dtwSat]{plotCostMatrix}},

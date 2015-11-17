@@ -7,7 +7,7 @@
 plotCostMatrix(x, matrix.name = "costMatrix", p.names)
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{dtwSat-class}} object}
+\item{x}{An \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{matrix.name}{A character. The name of the matrix to plot,
 "costMatrix", "localMatrix", or "timeWeight". 
@@ -52,7 +52,7 @@ grid.arrange(gp)
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, 
+\code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
 \code{\link[dtwSat]{plotPath}}, 
 \code{\link[dtwSat]{plotAlignment}},

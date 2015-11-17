@@ -3,12 +3,12 @@
 \docType{methods}
 \name{getInternals}
 \alias{getInternals}
-\title{Get internals from dtwSat object}
+\title{Get internals from twdtw object}
 \usage{
 getInternals(object, ...)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{dtwSat-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object}
 
 \item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
 }
@@ -29,7 +29,7 @@ A \code{\link[base]{list}} whose
 }
 \description{
 This function retrieves cost matrix, inputs, and other 
-internal structures from \link[dtwSat]{dtwSat-class} object
+internal structures from \link[dtwSat]{twdtw-class} object
 }
 \examples{
 
@@ -51,7 +51,7 @@ names(a)
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{dtwSat-class}}, and
+\code{\link[dtwSat]{twdtw-class}}, and
 \code{\link[dtwSat]{twdtw}}
 }
 

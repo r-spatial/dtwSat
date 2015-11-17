@@ -47,7 +47,7 @@ is(alig, "dtwSat")
 ```
 
 ```
-## [1] TRUE
+## [1] FALSE
 ```
 
 ```r

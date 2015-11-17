@@ -79,6 +79,44 @@ summary(alig)
 
 ### Plot examples
 
+
+Plot path for DTW (top) and TWDTW (bottom)
+
+```r
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+alig1 = twdtw(patterns=patterns.list, timeseries=template, 
+              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+alig2 = twdtw(patterns=patterns.list, timeseries=template, 
+              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
+              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+
+gp1 = plot(alig1, p.name="Soybean", show.dist = TRUE) + ggtitle("DTW") 
+gp2 = plot(alig2, p.name="Soybean", show.dist = TRUE) + ggtitle("TWDTW") 
+grid.arrange(gp1, gp2, ncol=1)
+```
+
+![plot of chunk define-demo-twdtw-x-dtw](figure/define-demo-twdtw-x-dtw-1.png) 
+
+
+Plot path for all classese
+
+```r
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+alig = twdtw(patterns=patterns.list, timeseries=template, 
+             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
+             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+
+gp = plot(alig, n.alignments=1:4, show.dist=TRUE)
+grid.arrange(gp)
+```
+
+![plot of chunk define-demo-plot-paths](figure/define-demo-plot-paths-1.png) 
+
+
 Plot matching points 
 
 ```r
@@ -117,47 +155,6 @@ grid.arrange(gp)
 ![plot of chunk define-demo-plot-alignments](figure/define-demo-plot-alignments-1.png) 
 
 
-Plot path for DTW (top) and TWDTW (bottom)
-
-```r
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig1 = twdtw(patterns=patterns.list, timeseries=template, 
-              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-alig2 = twdtw(patterns=patterns.list, timeseries=template, 
-              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp1 = plot(alig1, p.name="Soybean", show.dist = TRUE) + ggtitle("DTW") 
-gp2 = plot(alig3, p.name="Soybean", show.dist = TRUE) + ggtitle("TWDTW") 
-```
-
-```
-## Error in plot(alig3, p.name = "Soybean", show.dist = TRUE): error in evaluating the argument 'x' in selecting a method for function 'plot': Error: object 'alig3' not found
-```
-
-```r
-grid.arrange(gp1, gp2, ncol=1)
-```
-
-![plot of chunk define-demo-twdtw-x-dtw](figure/define-demo-twdtw-x-dtw-1.png) 
-
-Plot path for all classese
-
-```r
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig = twdtw(patterns=patterns.list, timeseries=template, 
-             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp = plot(alig, n.alignments=1:4, show.dist=TRUE)
-grid.arrange(gp)
-```
-
-![plot of chunk define-demo-plot-paths](figure/define-demo-plot-paths-1.png) 
 
 Compare DTW and TWDTW classification
 

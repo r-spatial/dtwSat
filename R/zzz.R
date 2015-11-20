@@ -28,6 +28,9 @@
 #' @importFrom scales pretty_breaks
 #' @importFrom grDevices terrain.colors gray.colors
 #' @importFrom utils tail head 
+#' @importFrom plyr alply
+#' @importFrom parallel mclapply
+#' @importFrom raster blockSize ncell extent crop brick setValues mosaic
 #' 
 NULL
 

@@ -10,7 +10,7 @@ plotGroup(x, attr, ...)
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 
-indicating the attribute for plotting, \emph{i.e.} a column of the \code{timeseries}. 
+indicating the attribute for plotting, \emph{i.e.} a column of the \code{x}. 
 If not declared the function will plot all attributes}
 
 \item{...}{additional arguments passed to \code{\link[dtwSat]{classifyIntervals}}}
@@ -24,7 +24,7 @@ time intervals based on \code{\link[dtwSat]{twdtw}} analysis
 }
 \examples{
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 
 # Classify interval

@@ -5,13 +5,11 @@
 \alias{waveletSmoothing}
 \title{Wavelet filter}
 \usage{
-waveletSmoothing(x, timeseries = x, timeline = NULL, frequency = NULL,
-  wf = "la8", J = 1, boundary = "periodic", ...)
+waveletSmoothing(x, timeline = NULL, frequency = NULL, wf = "la8",
+  J = 1, boundary = "periodic", ...)
 }
 \arguments{
-\item{x}{is deprecated, please use \code{timeseries} instead}
-
-\item{timeseries}{A \code{\link[zoo]{zoo}} object with the time series}
+\item{x}{A \code{\link[zoo]{zoo}} object with the time series}
 
 \item{timeline}{A vector of dates for the output time series.
 It must have a regular frequency.}
@@ -40,7 +38,7 @@ smoothing for each dimension in the imput time series.
 }
 \examples{
 ## Wavelet filter
-sy = waveletSmoothing(timeserie=template, frequency=16, wf = "la8", J=1, 
+sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
      boundary = "periodic")
 
 ## Plot raw EVI and filtered EVI

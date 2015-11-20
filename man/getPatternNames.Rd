@@ -24,7 +24,7 @@ This function retrieves pattern names in the
 }
 \examples{
 
-alig = twdtw(patterns=patterns.list, timeseries=template)
+alig = twdtw(x=template, patterns=patterns.list)
 
 getPatternNames(alig)
 

@@ -5,20 +5,21 @@
 \alias{classifyIntervals}
 \title{Classify time intervals}
 \usage{
-classifyIntervals(x, from, to, by, breaks, overlap = 0.3, threshold = Inf,
-  ...)
+classifyIntervals(x, breaks = NULL, from = NULL, to = NULL, by = NULL,
+  overlap = 0.3, threshold = Inf, pattern.only = FALSE,
+  pattern.levels = NULL, pattern.labels = NULL, Unclassified = 255, ...)
 }
 \arguments{
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object or 
 a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}}
+
+\item{breaks}{A vector of class \code{\link[base]{Dates}}}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
 \item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
 \item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''}
-
-\item{breaks}{A vector of class \code{\link[base]{Dates}}}
 
 \item{overlap}{A number between 0 and 1. The minimum overlapping 
 between the one alignment and the interval of classification. 
@@ -27,7 +28,15 @@ Default is 1, \emph{i.e.} 100\%}
 \item{threshold}{A number. The TWDTW threshold, i.e. the maximum TWDTW 
 cost for consideration. Default is \code{Inf}}
 
-\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
+\item{pattern.only}{return only the best pattenr for each interval. Default is FALSE}
+
+\item{pattern.levels}{A character or numeric vector. The categories for classification}
+
+\item{pattern.labels}{A character or numeric vector. The labels for each category}
+
+\item{Unclassified}{A numeric to fill gaps. Default is 255}
+
+\item{...}{other argument passed to \code{\link[dtwSat]{getPatternNames}}}
 }
 \value{
 A \code{\link[base]{data.frame}} with the best alignment 
@@ -38,9 +47,11 @@ This function retrieves the best alignment within each
 interval of classification based on the TWDTW distance
 }
 \examples{
+
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
-        normalize=TRUE, patterns.length=23)
+
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+        normalize.patterns=TRUE, patterns.length=23)
          
 # Classify interval
 from = as.Date("2009-09-01")

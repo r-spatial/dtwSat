@@ -25,7 +25,7 @@
 #' the time series. It computes a discreat wavelet 
 #' smoothing for each dimension in the imput time series.
 #' 
-#' @param timeseries A \code{\link[zoo]{zoo}} object with the time series
+#' @param x A \code{\link[zoo]{zoo}} object with the time series
 #' @param timeline A vector of dates for the output time series.
 #' It must have a regular frequency. 
 #' @param frequency The frequncy for the output time series
@@ -37,7 +37,6 @@
 #' Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.
 #' @param ... see parameters of \code{\link[waveslim]{mra}} in the 
 #' packege \pkg{waveslim}
-#' @param x is deprecated, please use \code{timeseries} instead
 #' 
 #' @docType methods
 #' @return A \code{\link[zoo]{zoo}} object
@@ -46,7 +45,7 @@
 #' 
 #' @examples
 #' ## Wavelet filter
-#' sy = waveletSmoothing(timeserie=template, frequency=16, wf = "la8", J=1, 
+#' sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
 #'      boundary = "periodic")
 #' 
 #' ## Plot raw EVI and filtered EVI
@@ -59,25 +58,18 @@
 #' gp
 #' 
 #' @export
-waveletSmoothing = function(x, timeseries=x, timeline=NULL, frequency=NULL, 
+waveletSmoothing = function(x, timeline=NULL, frequency=NULL, 
                             wf = "la8", J=1, boundary = "periodic", ...)
 {
-  
-  
-  # To remove 
-  if (!missing(x))
-    warning("argument x is deprecated, please use timeseries instead", call. = FALSE)
 
-  
-    
-  if(!is(timeseries, "zoo"))
-    stop("timeseries is not a zoo object")
+  if(!is(x, "zoo"))
+    stop("x is not a zoo object")
   
   if(is.null(timeline)){
     if(is.null(frequency)){
-      timeline = index(timeseries)
+      timeline = index(x)
     }else{
-      timeline = seq(min(index(timeseries)), max(index(timeseries)), by=frequency)
+      timeline = seq(min(index(x)), max(index(x)), by=frequency)
     }
   }
   
@@ -85,7 +77,7 @@ waveletSmoothing = function(x, timeseries=x, timeline=NULL, frequency=NULL,
   I = which(!is.na(timeline) & !duplicated(timeline))
   timeline = timeline[I]
   y = zoo(order.by = timeline)
-  y = merge(timeseries, y)
+  y = merge(x, y)
   y = na.approx(y)
   y = y[timeline,]
 
@@ -97,34 +89,6 @@ waveletSmoothing = function(x, timeseries=x, timeline=NULL, frequency=NULL,
   res
 }
 
-
-#' @title Create time sequence
-#' 
-#' @description This function creates a sequence of dates for 
-#' each year. The sequences start on January 1st of each year.
-#' 
-#' @param year A vector with the years. Default 
-#' is form 2000 to the system time year \code{format(Sys.time(), ''\%Y'')}
-#' @param frequency An integer with the frequency in days. Default is 16 days
-#' @docType methods
-#' 
-#' @return A vector of \code{\link[base]{Dates}} 
-#' 
-#' @seealso \link[dtwSat]{getDatesFromDOY} and \link[dtwSat]{getModisTimeIndex}
-#' 
-#' @examples
-#' dates = getModisTimeSequence()
-#' dates
-#' 
-#' @export
-createTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16){
-  .Deprecated("getModisTimeSequence")
-  res = unlist(lapply(year, function(y){
-    days = seq(from = as.Date(paste0(y,"-01-01")), to = as.Date(paste0(y,"-12-31")), by = frequency)
-  }))
-  res = as.Date(res, origin="1970-01-01")
-  res
-}
 
 #' @title Create time sequence
 #' 
@@ -176,7 +140,7 @@ getModisTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16
 getDatesFromDOY = function(year, doy){
   if(length(year)!=length(doy))
     stop("year and doy are not the same length")
-  res = as.Date(paste(year, doy), format="%Y %j", origin="1970-01-01")
+  res = as.Date(paste(as.numeric(year), as.numeric(doy)), format="%Y %j", origin="1970-01-01")
   res
 }
 
@@ -227,15 +191,22 @@ getModisTimeIndex = function(date, frequency=16){
 #' Default is 1, \emph{i.e.} 100\%
 #' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
 #' cost for consideration. Default is \code{Inf}
-#' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
+#' @param pattern.only return only the best pattenr for each interval. Default is FALSE 
+#' @param pattern.levels A character or numeric vector. The categories for classification
+#' @param pattern.labels A character or numeric vector. The labels for each category
+#' @param Unclassified A numeric to fill gaps. Default is 255
+#' @param ... other argument passed to \code{\link[dtwSat]{getPatternNames}}
+#' 
 #' 
 #' @docType methods
 #' @return A \code{\link[base]{data.frame}} with the best alignment 
 #' for each interval
 #' @examples
+#' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
-#'         normalize=TRUE, patterns.length=23)
+#' 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#'         normalize.patterns=TRUE, patterns.length=23)
 #'          
 #' # Classify interval
 #' from = as.Date("2009-09-01")
@@ -252,8 +223,13 @@ getModisTimeIndex = function(date, frequency=16){
 #' 
 #' 
 #' @export
-classifyIntervals = function(x, from, to, by, breaks, overlap=.3, 
-                             threshold=Inf, ...)
+classifyIntervals = function(x, breaks=NULL, from=NULL, to=NULL, by=NULL,
+                             overlap=.3, threshold=Inf, 
+                             pattern.only=FALSE,
+                             pattern.levels=NULL,
+                             pattern.labels=NULL,
+                             Unclassified=255,
+                             ...)
 {
   
   p.names = getPatternNames(x, ...)
@@ -267,24 +243,38 @@ classifyIntervals = function(x, from, to, by, breaks, overlap=.3,
   if( overlap < 0 & 1 < overlap )
     stop("overlap out of range, it must be a number between 0 and 1")
 
-  if(missing(breaks))
+  if(is.null(breaks))
     breaks = seq(as.Date(from), as.Date(to), by=by)
-
+  
+  if(!is(breaks,"Dates"))
+    breaks = as.Date(breaks)
+  
   res = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
-    .bestInterval(x, start=breaks[i-1], end=breaks[i], overlap)
+    .bestInterval(x, start=breaks[i-1], end=breaks[i], overlap, Unclassified)
   }))
   
   d = res$distance
   I = d>threshold
   if(any(I)){
-    res$pattern[I] = "Unclassified"
+    res$pattern[I] = if(is(x$pattern, "character")){"Unclassified"}else{Unclassified}
     res$distance[I] = Inf 
   }
+  
+  if(!is.null(pattern.levels)&&!is.null(pattern.labels)){
+    if(!length(pattern.levels)==length(pattern.labels))
+      stop("pattern.levels and pattern.labels are not the same length")
+    I = match(res$pattern, pattern.levels)
+    res$pattern = pattern.labels[I]
+    names(res$pattern) = pattern.levels[I]
+  }
+  
+  if(pattern.only)
+    return(res$pattern)
   res
 }
 
 
-.bestInterval = function(x, start, end,  overlap){
+.bestInterval = function(x, start, end,  overlap, Unclassified){
   
   I = lapply( 1:nrow(x), function(i){
     dates = seq(x$from[i], x$to[i], 1)
@@ -297,7 +287,7 @@ classifyIntervals = function(x, from, to, by, breaks, overlap=.3,
   I = unlist(I)
   
   res = list()
-  res$pattern = "Unclassified"
+  res$pattern = if(is(x$pattern, "character")){"Unclassified"}else{Unclassified}
   res$from = start
   res$to = end - 1
   res$distance = Inf
@@ -348,6 +338,43 @@ normalizePatterns = function(..., patterns = list(...), patterns.length=NULL){
   res
 }
 
+# Match and set a list of arguments to a function 
+.setFunArgs = function(fun, ..., args = list(...)){ 
+  base_formals = formals(fun)
+  base_formals_names = names(base_formals)
+  given_formals = args[names(args) %in% base_formals_names]
+  missing_formals_names = setdiff(base_formals_names, names(args))
+  new_formals = c(base_formals[missing_formals_names], given_formals)
+  new_formals = new_formals[base_formals_names]
+  formals(fun) = new_formals
+  fun
+}
 
+# Crop raster time series
+.cropTimeSeries = function(x, r1, r2){
+  if(is(x, "RasterBrick")){
+    y = extent(x, r1, r2)
+    x = crop(x, y)
+  } else {
+    x = x[r1:r2,,]
+  }
+  alply(x, c(1,2), as.numeric)
+}
 
+# Build zoo time series  
+.bulidZooFromTSList = function(p, x, timeline, bands){
+  # Get time series for each band 
+  datasets = lapply(x[c(bands, "doy")], function(x) x[[p]])
+  datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(as.Date(timeline), "%Y"))
+  
+  # Remove invalid values 
+  k = unlist(lapply(datasets[bands], function(x){
+    which(x<0|is.na(x))
+  }))
+  k = c(k, which(duplicated(datasets$doy)))
+  if(length(k)>0) x = lapply(x, function(x) x[-k] )
+  
+  # Build multi-band zoo object 
+  zoo(data.frame(datasets[bands]), order.by = datasets$doy)
+}
 

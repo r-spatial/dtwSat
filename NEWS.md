@@ -1,5 +1,6 @@
 # dtwSat v0.2.0 Release Notes
 
+* Include twdtwApply for raster and 3D arrays
 
 * Include Fortran optimization 
   

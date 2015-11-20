@@ -49,7 +49,7 @@
 #' @examples 
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Plot paths
@@ -124,7 +124,7 @@ setMethod("plot",
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #'        
 #' gp = plotPath(alig, n.alignments=1:4)
@@ -150,7 +150,7 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
       stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
     matching   = getMatches(x, p)
 
-    tx = index(internals[[p]]$timeseries)
+    tx = index(internals[[p]]$x)
     ty = index(internals[[p]]$pattern)
     m = internals[[p]]$costMatrix
     df.m = melt(m)
@@ -247,7 +247,7 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' gp = plotMatch(alig)
@@ -285,14 +285,14 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
   matching   = getMatches(x, p.names)
   alignments = getAlignments(x, p.names)
   
-  xx = internals[[p.names[1]]]$timeseries[,attr,drop=FALSE]
+  xx = internals[[p.names[1]]]$x[,attr,drop=FALSE]
   tx = index(xx)
 
   y.labels = pretty_breaks()(range(xx, na.rm = TRUE))
   y.breaks = y.labels
   
   # Get time series 
-  df.timeseries = data.frame(Time=tx, xx)
+  df.x = data.frame(Time=tx, xx)
   
   # Get matching points
   df.list = lapply(seq_along(p.names), function(i){
@@ -310,9 +310,9 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
     df.pt = data.frame(Time=ty[map$index1]+delay, yy[map$index1,,drop=FALSE]+max(xx, na.rm = TRUE))
     df.match.pt = df.pt
     df.match.pt$alig = paste(1:nrow(map),p,n[i],sep="_")
-    df.match.timeseries = df.timeseries[map$index2,]
-    df.match.timeseries$alig = paste(1:nrow(map),p,n[i],sep="_")
-    df.match = rbind(df.match.pt, df.match.timeseries)
+    df.match.x = df.x[map$index2,]
+    df.match.x$alig = paste(1:nrow(map),p,n[i],sep="_")
+    df.match = rbind(df.match.pt, df.match.x)
     df.pt$Pattern = paste(p,n[i])
     list(match=df.match, pt=df.pt)
   })
@@ -320,8 +320,8 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
   df.pt = do.call("rbind", lapply(df.list, function(df) df$pt))
   df.match = do.call("rbind", lapply(df.list, function(df) df$match))
   
-  attr_names = names(df.timeseries)[2]
-  gp = ggplot(data=df.timeseries, aes_string(x='Time', y=eval(attr_names))) +
+  attr_names = names(df.x)[2]
+  gp = ggplot(data=df.x, aes_string(x='Time', y=eval(attr_names))) +
     geom_line() +
     geom_line(data=df.pt, aes_string(x='Time', y=eval(attr_names), 
                                      group='Pattern', colour='Pattern')) + 
@@ -369,7 +369,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' gp = plotAlignment(alig, attr=c("ndvi","evi"))
@@ -399,9 +399,9 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
   alignments = getAlignments(x, p.names)
   
   # Get time series
-  df.timeseries = data.frame(internals$timeseries[,attr,drop=FALSE])
-  df.timeseries$Time = as.Date(rownames(df.timeseries))
-  df.alignments = melt(df.timeseries, id="Time")
+  df.x = data.frame(internals$x[,attr,drop=FALSE])
+  df.x$Time = as.Date(rownames(df.x))
+  df.alignments = melt(df.x, id="Time")
   df.alignments$distance = NA
   df.alignments$variable = as.character(df.alignments$variable)
   df.alignments$Variable = df.alignments$variable
@@ -448,7 +448,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
-#' indicating the attribute for plotting, \emph{i.e.} a column of the \code{timeseries}. 
+#' indicating the attribute for plotting, \emph{i.e.} a column of the \code{x}. 
 #' If not declared the function will plot all attributes
 #' @param ... additional arguments passed to \code{\link[dtwSat]{classifyIntervals}}
 #' 
@@ -465,7 +465,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
 #' 
 #' @examples
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Classify interval
@@ -494,22 +494,18 @@ plotGroup = function(x, attr, ...){
   best_class = classifyIntervals(x, ...)
   # best_class = classifyIntervals(x, from=from, to=to, by=by, overlap=.3, threshold=Inf)
   
-  tx = index(internals$timeseries)
+  tx = index(internals$x)
   
-  I = min(best_class$from, na.rm = TRUE)-30 <= index(internals$timeseries) & 
-      index(internals$timeseries) <= max(best_class$to, na.rm = TRUE)+30
+  I = min(best_class$from, na.rm = TRUE)-30 <= index(internals$x) & 
+      index(internals$x) <= max(best_class$to, na.rm = TRUE)+30
   
-  if(missing(attr)) attr=names(internals$timeseries)
-  xx = internals$timeseries[I,attr,drop=FALSE]
+  if(missing(attr)) attr=names(internals$x)
+  xx = internals$x[I,attr,drop=FALSE]
   tx = index(xx)
   
-  df.timeseries = melt(data.frame(Time=tx, xx), id="Time")
-#   if(is.null(df.timeseries$variable))
-#     df.timeseries$variable = names(internals$timeseries)[attr]
-#   if(length(attr)==1 | any(is.na(df.timeseries$variable)))
-#     df.timeseries$variable = attr
+  df.x = melt(data.frame(Time=tx, xx), id="Time")
   
-  y.labels = pretty_breaks()(range(df.timeseries$value, na.rm = TRUE))
+  y.labels = pretty_breaks()(range(df.x$value, na.rm = TRUE))
   y.breaks = y.labels
   df.pol = do.call("rbind", lapply(1:nrow(best_class), function(i){
     data.frame(
@@ -525,7 +521,7 @@ plotGroup = function(x, attr, ...){
     geom_polygon(data=df.pol, aes_string(x='Time', y='value', 
                                          group='Group', fill='Pattern'), alpha=.7) +
     scale_fill_brewer(palette="Set3") + 
-    geom_line(data=df.timeseries, aes_string(x='Time', y='value', colour='variable')) +
+    geom_line(data=df.x, aes_string(x='Time', y='value', colour='variable')) +
     scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=y.labels) +
     scale_x_date(breaks=waiver(), labels=waiver()) +
     ylab("Value") + 
@@ -561,7 +557,7 @@ plotGroup = function(x, attr, ...){
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Plot local cost for all patterns
@@ -604,7 +600,7 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
     if(is.null(internals))
       stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
     
-    tx = index(internals[[p]]$timeseries)
+    tx = index(internals[[p]]$x)
     ty = index(internals[[p]]$pattern)
     m = internals[[p]][[matrix.name]]
     df.m = melt(m)

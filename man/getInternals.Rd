@@ -23,9 +23,9 @@ A \code{\link[base]{list}} whose
       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
       computation, see package \code{\link[dtw]{dtw}}
       \cr\code{pattern}: pattern time series, 
-      \cr\code{timeseries}: satellite image time series,
+      \cr\code{x}: satellite image time series,
       \cr\code{N}: \code{pattern} length, and 
-      \cr\code{M}: \code{timeseries} length.
+      \cr\code{M}: \code{x} length.
 }
 \description{
 This function retrieves cost matrix, inputs, and other 
@@ -34,7 +34,7 @@ internal structures from \link[dtwSat]{twdtw-class} object
 \examples{
 
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, keep=TRUE)
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, keep=TRUE)
 
 a = getInternals(alig)
 names(a) 

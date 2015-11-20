@@ -5,7 +5,7 @@
 \alias{logisticWeight}
 \title{Logistic weight function}
 \usage{
-logisticWeight(alpha, beta, theta)
+logisticWeight(alpha, beta, theta = 0.5)
 }
 \arguments{
 \item{alpha}{numeric. The steepness of logistic weight}
@@ -14,7 +14,7 @@ logisticWeight(alpha, beta, theta)
 
 \item{theta}{numeric between 0 and 1. The weight of the time 
 for the TWDTW computation. Use \code{theta=0} to cancel the time weight, 
-\emph{i.e.} to run the original DTW algorithm}
+\emph{i.e.} to run the original DTW algorithm. Default is 0.5}
 }
 \value{
 An \code{\link[base]{expression}} object

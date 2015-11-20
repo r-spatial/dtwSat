@@ -33,6 +33,7 @@
 #' @seealso \link[dtwSat]{template}
 #' @seealso MOD13Q1 documentation: See 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
+#' 
 "patterns.list"
 
 #' @title Data: template time series
@@ -50,6 +51,7 @@
 #' Series Service \url{https://github.com/albhasan/rwtss.git}.
 #' @seealso MOD13Q1 documentation: 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
+#' 
 "template"
 
 
@@ -69,6 +71,7 @@
 #' Series Service \url{https://github.com/albhasan/rwtss.git}.
 #' @seealso MOD13Q1 documentation: 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
+#' 
 "template.list"
 
 

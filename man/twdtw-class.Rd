@@ -28,15 +28,15 @@ Class for Time-Weighted Dynamic Time Warping alignments
       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
       computation, see package \code{\link[dtw]{dtw}}
       \cr\code{N}: \code{pattern} length, 
-      \cr\code{M}: \code{timeseries} length, 
+      \cr\code{M}: \code{x} length, 
       \cr\code{timeWeight}: time weight matrix,
       \cr\code{localMatrix}: local cost matrix,
       \cr\code{patterns}: temporal pattern, 
-      \cr\code{timeseries}: satellite image time series,
+      \cr\code{x}: satellite image time series,
       }
 	\item{\code{matching}:}{An object of class \code{\link[base]{list}} whose 
   elements have the matching points for each alignment between the 
-  \code{pattern} and the \code{timeseries}, such that
+  \code{pattern} and the \code{x}, such that
       \cr\code{index1}: matching points of the temporal pattern, and
       \cr\code{index2}: matching points of the time series.
       }

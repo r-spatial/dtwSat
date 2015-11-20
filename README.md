@@ -39,9 +39,9 @@ names(patterns.list)
 ```r
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 
-alig = twdtw(patterns=patterns.list, 
-             timeseries=waveletSmoothing(timeseries=template), 
-             weight.fun = weight.fun, span=180, keep=TRUE) 
+alig = twdtw(x=waveletSmoothing(template), 
+             patterns=patterns.list, weight.fun = weight.fun, 
+             span=180, keep=TRUE) 
 
 is(alig, "dtwSat")
 ```
@@ -86,9 +86,9 @@ Plot path for DTW (top) and TWDTW (bottom)
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-alig1 = twdtw(patterns=patterns.list, timeseries=template, 
+alig1 = twdtw(x=template, patterns=patterns.list, 
               normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-alig2 = twdtw(patterns=patterns.list, timeseries=template, 
+alig2 = twdtw(x=template, patterns=patterns.list, 
               weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
               normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
 
@@ -106,7 +106,7 @@ Plot path for all classese
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-alig = twdtw(patterns=patterns.list, timeseries=template, 
+alig = twdtw(x=template, patterns=patterns.list, 
              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
 
@@ -123,7 +123,7 @@ Plot matching points
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-alig = twdtw(patterns=patterns.list, timeseries=waveletSmoothing(timeseries=template), 
+alig = twdtw(x=waveletSmoothing(template), patterns=patterns.list,
              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
 
@@ -144,7 +144,7 @@ Plot alignments
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-alig = twdtw(patterns=patterns.list, timeseries=template, 
+alig = twdtw(x=template, patterns=patterns.list, 
              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
 
@@ -163,10 +163,10 @@ library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
 
-alig1 = twdtw(patterns=patterns.list, timeseries=template, 
+alig1 = twdtw(x=template, patterns=patterns.list, 
               normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
 
-alig2 = twdtw(patterns=patterns.list, timeseries=template, 
+alig2 = twdtw(x=template, patterns=patterns.list, 
               weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
               normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
  
@@ -190,7 +190,7 @@ Plot wavelet smoothing
 library(dtwSat, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(gridExtra, quietly = TRUE)
-sy = waveletSmoothing(timeseries=template, frequency=8, wf = "la8", J=1, 
+sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
                       boundary = "periodic")
 
 gp1 = autoplot(sy, facets = NULL) + xlab("Time") + ylab("Value")

@@ -22,13 +22,13 @@ A \code{\link[base]{list}} whose
 }
 \description{
 This function retrieves the matching points 
-for each alignment between the \code{pattern} and the 
-\code{timeseries}
+for each alignment between the \code{pattern} and 
+\code{x}
 }
 \examples{
 
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
 
 getMatches(alig)
 

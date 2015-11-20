@@ -25,7 +25,10 @@ Imports:
     gridExtra,
     reshape2,
     grDevices,
-    utils
+    utils,
+    plyr,
+    parallel,
+    raster
 Suggests:
     testthat
 License: GPL (>= 2) | file LICENSE

@@ -43,15 +43,15 @@
 #'       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
 #'       computation, see package \code{\link[dtw]{dtw}}
 #'       \cr\code{N}: \code{pattern} length, 
-#'       \cr\code{M}: \code{timeseries} length, 
+#'       \cr\code{M}: \code{x} length, 
 #'       \cr\code{timeWeight}: time weight matrix,
 #'       \cr\code{localMatrix}: local cost matrix,
 #'       \cr\code{patterns}: temporal pattern, 
-#'       \cr\code{timeseries}: satellite image time series,
+#'       \cr\code{x}: satellite image time series,
 #'       }
 #' 	\item{\code{matching}:}{An object of class \code{\link[base]{list}} whose 
 #'   elements have the matching points for each alignment between the 
-#'   \code{pattern} and the \code{timeseries}, such that
+#'   \code{pattern} and the \code{x}, such that
 #'       \cr\code{index1}: matching points of the temporal pattern, and
 #'       \cr\code{index2}: matching points of the time series.
 #'       }
@@ -93,7 +93,7 @@ setMethod("initialize",
                                 distance   = numeric(0),
                                 K          = numeric(0),
                                 pattern      = numeric(0),
-                                timeseries = numeric(0),
+                                x = numeric(0),
                                 matching   = list(
                                                 index1 = numeric(0), 
                                                 index2 = numeric(0)
@@ -140,7 +140,7 @@ setMethod("show",
 #'  
 #' @examples
 #' 
-#' alig = twdtw(patterns=patterns.list, timeseries=template)
+#' alig = twdtw(x=template, patterns=patterns.list)
 #'        
 #' show(alig)
 #' summary(alig)
@@ -186,7 +186,7 @@ setMethod("summary",
 #' 
 #' @examples
 #' 
-#' alig = twdtw(patterns=patterns.list, timeseries=template)
+#' alig = twdtw(x=template, patterns=patterns.list)
 #' 
 #' getPatternNames(alig)
 #' 
@@ -235,7 +235,7 @@ setGeneric("getPatternNames",
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
 #' 
 #' getAlignments(alig)
 #' 
@@ -279,8 +279,8 @@ setGeneric("getAlignments",
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves the matching points 
-#' for each alignment between the \code{pattern} and the 
-#' \code{timeseries}
+#' for each alignment between the \code{pattern} and 
+#' \code{x}
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object
 #' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
@@ -300,7 +300,7 @@ setGeneric("getAlignments",
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
 #' 
 #' getMatches(alig)
 #' 
@@ -342,9 +342,9 @@ setGeneric("getMatches",
 #'       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
 #'       computation, see package \code{\link[dtw]{dtw}}
 #'       \cr\code{pattern}: pattern time series, 
-#'       \cr\code{timeseries}: satellite image time series,
+#'       \cr\code{x}: satellite image time series,
 #'       \cr\code{N}: \code{pattern} length, and 
-#'       \cr\code{M}: \code{timeseries} length.
+#'       \cr\code{M}: \code{x} length.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
@@ -353,7 +353,7 @@ setGeneric("getMatches",
 #' @examples
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-#' alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, keep=TRUE)
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, keep=TRUE)
 #' 
 #' a = getInternals(alig)
 #' names(a) 

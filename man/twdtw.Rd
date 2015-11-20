@@ -5,20 +5,19 @@
 \alias{twdtw}
 \title{Perform Time-Weighted Dynamic Time Warping alignment}
 \usage{
-twdtw(..., patterns = list(...), timeseries = NULL,
-  normalize.patterns = FALSE, patterns.length = NULL, weight.fun,
-  dist.method = "Euclidean", step.matrix = symmetric1,
-  n.alignments = NULL, span = NULL, keep = FALSE)
+twdtw(x, ..., patterns = list(...), normalize.patterns = FALSE,
+  patterns.length = NULL, weight.fun = NULL, dist.method = "Euclidean",
+  step.matrix = symmetric1, n.alignments = NULL, span = 0, keep = FALSE)
 }
 \arguments{
+\item{x}{A \link[zoo]{zoo} object with a time series similar 
+to \code{patterns}. \code{x} must have the same number of attributes
+and be equal to or longer than the \code{patterns}, 
+\emph{i.e.} \code{nrow(patterns)<=nrow(x)}}
+
 \item{...}{\link[zoo]{zoo} objects}
 
 \item{patterns}{a list of \link[zoo]{zoo} objects}
-
-\item{timeseries}{A \link[zoo]{zoo} object with a time series similar 
-to \code{patterns}. \code{timeseries} must have the same number of attributes
-and be equal to or longer than the \code{patterns}, 
-\emph{i.e.} \code{nrow(patterns)<=nrow(timeseries)}}
 
 \item{normalize.patterns}{Normalize queries length. Default is FALSE}
 
@@ -26,20 +25,20 @@ and be equal to or longer than the \code{patterns},
 the length of the output queries will be the length of the longest patterns}
 
 \item{weight.fun}{A function to be applied to each element of the local cost matrix 
-\code{x} and the time cost matrix \code{y}. If not declared the time weight is zero, 
-\emph{i.e.} \code{weight.fun = function(x, y) 1*x + 0*y}. See 'Details'}
+\code{phi} and the time cost matrix \code{psi}. If not declared the time weight is zero, 
+\emph{i.e.} \code{weight.fun = function(phi, psi) 1*phi + 0*psi}. See 'Details'}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
 \pkg{proxy}.}
 
-\item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2]}
+\item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [1]}
 
 \item{n.alignments}{An integer. The maximun number of alignments to 
 perform. NULL will return all possible alignments}
 
 \item{span}{Span between two points of minimum in days, \emph{i.e.} the minimum
-interval between two alignments, for details see [3]}
+interval between two alignments, for details see [2]}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE}
@@ -57,21 +56,31 @@ the time series.
 matrix that comes from the difference in the bands values pont-to-point between the 
 pattern and the time series. The second matrix is the difference in days pont-to-point 
 between the pattern and the time series. For a logistic time weight 
-see \link[dtwSat]{logisticWeight} function.
+see \link[dtwSat]{logisticWeight} function, see [3,4] for details.
 }
 \examples{
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun)
-alig
 
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+# Perform twdtw analysis for a single pixel 
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
              keep=TRUE)
 getPatternNames(alig)
 getAlignments(alig)
 getMatches(alig)
 getInternals(alig)
 
+# Perform twdtw for a list pixel 
+aligs = lapply(template.list, FUN=twdtw, patterns=patterns.list, 
+               weight.fun = weight.fun, keep=TRUE)
 
+aligs
+
+# Perform twdtw in parallel for a list pixel 
+# require(parallel)
+# aligs = mclapply(template.list, FUN=twdtw, patterns=patterns.list, 
+#                  weight.fun = weight.fun, keep=TRUE, mc.cores=2)
+# aligs
+               
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
@@ -82,6 +91,11 @@ The dtw Package. Journal of Statistical Software, 31, 1-24.
 
 [2] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 and Motion (pp. 79-84). London: Springer London, Limited.
+
+[4] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+(2015). Open boundary dynamic time warping for satellite image time series classification. 
+In: IGARSS 2015 2015 IEEE International Geoscience and Remote Sensing Symposium, 2015, Milan. 
+2015 IEEE International Geoscience and Remote Sensing Symposium (IGARSS), p. 3349-3352.
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}

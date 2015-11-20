@@ -34,7 +34,7 @@ cost matrix of Time-Weighted DTW
 \examples{
 
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
-alig = twdtw(patterns=patterns.list, timeseries=template, weight.fun = weight.fun, 
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
        
 gp = plotPath(alig, n.alignments=1:4)

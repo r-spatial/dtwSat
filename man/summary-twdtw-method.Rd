@@ -22,7 +22,7 @@ twdtw-class object
 }
 \examples{
 
-alig = twdtw(patterns=patterns.list, timeseries=template)
+alig = twdtw(x=template, patterns=patterns.list)
        
 show(alig)
 summary(alig)

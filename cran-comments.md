@@ -6,6 +6,8 @@
 
 # v0.2.0
 
+* Include twdtwApply for raster and 3D arrays
+
 * Include Fortran optimization 
   
   Two functions written in Fortran were included in this version, one to perform the accumulated cost and the second to trace back the alignment paths

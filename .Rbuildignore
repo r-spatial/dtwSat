@@ -4,6 +4,8 @@
 # Other files
 README.md
 corinho.R
+tardis.f
+tardis.o
 .git
 .gitignore
 ^README\.Rmd$
@@ -12,4 +14,3 @@ corinho.R
 ^README-.*\.png$
 ^cran-comments\.md
 ^NEWS\.md$
-^src$

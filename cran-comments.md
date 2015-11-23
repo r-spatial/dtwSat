@@ -4,6 +4,38 @@
 
 ## REVIEWS
 
+# v0.2.0
+
+* Include twdtwApply for raster and 3D arrays
+
+* Include Fortran optimization 
+  
+  Two functions written in Fortran were included in this version, one to perform the accumulated cost and the second to trace back the alignment paths
+
+* Extend dtwSat class for multiple alignments 
+
+  The dtwSat class and its methods were extended to afford multiple alignments 
+
+* Remove dependency 
+
+  Dependency from dtw package replaced by the import of DTW step patterns from that package 
+
+* New features
+
+  twdtw extended to afford multiple temporal patterns in the same call
+  
+  twdtw method extended to receive a weight function defined by the user
+  
+  plotAlignments visualization of alignments and distances for several patterns in the plot 
+  
+  plotMatch visualization of the matching points for several alignments in the same plot 
+  
+  plotGroup visualization of best classe for each time interval  
+
+* Update documentation
+ 
+  General review in the documentation
+
 # v0.1.1
 
 * Documentation update

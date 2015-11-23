@@ -19,4 +19,6 @@ README.md~
 
 # Other files
 corinho.R
-src/
+tardis.f
+*.o
+*.so

@@ -28,19 +28,13 @@ Imports:
     utils,
     plyr,
     parallel,
-    raster
+    raster,
+    sp,
+    mgcv
 Suggests:
     testthat
 License: GPL (>= 2) | file LICENSE
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
-Collate:
-    'class-dtwSat.R'
-    'data.R'
-    'dtw.R'
-    'miscellaneous.R'
-    'plot-dtwSat.R'
-    'twdtw.R'
-    'zzz.R'
 RoxygenNote: 5.0.1

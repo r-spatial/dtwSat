@@ -35,7 +35,7 @@
 #' less than or equal to log(length(x),2). Default is 1
 #' @param boundary Character string specifying the boundary condition. 
 #' Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.
-#' @param ... see parameters of \code{\link[waveslim]{mra}} in the 
+#' @param ... other arguments to pass to the function \code{\link[waveslim]{mra}} in the 
 #' packege \pkg{waveslim}
 #' 
 #' @docType methods
@@ -138,8 +138,6 @@ getModisTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16
 #'
 #' @export
 getDatesFromDOY = function(year, doy){
-  if(length(year)!=length(doy))
-    stop("year and doy are not the same length")
   res = as.Date(paste(as.numeric(year), as.numeric(doy)), format="%Y %j", origin="1970-01-01")
   res
 }
@@ -376,5 +374,42 @@ normalizePatterns = function(..., patterns = list(...), patterns.length=NULL){
   
   # Build multi-band zoo object 
   zoo(data.frame(datasets[bands]), order.by = datasets$doy)
+}
+
+.extractTimeSeries = function(i, x, y, timeline, bands){
+  # Get time interval 
+  aux   = data.frame(y[i,])
+  from  = as.Date(aux$from)
+  to    = as.Date(aux$to)
+  # Get raster layers in the interval 
+  layer = which.min( abs(from-timeline) )
+  nl    = which.min( abs(to-timeline) ) - layer
+  # Extract raster values 
+  res = data.frame(sapply(x, extract, y=y[i,], layer=layer, nl=nl))
+  # res$time = getDatesFromDOY(year=format(as.Date(timeline[layer:(layer+nl-1)]), "%Y"), doy=res$doy)
+  res$time = .shiftToBaseYear(year=2000,doy=res$doy)
+  # Build time series 
+  # zoo(data.frame(res[bands]), res$time)
+  data.frame(sampleID = i, time=res$time, res[bands])
+}
+
+.shiftToBaseYear = function(year, doy){
+  dates = getDatesFromDOY(year, doy)
+  diffdate = diff(dates)
+  I = which(diffdate<0)
+  if(length(I)<1) return(dates)
+  dates = c(dates[1:I[1]], .shiftToBaseYear(year+1, doy[(I[1]+1):length(doy)]))
+  dates
+}
+
+.getPointsOverRaster = function(x, y){
+  r_extent = extent(y)
+  point.x = c(r_extent[2], r_extent[1], r_extent[1], r_extent[2], r_extent[2])
+  point.y = c(r_extent[3], r_extent[3], r_extent[4], r_extent[4], r_extent[3])
+  r_sp_extent = list(Polygons(list(Polygon(data.frame(x=point.x, y=point.y))), ID="1"))
+  r_sp_extent = SpatialPolygons(r_sp_extent, proj4string = CRS(projection(y)))
+  res = over(x, r_sp_extent)
+  res = which(!is.na(res))
+  res
 }
 

@@ -139,9 +139,9 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
 #' @param patterns a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 #' details
 #' @param timeline A vector of class \code{\link[base]{Dates}}. 
-#' It must have the length of the layers in the \code{\link[raster]{raster}} object 
+#' It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} object 
 #' @param doy A \code{\link[raster]{RasterBrick-class}} or \code{\link[raster]{RasterStack-class}} 
-#' with the extent as the objects in \code{raster.list}
+#' with the same extent as the objects in \code{raster.list}
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
 #' object in the format "yyyy-mm-dd"

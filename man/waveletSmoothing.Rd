@@ -25,7 +25,7 @@ less than or equal to log(length(x),2). Default is 1}
 \item{boundary}{Character string specifying the boundary condition. 
 Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.}
 
-\item{...}{see parameters of \code{\link[waveslim]{mra}} in the 
+\item{...}{other arguments to pass to the function \code{\link[waveslim]{mra}} in the 
 packege \pkg{waveslim}}
 }
 \value{

@@ -1,7 +1,5 @@
 # dtwSat v0.2.0 Release Notes
 
-* Include twdtwApply for raster and 3D arrays
-
 * Include Fortran optimization 
   
   Two functions written in Fortran were included in this version, one to perform the accumulated cost and the second to trace back the alignment paths
@@ -15,6 +13,12 @@
   Dependency from dtw package replaced by the import of DTW step patterns from that package 
 
 * New features
+  
+  createPattern function to create temporal patterns from several samples time series 
+  
+  extractSampleTimeSeries extract time series from raster objects 
+  
+  twdtwApply for raster and 3D arrays
 
   twdtw extended to afford multiple temporal patterns in the same call
   

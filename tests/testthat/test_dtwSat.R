@@ -21,7 +21,7 @@
 names(patterns.list)
 
 # Perform twdtw alignment
-weight.fun = function(phi, psi) 0.1*phi
+weight.fun = function(phi, psi) 0.1*phi 
 alig = twdtw(x=template, patterns=patterns.list["Soybean"], step.matrix = symmetric1, 
              dist.method = "Euclidean", weight.fun = weight.fun, keep=TRUE)
 
@@ -86,12 +86,12 @@ alig = twdtw(x=template.list[[2]], patterns = patterns.list,
 
 # Classify interval
 best_class = classifyIntervals(x=alig, from=as.Date("2007-09-01"), 
-                               to=as.Date("2013-09-01"), by = "6 month",
+                               to=as.Date("2013-09-01"), by = "12 month",
                                overlap=.3, threshold=Inf)
 best_class
 
-gp = plotGroup(x=alig, from=as.Date("2007-09-01"),  
-               to=as.Date("2013-09-01"), by = "6 month",
+gp = plotGroup(x=alig, attr="evi", from=as.Date("2007-09-01"),  
+               to=as.Date("2013-09-01"), by = "12 month",
                overlap=.3)
 gp
 
@@ -109,7 +109,8 @@ grid.arrange(grobs=gp.list, ncol=1)
 
 
 # Plot cost matrix 
-alig = twdtw(x=template, patterns.list[["Soybean"]], weight.fun = weight.fun, 
+alig = twdtw(template.list[[1]], patterns=patterns.list[1], 
+             weight.fun = weight.fun, 
              keep=TRUE)
  
 

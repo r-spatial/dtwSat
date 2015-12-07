@@ -5,30 +5,20 @@
 \alias{extractSampleTimeSeries}
 \title{Extract time series from raster}
 \usage{
-extractSampleTimeSeries(x, proj4string = NA, raster.list, timeline, doy,
-  year = 2000, nsamples = 10, mc.cores = 1)
+extractSampleTimeSeries(x, y, proj4string = CRS(as.character(NA)),
+  mc.cores = 1)
 }
 \arguments{
-\item{x}{A \code{\link[base]{data.frame}} informing: longitude, 
-latitude, from, to, and classname, for each sample. This can also be 
-a \code{\link[sp]{SpatialPointsDataFrame}} informing: from, to, and 
-classname.}
+\item{x}{A list of \code{\link[raster]{RasterBrick-class}} or 
+\code{\link[raster]{RasterStack-class}} objects}
 
-\item{proj4string}{projection string, see \code{\link[sp]{CRS-class}}}
+\item{y}{A \code{\link[base]{data.frame}} whose attributes are: longitude, 
+latitude, the start ''from'' and the end ''to'' of the time interval 
+for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
+whose attributes are the start ''from'' and the end ''to'' of the time interval}
 
-\item{raster.list}{A list of \code{\link[raster]{RasterBrick-class}} or 
-\code{\link[raster]{RasterStack-class}}.}
-
-\item{timeline}{A vector of class \code{\link[base]{Dates}}. 
-It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} objects}
-
-\item{doy}{A \code{\link[raster]{RasterBrick-class}} or \code{\link[raster]{RasterStack-class}} 
-with the same extent as the objects in \code{raster.list}}
-
-\item{year}{An integer. An base year to set all time series of the class to the same period}
-
-\item{nsamples}{An integer. The number of samples for each class. Default extracts 
-all samples given bx \code{x}}
+\item{proj4string}{projection string, see \code{\link[sp]{CRS-class}}. Used 
+if \code{y} is a \code{\link[base]{data.frame}}}
 
 \item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
 for details}

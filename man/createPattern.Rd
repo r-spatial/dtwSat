@@ -5,23 +5,25 @@
 \alias{createPattern}
 \title{Create temporal patterns}
 \usage{
-createPattern(x, freq, mc.cores = 1, ...)
+createPattern(x, from, to, freq = 1, attr, ...)
 }
 \arguments{
 \item{x}{A \code{\link[base]{list}} of \code{\link[base]{data.frame}} such as 
 retrived by \code{\link[dtwSat]{extractSampleTimeSeries}}.}
 
-\item{freq}{An integer. The frequency in days of the output patterns}
+\item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
-\item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
-for details}
+\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
+
+\item{freq}{An integer. The frequency of the output patterns}
+
+\item{attr}{A vector character or numeric. The attributes in \code{x} to use}
 
 \item{...}{other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
 packege \pkg{mgcv}}
 }
 \value{
-A list temporal pattern as \code{\link[zoo]{zoo}} objects, 
-one for each class in \code{x}
+A \code{\link[zoo]{zoo}} object
 }
 \description{
 This function fits a gam model and retrieves a smoothed 

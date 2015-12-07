@@ -73,6 +73,26 @@ gp = plot(alig, n.alignments=1:4, show.dist=TRUE)
 grid.arrange(gp)
 ```
 
+Plot matching points DTW x TWDTW
+```{r define-demo-plot-matches-dtw-twdtw, eval=TRUE, include = TRUE}
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+alig1 = twdtw(x=waveletSmoothing(template), patterns=patterns.list, 
+             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+
+alig2 = twdtw(x=waveletSmoothing(template), patterns=patterns.list,
+             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
+             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+
+gp1 = plot(alig1, type="match") + 
+          ggtitle("DTW") +
+		      theme(axis.title.x=element_blank()) 
+gp2 = plot(alig2, type="match") +
+          ggtitle("TWDTW") 
+grid.arrange(gp1,gp2,nrow=2)
+```
+
 
 Plot matching points 
 ```{r define-demo-plot-matches, eval=TRUE, include = TRUE}
@@ -90,6 +110,7 @@ gp2 = plot(alig, type="match", p.names=rep("Soybean",4), n=1:4) +
           ggtitle("The four best alignments of Soybean") 
 grid.arrange(gp1,gp2,nrow=2)
 ```
+
 
 
 Plot alignments

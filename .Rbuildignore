@@ -11,6 +11,7 @@ tardis.o
 ^README\.Rmd$
 ^figure$
 ^.*\.png$
+^.*\.xml$
 ^README-.*\.png$
 ^cran-comments\.md
 ^NEWS\.md$

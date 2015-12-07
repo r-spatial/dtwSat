@@ -16,7 +16,57 @@
 ###############################################################
 #### UTILITY FUNCTIONS
 
-
+#' @title Create raster time series 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function creates a list of raster time series 
+#' 
+#' @param ... \code{\link[raster]{RasterBrick-class}} or \code{\link[raster]{RasterStack-class}}
+#' @param x A list of \code{\link[raster]{RasterBrick-class}} or 
+#' \code{\link[raster]{RasterStack-class}}
+#' Each layer of the Raster* object is a time step
+#' @param timeline A vector of \code{\link[base]{Dates}}
+#' It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} object 
+#' @param doy optional. A \code{\link[raster]{RasterBrick-class}} or 
+#' \code{\link[raster]{RasterStack-class}} with the same extent as the 
+#' objects in \code{x}
+#' 
+#' @details a list of \code{\link[raster]{RasterBrick-class}} or 
+#' \code{\link[raster]{RasterStack-class}} objects
+#' 
+#' @docType methods
+#' @return A \code{\link[dtwSat]{twdtw-class}} object
+#' 
+#' @seealso \code{\link[dtwSat]{twdtw}}, 
+#' \code{\link[dtwSat]{classifyIntervals}}
+#' 
+#' @examples
+#' 
+#' ####
+#' 
+#' @export
+createRasterTS = function(... , x = list(...), timeline, doy){
+  
+  timeline = as.Date(timeline)
+  if(!exists("doy")) {
+    array_data = rep(as.numeric(format(timeline, "%j")), each=ncell(x[[1]]))
+    doy = array(array_data, dim = dim(x[[1]]))
+  }
+  x = c(x, doy=doy)
+  
+  # Check timeline 
+  nl = lapply(x, nlayers)
+  if(any(nl!=length(timeline)))
+    stop("raster objects do not have the same length as the timeline")
+  
+  fun = function(x){
+    names(x) = paste0("date.",timeline)
+    x
+  }
+  
+  res = lapply(x, FUN=fun)
+  res
+}
 
 #' @title Wavelet filter
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
@@ -139,6 +189,9 @@ getModisTimeSequence = function(year=2000:format(Sys.time(), "%Y"), frequency=16
 #' @export
 getDatesFromDOY = function(year, doy){
   res = as.Date(paste(as.numeric(year), as.numeric(doy)), format="%Y %j", origin="1970-01-01")
+  # Correct leap years 
+  I = which(diff(res)<0)
+  if(length(I)>0) res[I+1] = as.Date(paste0(as.numeric(format(res[I+1], "%Y"))+1,format(res[I+1],"-%m-%d")))
   res
 }
 
@@ -336,6 +389,44 @@ normalizePatterns = function(..., patterns = list(...), patterns.length=NULL){
   res
 }
 
+#' @title Shift dates of zoo object 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function shifts the dates of the time series to a base year 
+#' 
+#' 
+#' @param x a \link[zoo]{zoo} object 
+#' @param year An integer
+#' 
+#' @docType methods
+#' @return a \link[zoo]{zoo} object shifted to the given year 
+#'
+#' @examples
+#' dates = seq(from = as.Date("2014-09-01"), to = as.Date("2015-03-01"), by = "15 day")
+#' x = zoo(seq_along(dates), dates)
+#' y = shiftDate(x, year=2005)
+#' index(x)
+#' index(y)
+#' 
+#' @export
+#' 
+shiftDate = function(x, year){
+  doy = as.numeric(format(index(x), "%j"))
+  d = .shiftDate(year, doy)
+  index(x) = d
+  x
+}
+
+.shiftDate = function(year, doy){
+  dates = getDatesFromDOY(year, doy)
+  diffdate = diff(dates)
+  I = which(diffdate<0)
+  if(length(I)<1) return(dates)
+  dates = c(.shiftDate(year-1, doy[1:(I[1])]), dates[(I[1]+1):length(doy)])
+  dates
+}
+
+
 # Match and set a list of arguments to a function 
 .setFunArgs = function(fun, ..., args = list(...)){ 
   base_formals = formals(fun)
@@ -348,7 +439,9 @@ normalizePatterns = function(..., patterns = list(...), patterns.length=NULL){
   fun
 }
 
-# Crop raster time series
+
+
+# Crop raster time series. Returns a 3D array 
 .cropTimeSeries = function(x, r1, r2){
   if(is(x, "RasterBrick")){
     y = extent(x, r1, r2)
@@ -360,56 +453,18 @@ normalizePatterns = function(..., patterns = list(...), patterns.length=NULL){
 }
 
 # Build zoo time series  
-.bulidZooFromTSList = function(p, x, timeline, bands){
+.bulidZooFromTS = function(p, x, timeline, bands){
   # Get time series for each band 
-  datasets = lapply(x[c(bands, "doy")], function(x) x[[p]])
-  datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(as.Date(timeline), "%Y"))
+  datasets = lapply(x, function(x) x[[p]])
+  datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(timeline, "%Y"))
   
   # Remove invalid values 
   k = unlist(lapply(datasets[bands], function(x){
     which(x<0|is.na(x))
   }))
   k = c(k, which(duplicated(datasets$doy)))
-  if(length(k)>0) x = lapply(x, function(x) x[-k] )
+  if(length(k)>0) datasets = lapply(datasets, function(x) x[-k] )
   
   # Build multi-band zoo object 
   zoo(data.frame(datasets[bands]), order.by = datasets$doy)
 }
-
-.extractTimeSeries = function(i, x, y, timeline, bands){
-  # Get time interval 
-  aux   = data.frame(y[i,])
-  from  = as.Date(aux$from)
-  to    = as.Date(aux$to)
-  # Get raster layers in the interval 
-  layer = which.min( abs(from-timeline) )
-  nl    = which.min( abs(to-timeline) ) - layer
-  # Extract raster values 
-  res = data.frame(sapply(x, extract, y=y[i,], layer=layer, nl=nl))
-  # res$time = getDatesFromDOY(year=format(as.Date(timeline[layer:(layer+nl-1)]), "%Y"), doy=res$doy)
-  res$time = .shiftToBaseYear(year=2000,doy=res$doy)
-  # Build time series 
-  # zoo(data.frame(res[bands]), res$time)
-  data.frame(sampleID = i, time=res$time, res[bands])
-}
-
-.shiftToBaseYear = function(year, doy){
-  dates = getDatesFromDOY(year, doy)
-  diffdate = diff(dates)
-  I = which(diffdate<0)
-  if(length(I)<1) return(dates)
-  dates = c(dates[1:I[1]], .shiftToBaseYear(year+1, doy[(I[1]+1):length(doy)]))
-  dates
-}
-
-.getPointsOverRaster = function(x, y){
-  r_extent = extent(y)
-  point.x = c(r_extent[2], r_extent[1], r_extent[1], r_extent[2], r_extent[2])
-  point.y = c(r_extent[3], r_extent[3], r_extent[4], r_extent[4], r_extent[3])
-  r_sp_extent = list(Polygons(list(Polygon(data.frame(x=point.x, y=point.y))), ID="1"))
-  r_sp_extent = SpatialPolygons(r_sp_extent, proj4string = CRS(projection(y)))
-  res = over(x, r_sp_extent)
-  res = which(!is.na(res))
-  res
-}
-

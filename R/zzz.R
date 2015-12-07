@@ -30,8 +30,8 @@
 #' @importFrom utils tail head 
 #' @importFrom plyr alply
 #' @importFrom parallel mclapply
-#' @importFrom raster blockSize ncell extent crop brick setValues mosaic extract projection
-#' @importFrom sp Polygon Polygons SpatialPolygons SpatialPointsDataFrame over CRS spTransform
+#' @importFrom raster blockSize ncell extent crop brick setValues mosaic extract projection nlayers
+#' @importFrom sp Polygon Polygons SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates
 #' @importFrom mgcv gam predict.gam
 #' 
 NULL

@@ -23,20 +23,14 @@
 #' @description This function extracts the time series from a list of 
 #' raster given set of spatial location 
 #' 
-#' @param x A \code{\link[base]{data.frame}} informing: longitude, 
-#' latitude, from, to, and classname, for each sample. This can also be 
-#' a \code{\link[sp]{SpatialPointsDataFrame}} informing: from, to, and 
-#' classname. 
-#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}
-#' @param raster.list A list of \code{\link[raster]{RasterBrick-class}} or 
-#' \code{\link[raster]{RasterStack-class}}.
-#' @param timeline A vector of class \code{\link[base]{Dates}}. 
-#' It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} objects 
-#' @param doy A \code{\link[raster]{RasterBrick-class}} or \code{\link[raster]{RasterStack-class}} 
-#' with the same extent as the objects in \code{raster.list}
-#' @param year An integer. An base year to set all time series of the class to the same period 
-#' @param nsamples An integer. The number of samples for each class. Default extracts 
-#' all samples given bx \code{x}
+#' @param y A \code{\link[base]{data.frame}} whose attributes are: longitude, 
+#' latitude, the start ''from'' and the end ''to'' of the time interval 
+#' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
+#' whose attributes are the start ''from'' and the end ''to'' of the time interval
+#' @param x A list of \code{\link[raster]{RasterBrick-class}} or 
+#' \code{\link[raster]{RasterStack-class}} objects 
+#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
+#' if \code{y} is a \code{\link[base]{data.frame}}
 #' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
 #' for details
 #' 
@@ -50,55 +44,27 @@
 #' 
 #' 
 #' @export
-extractSampleTimeSeries = function(x, proj4string=NA, raster.list, timeline, 
-                                   doy, year=2000, nsamples=10, mc.cores = 1){
+extractSampleTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
   
-  if(is(x, "data.frame"))
-    x = SpatialPointsDataFrame(x[,1:2], data=x[,3:5], proj4string=CRS(proj4string))
+  if(is(y, "data.frame"))
+    y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
   
-  if(!is(x, "SpatialPointsDataFrame"))
-    stop("x is not SpatialPointsDataFrame")
-  
-  # Get bands 
-  bands = names(raster.list)
-  names(bands) = bands
-  
-  # Set time line 
-  timeline = as.Date(timeline)
-  if(!exists("doy")) {
-    array_data = rep(as.numeric(format(timeline, "%j")), each=ncell(raster.list[[1]]))
-    doy = array(array_data, dim = dim(raster.list[[1]]))
-  }
-  raster.list = c(raster.list, doy=doy)
-  
-  proj4string = CRS(projection(doy))
-  
+  if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
+    stop("y is not SpatialPoints")
+
   # Reproject points to raster projection 
-  x = spTransform(x, proj4string)
+  y = spTransform(y, CRS(projection(x$doy)))
+
+  # res = lapply(s, FUN=.extractTimeSeries, x = x, y = y)
+  s = row.names(y)
+  names(s) = s
+  res = mclapply(s, FUN=.extractTimeSeries, x = x, y = y, mc.cores = mc.cores)
   
-  # Get points over the raster
-  I = .getPointsOverRaster(x, doy)
-  if(length(I)<1)
-    stop("there is no points over the raster")
-  xx = x[I,]
+  I = which(unlist(lapply(res, is.null)))
+  if(length(I)>0)
+    warning(paste("the samples ",paste0(s[I], collapse = ","),
+                  " are not over the rester extent or they do not overlap the rester time series"), call. = FALSE)
   
-  # Set parameters 
-  names(xx) = c("from", "to","classname")
-  data = data.frame(xx)
-  pattern_names = unique(data$classname)
-  names(pattern_names) = pattern_names
-  
-  fun = function(p){
-    I = which(data$classname==p)
-    if(!is.null(nsamples) & nsamples<length(I))
-      I = sample(I, nsamples)
-    if(length(I)<1) return(NULL)
-    do.call("rbind", lapply(I, .extractTimeSeries, x=raster.list, 
-                            y = xx, timeline = timeline, bands = bands))
-  }
-  
-  # res = lapply(pattern_names[1], FUN=fun)
-  res = mclapply(pattern_names, FUN=fun, mc.cores=mc.cores)
   res
 }
 
@@ -111,17 +77,17 @@ extractSampleTimeSeries = function(x, proj4string=NA, raster.list, timeline,
 #' 
 #' @param x A \code{\link[base]{list}} of \code{\link[base]{data.frame}} such as 
 #' retrived by \code{\link[dtwSat]{extractSampleTimeSeries}}. 
-#' @param freq An integer. The frequency in days of the output patterns 
-#' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
-#' for details
+#' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
+#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
+#' @param attr A vector character or numeric. The attributes in \code{x} to use 
+#' @param freq An integer. The frequency of the output patterns 
 #' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
 #' packege \pkg{mgcv}
 #' 
 #' 
 #' @docType methods
 #' 
-#' @return A list temporal pattern as \code{\link[zoo]{zoo}} objects, 
-#' one for each class in \code{x}
+#' @return A \code{\link[zoo]{zoo}} object 
 #' 
 #' @examples
 #' 
@@ -129,22 +95,70 @@ extractSampleTimeSeries = function(x, proj4string=NA, raster.list, timeline,
 #' 
 #' 
 #' @export
-createPattern = function(x, freq, mc.cores = 1, ...){
-  fun = function(x, ...){
-    dates = x$time
-    time_range = range(dates)
-    pred_x = seq(as.Date(time_range[1]), as.Date(time_range[2]), freq)
-    xx = x[,-c(1,2)]
-    res = sapply(as.list(xx), function(y){
-      df = data.frame(x=as.numeric(dates), y=y)
-      fit = gam(data = df, ...)
-      # fit = gam(data = df, formula = y ~ s(x), family = gaussian(), gamma = 4)
-      predict.gam(fit, newdata=data.frame(x=as.numeric(pred_x)))
-    })
-    zoo(data.frame(res), pred_x)
+createPattern = function(x, from, to, freq=1, attr, ...){
+  
+  # Pattern period 
+  from = as.Date(from)
+  to = as.Date(to)
+  
+  # Shift dates to match the same period  
+  df = do.call("rbind", lapply(x, function(x){
+    res = shiftDate(x, year=as.numeric(format(end, "%Y")))
+    res = window(res, start = from, end = to)
+    data.frame(time=index(res), res)
+  }))
+  
+  dates = as.Date(df$time)
+  pred_time = seq(from, to, freq)
+  
+  fun = function(y, ...){
+    df = data.frame(time=as.numeric(dates), y=y)
+    fit = gam(data = df, ...)
+    predict.gam(fit, newdata = data.frame(time=as.numeric(pred_time)))
   }
-  # res = lapply(x, FUN=.fitGAM)
-  res = mclapply(x, FUN=fun, mc.cores=mc.cores, ...)
+  
+  if(missing(attr)) attr = names(df)[-1]
+  
+  res = sapply(as.list(df[attr]), FUN=fun, ...)
+  res = zoo(data.frame(res), as.Date(pred_time))
+  res
+}
+
+
+.extractTimeSeries = function(p, x, y){
+  pto = y[p,]
+  # Check if the coordinates are over the raster extent
+  I = .getPointsOverRaster(x=x$doy, y=pto)
+  if(length(I)<1){
+    warning(paste("sample ",p," is not over the rester extent"), call. = FALSE)
+    return(NULL)
+  }
+  # Check if the sample time interval overlaps the raster time series 
+  from  = as.Date(pto$from)
+  to    = as.Date(pto$to)
+  doy   = c(extract(x = x$doy, y = coordinates(pto)))
+  year  = format(as.Date(names(x$doy), format="date.%Y.%m.%d"), "%Y")
+  timeline = getDatesFromDOY(year = year, doy = doy)
+  layer =  which( from - timeline <= 0 )[1]
+  nl    =  which(   to - timeline <= 0 )[1] - layer
+  if(nl<=0){
+    warning(paste("there is no overlap between sample ",p," and the rester time series"), call. = FALSE)
+    return(NULL)
+  }
+  # Extract raster values 
+  I = which(names(x) %in% c("doy"))
+  ts = data.frame(sapply(x[-I], extract, y=pto, layer = layer, nl = nl))
+  zoo(ts, timeline[layer:(layer+nl-1)])
+}
+
+.getPointsOverRaster = function(x, y){
+  r_extent = extent(x)
+  point.x = c(r_extent[2], r_extent[1], r_extent[1], r_extent[2], r_extent[2])
+  point.y = c(r_extent[3], r_extent[3], r_extent[4], r_extent[4], r_extent[3])
+  r_sp_extent = list(Polygons(list(Polygon(data.frame(x=point.x, y=point.y))), ID="1"))
+  r_sp_extent = SpatialPolygons(r_sp_extent, proj4string = CRS(projection(y)))
+  res = over(y, r_sp_extent)
+  res = row.names(y)[which(!is.na(res))]
   res
 }
 

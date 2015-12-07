@@ -5,8 +5,12 @@
 ## REVIEWS
 
 # v0.2.0
+* checking installed package size ... NOTE
+  installed size is  6.3Mb
+  sub-directories of 1Mb or more:
+    tif_MT   5.8Mb
 
-* Include twdtwApply for raster and 3D arrays
+  The 'tif' files were included in order to give an example of spatiotemporal analysis using dtwSat. This example is the smallest that is still meaningful for spatiotemporal analysis.
 
 * Include Fortran optimization 
   
@@ -21,6 +25,12 @@
   Dependency from dtw package replaced by the import of DTW step patterns from that package 
 
 * New features
+  
+  createPattern function to create temporal patterns from several samples time series 
+  
+  extractSampleTimeSeries extract time series from raster objects 
+  
+  twdtwApply for raster and 3D arrays
 
   twdtw extended to afford multiple temporal patterns in the same call
   

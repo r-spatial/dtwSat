@@ -116,6 +116,29 @@ grid.arrange(gp)
 
 ![plot of chunk define-demo-plot-paths](figure/define-demo-plot-paths-1.png) 
 
+Plot matching points DTW x TWDTW
+
+```r
+library(dtwSat, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(gridExtra, quietly = TRUE)
+alig1 = twdtw(x=waveletSmoothing(template), patterns=patterns.list,
+             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
+             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+
+alig2 = twdtw(x=waveletSmoothing(template), patterns=patterns.list, 
+             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
+
+gp1 = plot(alig2, type="match") + 
+          ggtitle("DTW") +
+		      theme(axis.title.x=element_blank()) 
+gp2 = plot(alig1, type="match") +
+          ggtitle("TWDTW") 
+grid.arrange(gp1,gp2,nrow=2)
+```
+
+![plot of chunk define-demo-plot-matches-dtw-twdtw](figure/define-demo-plot-matches-dtw-twdtw-1.png) 
+
 
 Plot matching points 
 
@@ -136,6 +159,7 @@ grid.arrange(gp1,gp2,nrow=2)
 ```
 
 ![plot of chunk define-demo-plot-matches](figure/define-demo-plot-matches-1.png) 
+
 
 
 Plot alignments

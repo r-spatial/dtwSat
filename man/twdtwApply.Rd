@@ -5,23 +5,17 @@
 \alias{twdtwApply}
 \title{Apply Time-Weighted Dynamic Time Warping alignment to raster}
 \usage{
-twdtwApply(raster.list, patterns, timeline, doy, breaks = NULL, from = NULL,
-  to = NULL, by = NULL, win.fun = NULL, win.size = c(1, 1),
-  chunk.overlap, mc.cores = 1, chunk.size, ...)
+twdtwApply(x, patterns, breaks = NULL, from = NULL, to = NULL,
+  by = NULL, win.fun = NULL, win.size = c(1, 1), chunk.overlap,
+  mc.cores = 1, chunk.size, ...)
 }
 \arguments{
-\item{raster.list}{A list of \code{\link[raster]{RasterBrick-class}} or 
+\item{x}{A list of \code{\link[raster]{RasterBrick-class}} or 
 \code{\link[raster]{RasterStack-class}}.
-Each layer of the \code{\link[raster]{raster}} object is a time step. See Details}
+Each layer of the Raster* object is a time step. See Details}
 
 \item{patterns}{a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 details}
-
-\item{timeline}{A vector of class \code{\link[base]{Dates}}. 
-It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} object}
-
-\item{doy}{A \code{\link[raster]{RasterBrick-class}} or \code{\link[raster]{RasterStack-class}} 
-with the same extent as the objects in \code{raster.list}}
 
 \item{breaks}{A vector of class \code{\link[base]{Dates}}}
 
@@ -62,19 +56,8 @@ analysis for each pixel time series.
 ...
 }
 \examples{
-weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 
-# Perform twdtw analysis for a single pixel 
-alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
-             keep=TRUE)
-getPatternNames(alig)
-getAlignments(alig)
-getMatches(alig)
-getInternals(alig)
-
-# Perform twdtw for a list pixel 
-#aligs = lapply(X=template, FUN=twdtw, patterns=patterns.list, 
-#weight.fun = weight.fun, keep=TRUE)
+###
 
 }
 \author{

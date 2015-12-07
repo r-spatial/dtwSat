@@ -18,6 +18,7 @@
 README.md~
 
 # Other files
+*.xml
 corinho.R
 tardis.f
 *.o

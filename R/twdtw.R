@@ -133,15 +133,11 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
 #' @description This function applies a multidimensional Time-Weighted DTW 
 #' analysis for each pixel time series. 
 #' 
-#' @param raster.list A list of \code{\link[raster]{RasterBrick-class}} or 
+#' @param x A list of \code{\link[raster]{RasterBrick-class}} or 
 #' \code{\link[raster]{RasterStack-class}}.
-#' Each layer of the \code{\link[raster]{raster}} object is a time step. See Details
+#' Each layer of the Raster* object is a time step. See Details
 #' @param patterns a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 #' details
-#' @param timeline A vector of class \code{\link[base]{Dates}}. 
-#' It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} object 
-#' @param doy A \code{\link[raster]{RasterBrick-class}} or \code{\link[raster]{RasterStack-class}} 
-#' with the same extent as the objects in \code{raster.list}
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
 #' object in the format "yyyy-mm-dd"
@@ -170,47 +166,28 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
 #' \code{\link[dtwSat]{classifyIntervals}}
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 #' 
-#' # Perform twdtw analysis for a single pixel 
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
-#'              keep=TRUE)
-#' getPatternNames(alig)
-#' getAlignments(alig)
-#' getMatches(alig)
-#' getInternals(alig)
-#' 
-#' # Perform twdtw for a list pixel 
-#' #aligs = lapply(X=template, FUN=twdtw, patterns=patterns.list, 
-#' #weight.fun = weight.fun, keep=TRUE)
+#' ###
 #' 
 #' @export
-twdtwApply = function(raster.list, patterns, 
-                       timeline, doy, breaks=NULL, from=NULL, to=NULL, by=NULL,
+twdtwApply = function(x, patterns, breaks=NULL, from=NULL, to=NULL, by=NULL,
                        win.fun = NULL, win.size = c(1,1), chunk.overlap,
                        mc.cores = 1, chunk.size, ...){
-  
-  # Set time line 
-  timeline = as.Date(timeline)
-  if(!exists("doy")) {
-    array_data = rep(as.numeric(format(timeline, "%j")), each=ncell(raster.list[[1]]))
-    doy = array(array_data, dim = dim(raster.list[[1]]))
-  }
-  raster.list = c(raster.list, doy=doy)
   
   # Set classification intervals 
   if(is.null(breaks))
     breaks = seq(from=as.Date(from), to=as.Date(to), by=by)
-  
+
   # Split and set arguments to functions 
+  names(patterns) = NULL
   args = list(..., patterns=patterns, breaks=breaks, from=from, to=to, by=by)
   win_fun = .setFunArgs(fun = win.fun, args = args)
   twdtw_fun = .setFunArgs(fun = twdtw, args = args)
   
   # Set blocks Multi-thread parameters
   minblocks = mc.cores
-  if(!missing(chunk.size)) minblocks = round(ncell(raster.list$doy) / chunk.size)
-  blocks = blockSize(raster.list$doy, minblocks = minblocks)
+  if(!missing(chunk.size)) minblocks = round(ncell(x$doy) / chunk.size)
+  blocks = blockSize(x$doy, minblocks = minblocks)
   threads = seq(1, blocks$n)
   
   # Set chunk overlap 
@@ -218,7 +195,7 @@ twdtwApply = function(raster.list, patterns,
   blocks$r1 = blocks$row - chunk.overlap[1]
   blocks$r1[blocks$r1<1] = 1
   blocks$r2 = blocks$row + blocks$nrows - 1 + chunk.overlap[1]
-  blocks$r2[blocks$r2>nrow(raster.list$doy)] = nrow(raster.list$doy)
+  blocks$r2[blocks$r2>nrow(x$doy)] = nrow(x$doy)
   
   # Set other arguments 
   bands = names(patterns[[1]])
@@ -226,13 +203,16 @@ twdtwApply = function(raster.list, patterns,
   blocks$bands = bands
   blocks$nl = length(breaks) - 1 
   
+  # Get time line 
+  timeline = as.Date(names(x$doy), format="date.%Y.%m.%d")
+
   fun2 = function(i){
     # Crop block time series 
-    array.list = lapply(raster.list, .cropTimeSeries, r1=blocks$r1[i], r2=blocks$r2[i])
+    array.list = lapply(x, .cropTimeSeries, r1=blocks$r1[i], r2=blocks$r2[i])
     nts = seq(1, ncell(array.list$doy))
     
     # Build zoo time series  
-    zoo.list = lapply(nts, .bulidZooFromTSList, x=array.list, 
+    zoo.list = lapply(nts, .bulidZooFromTS, x=array.list, 
                       timeline=timeline, bands=blocks$bands)
     
     # Apply TWDTW for each pixel time series 
@@ -242,9 +222,9 @@ twdtwApply = function(raster.list, patterns,
     res = lapply(twdtw_results, FUN = win_fun)
     
     # aux = lapply(seq(1,120*6,6), function(i) i:(i+5) )
-    y = extent(raster.list$doy, r1=blocks$r1[i], r2=blocks$r2[i])
-    res_brick = brick(crop(raster.list$doy, y), nl=blocks$nl)
-    M = apply(data.frame(res), 1, function(x) as.numeric(x))
+    y = extent(x$doy, r1=blocks$r1[i], r2=blocks$r2[i])
+    res_brick = brick(crop(x$doy, y), nl=blocks$nl)
+    M = apply(data.frame(res), 1, function(x) x)
     M = array(M, dim = dim(res_brick))
     res_brick = setValues(res_brick, M)
     res_brick

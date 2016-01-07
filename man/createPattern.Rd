@@ -5,11 +5,11 @@
 \alias{createPattern}
 \title{Create temporal patterns}
 \usage{
-createPattern(x, from, to, freq = 1, attr, ...)
+createPattern(x, from, to, freq = 1, attr, formula, ...)
 }
 \arguments{
 \item{x}{A \code{\link[base]{list}} of \code{\link[base]{data.frame}} such as 
-retrived by \code{\link[dtwSat]{extractSampleTimeSeries}}.}
+retrived by \code{\link[dtwSat]{extractTimeSeries}}.}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
@@ -18,6 +18,8 @@ retrived by \code{\link[dtwSat]{extractSampleTimeSeries}}.}
 \item{freq}{An integer. The frequency of the output patterns}
 
 \item{attr}{A vector character or numeric. The attributes in \code{x} to use}
+
+\item{formula}{A formula. Argument to pass to \code{\link[mgcv]{gam}}}
 
 \item{...}{other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
 packege \pkg{mgcv}}

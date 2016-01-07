@@ -18,7 +18,7 @@ vector with the patterns identification. If not declared the function
 will plot the matrices for all patterns}
 }
 \value{
-A \link[gtable]{gtable} object
+A \link[ggplot2]{ggplot} object
 }
 \description{
 Method for plotting the internal matrices
@@ -30,22 +30,22 @@ alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun,
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 
 # Plot local cost for all patterns
-gp = plotCostMatrix(x=alig, matrix.name="localMatrix")
-grid.arrange(gp)
+gp1 = plotCostMatrix(x=alig, matrix.name="localMatrix")
+gp1
 
 # Plot time weight for all patterns
-gp = plotCostMatrix(x=alig, matrix.name="timeWeight")
-grid.arrange(gp)
+gp2 = plotCostMatrix(x=alig, matrix.name="timeWeight")
+gp2
 
 # Plot accumulated cost for all patterns
-gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
-grid.arrange(gp)
+gp3 = plotCostMatrix(x=alig, matrix.name="costMatrix")
+gp3
 
 # Plot accumulated cost for Cotton and Soybean
-gp = plotCostMatrix(x=alig, matrix.name="costMatrix", 
+gp4 = plotCostMatrix(x=alig, matrix.name="costMatrix", 
      p.names=c("Cotton","Soybean"))
-grid.arrange(gp)
 
+gp4
 
 }
 \author{

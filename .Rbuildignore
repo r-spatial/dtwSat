@@ -2,8 +2,10 @@
 ^\.Rproj\.user$
 
 # Other files
+references.bib
 README.md
 corinho.R
+dtwSat_lucc.R
 tardis.f
 tardis.o
 .git

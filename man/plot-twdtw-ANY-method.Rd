@@ -20,9 +20,7 @@
 \code{\link[dtwSat]{plotGroup}}}
 }
 \value{
-A \link[gtable]{gtable} object for methods: ''path'' and 
-''cost'', or a \link[ggplot2]{ggplot} object for methods: ''match'', 
-''alignment'', and ''group''
+A \link[ggplot2]{ggplot} object
 }
 \description{
 Methods for plotting the results of the 
@@ -35,11 +33,11 @@ alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun,
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 
 # Plot paths
-gp1 = plot(alig, type="path", n.alignments=1:4, show.dist = TRUE)
-grid.arrange(gp1)
+gp1 = plot(alig, type="path", n.alignments=1:4)
+gp1
 
 # Plot matches 
-gp2 = plot(alig, type="match", attr=1)
+gp2 = plot(alig, type="match", attr="evi")
 gp2
 
 # Plot alignments 
@@ -53,7 +51,11 @@ gp4
 
 # Plot cost matrix
 gp5 = plot(alig, type="cost", matrix.name="costMatrix")
-grid.arrange(gp5)
+gp5
+
+# Plot cost matrix
+gp6 = plot(alig, type="pattern")
+gp6
 
 }
 \author{

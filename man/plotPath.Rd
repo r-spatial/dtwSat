@@ -5,8 +5,7 @@
 \alias{plotPath}
 \title{Plotting paths of twdtw alignments}
 \usage{
-plotPath(x, p.names, n.alignments = NULL, show.dist = FALSE, shift = c(-4,
-  -1))
+plotPath(x, p.names, n.alignments = NULL)
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{twdtw-class}} object}
@@ -17,15 +16,9 @@ will plot the paths for all patterns}
 
 \item{n.alignments}{An \link[base]{integer} vector. The alignment indices 
 to plot. If not declared the function will plot all possible alignments}
-
-\item{show.dist}{Display dtw distance for each alignment}
-
-\item{shift}{A vector of length 2. These values shift the position
-of the text in \code{x} and \code{y}, respectively. Argument used 
-with show.dist}
 }
 \value{
-A \link[gtable]{gtable} object
+A \link[ggplot2]{ggplot} object
 }
 \description{
 Method for plotting the minimum paths in the 
@@ -37,9 +30,13 @@ weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
        
-gp = plotPath(alig, n.alignments=1:4)
+gp1 = plotPath(alig, n.alignments=1:4)
 
-grid.arrange(gp)
+gp1
+
+gp2 = plotPath(alig, p.names=c("Cotton","Maize"), n.alignments=1:4)
+
+gp2
 
 }
 \author{

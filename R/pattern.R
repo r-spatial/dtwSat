@@ -27,8 +27,8 @@
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
 #' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
 #' whose attributes are the start ''from'' and the end ''to'' of the time interval
-#' @param x A list of \code{\link[raster]{RasterBrick-class}} or 
-#' \code{\link[raster]{RasterStack-class}} objects 
+#' @param x A list of \code{\link[raster]{Raster-class}}
+#' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects 
 #' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
 #' if \code{y} is a \code{\link[base]{data.frame}}
 #' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
@@ -44,29 +44,61 @@
 #' 
 #' 
 #' @export
-extractSampleTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
+# extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
+#   
+#   if(is(y, "data.frame"))
+#     y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
+#   
+#   if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
+#     stop("y is not SpatialPoints")
+# 
+#   # Reproject points to raster projection 
+#   y = spTransform(y, CRS(projection(x$doy)))
+# 
+#   # res = lapply(s, FUN=.extractTimeSeries, x = x, y = y)
+#   s = row.names(y)
+#   names(s) = s
+#   res = mclapply(s, FUN=.extractTimeSeries, x = x, y = y, mc.cores = mc.cores)
+#   
+#   I = which(unlist(lapply(res, is.null)))
+#   if(length(I)>0)
+#     warning(paste("the samples ",paste0(s[I], collapse = ","),
+#                   " are not over the rester extent or they do not overlap the rester time series"), call. = FALSE)
+#   
+#   res
+# }
+extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
   
   if(is(y, "data.frame"))
     y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
   
   if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
     stop("y is not SpatialPoints")
-
+  
   # Reproject points to raster projection 
   y = spTransform(y, CRS(projection(x$doy)))
+  
+  # Check if the coordinates are over the raster extent
+  pto = .getPointsOverRaster(x=x$doy, y=y)
+  if(length(pto)<1)
+    stop("extents do not overlap")
+  if(length(pto)<length(y))
+    warning(paste("raster extent does not overlap samples:",paste(pto, collapse = ",")), call. = FALSE)
 
-  # res = lapply(s, FUN=.extractTimeSeries, x = x, y = y)
-  s = row.names(y)
-  names(s) = s
-  res = mclapply(s, FUN=.extractTimeSeries, x = x, y = y, mc.cores = mc.cores)
+  # Extract time series 
+  ts_list = mclapply(x, FUN = extract, y = y[pto,], mc.cores = mc.cores)
+  
+  # Crop period
+  res = lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y)
+  names(res) = pto
   
   I = which(unlist(lapply(res, is.null)))
   if(length(I)>0)
-    warning(paste("the samples ",paste0(s[I], collapse = ","),
-                  " are not over the rester extent or they do not overlap the rester time series"), call. = FALSE)
+    warning(paste("rester extent or time period do not overlap samples:",paste0(pto[I], collapse = ",")), call. = FALSE)
   
   res
 }
+
 
 
 #' @title Create temporal patterns 
@@ -76,11 +108,12 @@ extractSampleTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc
 #' temporal pattern 
 #' 
 #' @param x A \code{\link[base]{list}} of \code{\link[base]{data.frame}} such as 
-#' retrived by \code{\link[dtwSat]{extractSampleTimeSeries}}. 
+#' retrived by \code{\link[dtwSat]{extractTimeSeries}}. 
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param attr A vector character or numeric. The attributes in \code{x} to use 
 #' @param freq An integer. The frequency of the output patterns 
+#' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}
 #' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
 #' packege \pkg{mgcv}
 #' 
@@ -95,29 +128,38 @@ extractSampleTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc
 #' 
 #' 
 #' @export
-createPattern = function(x, from, to, freq=1, attr, ...){
+createPattern = function(x, from, to, freq=1, attr, formula, ...){
   
   # Pattern period 
   from = as.Date(from)
   to = as.Date(to)
   
+  # Get formula variables
+  if(!is(formula, "formula"))
+    stop("missing object formula")
+  vars = all.vars(formula)
+  
   # Shift dates to match the same period  
-  df = do.call("rbind", lapply(x, function(x){
-    res = shiftDate(x, year=as.numeric(format(end, "%Y")))
+  df = do.call("rbind", lapply(x, function(xx){
+    res = shiftDate(xx, year=as.numeric(format(to, "%Y")))
     res = window(res, start = from, end = to)
-    data.frame(time=index(res), res)
+    res = data.frame(time=index(res), res)
   }))
+  # names(df)[1] = vars[2]
   
   dates = as.Date(df$time)
   pred_time = seq(from, to, freq)
   
   fun = function(y, ...){
-    df = data.frame(time=as.numeric(dates), y=y)
-    fit = gam(data = df, ...)
-    predict.gam(fit, newdata = data.frame(time=as.numeric(pred_time)))
+    df = data.frame(y, as.numeric(dates))
+    names(df) = vars
+    fit = gam(data = df, formula = formula, ...)
+    time = data.frame(as.numeric(pred_time))
+    names(time) = vars[2]
+    predict.gam(fit, newdata = time)
   }
   
-  if(missing(attr)) attr = names(df)[-1]
+  if(missing(attr)) attr = names(df)[-which(names(df) %in% "time")]
   
   res = sapply(as.list(df[attr]), FUN=fun, ...)
   res = zoo(data.frame(res), as.Date(pred_time))
@@ -125,30 +167,26 @@ createPattern = function(x, from, to, freq=1, attr, ...){
 }
 
 
-.extractTimeSeries = function(p, x, y){
-  pto = y[p,]
-  # Check if the coordinates are over the raster extent
-  I = .getPointsOverRaster(x=x$doy, y=pto)
-  if(length(I)<1){
-    warning(paste("sample ",p," is not over the rester extent"), call. = FALSE)
-    return(NULL)
-  }
+.extractTimeSeries = function(pto, p, x, y){
+  s = y[pto[p],]
   # Check if the sample time interval overlaps the raster time series 
-  from  = as.Date(pto$from)
-  to    = as.Date(pto$to)
-  doy   = c(extract(x = x$doy, y = coordinates(pto)))
-  year  = format(as.Date(names(x$doy), format="date.%Y.%m.%d"), "%Y")
+  from  = as.Date(s$from)
+  to    = as.Date(s$to)
+  doy   = c(x$doy[p,])
+  year  = format(as.Date(names(x$doy[p,]), format="date.%Y.%m.%d"), "%Y")
   timeline = getDatesFromDOY(year = year, doy = doy)
   layer =  which( from - timeline <= 0 )[1]
   nl    =  which(   to - timeline <= 0 )[1] - layer
   if(nl<=0){
-    warning(paste("there is no overlap between sample ",p," and the rester time series"), call. = FALSE)
+    warning(paste("time period of sample ",pto[p]," does not overlap rester time series"), call. = FALSE)
     return(NULL)
   }
   # Extract raster values 
   I = which(names(x) %in% c("doy"))
-  ts = data.frame(sapply(x[-I], extract, y=pto, layer = layer, nl = nl))
-  zoo(ts, timeline[layer:(layer+nl-1)])
+  ts = data.frame(sapply(x[-I], function(x) x[p,layer:(layer+nl-1)]))
+  timeline = timeline[layer:(layer+nl-1)]
+  k = !duplicated(timeline)
+  zoo(ts[k,], timeline[k])
 }
 
 .getPointsOverRaster = function(x, y){

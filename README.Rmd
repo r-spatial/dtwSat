@@ -1,11 +1,15 @@
 ---
+title: "Land use classification using dtwSat"
+author: "Victor Maus^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany], ^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.]"
+date: "`r Sys.Date()`"
 output:
   md_document:
     variant: markdown_github
+    bibliography: references.bib
 ---
 
 <!-- 
-# Edit and run 
+# Build the README.md file for github webpage 
 library(knitr)
 knit(input="README.Rmd", output = "README.md")
 -->
@@ -14,168 +18,38 @@ dtwSat
 =====
 
 ### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
-dtwSat provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm to measure similarity between two temporal sequences. This adaptation of the classical Dynamic Time Warping (DTW) algorithm is flexible to compare events that have a strong time dependency, such as phenological stages of cropland systems and tropical forests. 
+dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) method for satellite image time series analysis and land use classification. It is useful to account for natural and cultivated vegetation types even with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining. The [tutorial bellow][Land use classification using dtwSat] shows how to use the package for land use mapping using satellite image time series.
 
 ### Install
 ```{r installation, eval = FALSE}
 devtools::install_github("vwmaus/dtwSat")
 ```
 
-
 ### Quick demo
 
-This dome performs a dtwSat analysis and show the results.
-```{r define-demo-plot-dtwSat, eval=TRUE, include = TRUE}
+This dome performs a TWDTW analysis and show the results.
+```{r quick_demo, echo = TRUE, eval = FALSE, results = "hide", warning = FALSE, message = FALSE}
 library(dtwSat, quietly = TRUE)
-names(patterns.list)
-
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 
 alig = twdtw(x=waveletSmoothing(template), 
              patterns=patterns.list, weight.fun = weight.fun, 
              span=180, keep=TRUE) 
 
-is(alig, "dtwSat")
+class("twdtw")
 print(alig)
 summary(alig)
 ```
 
-### Plot examples
-
-
-Plot path for DTW (top) and TWDTW (bottom)
-```{r define-demo-twdtw-x-dtw, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig1 = twdtw(x=template, patterns=patterns.list, 
-              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-alig2 = twdtw(x=template, patterns=patterns.list, 
-              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp1 = plot(alig1, p.name="Soybean", show.dist = TRUE) + ggtitle("DTW") 
-gp2 = plot(alig2, p.name="Soybean", show.dist = TRUE) + ggtitle("TWDTW") 
-grid.arrange(gp1, gp2, ncol=1)
+```{r path-plot, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+library(ggplot2)
+gp = plot(alig) + theme(text = element_text(size = 8, family="Helvetica"))
+gp
 ```
 
 
-Plot path for all classese
-```{r define-demo-plot-paths, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig = twdtw(x=template, patterns=patterns.list, 
-             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp = plot(alig, n.alignments=1:4, show.dist=TRUE)
-grid.arrange(gp)
+Land use classification using dtwSat
+=====
+```{r child = 'vignettes/lucc.Rmd'}
 ```
 
-Plot matching points DTW x TWDTW
-```{r define-demo-plot-matches-dtw-twdtw, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig1 = twdtw(x=waveletSmoothing(template), patterns=patterns.list, 
-             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-alig2 = twdtw(x=waveletSmoothing(template), patterns=patterns.list,
-             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp1 = plot(alig1, type="match") + 
-          ggtitle("DTW") +
-		      theme(axis.title.x=element_blank()) 
-gp2 = plot(alig2, type="match") +
-          ggtitle("TWDTW") 
-grid.arrange(gp1,gp2,nrow=2)
-```
-
-
-Plot matching points 
-```{r define-demo-plot-matches, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig = twdtw(x=waveletSmoothing(template), patterns=patterns.list,
-             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp1 = plot(alig, type="match") + 
-          ggtitle("Best alignment for each class") +
-		      theme(axis.title.x=element_blank()) 
-gp2 = plot(alig, type="match", p.names=rep("Soybean",4), n=1:4) +
-          ggtitle("The four best alignments of Soybean") 
-grid.arrange(gp1,gp2,nrow=2)
-```
-
-
-
-Plot alignments
-```{r define-demo-plot-alignments, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-alig = twdtw(x=template, patterns=patterns.list, 
-             weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-             normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-gp = plot(alig, attr=c("evi","ndvi"), type="alignment", threshold=4)
-grid.arrange(gp)
-```
-
-
-
-Compare DTW and TWDTW classification
-```{r define-demo-plot-classification, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-
-alig1 = twdtw(x=template, patterns=patterns.list, 
-              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
-
-alig2 = twdtw(x=template, patterns=patterns.list, 
-              weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5), 
-              normalize.patterns=TRUE, patterns.length=23, span=180, keep=TRUE)
- 
-gp1 = plot(alig1, type="group", from=as.Date("2009-09-01"),  
-           to=as.Date("2013-09-01"), by = "6 month", overlap=.3) + 
-           ggtitle("DTW") 
-
-gp2 = plot(alig2, type="group", from=as.Date("2009-09-01"), 
-           to=as.Date("2013-09-01"), by = "6 month", overlap=.3) + 
-           ggtitle("TWDTW") 
-
-grid.arrange(gp1, gp2, ncol=1)
-```
-
-
-Plot wavelet smoothing
-```{r define-demo-plot-smoothing, eval=TRUE, include = TRUE}
-library(dtwSat, quietly = TRUE)
-library(ggplot2, quietly = TRUE)
-library(gridExtra, quietly = TRUE)
-sy = waveletSmoothing(x=template, frequency=8, wf = "la8", J=1, 
-                      boundary = "periodic")
-
-gp1 = autoplot(sy, facets = NULL) + xlab("Time") + ylab("Value")
-
-evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
-
-gp2 = autoplot(evi, facets = NULL) + xlab("Time") + ylab("EVI")
-
-grid.arrange(gp1,gp2,nrow=2)
-```
-
-
-
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
-```

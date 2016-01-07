@@ -10,8 +10,8 @@ twdtwApply(x, patterns, breaks = NULL, from = NULL, to = NULL,
   mc.cores = 1, chunk.size, ...)
 }
 \arguments{
-\item{x}{A list of \code{\link[raster]{RasterBrick-class}} or 
-\code{\link[raster]{RasterStack-class}}.
+\item{x}{A list of \code{\link[raster]{Raster-class}}
+\code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects.
 Each layer of the Raster* object is a time step. See Details}
 
 \item{patterns}{a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for

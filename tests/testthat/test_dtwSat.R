@@ -20,6 +20,9 @@
 # Show pattern names
 names(patterns.list)
 
+# 
+plotPatterns(patterns.list)
+
 # Perform twdtw alignment
 weight.fun = function(phi, psi) 0.1*phi 
 alig = twdtw(x=template, patterns=patterns.list["Soybean"], step.matrix = symmetric1, 
@@ -31,8 +34,8 @@ print(alig)
 summary(alig)
 
 # Plot cost matrix paths
-gp1 = plot(x=alig, type="path", show.dist=TRUE)
-grid.arrange(gp1)
+gp1 = plot(x=alig, type="path")
+gp1
 
 
 # Plot alignment
@@ -86,12 +89,12 @@ alig = twdtw(x=template.list[[2]], patterns = patterns.list,
 
 # Classify interval
 best_class = classifyIntervals(x=alig, from=as.Date("2007-09-01"), 
-                               to=as.Date("2013-09-01"), by = "12 month",
+                               to=as.Date("2013-09-01"), by = "6 month",
                                overlap=.3, threshold=Inf)
 best_class
 
 gp = plotGroup(x=alig, attr="evi", from=as.Date("2007-09-01"),  
-               to=as.Date("2013-09-01"), by = "12 month",
+               to=as.Date("2013-09-01"), by = "6 month",
                overlap=.3)
 gp
 
@@ -115,13 +118,13 @@ alig = twdtw(template.list[[1]], patterns=patterns.list[1],
  
 
 gp = plotCostMatrix(x=alig, matrix.name="timeWeight")
-grid.arrange(gp)
+gp
 
 gp = plotCostMatrix(x=alig, matrix.name="localMatrix")
-grid.arrange(gp)
+gp
  
 gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
-grid.arrange(gp)
+gp
 
  
 # Test bands order 

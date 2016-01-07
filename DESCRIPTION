@@ -11,18 +11,17 @@ Description: Provides a Time-Weighted Dynamic Time Warping (TWDTW) algorithm
     that have a strong time dependency, such as phenological stages of cropland
     systems and tropical forests. This package provides methods for visualization of
     minimum cost paths, time series alignment, and time intervals classification.
-Depends:
+Depends: 
     R (>= 3.0.0),
     methods,
     zoo
-Imports:
+Imports: 
     dtw,
     proxy,
     waveslim,
     graphics,
     ggplot2,
     scales,
-    gridExtra,
     reshape2,
     grDevices,
     utils,
@@ -31,10 +30,15 @@ Imports:
     raster,
     sp,
     mgcv
-Suggests:
-    testthat
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown, 
+    gridExtra,
+    rgdal
 License: GPL (>= 2) | file LICENSE
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
 RoxygenNote: 5.0.1
+VignetteBuilder: knitr

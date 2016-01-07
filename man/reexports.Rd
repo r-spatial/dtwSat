@@ -2,10 +2,7 @@
 % Please edit documentation in R/zzz.R
 \docType{import}
 \name{reexports}
-\alias{arrangeGrob}
 \alias{asymmetric}
-\alias{autoplot}
-\alias{grid.arrange}
 \alias{rabinerJuangStepPattern}
 \alias{reexports}
 \alias{symmetric1}
@@ -17,10 +14,6 @@ below to see their documentation.
 
 \describe{
   \item{dtw}{\code{\link[dtw]{symmetric1}}, \code{\link[dtw]{symmetric2}}, \code{\link[dtw]{asymmetric}}, \code{\link[dtw]{rabinerJuangStepPattern}}}
-
-  \item{ggplot2}{\code{\link[ggplot2]{autoplot}}}
-
-  \item{gridExtra}{\code{\link[gridExtra]{arrangeGrob}}, \code{\link[gridExtra]{grid.arrange}}}
 }}
 \keyword{internal}
 

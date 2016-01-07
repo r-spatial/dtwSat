@@ -133,8 +133,8 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
 #' @description This function applies a multidimensional Time-Weighted DTW 
 #' analysis for each pixel time series. 
 #' 
-#' @param x A list of \code{\link[raster]{RasterBrick-class}} or 
-#' \code{\link[raster]{RasterStack-class}}.
+#' @param x A list of \code{\link[raster]{Raster-class}}
+#' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects.
 #' Each layer of the Raster* object is a time step. See Details
 #' @param patterns a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 #' details

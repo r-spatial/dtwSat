@@ -25,12 +25,12 @@
 #' @importFrom graphics plot
 #' @importFrom waveslim mra
 #' @importFrom ggplot2 ggplot geom_line geom_point geom_path geom_raster geom_polygon xlab ylab scale_x_continuous scale_y_continuous scale_x_date scale_y_date scale_fill_brewer annotate scale_fill_gradientn aes_string waiver facet_wrap ggtitle
-#' @importFrom scales pretty_breaks
+#' @importFrom scales pretty_breaks date_format
 #' @importFrom grDevices terrain.colors gray.colors
 #' @importFrom utils tail head 
 #' @importFrom plyr alply
 #' @importFrom parallel mclapply
-#' @importFrom raster blockSize ncell extent crop brick setValues mosaic extract projection nlayers
+#' @importFrom raster blockSize ncell extent crop brick setValues mosaic extract projection nlayers writeRaster
 #' @importFrom sp Polygon Polygons SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates
 #' @importFrom mgcv gam predict.gam
 #' 
@@ -38,18 +38,6 @@ NULL
 
 
 ### Import and export functions from other packages
-
-#' @importFrom ggplot2 autoplot
-#' @export 
-ggplot2::autoplot
-
-#' @importFrom gridExtra arrangeGrob
-#' @export 
-gridExtra::arrangeGrob
-
-#' @importFrom gridExtra grid.arrange
-#' @export 
-gridExtra::grid.arrange
 
 #' @importFrom dtw symmetric1
 #' @export 

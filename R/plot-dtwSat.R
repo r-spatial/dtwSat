@@ -33,9 +33,7 @@
 #' \code{\link[dtwSat]{plotAlignment}}, \code{\link[dtwSat]{plotMatch}}, and
 #' \code{\link[dtwSat]{plotGroup}}
 #' 
-#' @return A \link[gtable]{gtable} object for methods: ''path'' and 
-#' ''cost'', or a \link[ggplot2]{ggplot} object for methods: ''match'', 
-#' ''alignment'', and ''group''
+#' @return A \link[ggplot2]{ggplot} object
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
@@ -53,11 +51,11 @@
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Plot paths
-#' gp1 = plot(alig, type="path", n.alignments=1:4, show.dist = TRUE)
-#' grid.arrange(gp1)
+#' gp1 = plot(alig, type="path", n.alignments=1:4)
+#' gp1
 #' 
 #' # Plot matches 
-#' gp2 = plot(alig, type="match", attr=1)
+#' gp2 = plot(alig, type="match", attr="evi")
 #' gp2
 #' 
 #' # Plot alignments 
@@ -71,7 +69,11 @@
 #' 
 #' # Plot cost matrix
 #' gp5 = plot(alig, type="cost", matrix.name="costMatrix")
-#' grid.arrange(gp5)
+#' gp5
+#' 
+#' # Plot cost matrix
+#' gp6 = plot(alig, type="pattern")
+#' gp6
 #' 
 #' @export
 setMethod("plot", 
@@ -81,13 +83,14 @@ setMethod("plot",
               stop("x is not a twdtw object.")
             if(length(getInternals(x))==0)
               stop("plot method requires twdtw internals (set keep.internals=TRUE on dtw() call)")
-            pt = pmatch(type,c("path","match","alignment","group","cost"))
+            pt = pmatch(type,c("path","match","alignment","group","cost","pattern"))
             switch(pt,
                    plotPath(x, ...),
                    plotMatch(x, ...),
                    plotAlignment(x, ...),
                    plotGroup(x, ...),
-                   plotCostMatrix(x, ...)
+                   plotCostMatrix(x, ...),
+                   plotPatterns(x, ...)
             )
           } 
 )
@@ -105,13 +108,9 @@ setMethod("plot",
 #' will plot the paths for all patterns 
 #' @param n.alignments An \link[base]{integer} vector. The alignment indices 
 #' to plot. If not declared the function will plot all possible alignments 
-#' @param show.dist Display dtw distance for each alignment 
-#' @param shift A vector of length 2. These values shift the position
-#' of the text in \code{x} and \code{y}, respectively. Argument used 
-#' with show.dist
 #' @docType methods
 #' 
-#' @return A \link[gtable]{gtable} object
+#' @return A \link[ggplot2]{ggplot} object
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
@@ -127,12 +126,16 @@ setMethod("plot",
 #' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #'        
-#' gp = plotPath(alig, n.alignments=1:4)
+#' gp1 = plotPath(alig, n.alignments=1:4)
 #' 
-#' grid.arrange(gp)
+#' gp1
+#' 
+#' gp2 = plotPath(alig, p.names=c("Cotton","Maize"), n.alignments=1:4)
+#' 
+#' gp2
 #' 
 #' @export
-plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-1)){
+plotPath = function(x, p.names, n.alignments=NULL){
   
   if(missing(p.names)) {
     p.names = getPatternNames(x)
@@ -140,21 +143,31 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
     p.names = getPatternNames(x, p.names)
   }
   
-  last.pattern = tail(p.names, 1)
+  # Get cost matrix
+  df.m = do.call("rbind", lapply(p.names, function(p){
     
-  gp.list = lapply(p.names, function(p){
-
     ## Get data
     internals  = getInternals(x, p)
     if(is.null(internals))
       stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
     matching   = getMatches(x, p)
-
-    tx = index(internals[[p]]$x)
-    ty = index(internals[[p]]$pattern)
-    m = internals[[p]]$costMatrix
-    df.m = melt(m)
     
+    tx = index(internals[[p]]$x)
+    ty = index(shiftDate(x=internals[[p]]$pattern, year=2005))
+    m = internals[[p]]$costMatrix
+    res = melt(m)
+    res$Pattern = p
+    res$tx = tx
+    res$ty = ty
+    res
+  }))
+  
+  # Get minimun cost paths
+  df.path = do.call("rbind", lapply(p.names, function(p){
+    
+    ## Get data
+    matching = getMatches(x, p)
+
     if(is.null(n.alignments)) n.alignments = seq_along(matching[[p]])
     k = which(n.alignments > length(matching[[p]]))
     if(length(k)>0){
@@ -162,54 +175,50 @@ plotPath = function(x, p.names, n.alignments=NULL, show.dist=FALSE, shift=c(-4,-
       n.alignments = n.alignments[-k]
     }
     
-    df.path = do.call("rbind", lapply(n.alignments, function(i){
+    res = do.call("rbind", lapply(n.alignments, function(i){
       data.frame(matching[[p]][[i]], alignment=i)
     }))
     
-    ## Set axis breaks and labels 
-    x.labels = pretty_breaks()(range(tx[df.m$Var2], na.rm = TRUE))
-    timeline = unique( c(tx[df.m$Var2], x.labels) )
-    x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
-    x.breaks = na.approx(x.breaks)
-    x.breaks = x.breaks[x.labels]
-    y.labels = pretty_breaks()(range(ty[df.m$Var1], na.rm = TRUE))
-    timeline = unique( c(ty[df.m$Var1], y.labels) )
-    y.breaks = zoo( c(unique(df.m$Var1), rep(NA, length(y.labels))), timeline )
+    res$Pattern = p 
+    res 
+  }))
+  
+  ## Set axis breaks and labels 
+  x.labels = pretty_breaks()(range(df.m$tx, na.rm = TRUE))
+  timeline = unique( c(df.m$tx, x.labels) )
+  x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
+  x.breaks = na.approx(x.breaks)
+  x.axis = data.frame(x.breaks=x.breaks[x.labels], x.labels = names(x.labels))
+  
+  fact = 0 
+  for(i in seq_along(p.names)[-1]) fact[i] = fact[i-1] + max(df.m$Var1[df.m$Pattern==p.names[i]])
+  df.m$Var3 = df.m$Var1 + unlist(lapply(seq_along(p.names), function(i) rep(fact[i], length(which(df.m$Pattern==p.names[i])) )))
+  df.path$Var3 = df.path$index1 + unlist(lapply(seq_along(p.names), function(i) rep(fact[i], length(which(df.path$Pattern==p.names[i])) )))
+  
+  y.axis = do.call("rbind", lapply(p.names, function(p){
+    df = df.m[df.m$Pattern==p,]
+    y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
+    timeline = unique( c(df$ty, y.labels) )
+    y.breaks = zoo( c(unique(df$Var3), rep(NA, length(y.labels))), timeline )
     y.breaks = na.approx(y.breaks)
     y.breaks = y.breaks[y.labels]
-    
-    ## Plot matrix and paths
-    gp = ggplot(data=df.m, aes_string(y='Var1', x='Var2')) +
-      geom_raster(aes_string(fill='value')) + 
-      scale_fill_gradientn(name = 'Warp cost', colours = terrain.colors(100)) +
-      geom_path(data=df.path, aes_string(y='index1', x='index2', group='alignment')) + 
-      scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=names(y.labels)) +
-      scale_x_continuous(expand = c(0, 0), breaks=x.breaks, labels=names(x.labels)) +
-      ggtitle(p) + 
-      xlab("") + 
-      ylab("Pattern")
-    
-    if(p==last.pattern)
-      gp = gp + xlab("Time series")
-    
-    # Show distance
-    if(show.dist){
-      alig = getAlignments(x, p)
-      text.label = format(alig$distance[n.alignments], digits=2, nsmall = 2)
-      text.x = unlist(lapply(n.alignments, function(i) tail(matching[[p]][[i]]$index2,1) + shift[1] ) )
-      text.y = rep(max(df.path$index1, na.rm = TRUE), length(x)) + shift[2]
-      gp = gp + annotate("text", x=text.x, y=text.y, label=text.label)
-    }
-    gp
-  })
+    data.frame(y.breaks, y.labels=names(y.labels))
+  }))
+  
+  # Plot
+  gp = ggplot(data=df.m, aes_string(y='Var3', x='Var2')) +
+    facet_wrap(~Pattern, scales = "free", ncol=1) + 
+    geom_raster(aes_string(fill='value')) + 
+    scale_fill_gradientn(name = 'Warp cost', colours = terrain.colors(100)) + 
+    geom_path(data=df.path, aes_string(y='Var3', x='index2', group='alignment')) + 
+    scale_x_continuous(expand = c(0, 0), breaks=x.axis$x.breaks, labels=x.axis$x.labels) +
+    scale_y_continuous(expand = c(0, 0), breaks=y.axis$y.breaks, labels=y.axis$y.labels) +
+    xlab("Time series") + 
+    ylab("Pattern")
+  
+  gp
 
-  if(length(gp.list)==1)
-    return(gp.list[[1]])
-  # grid.arrange(grobs = gp.list, nrow=length(p.names))
-  arrangeGrob(grobs = gp.list, nrow=length(p.names))
 }
-
-
 
 #' @title Plotting matching points of twdtw alignments
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
@@ -544,7 +553,7 @@ plotGroup = function(x, attr, ...){
 #' vector with the patterns identification. If not declared the function 
 #' will plot the matrices for all patterns
 #' 
-#' @return A \link[gtable]{gtable} object 
+#' @return A \link[ggplot2]{ggplot} object 
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
@@ -561,22 +570,22 @@ plotGroup = function(x, attr, ...){
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Plot local cost for all patterns
-#' gp = plotCostMatrix(x=alig, matrix.name="localMatrix")
-#' grid.arrange(gp)
+#' gp1 = plotCostMatrix(x=alig, matrix.name="localMatrix")
+#' gp1
 #' 
 #' # Plot time weight for all patterns
-#' gp = plotCostMatrix(x=alig, matrix.name="timeWeight")
-#' grid.arrange(gp)
+#' gp2 = plotCostMatrix(x=alig, matrix.name="timeWeight")
+#' gp2
 #' 
 #' # Plot accumulated cost for all patterns
-#' gp = plotCostMatrix(x=alig, matrix.name="costMatrix")
-#' grid.arrange(gp)
+#' gp3 = plotCostMatrix(x=alig, matrix.name="costMatrix")
+#' gp3
 #' 
 #' # Plot accumulated cost for Cotton and Soybean
-#' gp = plotCostMatrix(x=alig, matrix.name="costMatrix", 
+#' gp4 = plotCostMatrix(x=alig, matrix.name="costMatrix", 
 #'      p.names=c("Cotton","Soybean"))
-#' grid.arrange(gp)
 #' 
+#' gp4
 #' 
 #' @export
 plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
@@ -585,60 +594,139 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
   if(is.na(pt))
     stop("matrix.name is not costMatrix, localMatrix, or timeWeight")
   
+  legend_name = c("Warp cost", "Local cost", "Time weight")[pt]
+  
   if(missing(p.names)) {
     p.names = getPatternNames(x)
   } else {
     p.names = getPatternNames(x, p.names)
   }
   
-  last.pattern = tail(p.names, 1)
-  
-  gp.list = lapply(p.names, function(p){
+  # Get cost matrix
+  df.m = do.call("rbind", lapply(p.names, function(p){
     
     ## Get data
     internals  = getInternals(x, p)
     if(is.null(internals))
       stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
+    matching   = getMatches(x, p)
     
     tx = index(internals[[p]]$x)
-    ty = index(internals[[p]]$pattern)
+    ty = index(shiftDate(x=internals[[p]]$pattern, year=2005))
     m = internals[[p]][[matrix.name]]
-    df.m = melt(m)
-    
-    ## Set axis breaks and labels 
-    x.labels = pretty_breaks()(range(tx[df.m$Var2], na.rm = TRUE))
-    timeline = unique( c(tx[df.m$Var2], x.labels) )
-    x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
-    x.breaks = na.approx(x.breaks)
-    x.breaks = x.breaks[x.labels]
-    y.labels = pretty_breaks()(range(ty[df.m$Var1], na.rm = TRUE))
-    timeline = unique( c(ty[df.m$Var1], y.labels) )
-    y.breaks = zoo( c(unique(df.m$Var1), rep(NA, length(y.labels))), timeline )
+    res = melt(m)
+    res$Pattern = p
+    res$tx = tx
+    res$ty = ty
+    res
+  }))
+  
+  ## Set axis breaks and labels 
+  x.labels = pretty_breaks()(range(df.m$tx, na.rm = TRUE))
+  timeline = unique( c(df.m$tx, x.labels) )
+  x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
+  x.breaks = na.approx(x.breaks)
+  x.axis = data.frame(x.breaks=x.breaks[x.labels], x.labels = names(x.labels))
+  
+  fact = 0 
+  for(i in seq_along(p.names)[-1]) fact[i] = fact[i-1] + max(df.m$Var1[df.m$Pattern==p.names[i]])
+  df.m$Var3 = df.m$Var1 + unlist(lapply(seq_along(p.names), function(i) rep(fact[i], length(which(df.m$Pattern==p.names[i])) )))
+  
+  y.axis = do.call("rbind", lapply(p.names, function(p){
+    df = df.m[df.m$Pattern==p,]
+    y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
+    timeline = unique( c(df$ty, y.labels) )
+    y.breaks = zoo( c(unique(df$Var3), rep(NA, length(y.labels))), timeline )
     y.breaks = na.approx(y.breaks)
     y.breaks = y.breaks[y.labels]
-    
-    legend_name = c("Warp cost", "Local cost", "Time weight")[pt]
-    
-    ## Plot matrix and paths
-    gp = ggplot(data=df.m, aes_string(y='Var1', x='Var2')) +
-      geom_raster(aes_string(fill='value')) + 
-      scale_fill_gradientn(name = legend_name, colours = gray.colors(100, start = 0.1, end = 1)) +
-      scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=names(y.labels)) +
-      scale_x_continuous(expand = c(0, 0), breaks=x.breaks, labels=names(x.labels)) +
-      ggtitle(p) + 
-      xlab("") + 
-      ylab("Pattern")
-    
-    if(p==last.pattern)
-      gp = gp + xlab("Time series")
-    
-    gp
-    
-  })
+    data.frame(y.breaks, y.labels=names(y.labels))
+  }))
   
-  if(length(gp.list)==1)
-    return(gp.list[[1]])
-  # grid.arrange(grobs = gp.list, nrow=length(p.names))
-  arrangeGrob(grobs = gp.list, nrow=length(p.names))
+  # Plot
+  gp = ggplot(data=df.m, aes_string(y='Var3', x='Var2')) +
+    facet_wrap(~Pattern, scales = "free", ncol=1) + 
+    geom_raster(aes_string(fill='value')) + 
+    scale_fill_gradientn(name = legend_name, colours = gray.colors(100, start = 0.1, end = 1)) +
+    scale_x_continuous(expand = c(0, 0), breaks=x.axis$x.breaks, labels=x.axis$x.labels) +
+    scale_y_continuous(expand = c(0, 0), breaks=y.axis$y.breaks, labels=y.axis$y.labels) +
+    xlab("Time series") + 
+    ylab("Pattern")
+  
+  gp
  
+}
+
+
+#' @title Plotting temporal patterns 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description Method for plotting the temporal patterns 
+#' 
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object or a list of 
+#' \code{\link[zoo]{zoo}} objects
+#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' vector with the patterns identification. If not declared the function 
+#' will plot the paths for all patterns 
+#' @docType methods
+#' 
+#' @return A \link[ggplot2]{ggplot} object
+#' 
+#' @seealso 
+#' \code{\link[dtwSat]{twdtw-class}}, 
+#' \code{\link[dtwSat]{twdtw}}, 
+#' \code{\link[dtwSat]{plotCostMatrix}},
+#' \code{\link[dtwSat]{plotAlignment}},
+#' \code{\link[dtwSat]{plotMatch}}, and
+#' \code{\link[dtwSat]{plotGroup}}
+#'  
+#' @examples
+#' 
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+#'        
+#' gp1 = plotPatterns(alig)
+#' gp1
+#' 
+#' gp2 = plotPatterns(patterns.list)
+#' gp2
+#' 
+#' 
+#' 
+#' @export
+plotPatterns = function(x, p.names){
+  
+  # Get temporal patterns
+  if(is(x, "twdtw")){
+    if(missing(p.names)) {
+      p.names = getPatternNames(x)
+    } else {
+      p.names = getPatternNames(x, p.names)
+    }
+    x = lapply(p.names, function(p) getInternals(x)[[p]]$pattern)
+  }
+  
+  if(missing(p.names))
+    p.names = names(x)
+  
+  if(any(!unlist(lapply(x[p.names], is.zoo))))
+    stop("patterns should be a list of zoo objects")
+
+  # Shift dates 
+  x = lapply(x[p.names], shiftDate, year=2005)
+  
+  # Build data.frame
+  df.p = do.call("rbind", lapply(p.names, function(p)
+    data.frame(Time=index(x[[p]]), x[[p]], Pattern=p)
+  ))
+  df.p = melt(df.p, id.vars=c("Time","Pattern"))
+  
+  # Plot temporal patterns
+  gp = ggplot(df.p, aes_string(x="Time", y="value", colour="variable") ) + 
+    geom_line() + 
+    facet_wrap(~Pattern) + 
+    scale_x_date(labels = date_format("%b"))
+
+  gp
+  
 }

@@ -13,6 +13,12 @@ output:
 library(knitr)
 knit(input="README.Rmd", output = "README.md")
 -->
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  comment=NA, 
+  fig.width=6
+)
+```
 
 dtwSat
 =====

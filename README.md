@@ -14,7 +14,6 @@ library(knitr)
 knit(input="README.Rmd", output = "README.md")
 -->
 
-
 dtwSat
 =====
 
@@ -137,7 +136,7 @@ names(field_samples)
 ```
 
 ```
-[1] "from"  "to"    "group"
+## [1] "from"  "to"    "group"
 ```
 
 ```r
@@ -145,9 +144,9 @@ table(field_samples$group)
 ```
 
 ```
-
- Cotton-fallow         Forest Soybean-cotton  Soybean-maize Soybean-millet 
-            68            138             79            134            184 
+## 
+##  Cotton-fallow         Forest Soybean-cotton  Soybean-maize Soybean-millet 
+##             68            138             79            134            184
 ```
 
 
@@ -219,9 +218,9 @@ class(alig)
 ```
 
 ```
-[1] "twdtw"
-attr(,"package")
-[1] "dtwSat"
+## [1] "twdtw"
+## attr(,"package")
+## [1] "dtwSat"
 ```
 
 ```r
@@ -229,15 +228,15 @@ alig
 ```
 
 ```
-Time-Weighted DTW alignment object
-Number of alignments: 48 
-        pattern       from         to distance
-1 Cotton-fallow 2011-08-11 2012-08-29 2.126412
-2 Cotton-fallow 2007-09-26 2008-08-18 2.440281
-3 Cotton-fallow 2008-08-18 2009-08-05 2.655514
-4 Cotton-fallow 2009-10-01 2010-08-08 3.053718
-5 Cotton-fallow 2010-08-08 2011-08-11 3.690460
-6 Cotton-fallow 2012-08-29 2013-08-16 3.832881
+## Time-Weighted DTW alignment object
+## Number of alignments: 48 
+##         pattern       from         to distance
+## 1 Cotton-fallow 2011-08-11 2012-08-29 2.126412
+## 2 Cotton-fallow 2007-09-26 2008-08-18 2.440281
+## 3 Cotton-fallow 2008-08-18 2009-08-05 2.655514
+## 4 Cotton-fallow 2009-10-01 2010-08-08 3.053718
+## 5 Cotton-fallow 2010-08-08 2011-08-11 3.690460
+## 6 Cotton-fallow 2012-08-29 2013-08-16 3.832881
 ```
 
 ```r
@@ -245,12 +244,12 @@ summary(alig)
 ```
 
 ```
-               N.Alig  Min. X1st.Qu. Median  Mean X3rd.Qu.  Max.
-Cotton-fallow      10 2.126    2.755  3.762 6.964    9.925 17.62
-Forest             10 4.468    4.932  5.785 7.366    8.807 16.10
-Soybean-cotton      7 2.665    2.842  3.065 5.024    3.499 16.76
-Soybean-maize      10 2.543    2.645  3.891 6.004    7.619 16.23
-Soybean-millet     11 2.971    3.627  4.607 6.583    8.428 14.88
+##                N.Alig  Min. X1st.Qu. Median  Mean X3rd.Qu.  Max.
+## Cotton-fallow      10 2.126    2.755  3.762 6.964    9.925 17.62
+## Forest             10 4.468    4.932  5.785 7.366    8.807 16.10
+## Soybean-cotton      7 2.665    2.842  3.065 5.024    3.499 16.76
+## Soybean-maize      10 2.543    2.645  3.891 6.004    7.619 16.23
+## Soybean-millet     11 2.971    3.627  4.607 6.583    8.428 14.88
 ```
 
 

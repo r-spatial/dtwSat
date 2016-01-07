@@ -28,11 +28,11 @@ devtools::install_github("vwmaus/dtwSat")
 ### Quick demo
 
 This dome performs a TWDTW analysis and show the results.
-```{r quick_demo, echo = TRUE, eval = FALSE, results = "hide", warning = FALSE, message = FALSE}
+```{r quick_demo, echo = TRUE, eval = TRUE, results = "hide", warning = FALSE, message = FALSE}
 library(dtwSat, quietly = TRUE)
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 
-alig = twdtw(x=waveletSmoothing(template), 
+alig = twdtw(x=waveletSmoothing(template.list[[1]]), 
              patterns=patterns.list, weight.fun = weight.fun, 
              span=180, keep=TRUE) 
 
@@ -41,7 +41,7 @@ print(alig)
 summary(alig)
 ```
 
-```{r path-plot, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-path, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=8, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 library(ggplot2)
 gp = plot(alig) + theme(text = element_text(size = 8, family="Helvetica"))
 gp

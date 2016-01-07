@@ -34,7 +34,7 @@ This dome performs a TWDTW analysis and show the results.
 library(dtwSat, quietly = TRUE)
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
 
-alig = twdtw(x=waveletSmoothing(template), 
+alig = twdtw(x=waveletSmoothing(template.list[[1]]), 
              patterns=patterns.list, weight.fun = weight.fun, 
              span=180, keep=TRUE) 
 
@@ -50,7 +50,7 @@ gp = plot(alig) + theme(text = element_text(size = 8, family="Helvetica"))
 gp
 ```
 
-<img src="figure/path-plot-1.png" title="Typical temporal patterns." alt="Typical temporal patterns." style="display: block; margin: auto;" />
+<img src="figure/plot-path-1.png" title="Typical temporal patterns." alt="Typical temporal patterns." style="display: block; margin: auto;" />
 
 
 Land use classification using dtwSat
@@ -178,7 +178,7 @@ library(ggplot2)
 plotPatterns(patterns_list) + theme(text = element_text(size = 8, family="Helvetica"))
 ```
 
-<img src="figure/temporal_patterns-1.png" title="Typical temporal patterns." alt="Typical temporal patterns." style="display: block; margin: auto;" />
+<img src="figure/temporal-patterns-1.png" title="Typical temporal patterns." alt="Typical temporal patterns." style="display: block; margin: auto;" />
 
 ## Single time series analysis
 
@@ -257,7 +257,7 @@ summary(alig)
 plot(alig) + theme(text = element_text(size = 8, family="Helvetica"))
 ```
 
-<img src="figure/plot_alig-1.png" title="Typical temporal patterns." alt="Typical temporal patterns." style="display: block; margin: auto;" />
+<img src="figure/plot-alig-1.png" title="Typical temporal patterns." alt="Typical temporal patterns." style="display: block; margin: auto;" />
 
 ... Other plot methods ...
 

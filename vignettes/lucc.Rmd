@@ -112,7 +112,7 @@ patterns_list = lapply(field_samples_list, createPattern,
 
 Below we plot the resulting temporal patterns for each class. 
 
-```{r temporal_patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r temporal-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 library(ggplot2)
 plotPatterns(patterns_list) + theme(text = element_text(size = 8, family="Helvetica"))
 ```
@@ -150,7 +150,7 @@ alig
 summary(alig)
 ```
 
-```{r plot_alig, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=8, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-alig, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=8, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 plot(alig) + theme(text = element_text(size = 8, family="Helvetica"))
 ```
 

@@ -14,6 +14,10 @@
 
 * New features
   
+  plotLUCC method for raster object. Land use and land cover change analysis 
+  
+  plotPatterns method to plot temporal patterns 
+  
   createPattern function to create temporal patterns from several samples time series 
   
   extractSampleTimeSeries extract time series from raster objects 

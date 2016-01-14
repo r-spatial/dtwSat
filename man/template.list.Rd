@@ -5,8 +5,9 @@
 \alias{template.list}
 \title{Data: list of template time series}
 \format{Each element in the \link[base]{list} has a \link[zoo]{zoo} object, 
-whose indices are \code{\link[base]{Dates}} in the format "yyyy-mm-dd". 
-Each node has 6 attributes: "ndvi", "evi", "red", "nir", "blue", and "mir".}
+whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''. 
+Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
+and ''mir''.}
 \usage{
 template.list
 }

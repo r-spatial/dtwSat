@@ -44,36 +44,13 @@
 #' 
 #' 
 #' @export
-# extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
-#   
-#   if(is(y, "data.frame"))
-#     y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
-#   
-#   if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
-#     stop("y is not SpatialPoints")
-# 
-#   # Reproject points to raster projection 
-#   y = spTransform(y, CRS(projection(x$doy)))
-# 
-#   # res = lapply(s, FUN=.extractTimeSeries, x = x, y = y)
-#   s = row.names(y)
-#   names(s) = s
-#   res = mclapply(s, FUN=.extractTimeSeries, x = x, y = y, mc.cores = mc.cores)
-#   
-#   I = which(unlist(lapply(res, is.null)))
-#   if(length(I)>0)
-#     warning(paste("the samples ",paste0(s[I], collapse = ","),
-#                   " are not over the rester extent or they do not overlap the rester time series"), call. = FALSE)
-#   
-#   res
-# }
 extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
   
   if(is(y, "data.frame"))
     y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
   
   if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
-    stop("y is not SpatialPoints")
+    stop("y is not SpatialPoints or SpatialPointsDataFrame")
   
   # Reproject points to raster projection 
   y = spTransform(y, CRS(projection(x$doy)))
@@ -170,11 +147,13 @@ createPattern = function(x, from, to, freq=1, attr, formula, ...){
 .extractTimeSeries = function(pto, p, x, y){
   s = y[pto[p],]
   # Check if the sample time interval overlaps the raster time series 
-  from  = as.Date(s$from)
-  to    = as.Date(s$to)
+  from  = try(as.Date(s$from))
+  to    = try(as.Date(s$to))
   doy   = c(x$doy[p,])
   year  = format(as.Date(names(x$doy[p,]), format="date.%Y.%m.%d"), "%Y")
   timeline = getDatesFromDOY(year = year, doy = doy)
+  if(is.null(from) | is(from, "try-error")) from = timeline[1]
+  if(is.null(to) | is(to, "try-error")) to = tail(timeline,1)
   layer =  which( from - timeline <= 0 )[1]
   nl    =  which(   to - timeline <= 0 )[1] - layer
   if(nl<=0){

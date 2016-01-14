@@ -4,10 +4,10 @@
 \name{patterns.list}
 \alias{patterns.list}
 \title{Data: patterns time series}
-\format{A named \code{list} of 3 \link[zoo]{zoo} objects, "Soybean", "Cotton", 
-and "Maize", whose indices are \code{\link[base]{Dates}} in the format "yyyy-mm-dd".
-Each node has 6 attributes: "ndvi", "evi", "red", "nir", "blue", 
-and "mir".}
+\format{A named \code{list} of 3 \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
+and ''Maize'', whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''.
+Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
+and ''mir''.}
 \usage{
 patterns.list
 }

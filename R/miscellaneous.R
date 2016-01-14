@@ -50,12 +50,14 @@
 #' 
 #' @export
 createRasterTimeSeries = function(x , timeline, doy, filepath=NULL,
-                                  mc.cores = 4, ...){
+                                  mc.cores = 1, ...){
   
   timeline = as.Date(timeline)
-  if(!exists("doy")) {
-    array_data = rep(as.numeric(format(timeline, "%j")), each=ncell(x[[1]]))
-    doy = array(array_data, dim = dim(x[[1]]))
+  if(missing(doy)) {
+    array_data = rep(as.numeric(format(as.Date(timeline), "%j")), each=ncell(x[[1]]))
+    e = extent(x[[1]])
+    doy = brick(array(array_data, dim = dim(x[[1]])), 
+                xmn=e[1], xmx=e[2], ymn=e[3], ymx=e[4], crs = projection(x[[1]]))
   }
   x = c(x, doy=doy)
   
@@ -265,9 +267,9 @@ getModisTimeIndex = function(date, frequency=16){
 #' Default is 1, \emph{i.e.} 100\%
 #' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
 #' cost for consideration. Default is \code{Inf}
-#' @param pattern.only return only the best pattenr for each interval. Default is FALSE 
-#' @param pattern.levels A character or numeric vector. The categories for classification
-#' @param pattern.labels A character or numeric vector. The labels for each category
+#' @param simplify return only the best pattenr for each interval. Default is FALSE 
+#' @param levels A character or numeric vector. The categories for classification
+#' @param labels A character or numeric vector. The labels for each category
 #' @param Unclassified A numeric to fill gaps. Default is 255
 #' @param ... other argument passed to \code{\link[dtwSat]{getPatternNames}}
 #' 
@@ -295,13 +297,16 @@ getModisTimeIndex = function(date, frequency=16){
 #' classifyIntervals(x=alig, from=from, to=to, by = by,
 #'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 #' 
-#' 
+#' # Simplify Cotton and Maize 
+#' classifyIntervals(x=alig, from=from, to=to, by = by, simplify= TRUE,
+#'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
+#'              
 #' @export
 classifyIntervals = function(x, breaks=NULL, from=NULL, to=NULL, by=NULL,
                              overlap=.3, threshold=Inf, 
-                             pattern.only=FALSE,
-                             pattern.levels=NULL,
-                             pattern.labels=NULL,
+                             simplify=FALSE,
+                             levels=NULL,
+                             labels=NULL,
                              Unclassified=255,
                              ...)
 {
@@ -334,16 +339,21 @@ classifyIntervals = function(x, breaks=NULL, from=NULL, to=NULL, by=NULL,
     res$distance[I] = Inf 
   }
   
-  if(!is.null(pattern.levels)&&!is.null(pattern.labels)){
-    if(!length(pattern.levels)==length(pattern.labels))
-      stop("pattern.levels and pattern.labels are not the same length")
-    I = match(res$pattern, pattern.levels)
-    res$pattern = pattern.labels[I]
-    names(res$pattern) = pattern.levels[I]
-  }
+  if(is.null(levels))
+    levels = c(seq_along(unique(x$pattern)), Unclassified)
   
-  if(pattern.only)
-    return(res$pattern)
+  if(is.null(labels))
+    labels = c(unique(x$pattern), "Unclassified")
+  
+  if(!length(levels)==length(labels))
+    stop("levels and labels are not the same length")
+  
+  I = match(res$pattern, labels)
+  res$level = levels[I]
+  names(res$level) = labels[I]
+  
+  if(simplify)
+    return(res$level)
   res
 }
 
@@ -476,18 +486,24 @@ shiftDate = function(x, year){
 }
 
 # Build zoo time series  
-.bulidZooFromTS = function(p, x, timeline, bands){
+.bulidZoo = function(p, x, timeline){
   # Get time series for each band 
   datasets = lapply(x, function(x) x[[p]])
   datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(timeline, "%Y"))
+  idoy = which(names(datasets) %in% c("doy"))
   
   # Remove invalid values 
-  k = unlist(lapply(datasets[bands], function(x){
+  k = unlist(lapply(datasets[-idoy], function(x){
     which(x<0|is.na(x))
   }))
   k = c(k, which(duplicated(datasets$doy)))
   if(length(k)>0) datasets = lapply(datasets, function(x) x[-k] )
   
   # Build multi-band zoo object 
-  zoo(data.frame(datasets[bands]), order.by = datasets$doy)
+  zoo(data.frame(datasets[-idoy]), order.by = datasets$doy)
 }
+
+
+
+
+

@@ -6,8 +6,8 @@
 \title{Classify time intervals}
 \usage{
 classifyIntervals(x, breaks = NULL, from = NULL, to = NULL, by = NULL,
-  overlap = 0.3, threshold = Inf, pattern.only = FALSE,
-  pattern.levels = NULL, pattern.labels = NULL, Unclassified = 255, ...)
+  overlap = 0.3, threshold = Inf, simplify = FALSE, levels = NULL,
+  labels = NULL, Unclassified = 255, ...)
 }
 \arguments{
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object or 
@@ -28,11 +28,11 @@ Default is 1, \emph{i.e.} 100\%}
 \item{threshold}{A number. The TWDTW threshold, i.e. the maximum TWDTW 
 cost for consideration. Default is \code{Inf}}
 
-\item{pattern.only}{return only the best pattenr for each interval. Default is FALSE}
+\item{simplify}{return only the best pattenr for each interval. Default is FALSE}
 
-\item{pattern.levels}{A character or numeric vector. The categories for classification}
+\item{levels}{A character or numeric vector. The categories for classification}
 
-\item{pattern.labels}{A character or numeric vector. The labels for each category}
+\item{labels}{A character or numeric vector. The labels for each category}
 
 \item{Unclassified}{A numeric to fill gaps. Default is 255}
 
@@ -66,7 +66,10 @@ classifyIntervals(x=alig, from=from, to=to, by = by,
 classifyIntervals(x=alig, from=from, to=to, by = by,
              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 
-
+# Simplify Cotton and Maize 
+classifyIntervals(x=alig, from=from, to=to, by = by, simplify= TRUE,
+             overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
+             
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

@@ -24,6 +24,7 @@ Imports:
     scales,
     reshape2,
     grDevices,
+    RColorBrewer,
     utils,
     plyr,
     parallel,
@@ -33,7 +34,7 @@ Imports:
 Suggests: 
     testthat,
     knitr,
-    rmarkdown, 
+    rmarkdown,
     gridExtra,
     rgdal
 License: GPL (>= 2) | file LICENSE

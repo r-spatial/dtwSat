@@ -1,24 +1,23 @@
 ---
-title: "Land use classification using dtwSat"
-author: "Victor Maus^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany], ^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.]"
+title: "dtwSat"
+author: "Victor Maus"
 date: "`r Sys.Date()`"
 output:
   md_document:
     variant: markdown_github
-    bibliography: references.bib
+bibliography: ./vignettes/references.bib
 ---
 
 <!-- 
-# Build the README.md file for github webpage 
-library(knitr)
-knit(input="README.Rmd", output = "README.md")
+# Render README.md file  
+rmarkdown::render("README.Rmd")
 -->
 
 dtwSat
 =====
 
 ### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
-dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) method for satellite image time series analysis and land use classification. It is useful to account for natural and cultivated vegetation types even with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining. The [tutorial bellow][Land use classification using dtwSat] shows how to use the package for land use mapping using satellite image time series.
+dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification. It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining. Bellow we show a quick demo of the package and a vignette for land use mapping using satellite image time series.
 
 ### Install
 ```{r installation, eval = FALSE}
@@ -27,28 +26,58 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
-This dome performs a TWDTW analysis and show the results.
-```{r quick_demo, echo = TRUE, eval = TRUE, results = "hide", warning = FALSE, message = FALSE}
-library(dtwSat, quietly = TRUE)
-weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+This dome performs the TWDTW analysis for the following `template` time series
+```{r plot-template-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+library(dtwSat)
+library(ggplot2)
+autoplot(template, facets = NULL) + 
+     theme(text = element_text(size = 8, family = "Helvetica"))
+```
+whose subintervals we want to classify into one of the following crop types
+```{r plot-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+plotPatterns(patterns.list) + 
+     theme(text = element_text(size = 8, family = "Helvetica"))
+```
 
-alig = twdtw(x=waveletSmoothing(template.list[[1]]), 
-             patterns=patterns.list, weight.fun = weight.fun, 
-             span=180, keep=TRUE) 
-
-class("twdtw")
+Therefore, we apply the TWDTW analysis using a logistic time-weight
+```{r perform-twdtw, echo = TRUE, eval = TRUE, results = "hide", warning = FALSE, message = FALSE}
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
+alig = twdtw(x=template.list[[1]], patterns=patterns.list, 
+             normalize.patterns = TRUE, patterns.length = 23,
+             weight.fun = weight.fun, keep=TRUE) 
+```
+that retrieves an `twdtw` object with all possible alignments of the patterns to the template time series 
+```{r show-twdtw, echo = TRUE, eval = TRUE, results = "hide", warning = FALSE, message = FALSE}
+class(alig)
 print(alig)
 summary(alig)
 ```
 
+We can use several plot methods to visualize the resulting `twdtw` object. To plot alignments 
+```{r plot-alignment, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+plot(x = alig, type = "alignment") + 
+     theme(text = element_text(size = 8, family = "Helvetica"))
+```
+to plot matching point 
+```{r plot-match, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+plot(x = alig, type = "match", attr = "evi") + 
+     theme(text = element_text(size = 8, family = "Helvetica"))
+```
+to plot minimum cost paths 
 ```{r plot-path, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
-library(ggplot2)
-gp = plot(alig) + theme(text = element_text(size = 8, family="Helvetica"))
-gp
+plot(type = "path", x = alig) + 
+     theme(text = element_text(size = 8, family = "Helvetica"))
+```
+or to classify and plot each subinterval of the template time series 
+```{r plot-group, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+plot(x = alig, type = "group",
+     from = "2009-09-01", to = "2013-09-01", 
+     by = "6 month", overlap = 0.3) + 
+     theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 
 
-Land use classification using dtwSat
+Vignette - Land use classification using dtwSat
 =====
 ```{r child = 'vignettes/lucc.Rmd'}
 ```

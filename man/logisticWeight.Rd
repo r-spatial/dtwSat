@@ -13,14 +13,15 @@ logisticWeight(alpha, beta, theta = 0.5)
 \item{beta}{numeric. The midpoint of logistic weight}
 
 \item{theta}{numeric between 0 and 1. The weight of the time 
-for the TWDTW computation. Use \code{theta=0} to cancel the time weight, 
-\emph{i.e.} to run the original DTW algorithm. Default is 0.5}
+for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
+\emph{i.e.} to run the original DTW algorithm. Default is 0.5. 
+For details see [1]}
 }
 \value{
-An \code{\link[base]{expression}} object
+An \code{\link[base]{function}} object
 }
 \description{
-This function builds a logistic time weight 
+Builds a logistic time weight 
 function to compute the TWDTW local cost matrix
 }
 \examples{
@@ -30,6 +31,12 @@ weight.fun
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\references{
+[1] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+(2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
+IEEE Journal of, X, XX-XX.
 }
 \seealso{
 \code{\link[dtwSat]{twdtw}}

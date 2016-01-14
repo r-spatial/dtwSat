@@ -56,7 +56,7 @@ the time series.
 matrix that comes from the difference in the bands values pont-to-point between the 
 pattern and the time series. The second matrix is the difference in days pont-to-point 
 between the pattern and the time series. For a logistic time weight 
-see \link[dtwSat]{logisticWeight} function, see [3,4] for details.
+see \link[dtwSat]{logisticWeight} function, see [3] for details.
 }
 \examples{
 weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
@@ -75,7 +75,7 @@ aligs = lapply(template.list, FUN=twdtw, patterns=patterns.list,
 
 aligs
 
-# Perform twdtw in parallel for a list pixel 
+### Perform twdtw in parallel for a list pixel 
 # require(parallel)
 # aligs = mclapply(template.list, FUN=twdtw, patterns=patterns.list, 
 #                  weight.fun = weight.fun, keep=TRUE, mc.cores=2)
@@ -92,10 +92,10 @@ The dtw Package. Journal of Statistical Software, 31, 1-24.
 [2] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 and Motion (pp. 79-84). London: Springer London, Limited.
 
-[4] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-(2015). Open boundary dynamic time warping for satellite image time series classification. 
-In: IGARSS 2015 2015 IEEE International Geoscience and Remote Sensing Symposium, 2015, Milan. 
-2015 IEEE International Geoscience and Remote Sensing Symposium (IGARSS), p. 3349-3352.
+[3] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+(2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
+IEEE Journal of, X, XX-XX.
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}

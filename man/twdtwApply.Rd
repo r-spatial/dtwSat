@@ -5,9 +5,8 @@
 \alias{twdtwApply}
 \title{Apply Time-Weighted Dynamic Time Warping alignment to raster}
 \usage{
-twdtwApply(x, patterns, breaks = NULL, from = NULL, to = NULL,
-  by = NULL, win.fun = NULL, win.size = c(1, 1), chunk.overlap,
-  mc.cores = 1, chunk.size, ...)
+twdtwApply(x, patterns, win.fun, win.size = c(1, 1), chunk.size = 100,
+  chunk.overlap, mc.cores = 1, ...)
 }
 \arguments{
 \item{x}{A list of \code{\link[raster]{Raster-class}}
@@ -17,19 +16,13 @@ Each layer of the Raster* object is a time step. See Details}
 \item{patterns}{a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 details}
 
-\item{breaks}{A vector of class \code{\link[base]{Dates}}}
-
-\item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
-
-\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
-object in the format "yyyy-mm-dd"}
-
-\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''}
-
 \item{win.fun}{A function. A function to be applied to the twdtw results. See Details}
 
 \item{win.size}{A numeric vector. The size of a processing window in col x row order.
 Default is a single pixel, \emph{i.e.} \code{win.size=c(1,1)}}
+
+\item{chunk.size}{An integer. Set the number of cells for each block, 
+See \code{\link[raster]{blockSize}} for details}
 
 \item{chunk.overlap}{A numeric vector. The overlap of neighboring chunks of an 
 raster. Overlap is specified for each dimension of the raster col x row. 
@@ -38,9 +31,6 @@ the window.}
 
 \item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
 for details}
-
-\item{chunk.size}{An integer. Set the number of cells for each block, 
-See \code{\link[raster]{blockSize}} for details}
 
 \item{...}{other arguments to pass to the functions \code{\link[dtwSat]{twdtw}} and 
 \code{win.fun}. Note that the 'win.fun' should explicitly name the arguments}
@@ -57,8 +47,8 @@ analysis for each pixel time series.
 }
 \examples{
 
-###
-
+#####
+ 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

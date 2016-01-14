@@ -51,7 +51,7 @@
 #' matrix that comes from the difference in the bands values pont-to-point between the 
 #' pattern and the time series. The second matrix is the difference in days pont-to-point 
 #' between the pattern and the time series. For a logistic time weight 
-#' see \link[dtwSat]{logisticWeight} function, see [3,4] for details. 
+#' see \link[dtwSat]{logisticWeight} function, see [3] for details. 
 #' 
 #' @docType methods
 #' @return A \code{\link[dtwSat]{twdtw-class}} object
@@ -62,16 +62,11 @@
 #' @references 
 #' [2] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 #' and Motion (pp. 79-84). London: Springer London, Limited. 
-### @references 
-### [3] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-### (2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
-### mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
-### IEEE Journal of, X, XX-XX.
 #' @references 
-#' [4] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-#' (2015). Open boundary dynamic time warping for satellite image time series classification. 
-#' In: IGARSS 2015 2015 IEEE International Geoscience and Remote Sensing Symposium, 2015, Milan. 
-#' 2015 IEEE International Geoscience and Remote Sensing Symposium (IGARSS), p. 3349-3352. 
+#' [3] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+#' (2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+#' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
+#' IEEE Journal of, X, XX-XX.
 #' 
 #' @seealso \code{\link[dtwSat]{twdtw-class}}
 #' 
@@ -92,7 +87,7 @@
 #' 
 #' aligs
 #' 
-#' # Perform twdtw in parallel for a list pixel 
+#' ### Perform twdtw in parallel for a list pixel 
 #' # require(parallel)
 #' # aligs = mclapply(template.list, FUN=twdtw, patterns=patterns.list, 
 #' #                  weight.fun = weight.fun, keep=TRUE, mc.cores=2)
@@ -138,11 +133,6 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
 #' Each layer of the Raster* object is a time step. See Details
 #' @param patterns a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 #' details
-#' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
-#' object in the format "yyyy-mm-dd"
-#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''
-#' @param breaks A vector of class \code{\link[base]{Dates}}
 #' @param win.fun A function. A function to be applied to the twdtw results. See Details
 #' @param win.size A numeric vector. The size of a processing window in col x row order.
 #' Default is a single pixel, \emph{i.e.} \code{win.size=c(1,1)}
@@ -167,26 +157,23 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
 #' 
 #' @examples
 #' 
-#' ###
-#' 
+#' #####
+#'  
 #' @export
-twdtwApply = function(x, patterns, breaks=NULL, from=NULL, to=NULL, by=NULL,
-                       win.fun = NULL, win.size = c(1,1), chunk.overlap,
-                       mc.cores = 1, chunk.size, ...){
+twdtwApply = function(x, patterns, win.fun, 
+                      win.size = c(1,1), 
+                      chunk.size = 100, 
+                      chunk.overlap,
+                      mc.cores = 1, ...){
   
-  # Set classification intervals 
-  if(is.null(breaks))
-    breaks = seq(from=as.Date(from), to=as.Date(to), by=by)
-
   # Split and set arguments to functions 
-  names(patterns) = NULL
-  args = list(..., patterns=patterns, breaks=breaks, from=from, to=to, by=by)
+  # args = list(weight.fun = weight.fun, breaks = breaks, levels = levels, labels = labels, simplify= TRUE, patterns = patterns.vignette)
+  args = list(..., patterns = patterns)
   win_fun = .setFunArgs(fun = win.fun, args = args)
   twdtw_fun = .setFunArgs(fun = twdtw, args = args)
   
   # Set blocks Multi-thread parameters
-  minblocks = mc.cores
-  if(!missing(chunk.size)) minblocks = round(ncell(x$doy) / chunk.size)
+  minblocks = round(ncell(x$doy) / chunk.size)
   blocks = blockSize(x$doy, minblocks = minblocks)
   threads = seq(1, blocks$n)
   
@@ -197,11 +184,9 @@ twdtwApply = function(x, patterns, breaks=NULL, from=NULL, to=NULL, by=NULL,
   blocks$r2 = blocks$row + blocks$nrows - 1 + chunk.overlap[1]
   blocks$r2[blocks$r2>nrow(x$doy)] = nrow(x$doy)
   
-  # Set other arguments 
+  # Reshape raster bands to match pattern bands
   bands = names(patterns[[1]])
-  names(bands) = bands
-  blocks$bands = bands
-  blocks$nl = length(breaks) - 1 
+  x = x[c(bands,"doy")]
   
   # Get time line 
   timeline = as.Date(names(x$doy), format="date.%Y.%m.%d")
@@ -212,8 +197,7 @@ twdtwApply = function(x, patterns, breaks=NULL, from=NULL, to=NULL, by=NULL,
     nts = seq(1, ncell(array.list$doy))
     
     # Build zoo time series  
-    zoo.list = lapply(nts, .bulidZooFromTS, x=array.list, 
-                      timeline=timeline, bands=blocks$bands)
+    zoo.list = lapply(nts, .bulidZoo, x=array.list, timeline=timeline)
     
     # Apply TWDTW for each pixel time series 
     twdtw_results = lapply(zoo.list, FUN = twdtw_fun)
@@ -222,15 +206,15 @@ twdtwApply = function(x, patterns, breaks=NULL, from=NULL, to=NULL, by=NULL,
     res = lapply(twdtw_results, FUN = win_fun)
     
     # aux = lapply(seq(1,120*6,6), function(i) i:(i+5) )
-    y = extent(x$doy, r1=blocks$r1[i], r2=blocks$r2[i])
-    res_brick = brick(crop(x$doy, y), nl=blocks$nl)
     M = apply(data.frame(res), 1, function(x) x)
+    e = extent(x$doy, r1=blocks$r1[i], r2=blocks$r2[i])
+    res_brick = brick(crop(x$doy, e), nl=ncol(M))
     M = array(M, dim = dim(res_brick))
     res_brick = setValues(res_brick, M)
     res_brick
   }
   
-  # out.list = lapply(1:2, FUN=fun2)
+  # out.list = lapply(1, FUN=fun2)
   out.list = mclapply(threads, FUN=fun2, mc.cores=mc.cores)
   
   out.list$fun = max
@@ -242,20 +226,27 @@ twdtwApply = function(x, patterns, breaks=NULL, from=NULL, to=NULL, by=NULL,
 #' @title Logistic weight function 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function builds a logistic time weight 
+#' @description Builds a logistic time weight 
 #' function to compute the TWDTW local cost matrix
 #' 
 #' @param alpha numeric. The steepness of logistic weight
 #' @param beta numeric. The midpoint of logistic weight
 #' @param theta numeric between 0 and 1. The weight of the time 
-#' for the TWDTW computation. Use \code{theta=0} to cancel the time weight, 
-#' \emph{i.e.} to run the original DTW algorithm. Default is 0.5 
+#' for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
+#' \emph{i.e.} to run the original DTW algorithm. Default is 0.5. 
+#' For details see [1]
 #' 
 #' @docType methods
-#' @return An \code{\link[base]{expression}} object
+#' @return An \code{\link[base]{function}} object
 #' 
 #' 
 #' @seealso \code{\link[dtwSat]{twdtw}}
+#' 
+#' @references 
+#' [1] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+#' (2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+#' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
+#' IEEE Journal of, X, XX-XX.
 #' 
 #' @examples
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)

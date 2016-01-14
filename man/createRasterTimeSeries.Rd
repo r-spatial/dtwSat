@@ -5,7 +5,7 @@
 \alias{createRasterTimeSeries}
 \title{Create raster time series}
 \usage{
-createRasterTimeSeries(x, timeline, doy, filepath = NULL, mc.cores = 4, ...)
+createRasterTimeSeries(x, timeline, doy, filepath = NULL, mc.cores = 1, ...)
 }
 \arguments{
 \item{x}{A list of \code{\link[raster]{RasterBrick-class}} or 

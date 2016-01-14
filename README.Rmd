@@ -27,14 +27,14 @@ devtools::install_github("vwmaus/dtwSat")
 ### Quick demo
 
 This dome performs the TWDTW analysis for the following `template` time series
-```{r plot-template-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-template-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=2, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 library(dtwSat)
 library(ggplot2)
 autoplot(template, facets = NULL) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 whose subintervals we want to classify into one of the following crop types
-```{r plot-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=2, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 plotPatterns(patterns.list) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
@@ -54,12 +54,12 @@ summary(alig)
 ```
 
 We can use several plot methods to visualize the resulting `twdtw` object. To plot alignments 
-```{r plot-alignment, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-alignment, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 plot(x = alig, type = "alignment") + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 to plot matching point 
-```{r plot-match, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-match, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 plot(x = alig, type = "match", attr = "evi") + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
@@ -69,7 +69,7 @@ plot(type = "path", x = alig) +
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 or to classify and plot each subinterval of the template time series 
-```{r plot-group, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
+```{r plot-group, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=2, fig.align='center', fig.cap='Typical temporal patterns.', warning = FALSE, message = FALSE}
 plot(x = alig, type = "group",
      from = "2009-09-01", to = "2013-09-01", 
      by = "6 month", overlap = 0.3) + 

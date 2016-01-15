@@ -15,7 +15,8 @@ vignette: >
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
-  error = FALSE
+  error = FALSE,
+  results = "hide"
 )
 ```
 
@@ -56,7 +57,7 @@ The folder *lucc_MT* installed with [dtwSat](https://cran.r-project.org/web/pack
 We use the `raster` package to build a `list` of satellite bands time series, *i.e.* a `list` of raster `RasterBrick` or `RasterStack` objects. Each node in the list has one multi-layer raster object that has one satellite band ordered over time. All raster objects in the list must have the same temporal and spatial extension. 
 
 To build the raster time series we locate the *tif* files in the folder *lucc_MT* (installed with [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package). These files are ordered by time of the image acquisition, and therefore we can directly build a list of files using the following commands
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 library(dtwSat)
 library(raster)
 raster_dir = system.file('lucc_MT',  package = 'dtwSat')
@@ -64,7 +65,7 @@ raster_files_list = paste(raster_dir, dir(raster_dir, pattern = '.tif$'), sep = 
 ```
 
 Using the function `lapply` and `raster::stack` we create a `list` of multi-layer `raster::RasterStack` objects (list of raster time series) for each band: ndvi, evi, red, nir, mir, such that
-```{r, echo = TRUE, eval = FALSE, results = "hide"}
+```{r, echo = TRUE, eval = FALSE}
 bands = 1:6
 names(bands) = c('ndvi','evi','red','nir','mir','blue')
 stack_list = lapply(bands, function(x)
@@ -72,21 +73,21 @@ stack_list = lapply(bands, function(x)
   )
 ```
 and, optionally we can also build a `raster::RasterStack` of the real day of the year (doy) for each pixels 
-```{r, echo = TRUE, eval = FALSE, results = "hide"}
+```{r, echo = TRUE, eval = FALSE}
 doy = stack(raster_files_list, bands = 7)
 ```
 
 At this point our time series (i.e. the list of multi-layer raster objects) are without time reference. Therefore, the package **dtwSat** also provides the acquisition dates of the satellite images in `lucc_MT/timeline.csv`. The time information is also part of the name of the *tif* files, such as it usually comes from the data provider.
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 timeline = read.table(system.file('lucc_MT/timeline.csv', package = 'dtwSat'), as.is = TRUE)
 ```
 
 To attach the `timeline` and `raster::RasterStack` objects we use the function `createRasterTimeSeries` that will retrieve a list of raster time series, which servers as the input for other functions of **dtwSat** package. Note that the access of time series from several *tif* files might become slow. Therefore, the function `createRasterTimeSeries` also provides an interface to `raster::writeRaster` and creates independent files for each time series, i.e. it creates one file for each band that allows us to use `raster::RasterBrick` instead of `raster::RasterStack` objects. As our example is small, we will use the `raster::RasterStack` object, such that 
-```{r, echo = TRUE, eval = FALSE, results = "hide"}
+```{r, echo = TRUE, eval = FALSE}
 raster_timeseries = createRasterTimeSeries(x = stack_list, timeline = timeline[,1], doy = doy)
 ```
 
-```{r, echo = FALSE, eval = TRUE, results = "hide"}
+```{r, echo = FALSE, eval = TRUE}
 # Fast version using raster brick  
 flist = dir("~/lucc_brick/", pattern = ".tif$")
 fnames = unlist(lapply(flist, function(x) unlist(strsplit(x, split="[.]"))[1]))
@@ -98,7 +99,7 @@ raster_timeseries = createRasterTimeSeries(x = brick_list, timeline = timeline[,
 ```
 
 To create the typical temporal patterns we use the ground truth samples in the file *lucc_MT/samples_MT.shp*. Each point in the shapefile has the name of the land use class and the temporal range of the sample in the format of date (i.e. `yyyy-mm-dd`). This dataset has a total of 603 samples that are: 68 Cotton-fallow, 138 Forest, 79 Soybean-cotton, 134 Soybean-maize, and 184 Soybean-millet. 
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 library(rgdal)
 field_samples = readOGR(system.file('lucc_MT/samples_MT.shp', package="dtwSat"),
                         layer = "samples_MT")
@@ -111,7 +112,7 @@ table(field_samples$group)
 ## Extract time series and create temporal patterns
 
 In this section we show how to create the typical temporal patterns for each land use class in the samples. For that we extract the time series for each sample from the `raster::RasterStack` list stored in `raster_timeseries`. The extraction process might take a few minutes because it has to read several raster files in order to get the complete time series (~4 minutes using 1 cores with 2.4 GHz clock). Note that the extraction is much faster if we use `raster::RasterBrick` instead of `raster::RasterStack` (~4.5 seconds using 1 cores with 2.4 GHz clock). Linux users can also speedup the processing by setting larger number of cores in the parameter `mc.cores`.
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 ts_list = extractTimeSeries(x = raster_timeseries, y = field_samples, mc.cores = 1)
 ```
 <!-- 
@@ -124,7 +125,7 @@ t2=system.time(
 -->
 
 In the code bellow we use all time series extracted in the previous step to create typical temporal patterns for each class. The function `createPattern` uses a Generalised Additive Model (GAM) (cf. [mgcv](https://cran.r-project.org/web/packages/mgcv/index.html)) to create the temporal patterns. To use this function the user has to inform the start (`from`), the end (`to`), and the frequency in days of the desired output temporal patterns. Besides the user also has to provide a fitting formula for the `mgcv::gam` model (for details see [mgcv::gam](https://cran.r-project.org/web/packages/mgcv/index.html)). Here we set the output patterns with frequency of 8 days from "2004-09-01" to "2005-09-0", and cyclic cubic spline model, such that `y ~ s(time, bs="cc")`, where `time` is the independent variable and `y` is one of the satellite bands (for details see [mgcv::s](https://cran.r-project.org/web/packages/mgcv/index.html)). 
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 groups = as.character(unique(field_samples$group))
 names(groups) = groups
 field_samples_list = lapply(groups, function(x) ts_list[field_samples$group==x])
@@ -142,7 +143,7 @@ plotPatterns(patterns_list) +
 ## Land use mapping
 
 In this section we use [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) to classify our small study area in the Brazilian Amazon into land use types over time. The function `twdtwApply` performs the TWDTW analysis over all pixel locations and returns a `raster::RasterBrick` object whose layers have the final classification for each time period. To use this function we define some classification parameters, such that
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 ## Time-weight function for TWDTW analysis. See ?twdtw for details 
 weight.fun = logisticWeight(alpha=-0.1, beta=50)
 ## Classification function. See ?classifyIntervals for details
@@ -159,7 +160,7 @@ names(colors) = labels
 Note that we use `win.fun=classifyIntervals`, which classifies the time intervals of each pixel location based on the lowest TWDTW distance, i.e. a pixel based classification. The users can also define their own classification function using different rules, for example, by using the TWDTW distance of neighborhood. 
 
 For a `raster::RasterStack` object the total processing time of 999 time series is ~XXXX minutes using 1 cores with 2.4 GHz clock. This can be improved if we use `raster::RasterBrick` instead of `raster::RasterStack` (~4 minutes using 1 cores with 2.4 GHz clock). Linux users can also speedup the processing by setting larger number of cores in the parameter `mc.cores`.
-```{r, echo = TRUE, eval = FALSE, results = "hide"}
+```{r, echo = TRUE, eval = FALSE}
 land_use_maps = twdtwApply(x = raster_timeseries, patterns = patterns_list, 
                            mc.cores = 4, win.fun = win.fun, weight.fun = weight.fun, 
                            breaks = breaks, overlap = overlap, levels = levels, 
@@ -202,7 +203,7 @@ plotLUCC(x = land_use_maps, type = "change", layer.labels = 2008:2013,
 
 ## Accuracy assessment
 
-```{r, echo = TRUE, eval = FALSE, results = "hide"}
+```{r, echo = TRUE, eval = FALSE}
 library(caret)
 library(parallel)
 library(reshape2)
@@ -254,14 +255,14 @@ assess_list = lapply(training_sample, function(I){
   return(res)
 })
 ```
-```{r, echo = FALSE, eval = FALSE, results = "hide"}
+```{r, echo = FALSE, eval = FALSE}
 save(assess_list, file="./inst/lucc_MT/assess_list.RData")
 ```
-```{r, echo = FALSE, eval = TRUE, results = "hide"}
+```{r, echo = FALSE, eval = TRUE}
 ## Load classification not to run again 
 load(system.file('lucc_MT/assess_list.RData', package = 'dtwSat'))
 ```
-```{r, echo = TRUE, eval = TRUE, results = "hide"}
+```{r, echo = TRUE, eval = TRUE}
 assess_results = do.call("rbind", lapply(assess_list, function(class_table){
   assess_table = table(Predicted=class_table$Predicted, Reference=class_table$Reference)
   user_accuracy = diag(assess_table) / rowSums(assess_table)

@@ -1,11 +1,3 @@
-<!-- 
-# Render md file for github  
-rmarkdown::render(input="./vignettes/lucc.Rmd", output_format="md_document")
--->
-<!-- 
-# Render README.md file  
-rmarkdown::render("README.Rmd")
--->
 dtwSat
 ======
 

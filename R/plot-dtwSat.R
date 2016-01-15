@@ -891,7 +891,7 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
     scale_fill_manual(name="Land use", values = colors) + 
     facet_wrap(~variable) + 
     scale_y_continuous(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0)) + 
+    scale_x_continuous(expand = c(0, -0.1)) + 
     theme(legend.position = "bottom") + 
     coord_fixed(ratio = 1) + 
     xlab("Longitude") + 

@@ -16,7 +16,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="study_area.svg">
+   sodipodi:docname="study_area.svg"
+   inkscape:export-filename="/home/mausv/workspace/dtwSat/vignettes/study_area.png"
+   inkscape:export-xdpi="106.71"
+   inkscape:export-ydpi="106.71">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -46,7 +49,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

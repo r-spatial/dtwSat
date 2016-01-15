@@ -241,11 +241,11 @@ assess_results = do.call("rbind", lapply(assess_list, function(class_table){
 ``` r
 library(reshape2)
 df = melt(assess_results, id="Group")
-ggplot(df, aes(x=Group, y=value)) + 
+ggplot(df, aes(x=Group, y=100*value)) + 
   stat_summary(fun.data="median_hilow", width=0.5, geom="crossbar", fill="grey") + 
   geom_point() +  
   facet_grid(. ~ variable) + 
-  scale_y_continuous(limits = c(0,1)) + 
+  scale_y_continuous(limits = c(0,100)) + 
   xlab("") + 
   ylab("Accuracy %") + 
   coord_flip()

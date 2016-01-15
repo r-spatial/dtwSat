@@ -864,8 +864,8 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
 
   # Plot change 
   gp = ggplot() +
-    geom_bar(data=df[I,], aes_string(x="to", y="Freq", fill="from"), stat="identity") +
-    geom_bar(data=df[I,], aes_string(x="from", y="-Freq", fill="to"), stat="identity") +
+    geom_bar(data=df[I,], aes_string(x="to", y="100*Freq", fill="from"), stat="identity") +
+    geom_bar(data=df[I,], aes_string(x="from", y="-100*Freq", fill="to"), stat="identity") +
     facet_wrap(~layer) +
     scale_fill_manual(name = "Land use", values = colors) + 
     xlab("") + 
@@ -913,7 +913,7 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
   
   x.breaks = pretty_breaks()(range(df.area$Time, na.rm = TRUE))
   
-  gp = ggplot(data=df.area, aes_string(x="Time", y="Freq", fill="value")) +
+  gp = ggplot(data=df.area, aes_string(x="Time", y="100*Freq", fill="value")) +
     geom_area(position = 'stack') + 
     scale_fill_manual(name="Land use", values = colors) + 
     scale_x_continuous(expand = c(0, 0), breaks = x.breaks, labels = layer.labels) + 

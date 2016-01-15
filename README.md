@@ -21,7 +21,7 @@ devtools::install_github("vwmaus/dtwSat")
 * [Timw-Weighted Dynamic Time Warping - TWDTW]
 * [Time series analysis using dtwSat]
 -->
-1.  [Land use classification using dtwSat](ist/doc/lucc.html)
+1.  [Land use classification using dtwSat](./inst/doc/lucc.html)
 
 ### Quick demo
 

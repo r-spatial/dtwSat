@@ -8,12 +8,16 @@
 createPattern(x, from, to, freq = 1, attr, formula, ...)
 }
 \arguments{
-\item{x}{A \code{\link[base]{list}} of \code{\link[base]{data.frame}} such as 
+\item{x}{A \code{\link[base]{list}} of \code{\link[zoo]{zoo}} such as 
 retrived by \code{\link[dtwSat]{extractTimeSeries}}.}
 
-\item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
+\item{from}{A character or \code{\link[base]{Dates}} object in the format 
+"yyyy-mm-dd". If not informed it is equal to the smallest date of the 
+first element in x}
 
-\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
+\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
+object in the format "yyyy-mm-dd". If not informed it is equal to the 
+greatest date of the first element in x}
 
 \item{freq}{An integer. The frequency of the output patterns}
 

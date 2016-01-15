@@ -5,8 +5,8 @@
 \alias{plotLUCC}
 \title{Plotting land use/cover changes (LUCC)}
 \usage{
-plotLUCC(x, type = "area", layers, layer.labels = NULL, levels = NULL,
-  labels = NULL, colors = NULL)
+plotLUCC(x, type = "area", layer.levels, layer.labels = NULL,
+  levels = NULL, labels = NULL, colors = NULL)
 }
 \arguments{
 \item{x}{A \code{\link[raster]{Raster-class}}
@@ -16,13 +16,13 @@ A \link[base]{character} with the raster file name is also accepted.}
 \item{type}{A \link[base]{character}. The plot type, ''map'', 
 ''area'', or ''change''. Default is ''map''}
 
-\item{layers}{A \link[base]{character} or \link[base]{numeric}
+\item{layer.levels}{A \link[base]{character} or \link[base]{numeric}
 vector with the layers to compute the changes. The minimum length 
 is two}
 
 \item{layer.labels}{A \link[base]{character} or \link[base]{numeric}
 vector with the labels of the layers. It must have the same 
-length as layers. Default is NULL}
+length as layer.levels. Default is NULL}
 
 \item{levels}{A \link[base]{character} or \link[base]{numeric}
 vector with the levels of the raster values. Default is NULL}

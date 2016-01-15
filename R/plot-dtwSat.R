@@ -743,12 +743,12 @@ plotPatterns = function(x, p.names){
 #' A \link[base]{character} with the raster file name is also accepted.
 #' @param type A \link[base]{character}. The plot type, ''map'', 
 #' ''area'', or ''change''. Default is ''map''
-#' @param layers A \link[base]{character} or \link[base]{numeric}
+#' @param layer.levels A \link[base]{character} or \link[base]{numeric}
 #' vector with the layers to compute the changes. The minimum length 
 #' is two 
 #' @param layer.labels A \link[base]{character} or \link[base]{numeric}
 #' vector with the labels of the layers. It must have the same 
-#' length as layers. Default is NULL
+#' length as layer.levels. Default is NULL
 #' @param levels A \link[base]{character} or \link[base]{numeric}
 #' vector with the levels of the raster values. Default is NULL 
 #' @param labels A \link[base]{character} or \link[base]{numeric}
@@ -794,7 +794,7 @@ plotPatterns = function(x, p.names){
 #' gp3
 #' 
 #' @export
-plotLUCC = function(x, type="area", layers, layer.labels=NULL, 
+plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL, 
                     levels=NULL, labels=NULL, colors=NULL){
   
   if(is(x, "character"))
@@ -803,14 +803,14 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
   if(!is(x,"RasterBrick") & !is(x,"RasterStack"))
     stop("x is not a RasterBrick or RasterStack object")
   
-  if(missing(layers))
-    layers = names(x)
+  if(missing(layer.levels))
+    layer.levels = names(x)
   
   if(is.null(layer.labels))
-    layer.labels = layers
+    layer.labels = layer.levels
   
-  if(length(layers)!=length(layer.labels))
-    stop("layers and layer.labels have different length")
+  if(length(layer.levels)!=length(layer.labels))
+    stop("layer.levels and layer.labels have different length")
   
   x_levels = unique(as.vector(unique(x[])))
   if( is.null(colors) | length(colors)<length(x_levels) )
@@ -830,26 +830,26 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
   
   pt = pmatch(type,c("map","area","change"))
   
-  x = raster::subset(x=x, subset=layers)
-  names(layers) = names(x)
+  x = raster::subset(x=x, subset=layer.levels)
+  names(layer.levels) = names(x)
   names(layer.labels) = names(x)
   
   switch(pt,
-         .plotLUMap(x, layers, layer.labels, levels, labels, colors),
-         .plotLUArea(x, layers, layer.labels, levels, labels, colors),
-         .plotLUChange(x, layers, layer.labels, levels, labels, colors)
+         .plotLUMap(x, layer.levels, layer.labels, levels, labels, colors),
+         .plotLUArea(x, layer.levels, layer.labels, levels, labels, colors),
+         .plotLUChange(x, layer.levels, layer.labels, levels, labels, colors)
   )
 
 }
 
-.plotLUChange = function(x, layers, layer.labels, levels, labels, colors){
+.plotLUChange = function(x, layer.levels, layer.labels, levels, labels, colors){
   
-  if(length(layers)<2)
-    stop("the vector layers is shorter than two")
+  if(length(layer.levels)<2)
+    stop("the vector layer.levels is shorter than two")
   
-  df = do.call("rbind", lapply(seq_along(layers)[-1], function(l){
-    from = raster::subset(x=x, subset=layers[l-1])[]
-    to   = raster::subset(x=x, subset=layers[l]  )[]
+  df = do.call("rbind", lapply(seq_along(layer.levels)[-1], function(l){
+    from = raster::subset(x=x, subset=layer.levels[l-1])[]
+    to   = raster::subset(x=x, subset=layer.levels[l]  )[]
     res = data.frame(from, to)
     res = data.frame(xtabs(~ from + to, res) / nrow(res))
     res$layer = paste0(layer.labels[l-1],"-",layer.labels[l])
@@ -864,21 +864,22 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
 
   # Plot change 
   gp = ggplot() +
-    geom_bar(data=df[I,], aes_string(x="to", y="100*Freq", fill="from"), stat="identity") +
-    geom_bar(data=df[I,], aes_string(x="from", y="-100*Freq", fill="to"), stat="identity") +
+    geom_bar(data=df[I,], aes_string(x="to", y="Freq", fill="from"), stat="identity") +
+    geom_bar(data=df[I,], aes_string(x="from", y="-Freq", fill="to"), stat="identity") +
     facet_wrap(~layer) +
-    scale_fill_manual(name = "Land use", values = colors) + 
+    scale_fill_manual(name = "Legend", values = colors) + 
+    scale_y_continuous(labels = percent) + 
     xlab("") + 
     geom_hline(yintercept = 0) +
     coord_flip() + 
     theme(legend.position = "bottom") + 
-    ylab("Change (%)")
+    ylab("Change")
   
   gp
   
 }
 
-.plotLUMap = function(x, layers, layer.labels, levels, labels, colors){
+.plotLUMap = function(x, layer.levels, layer.labels, levels, labels, colors){
 
   df.map = data.frame(coordinates(x), x[] )
   df.map = melt(df.map, id.vars = c("x", "y"))
@@ -888,10 +889,10 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
   
   gp = ggplot(data=df.map, aes_string(x="x", y="y")) +
     geom_raster(aes_string(fill="value")) + 
-    scale_fill_manual(name="Land use", values = colors) + 
+    scale_fill_manual(name="Legend", values = colors) + 
     facet_wrap(~variable) + 
     scale_y_continuous(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, -0.1)) + 
+    scale_x_continuous(expand = c(0, 0)) + 
     theme(legend.position = "bottom") + 
     coord_fixed(ratio = 1) + 
     xlab("Longitude") + 
@@ -901,7 +902,7 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
 }
 
 
-.plotLUArea = function(x, layers, layer.labels, levels, labels, colors){
+.plotLUArea = function(x, layer.levels, layer.labels, levels, labels, colors){
 
   df.map = data.frame(coordinates(x), x[] )
   df.map = melt(df.map, id.vars = c("x", "y"))
@@ -913,13 +914,13 @@ plotLUCC = function(x, type="area", layers, layer.labels=NULL,
   
   x.breaks = pretty_breaks()(range(df.area$Time, na.rm = TRUE))
   
-  gp = ggplot(data=df.area, aes_string(x="Time", y="100*Freq", fill="value")) +
+  gp = ggplot(data=df.area, aes_string(x="Time", y="Freq", fill="value")) +
     geom_area(position = 'stack') + 
-    scale_fill_manual(name="Land use", values = colors) + 
-    scale_x_continuous(expand = c(0, 0), breaks = x.breaks, labels = layer.labels) + 
-    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(name="Legend", values = colors) + 
+    scale_x_continuous(expand = c(0.01, 0), breaks = x.breaks, labels = layer.labels) + 
+    scale_y_continuous(expand = c(0, 0), labels = percent) +
     theme(legend.position = "bottom") + 
-    ylab("Area (%)")
+    ylab("Area")
   gp 
   
 }

@@ -20,19 +20,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of results. In this vignette we show how to use the package for land use and land cover classification using satellite image time series. We use a small sample in a tropical forest area (in Mato Grosso, Brazil) and a set of field samples to build typical temporal patterns to perform the land use mapping. 
-
+The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of the TWDTW results. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for a raster time series. In the end of this chapter we also present an example of land use and land cover changes analysis and an accuracy assessment. 
 
 ## Introduction
 
-The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (cf. Maus et al. [-@Maus:2016] for details).
+The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (cf. Maus et al. [-@Maus:2016] for details). 
 
 [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007; @Petitjean:2012]
-
 ...
-
-In the next sections we present the [input data][Input data] for the algorithm and show, step-by-step, how to perform the TWDTW analysis for satellite image time series. We start by [extracting the time series from the satellite images][Extract time series and create temporal patterns], and then we show how to [create the typical temporal patterns][Extract time series and create temporal patterns] for each land class. Using these temporal patterns we show the [land use mapping application][Land use mapping] that is followed by an [accuracy assessment][Accuracy assessment].
 
 ## Data 
 

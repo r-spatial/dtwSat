@@ -134,6 +134,8 @@ Data
 
 The inputs of the algorithm are: *i)* a sequence of satellite images ordered over time, and *ii)* a set of ground truth samples. The case study is in a tropical forest area, in Mato Grosso, Brazil, and the time domain ranges from 2007 to 2013. We also use a set of 603 ground truth samples of the following land classes: forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet.
 
+![alt text](./inst/lucc_MT/study_area.png)
+
 Here we use the MODIS product [MOD13Q1](https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1). This produt has 250 m spatial and 16 day temporal resolution, that means a sequence of 160 images with 999 pixels each, covering our study area from 2007 to 2013.
 
 The folder *lucc\_MT* installed with [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides the raster files and the ground truth samples for the study are. The raster files are ordered according to the time of the image acquisition in *GeoTIFF* format. Each file has 7 bands (ndvi, evi, red, nir, mir, blue, and doy) extracted from the MODIS product MOD13Q1. The ground truth samples are an *Esri Shapefile*. Besides the location, the shapefile also provides the time range (*from* *to*) and the land class (*group*) of each ground truth sample.
@@ -228,7 +230,6 @@ groups = as.character(unique(field_samples$group))
 names(groups) = groups
 field_samples_list = lapply(groups, function(x) ts_list[field_samples$group==x])
 patterns_list = lapply(field_samples_list, createPattern, 
-                       from = "2004-09-01", to = "2005-09-01", 
                        freq = 8, formula = y ~ s(time, bs = "cc"))
 ```
 
@@ -236,7 +237,9 @@ This will give us the following temporal patterns
 
 ``` r
 library(ggplot2)
-plotPatterns(patterns_list) + theme(text = element_text(size = 8, family="Helvetica"))
+plotPatterns(patterns_list) + 
+  theme(text = element_text(size = 8, family="Helvetica"),
+        legend.position = "bottom")
 ```
 
 <img src="figure/temporal-patterns-1.png" alt="Typical temporal patterns."  />
@@ -251,14 +254,17 @@ In this section we use [dtwSat](https://cran.r-project.org/web/packages/dtwSat/i
 
 ``` r
 ## Time-weight function for TWDTW analysis. See ?twdtw for details 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)  
+weight.fun = logisticWeight(alpha=-0.1, beta=50)
 ## Classification function. See ?classifyIntervals for details
 win.fun = classifyIntervals 
-## Classification intervals. See ?classifyIntervals for details
+## Classification intervals and overlap. See ?classifyIntervals for details
 breaks = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by = "12 month")
+overlap = 0.5 
 # Legend parameter. See ?classifyIntervals for details
-pattern_levels = c(seq_along(patterns_list), 255)
-pattern_labels = c(names(patterns_list), "Unclassified")
+levels = c(seq_along(patterns_list), 255)
+labels = c(names(patterns_list), "Unclassified")
+colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
+names(colors) = labels
 ```
 
 Note that we use `win.fun=classifyIntervals`, which classifies the time intervals of each pixel location based on the lowest TWDTW distance, i.e. a pixel based classification. The users can also define their own classification function using different rules, for example, by using the TWDTW distance of neighborhood.
@@ -266,21 +272,17 @@ Note that we use `win.fun=classifyIntervals`, which classifies the time interval
 For a `raster::RasterStack` object the total processing time of 999 time series is ~XXXX minutes using 1 cores with 2.4 GHz clock. This can be improved if we use `raster::RasterBrick` instead of `raster::RasterStack` (~4 minutes using 1 cores with 2.4 GHz clock). Linux users can also speedup the processing by setting larger number of cores in the parameter `mc.cores`.
 
 ``` r
-proctime = system.time(
-  land_use_maps <- twdtwApply(x = raster_timeseries, patterns = patterns_list, 
-                              mc.cores = 1, win.fun = win.fun, weight.fun = weight.fun, 
-                              breaks = breaks, levels = pattern_levels, 
-                              labels = pattern_labels, simplify= TRUE)
-)
+land_use_maps = twdtwApply(x = raster_timeseries, patterns = patterns_list, 
+                           mc.cores = 4, win.fun = win.fun, weight.fun = weight.fun, 
+                           breaks = breaks, overlap = overlap, levels = levels, 
+                           labels = labels, simplify= TRUE)
 ```
 
 Lets now take a look at the classification results. This sequence of maps provided here is useful for land use changes analysis. Such results can be linked to other kind of datasets, e.g. commodities trading, and help in understanding the spatiotemporal connections of land use changes and its drivers.
 
 ``` r
-pattern_colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
-names(pattern_colors) = pattern_labels
 plotLUCC(x = land_use_maps, type = "map", layer.labels = 2008:2013, 
-         levels = pattern_levels, labels = pattern_labels, colors = pattern_colors) + 
+         levels = levels, labels = labels, colors = colors) + 
          theme(text = element_text(size = 8, family="Helvetica"))
 ```
 
@@ -293,8 +295,8 @@ For example, we can quantify the accumulated land use changes over time, or even
 
 ``` r
 plotLUCC(x = land_use_maps, type = "area", layer.labels = 2008:2013, 
-         levels = pattern_levels, labels = pattern_labels, 
-         colors = pattern_colors) + 
+         levels = levels, labels = labels, 
+         colors = colors) + 
          theme(text = element_text(size = 8, family="Helvetica"))
 ```
 
@@ -305,7 +307,7 @@ Typical temporal patterns.
 
 ``` r
 plotLUCC(x = land_use_maps, type = "change", layer.labels = 2008:2013, 
-         levels = pattern_levels, labels = pattern_labels, colors = pattern_colors) + 
+         levels = levels, labels = labels, colors = colors) + 
          theme(text = element_text(size = 8, family="Helvetica"))
 ```
 
@@ -316,6 +318,88 @@ Typical temporal patterns.
 
 Accuracy assessment
 -------------------
+
+``` r
+library(caret)
+library(parallel)
+library(reshape2)
+n = 100 # Number of repetitions 
+p = 0.1 # p% Training (1-p)% Validation 
+set.seed(1)
+training_sample = createDataPartition(y = field_samples$group, 
+                                      times = n, p = 0.1, list = TRUE)
+
+assess_list = lapply(training_sample, function(I){
+  cat(".")
+  # Split training and validation samples 
+  ts_training_sample   = ts_list[ I]
+  ts_validation_sample = ts_list[-I]
+  sp_training_sample   = field_samples[ I,]
+  sp_validation_sample = field_samples[-I,]
+  
+  # Group land-use classes 
+  groups = as.character(unique(sp_training_sample$group))
+  names(groups) = groups
+  J = lapply(groups, function(x) 
+    row.names(sp_training_sample)[sp_training_sample$group==x])
+  
+  # Create temporal patterns 
+  samples_list = lapply(J, function(j) ts_training_sample[j] )
+  patterns_list = lapply(samples_list, createPattern, freq=8, 
+                         from="2007-09-01", to="2008-09-01",
+                         formula = y ~ s(time, bs="cc"))
+  # grid.arrange(grobs=lapply(patterns.list, autoplot, facets = NULL), ncol=3)
+
+  # Apply twdtw for the validation samples 
+  validation_results = mclapply(ts_validation_sample, FUN=twdtw, 
+                              patterns = patterns_list, 
+                              weight.fun = weight.fun, mc.cores=3)
+
+  # Classify twdtw results
+  s = names(validation_results)
+  names(s) = s
+  res = do.call("rbind", mclapply(s, mc.cores=3, function(i){
+    from = sp_validation_sample[i,]$from
+    to = sp_validation_sample[i,]$to
+    pred = classifyIntervals(validation_results[[i]], 
+                             from = from, to = to, 
+                             by = "12 month",
+                             overlap = overlap)
+    data.frame(Reference = as.character(sp_validation_sample[i,]$group),
+               Predicted = as.character(pred$pattern), stringsAsFactors = FALSE)
+  }))
+  return(res)
+})
+```
+
+``` r
+assess_results = do.call("rbind", lapply(assess_list, function(class_table){
+  assess_table = table(Predicted=class_table$Predicted, Reference=class_table$Reference)
+  user_accuracy = diag(assess_table) / rowSums(assess_table)
+  prod_accuracy = diag(assess_table) / colSums(assess_table)
+  data.frame(Group=names(user_accuracy), 
+             User = user_accuracy,
+             Producer = prod_accuracy)
+}))
+```
+
+``` r
+library(reshape2)
+df = melt(assess_results, id="Group")
+ggplot(df, aes(x=Group, y=value)) + 
+  stat_summary(fun.data="median_hilow", width=0.5, geom="crossbar", fill="grey") + 
+  geom_point() +  
+  facet_grid(. ~ variable) + 
+  scale_y_continuous(limits = c(0,1)) + 
+  xlab("") + 
+  ylab("Accuracy %") + 
+  coord_flip()
+```
+
+<img src="figure/plot-accuracy-1.png" alt="Typical temporal patterns."  />
+<p class="caption">
+Typical temporal patterns.
+</p>
 
 References
 ----------

@@ -84,10 +84,14 @@ extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores
 #' @description This function fits a gam model and retrieves a smoothed 
 #' temporal pattern 
 #' 
-#' @param x A \code{\link[base]{list}} of \code{\link[base]{data.frame}} such as 
+#' @param x A \code{\link[base]{list}} of \code{\link[zoo]{zoo}} such as 
 #' retrived by \code{\link[dtwSat]{extractTimeSeries}}. 
-#' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
+#' @param from A character or \code{\link[base]{Dates}} object in the format 
+#' "yyyy-mm-dd". If not informed it is equal to the smallest date of the 
+#' first element in x 
+#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
+#' object in the format "yyyy-mm-dd". If not informed it is equal to the 
+#' greatest date of the first element in x 
 #' @param attr A vector character or numeric. The attributes in \code{x} to use 
 #' @param freq An integer. The frequency of the output patterns 
 #' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}
@@ -108,6 +112,10 @@ extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores
 createPattern = function(x, from, to, freq=1, attr, formula, ...){
   
   # Pattern period 
+  if( missing(from) | missing(to) ){
+    from = as.Date(min(index(x[[1]])))
+    to = as.Date(max(index(x[[1]])))
+  } 
   from = as.Date(from)
   to = as.Date(to)
   

@@ -19,9 +19,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!-- 
- Comment 
--->
 
 The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of results. In this vignette we show how to use the package for land use and land cover classification using satellite image time series. We use a small sample in a tropical forest area (in Mato Grosso, Brazil) and a set of field samples to build typical temporal patterns to perform the land use mapping. 
 

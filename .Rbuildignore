@@ -16,3 +16,4 @@ tardis.o
 ^README-.*\.png$
 ^cran-comments\.md
 ^NEWS\.md$
+^lucc\.md$

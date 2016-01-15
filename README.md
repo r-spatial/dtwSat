@@ -1,4 +1,8 @@
 <!-- 
+# Render md file for github  
+rmarkdown::render(input="./vignettes/lucc.Rmd", output_format="md_document")
+-->
+<!-- 
 # Render README.md file  
 rmarkdown::render("README.Rmd")
 -->
@@ -21,7 +25,7 @@ devtools::install_github("vwmaus/dtwSat")
 * [Timw-Weighted Dynamic Time Warping - TWDTW]
 * [Time series analysis using dtwSat]
 -->
-1.  [Land use classification using dtwSat](./inst/doc/lucc.html)
+1.  [Land use classification using dtwSat](./vignettes/lucc.md)
 
 ### Quick demo
 

@@ -30,17 +30,6 @@ devtools::install_github("vwmaus/dtwSat")
 ```
 
 
-###Vignettes
-<!--
-* [Timw-Weighted Dynamic Time Warping - TWDTW]
-* [Time series analysis using dtwSat]
--->
-1. [Land use classification using dtwSat](./vignettes/lucc.md)
-```{r, echo=FALSE, eval=TRUE}
-# Render md file for github  
-output_format = rmarkdown::md_document(variant = "markdown_github")
-rmarkdown::render(input="./vignettes/lucc.Rmd", output_format=output_format)
-```
 
 
 ```{r, echo = FALSE, eval = TRUE}
@@ -118,6 +107,20 @@ k=k+1
 ```
 
 To see more example please check the [R vignettes][Vignettes] and if you want to learn more about the TWDTW method see Maus et al. [-@Maus:2016]
+
+
+###Vignettes
+<!--
+* [Timw-Weighted Dynamic Time Warping - TWDTW]
+* [Time series analysis using dtwSat]
+-->
+1. [Land use classification using dtwSat](./vignettes/lucc.md)
+```{r, echo=FALSE, eval=TRUE}
+# Render md file for github  
+output_format = rmarkdown::md_document(variant = "markdown_github")
+rmarkdown::render(input="./vignettes/lucc.Rmd", output_format=output_format)
+```
+
 
 ### References
 

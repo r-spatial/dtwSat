@@ -36,7 +36,9 @@ Suggests:
     knitr,
     rmarkdown,
     gridExtra,
-    rgdal
+    rgdal,
+    grid,
+    png
 License: GPL (>= 2) | file LICENSE
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>

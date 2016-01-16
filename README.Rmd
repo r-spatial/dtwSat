@@ -22,7 +22,7 @@ dtwSat
 =====
 
 ### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
-dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification [@Maus:2016]. It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007; @Petitjean:2012]. Bellow we show a quick demo of the package and some R vignettes about the package.
+dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification [@Maus:2015, @Maus:2016]. It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007; @Petitjean:2012]. Bellow we show a quick demo of the package and some R vignettes about the package.
 
 ### Install
 ```{r installation, eval = FALSE}
@@ -106,21 +106,21 @@ plot(x = alig, type = "group",
 k=k+1
 ```
 
-To see more example please check the [R vignettes][Vignettes] and if you want to learn more about the TWDTW method see Maus et al. [-@Maus:2016]
+To see more example please check the [R vignettes][Vignettes] and if you want to learn more about the TWDTW method see [@Maus:2015, @Maus:2016].
 
 
 ###Vignettes
+1. [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
+2. [Time series analysis and visualization using dtwSat](./vignettes/dtwSat_usage.md)
+3. [Land use classification using dtwSat](./vignettes/lucc.md)
 <!--
-* [Timw-Weighted Dynamic Time Warping - TWDTW]
-* [Time series analysis using dtwSat]
+# Otput to render md file for github webpage 
+output_format = rmarkdown::md_document(variant = "markdown_github", preserve_yaml = TRUE)
+# Render vignettes
+rmarkdown::render(input="./vignettes/twdtw.Rmd",        output_format=output_format)
+rmarkdown::render(input="./vignettes/dtwSat_usage.Rmd", output_format=output_format)
+rmarkdown::render(input="./vignettes/lucc.Rmd",         output_format=output_format)
 -->
-1. [Land use classification using dtwSat](./vignettes/lucc.md)
-```{r, echo=FALSE, eval=TRUE}
-# Render md file for github  
-output_format = rmarkdown::md_document(variant = "markdown_github")
-rmarkdown::render(input="./vignettes/lucc.Rmd", output_format=output_format)
-```
-
 
 ### References
 

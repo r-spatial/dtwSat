@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, echo=FALSE}
+```{r lucc, echo=FALSE}
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
@@ -24,7 +24,7 @@ The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package 
 
 ## Introduction
 
-The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (cf. Maus et al. [-@Maus:2016] for details). 
+The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (see [@Maus:2016] for details). 
 
 [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007; @Petitjean:2012]
 ...

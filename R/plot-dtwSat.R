@@ -919,7 +919,8 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     scale_fill_manual(name="Legend", values = colors) + 
     scale_x_continuous(expand = c(0.01, 0), breaks = x.breaks, labels = layer.labels) + 
     scale_y_continuous(expand = c(0, 0), labels = percent) +
-    theme(legend.position = "bottom") + 
+    theme(legend.position = "bottom",
+          panel.background = element_blank()) + 
     ylab("Area")
   gp 
   

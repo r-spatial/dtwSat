@@ -1,9 +1,22 @@
+---
+title: "Land use classification using dtwSat"
+author: "Victor Maus^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany], ^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.]"
+date: "2016-01-16"
+output: 
+  rmarkdown::html_vignette:
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Land use classification using dtwSat}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
 The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of the TWDTW results. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for a raster time series. In the end of this chapter we also present an example of land use and land cover changes analysis and an accuracy assessment.
 
 Introduction
 ------------
 
-The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (cf. Maus et al. (2016) for details).
+The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (see (Maus et al. 2016) for details).
 
 (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012) ...
 
@@ -261,7 +274,7 @@ Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Fi
 
 Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
 
-Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping method for land use and land cover mapping.” *Selected Topics in Applied Earth Observations and Remote Sensing, IEEE Journal of* 9 (X): XXXX–XX. doi:[10.1109/JSTARS.2016.2517118](http://dx.doi.org/10.1109/JSTARS.2016.2517118).
+Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping method for land use and land cover mapping.” *Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (X): XXXX–XX.
 
 Müller, Meinard. 2007. *Information Retrieval for Music and Motion*. London: Springer.
 

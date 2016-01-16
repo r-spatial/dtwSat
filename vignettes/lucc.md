@@ -11,14 +11,16 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of the TWDTW results. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for a raster time series. In the end of this chapter we also present an example of land use and land cover changes analysis and an accuracy assessment.
+The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of the TWDTW results. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for time series stored as sequence of raster files. In the end of this chapter we also present an example of land use and land cover changes analysis as well as the accuracy assessment.
 
 Introduction
 ------------
 
-The Time-Weighted Dynamic Time Warping (TWDTW) is adapted to multi-band satellite image time series analysis, and it is flexible to compare satellite time series even if they are irregularly sampled, or are out of phase in the time axis (see (Maus et al. 2016) for details).
+Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series.
 
-(Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012) ...
+Here we use the Time-Weighted Dynamic Time Warping (TWDTW) method for land use and land cover mapping using sequence of satellite images (Maus et al. 2016). Methods based on dynamic time warping are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012). The original dynamic time warping method works well for shape matching but it is not suited for remote sensing time series classification. This is because it disregards the temporal range when finding the best alignment between two time series. Each land cover class has a specific phenological cycle, and therefore, a good time-series land cover classifier needs to balance between shape matching and temporal alignment. To that end, Maus et al. (2016) included a temporal weight to the original dynamic time warping method that accounts for seasonality of land cover types. To get good results with the proposed algorithm, the spatial and temporal resolutions of the data should capture the properties of the landscape, and the pattern samples should also represent well the temporal variation of land cover. If these conditions are met, we expect that the TWDTW algorithm will be successful for large-scale land cover classification of remote sensing time series. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of the TWDTW method.
+
+The aim of the chapter is to present an application for land use and land cover changes analysis using [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html). For that we run a TWDTW analysis for small area with rapid land use changes in Mato Grosso, Brazil. We also present and a land use changes analysis as well as the accuracy assessment.
 
 Data
 ----
@@ -165,7 +167,9 @@ plotLUCC(x = land_use_maps, type = "map", layer.labels = 2008:2013,
          theme(text = element_text(size = 8, family="Helvetica"))
 ```
 
-<img src="figure/plot-map-1.png" title="" alt="" style="display: block; margin: auto;" /> For example, we can quantify the accumulated land use changes over time, or even the land use transitions from class to class over time, such that
+<img src="figure/plot-map-1.png" title="" alt="" style="display: block; margin: auto;" />
+
+For example, we can quantify the accumulated land use changes over time, or even the land use transitions from and to each land class over time, such that
 
 ``` r
 plotLUCC(x = land_use_maps, type = "area", layer.labels = 2008:2013, 

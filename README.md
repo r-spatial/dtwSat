@@ -1,9 +1,17 @@
+<!--
+# Otput to render md file for github webpage 
+output_format = rmarkdown::md_document(variant = "markdown_github", preserve_yaml = TRUE)
+# Render vignettes
+rmarkdown::render(input="./vignettes/twdtw.Rmd",        output_format=output_format)
+rmarkdown::render(input="./vignettes/dtwSat_usage.Rmd", output_format=output_format)
+rmarkdown::render(input="./vignettes/lucc.Rmd",         output_format=output_format)
+-->
 dtwSat
 ======
 
 ### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
 
-dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification (Maus et al. 2015, Maus et al. (2016)). It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012). Bellow we show a quick demo of the package and some R vignettes about the package.
+dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification (Maus et al. 2016). It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012). Bellow we show a quick demo of the package and some [R vignettes](#vignettes) about the package usage and the TWDTW method.
 
 ### Install
 
@@ -106,28 +114,19 @@ plot(x = alig, type = "group",
 Fig. 6. Classification using the best match for each subinterval.
 </p>
 
-To see more example please check the [R vignettes](#vignettes) and if you want to learn more about the TWDTW method see (Maus et al. 2015, Maus et al. (2016)).
+To see more example please check the [R vignettes](#vignettes) and if you want to learn more about the TWDTW method (see, Maus et al. 2016).
 
 ### Vignettes
 
 1.  [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
 2.  [Time series analysis and visualization using dtwSat](./vignettes/dtwSat_usage.md)
-3.  [Land use classification using dtwSat](./vignettes/lucc.md) <!--
-    # Otput to render md file for github webpage 
-    output_format = rmarkdown::md_document(variant = "markdown_github", preserve_yaml = TRUE)
-    # Render vignettes
-    rmarkdown::render(input="./vignettes/twdtw.Rmd",        output_format=output_format)
-    rmarkdown::render(input="./vignettes/dtwSat_usage.Rmd", output_format=output_format)
-    rmarkdown::render(input="./vignettes/lucc.Rmd",         output_format=output_format)
-    -->
+3.  [Land use classification using dtwSat](./vignettes/lucc.md)
 
 ### References
 
 Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Find Patterns in Time Series.” In *KDD Workshop*, edited by Usama M. Fayyad and Ramasamy Uthurusamy, 359–70. AAAI Press.
 
 Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
-
-Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Fernando M. Ramos, Alber Sanchez, and Gilberto Q. Ribeiro. 2015. “Open Boundary Dynamic Time Warping for Satellite Image Time Series Classification.” In *Geoscience and Remote Sensing Symposium (IGARSS), 2015 IEEE International*, 3349–52. doi:[10.1109/IGARSS.2015.7326536](http://dx.doi.org/10.1109/IGARSS.2015.7326536).
 
 Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping method for land use and land cover mapping.” *Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (X): XXXX–XX.
 

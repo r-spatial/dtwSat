@@ -1,6 +1,6 @@
 ---
 title: "Land use classification using dtwSat"
-author: "Victor Maus^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany], ^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.]"
+author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
 date: "2016-01-16"
 output: 
   rmarkdown::html_vignette:
@@ -292,6 +292,6 @@ Sakoe, Hiroaki, and Seibi Chiba. 1971. “A Dynamic Programming Approach to Cont
 
 Velichko, V.M., and N.G. Zagoruyko. 1970. “Automatic Recognition of 200 Words.” *International Journal of Man-Machine Studies* 2 (3): 223–34. doi:[10.1016/S0020-7373(70)80008-6](http://dx.doi.org/10.1016/S0020-7373(70)80008-6).
 
-[1] Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany
+[1] National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.
 
-[2] National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.
+[2] Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany

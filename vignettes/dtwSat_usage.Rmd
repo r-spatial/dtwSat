@@ -4,6 +4,7 @@ author: "Victor Maus^[National Institute for Space Research, Avenida dos Astrona
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
+    fig_caption: yes
 bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Time series analysis and visualization using dtwSat}

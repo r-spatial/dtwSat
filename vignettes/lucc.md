@@ -1,9 +1,10 @@
 ---
 title: "Land use classification using dtwSat"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
-date: "2016-01-16"
+date: "2016-01-17"
 output: 
   rmarkdown::html_vignette:
+    fig_caption: yes
 bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Land use classification using dtwSat}
@@ -15,10 +16,6 @@ The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package 
 
 Introduction
 ------------
-
-Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series.
-
-Here we use the Time-Weighted Dynamic Time Warping (TWDTW) method for land use and land cover mapping using sequence of satellite images (Maus et al. 2016). Methods based on dynamic time warping are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012). The original dynamic time warping method works well for shape matching but it is not suited for remote sensing time series classification. This is because it disregards the temporal range when finding the best alignment between two time series. Each land cover class has a specific phenological cycle, and therefore, a good time-series land cover classifier needs to balance between shape matching and temporal alignment. To that end, Maus et al. (2016) included a temporal weight to the original dynamic time warping method that accounts for seasonality of land cover types. To get good results with the proposed algorithm, the spatial and temporal resolutions of the data should capture the properties of the landscape, and the pattern samples should also represent well the temporal variation of land cover. If these conditions are met, we expect that the TWDTW algorithm will be successful for large-scale land cover classification of remote sensing time series. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of the TWDTW method.
 
 The aim of the chapter is to present an application for land use and land cover changes analysis using [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html). For that we run a TWDTW analysis for small area with rapid land use changes in Mato Grosso, Brazil. We also present and a land use changes analysis as well as the accuracy assessment.
 
@@ -271,26 +268,12 @@ ggplot(df, aes(x=Group, y=value)) +
 
 <img src="figure/plot-accuracy-1.png" title="" alt="" style="display: block; margin: auto;" />
 
+### Conclusions
+
+To get good results the TWDTW algorithm, the spatial and temporal resolutions of the data should capture the properties of the landscape, and the pattern samples should also represent well the temporal variation of land cover. If these conditions are met, we expect that the TWDTW algorithm will be successful for large-scale land cover classification of remote sensing time series.
+
 References
 ----------
-
-Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Find Patterns in Time Series.” In *KDD Workshop*, edited by Usama M. Fayyad and Ramasamy Uthurusamy, 359–70. AAAI Press.
-
-Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
-
-Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping method for land use and land cover mapping.” *Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (X): XXXX–XX.
-
-Müller, Meinard. 2007. *Information Retrieval for Music and Motion*. London: Springer.
-
-Petitjean, F., J. Inglada, and P. Gancarski. 2012. “Satellite Image Time Series Analysis Under Time Warping.” *Geoscience and Remote Sensing, IEEE Transactions on* 50 (8): 3081–95. doi:[10.1109/TGRS.2011.2179050](http://dx.doi.org/10.1109/TGRS.2011.2179050).
-
-Rabiner, Lawrence, and Biing-Hwang Juang. 1993. *Fundamentals of Speech Recognition*. Prentice-Hall International, Inc.
-
-Sakoe, H., and S. Chiba. 1978. “Dynamic Programming Algorithm Optimization for Spoken Word Recognition.” *Acoustics, Speech and Signal Processing, IEEE Transactions on* 26 (1): 43–49. doi:[10.1109/TASSP.1978.1163055](http://dx.doi.org/10.1109/TASSP.1978.1163055).
-
-Sakoe, Hiroaki, and Seibi Chiba. 1971. “A Dynamic Programming Approach to Continuous Speech Recognition.” In *Proceedings of the Seventh International Congress on Acoustics, Budapest*, 3:65–69. Budapest: Akadémiai Kiadó.
-
-Velichko, V.M., and N.G. Zagoruyko. 1970. “Automatic Recognition of 200 Words.” *International Journal of Man-Machine Studies* 2 (3): 223–34. doi:[10.1016/S0020-7373(70)80008-6](http://dx.doi.org/10.1016/S0020-7373(70)80008-6).
 
 [1] National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.
 

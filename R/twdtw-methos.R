@@ -240,12 +240,14 @@ setGeneric("getAlignments",
   k = 1
   names(p.names) = NULL
   do.call("rbind", lapply(p.names, function(p){
-    name = p
     x = object@alignments[[p]]
-    if(length(x$distance)<1)
-      name = numeric(0)
-    r.names = paste0(k:(k+x$K-1))
-    k <<- k + x$K
+    name = numeric(0)
+    r.names = NULL
+    if(length(x$distance)>0){
+      name = p
+      r.names = paste0(k:(k+x$K-1))
+      k <<- k + x$K
+    }
     data.frame(pattern  = name,
                from     = x$from,
                to       = x$to,

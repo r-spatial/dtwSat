@@ -114,11 +114,7 @@ Example of paths in the the accumulated cost matrix \(\mathbf{D}\) after the rev
 
 ### Conclusions
 
-Advantages related to other versions ...
-
-Computation time ...
-
-Other step patterns ...
+The TWDTW algorithm is suitable for applications of remote sensing time series where the temporal variation is more important than the spatial variation for classifying remote sensing data sets. The inclusion of a temporal restriction allows for phase-shifts due to seasonal changes of natural and cultivated vegetation types.
 
 ### References
 

@@ -1,10 +1,9 @@
 ---
 title: "Land use classification using dtwSat"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
-date: "2016-01-17"
+date: "2016-01-18"
 output: 
   rmarkdown::html_vignette:
-    fig_caption: yes
 bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Land use classification using dtwSat}
@@ -12,12 +11,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) also includes methods for analysis and visualization of the TWDTW results. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for time series stored as sequence of raster files. In the end of this chapter we also present an example of land use and land cover changes analysis as well as the accuracy assessment.
+[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implements the Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. It includes methods for analysis and visualization of results and for land use and land cover changes analysis. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for time series stored as sequence of raster files. In the end of this chapter we also present an example of land use and land cover changes analysis as well as the accuracy assessment.
 
 Introduction
 ------------
 
-The aim of the chapter is to present an application for land use and land cover changes analysis using [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html). For that we run a TWDTW analysis for small area with rapid land use changes in Mato Grosso, Brazil. We also present and a land use changes analysis as well as the accuracy assessment.
+Land use and land cover changes studies require accurate spatiotemporal data that usually is not available for many regions of the world (Fritz et al. 2013). This has lead to much recent development of automated and semiautomated methods for use and land cover classification, *e.g* land cover mapping (Griffiths et al. 2013), detecting forest disturbance and recovery (Kennedy, Yang, and Cohen 2010; Zhu, Woodcock, and Olofsson 2012; DeVries et al. 2015), crop classification (Xiao et al. 2005; Wardlow, Egbert, and Kastens 2007; Petitjean, Inglada, and Gancarski 2012; Maus et al. 2016), planted forest mapping (Maire et al. 2014), and crop expansion and intensification [Galford:2008; Sakamoto:2009]. Particularly, the Time-Weighted Dynamic Time Warping (TWDTW) by (Maus et al. 2016) is flexible to account for multiyear crops, single cropping and double cropping. It is also robust to account for other land cover types such as forest and pasture and works with a small amount of training samples.
+
+The aim of this chapter is to present an example of land use and land cover changes analysis using [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html). For that we run a TWDTW analysis in a small area with rapid land use changes in Mato Grosso, Brazil. We also present and a land use changes analysis as well as the accuracy assessment.
 
 Data
 ----
@@ -270,10 +271,32 @@ ggplot(df, aes(x=Group, y=value)) +
 
 ### Conclusions
 
+[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) provides an accurate interface for R users to carry out land use and land cover changes analysis. Its interface to [raster](<https://cran.r-project.org/web/packages/raster/index.html>, [sp](https://cran.r-project.org/web/packages/sp/index.html), and [mgcv](https://cran.r-project.org/web/packages/mgcv/index.html) allows users to create their own temporal patterns and to perform TWDTW analysis using remote sensing time series.
+
 To get good results the TWDTW algorithm, the spatial and temporal resolutions of the data should capture the properties of the landscape, and the pattern samples should also represent well the temporal variation of land cover. If these conditions are met, we expect that the TWDTW algorithm will be successful for large-scale land cover classification of remote sensing time series.
 
 References
 ----------
+
+DeVries, Ben, Jan Verbesselt, Lammert Kooistra, and Martin Herold. 2015. “Robust Monitoring of Small-Scale Forest Disturbances in a Tropical Montane Forest Using Landsat Time Series.” *Remote Sensing of Environment* 161 (0): 107–21. doi:[http://dx.doi.org/10.1016/j.rse.2015.02.012](http://dx.doi.org/http://dx.doi.org/10.1016/j.rse.2015.02.012).
+
+Fritz, Steffen, Linda See, Liangzhi You, Chris Justice, Inbal Becker-Reshef, Lieven Bydekerke, Renato Cumani, et al. 2013. “The Need for Improved Maps of Global Cropland.” *Eos, Transactions American Geophysical Union* 94 (3): 31–32. doi:[10.1002/2013EO030006](http://dx.doi.org/10.1002/2013EO030006).
+
+Griffiths, P., S. van der Linden, T. Kuemmerle, and P. Hostert. 2013. “A Pixel-Based Landsat Compositing Algorithm for Large Area Land Cover Mapping.” *Selected Topics in Applied Earth Observations and Remote Sensing, IEEE Journal of* 6 (5): 2088–2101. doi:[10.1109/JSTARS.2012.2228167](http://dx.doi.org/10.1109/JSTARS.2012.2228167).
+
+Kennedy, Robert E., Zhiqiang Yang, and Warren B. Cohen. 2010. “Detecting Trends in Forest Disturbance and Recovery Using Yearly Landsat Time Series: 1. LandTrendr – Temporal Segmentation Algorithms.” *Remote Sensing of Environment* 114 (12): 2897–2910. doi:[http://dx.doi.org/10.1016/j.rse.2010.07.008](http://dx.doi.org/http://dx.doi.org/10.1016/j.rse.2010.07.008).
+
+Maire, Guerric le, Stéphane Dupuy, Yann Nouvellon, Rodolfo Araujo Loos, and Rodrigo Hakamada. 2014. “Mapping Short-Rotation Plantations at Regional Scale Using MODIS Time Series: Case of Eucalypt Plantations in Brazil.” *Remote Sensing of Environment* 152 (0): 136–49. doi:[http://dx.doi.org/10.1016/j.rse.2014.05.015](http://dx.doi.org/http://dx.doi.org/10.1016/j.rse.2014.05.015).
+
+Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping method for land use and land cover mapping.” *Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (X): XXXX–XX.
+
+Petitjean, F., J. Inglada, and P. Gancarski. 2012. “Satellite Image Time Series Analysis Under Time Warping.” *Geoscience and Remote Sensing, IEEE Transactions on* 50 (8): 3081–95. doi:[10.1109/TGRS.2011.2179050](http://dx.doi.org/10.1109/TGRS.2011.2179050).
+
+Wardlow, Brian D., Stephen L. Egbert, and Jude H. Kastens. 2007. “Analysis of Time-Series MODIS 250 M Vegetation Index Data for Crop Classification in the U.S. Central Great Plains.” *Remote Sensing of Environment* 108 (3): 290–310. doi:[http://dx.doi.org/10.1016/j.rse.2006.11.021](http://dx.doi.org/http://dx.doi.org/10.1016/j.rse.2006.11.021).
+
+Xiao, Xiangming, Stephen Boles, Jiyuan Liu, Dafang Zhuang, Steve Frolking, Changsheng Li, William Salas, and Berrien Moore III. 2005. “Mapping Paddy Rice Agriculture in Southern China Using Multi-Temporal MODIS Images.” *Remote Sensing of Environment* 95 (4): 480–92. doi:[http://dx.doi.org/10.1016/j.rse.2004.12.009](http://dx.doi.org/http://dx.doi.org/10.1016/j.rse.2004.12.009).
+
+Zhu, Zhe, Curtis E. Woodcock, and Pontus Olofsson. 2012. “Continuous Monitoring of Forest Disturbance Using All Available Landsat Imagery.” *Remote Sensing of Environment* 122 (0): 75–91. doi:[http://dx.doi.org/10.1016/j.rse.2011.10.030](http://dx.doi.org/http://dx.doi.org/10.1016/j.rse.2011.10.030).
 
 [1] National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.
 

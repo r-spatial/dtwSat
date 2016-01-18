@@ -1,7 +1,7 @@
 ---
 title: "Timw-Weighted Dynamic Time Warping"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
-date: "2016-01-17"
+date: "2016-01-18"
 output: 
   rmarkdown::html_vignette:
 bibliography: references.bib
@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-TWDTW is an adaptation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as a global constraint to perform the alignment. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series of phenomenons with strong time dependency, such as phenological stages of the vegetation observed in remote sensing time series (Maus et al. 2016). TWDTW finds the possible alignments of a well known temporal pattern within a long-term satellite image time series and gives a similarity measure for each alignment.
+TWDTW is an adaptation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as a global constraint to perform the alignment. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series of phenomenons with strong time dependency, such as phenological stages of the vegetation observed in remote sensing time series. TWDTW finds the possible alignments of a well known temporal pattern within a long-term satellite image time series and gives a similarity measure for each alignment.
 
 ### Introduction
 

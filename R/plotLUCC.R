@@ -154,7 +154,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     geom_hline(yintercept = 0) +
     coord_flip() + 
     theme(legend.position = "bottom") + 
-    ylab("Change")
+    ylab("Percentage of land changes")
   
   gp
   
@@ -201,7 +201,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     scale_y_continuous(expand = c(0, 0), labels = percent) +
     theme(legend.position = "bottom",
           panel.background = element_blank()) + 
-    ylab("Area")
+    ylab("Percentage of total land area")
   gp 
   
 }

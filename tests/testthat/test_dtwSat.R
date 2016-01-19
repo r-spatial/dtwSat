@@ -24,7 +24,7 @@ names(patterns.list)
 plotPatterns(patterns.list)
 
 # Perform twdtw alignment
-weight.fun = function(phi, psi) 0.1*phi 
+weight.fun = function(psi) 0 
 alig = twdtw(x=template, patterns=patterns.list["Soybean"], step.matrix = symmetric1, 
              dist.method = "Euclidean", weight.fun = weight.fun, keep=TRUE)
 
@@ -62,7 +62,7 @@ new.patterns.list = normalizePatterns(patterns = patterns.list, patterns.length 
 data.frame(Old.Length=sapply(patterns.list, nrow), New.length=sapply(new.patterns.list, nrow))
 
 # Perform twdtw to patterns list 
-weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
 alig = twdtw(x=template, patterns=new.patterns.list, 
               weight.fun = weight.fun, keep=TRUE)
 

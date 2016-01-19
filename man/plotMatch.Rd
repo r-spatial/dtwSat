@@ -5,7 +5,7 @@
 \alias{plotMatch}
 \title{Plotting matching points of twdtw alignments}
 \usage{
-plotMatch(x, p.names, n, attr = 1, shift = 0.5)
+plotMatch(x, p.names, n, attr = 1, shift = 0.5, show.dist = FALSE)
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{twdtw-class}} object}
@@ -27,6 +27,8 @@ Default is 1}
 
 \item{shift}{A number, it shifts the pattern position in the \code{x}
 direction. Default is 0.5}
+
+\item{show.dist}{show the distance for each alignment. Default is FALSE}
 }
 \value{
 A \link[ggplot2]{ggplot} object
@@ -37,7 +39,7 @@ Time-Weighted DTW alignments
 }
 \examples{
 
-weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
 alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 

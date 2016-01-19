@@ -24,7 +24,11 @@ knitr::opts_chunk$set(
 
 ### Introduction 
 
+[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) provides a Time-Weighted Dynamic Time Warping for remote sensing time series analysis developed. Its implementation allows the user define the weighting function, which can be used together with several families of step patterns imported from [dtw](https://cran.r-project.org/web/packages/dtw/index.html) [@Giorgino:2009]. The package has a set of methods for time series analysis and visualization as well as for land use and land cover changes analysis. 
 
+In this chapter give some details of the package implementation an examples of its usage for satellite time series analysis and classification. 
+
+### 
 
 ### References
 

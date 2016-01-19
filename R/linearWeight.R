@@ -8,19 +8,19 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-19-01                             #
 #                                                             #
 ###############################################################
 
 
-#' @title Logistic weight function 
+#' @title Linear weight function 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Builds a logistic time weight 
+#' @description Builds a linear time weight 
 #' function to compute the TWDTW local cost matrix [1]
 #' 
-#' @param alpha numeric. The steepness of logistic weight
-#' @param beta numeric. The midpoint of logistic weight 
+#' @param a numeric. The slop of the line 
+#' @param b numeric. The intercept of the line 
 #' 
 #' @docType methods
 #' @return An \code{\link[base]{function}} object
@@ -35,11 +35,11 @@
 #' IEEE Journal of, X, XX-XX.
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' weight.fun = linearWeight(a=0.1)
 #' weight.fun
 #' 
 #' @export
-logisticWeight = function(alpha, beta){
-  function(psi) 1 / (1 + exp(1) ^ (alpha * (psi - beta )))
+linearWeight = function(a, b=0){
+  function(psi) a*psi + b
 }
 

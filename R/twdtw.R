@@ -40,6 +40,9 @@
 #' perform. NULL will return all possible alignments
 #' @param span Span between two points of minimum in days, \emph{i.e.} the minimum  
 #' interval between two alignments, for details see [2]
+#' @param theta numeric between 0 and 1. The weight of the time 
+#' for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
+#' \emph{i.e.} to run the original DTW algorithm. Default is 0.5. 
 #' @param keep preserves the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE
 #' 
@@ -60,14 +63,14 @@
 #' and Motion (pp. 79-84). London: Springer London, Limited. 
 #' @references 
 #' [3] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-#' (2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+#' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
 #' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
 #' IEEE Journal of, X, XX-XX.
 #' 
 #' @seealso \code{\link[dtwSat]{twdtw-class}}
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
 #' 
 #' # Perform twdtw analysis for a single pixel 
 #' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
@@ -92,7 +95,8 @@
 #' @export
 twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE, 
                   patterns.length=NULL, weight.fun=NULL, dist.method="Euclidean", 
-                  step.matrix = symmetric1, n.alignments=NULL, span=0, keep=FALSE)
+                  step.matrix = symmetric1, n.alignments=NULL, span=0, 
+                  theta = 0.5, keep=FALSE)
 {
   
   if(!is(patterns, "list"))
@@ -104,7 +108,7 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
   if(!is(step.matrix, "stepPattern"))
     stop("step.matrix is no stepPattern object")
   if(is.null(weight.fun))
-    weight.fun = function(phi, psi) 1*phi 
+    weight.fun = function(psi) 0 
   if(!is(weight.fun, "function"))
     stop("weight.fun is not a function")
   
@@ -112,12 +116,12 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     patterns = normalizePatterns(patterns=patterns, patterns.length=patterns.length)
   
   res = .twdtw(x, patterns, weight.fun, dist.method, 
-               step.matrix, n.alignments, span, keep)
+               step.matrix, n.alignments, span, theta, keep)
   res
 }
 
 .twdtw =  function(x, patterns, weight.fun, dist.method, 
-                   step.matrix, n.alignments, span, keep)
+                   step.matrix, n.alignments, span, theta, keep)
 {
   
   res = lapply(patterns, function(pattern){
@@ -136,7 +140,7 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     # Time cost matrix 
     psi = .g(dist(tx, ty, method=dist.method))
     # Weighted local cost matrix 
-    cm = weight.fun(phi, psi)
+    cm = (1-theta)*phi + theta*weight.fun(psi)
     
     # Compute cost matris 
     internals = .computecost(cm, step.matrix)

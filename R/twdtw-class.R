@@ -61,7 +61,6 @@
 #' \code{\link[dtwSat]{getAlignments}},
 #' \code{\link[dtwSat]{getMatches}}, and 
 #' \code{\link[dtwSat]{getInternals}}
-#' 
 NULL
 twdtw = setClass(
   Class = "twdtw",

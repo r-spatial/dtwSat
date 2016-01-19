@@ -34,6 +34,7 @@
 #' Default is 1
 #' @param shift A number, it shifts the pattern position in the \code{x}
 #' direction. Default is 0.5
+#' @param show.dist show the distance for each alignment. Default is FALSE
 #' @docType methods
 #' 
 #' @return A \link[ggplot2]{ggplot} object
@@ -48,7 +49,7 @@
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
 #' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
@@ -66,7 +67,7 @@
 #' gp
 #' 
 #' @export
-plotMatch = function(x, p.names, n, attr=1, shift=0.5){
+plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   
   if(missing(p.names)) {
     p.names = getPatternNames(x)
@@ -102,6 +103,11 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
     yy = internals[[p]]$pattern[,attr,drop=FALSE]
     ty = index(yy)
     
+    if(n[i]>length(matching[[p]])){
+      warning("alignment index out of bounds", call. = TRUE)
+      return(NULL)
+    } 
+      
     map = data.frame(matching[[p]][[n[i]]])
     delay = tx[map$index2[1]]-ty[1]
     if(delay>0)
@@ -116,7 +122,10 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
     df.match.x$alig = paste(1:nrow(map),p,n[i],sep="_")
     df.match = rbind(df.match.pt, df.match.x)
     df.pt$Pattern = paste(p,n[i])
-    list(match=df.match, pt=df.pt)
+    df.dist = data.frame(Time=max(ty[map$index1]+delay)+diff(range(df.pt$Time))/3,
+                         max(df.pt[,names(yy)]),Dist=alignments$distance[n[i]])
+    names(df.dist) = c("Time", names(yy), "Dist")
+    list(match=df.match, pt=df.pt, dist=df.dist)
   })
   
   df.pt = do.call("rbind", lapply(df.list, function(df) df$pt))
@@ -133,7 +142,12 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5){
     scale_x_date(breaks=waiver(), labels=waiver()) +
     ylab(attr_names) 
   
-  gp
+  if(show.dist){
+    df.dist = do.call("rbind", lapply(df.list, function(df) df$dist))
+    df.dist$Dist = paste("Distance:",round(df.dist$Dist,2))
+    gp = gp + geom_text(data=df.dist, mapping = aes_string(x='Time', y=eval(attr_names), label='Dist')) 
+  }
   
+  gp
 }
 

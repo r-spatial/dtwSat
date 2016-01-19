@@ -7,7 +7,8 @@
 \usage{
 twdtw(x, ..., patterns = list(...), normalize.patterns = FALSE,
   patterns.length = NULL, weight.fun = NULL, dist.method = "Euclidean",
-  step.matrix = symmetric1, n.alignments = NULL, span = 0, keep = FALSE)
+  step.matrix = symmetric1, n.alignments = NULL, span = 0, theta = 0.5,
+  keep = FALSE)
 }
 \arguments{
 \item{x}{A \link[zoo]{zoo} object with a time series similar 
@@ -40,6 +41,10 @@ perform. NULL will return all possible alignments}
 \item{span}{Span between two points of minimum in days, \emph{i.e.} the minimum
 interval between two alignments, for details see [2]}
 
+\item{theta}{numeric between 0 and 1. The weight of the time 
+for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
+\emph{i.e.} to run the original DTW algorithm. Default is 0.5.}
+
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE}
 }
@@ -59,7 +64,7 @@ between the pattern and the time series. For a logistic time weight
 see \link[dtwSat]{logisticWeight} function, see [3] for details.
 }
 \examples{
-weight.fun = logisticWeight(alpha=-0.1, beta=100, theta=0.5)
+weight.fun = logisticWeight(alpha=-0.1, beta=100)
 
 # Perform twdtw analysis for a single pixel 
 alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
@@ -93,7 +98,7 @@ The dtw Package. Journal of Statistical Software, 31, 1-24.
 and Motion (pp. 79-84). London: Springer London, Limited.
 
 [3] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-(2015). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+(2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
 mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
 IEEE Journal of, X, XX-XX.
 }

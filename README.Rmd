@@ -120,7 +120,7 @@ To see more example please check the [R vignettes][Vignettes] and if you want to
 ###Vignettes
 1. [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
 2. [Time series analysis and visualization using dtwSat](./vignettes/dtwSat_usage.md)
-3. [Land use classification using dtwSat](./vignettes/lucc.md)
+3. [Land use changes analysis using dtwSat](./vignettes/lucc.md)
 
 
 ### References

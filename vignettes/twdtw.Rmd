@@ -36,7 +36,7 @@ page_width = 5.590551#in #14.2#cm
 page_height = 9.173228#in 23.3#cm
 
 # DTW Alignment 
-weight.fun = logisticWeight(alpha = -0.1, beta = 100, theta = 0.5)
+weight.fun = logisticWeight(alpha = -0.1, beta = 100)
 alig1 = twdtw(x=waveletSmoothing(template), patterns = patterns.list['Soybean'], span = 130, keep = TRUE) 
 # TWDTW Alignment 
 alig2 = twdtw(x=waveletSmoothing(template), patterns = patterns.list['Soybean'], weight.fun = weight.fun, span = 130, keep = TRUE)
@@ -46,22 +46,35 @@ names(res) =  c("DTW", "TWDTW")
 twdtw_x_dtw = new("twdtw", call=match.call(), alignments=res)
 ```
 
-TWDTW is an adaptation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as a global constraint to perform the alignment. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series of phenomenons with strong time dependency, such as phenological stages of the vegetation observed in remote sensing time series. TWDTW finds the possible alignments of a well known temporal pattern within a long-term satellite image time series and gives a similarity measure for each alignment. 
+Time-Weighted Dynamic Time Warping is a variation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as constraint to perform a time series alignment. It works by comparing a temporal pattern of a known event observed through a sequence of satellite images (e.g. the phenological cycle of the vegetation) to an unknown long-term satellite time series. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series with strong time dependency, such as phenological the stages of vegetation. 
 
 ### Introduction 
 
-Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series. 
-
-Methods based on Dynamic Time Warping (DTW) are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining [@Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007]. Originally, DTW was developed to compare speech records [@Velichko:1970; @Sakoe:1971; @Sakoe:1978] but it has shown great potential in other areas, such as, in remote sensing [@Petitjean:2012; @Maus:2016]. Here we describe the Time-Weighted Dynamic Time Warping (TWDTW) algorithm for satellite images time series analysis proposed by @Maus:2016. 
+Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis [@Reed:1994; @Huete:1997, @Huete:2002]. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series. Methods based on Dynamic Time Warping (DTW), for example, are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining [@Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007]. Originally, DTW was developed to compare speech records [@Velichko:1970; @Sakoe:1971; @Sakoe:1978] but it has shown great potential in other areas, such as, in remote sensing [@Petitjean:2012; 
 
 The original dynamic time warping method works well for shape matching but it is not suited for remote sensing time series classification. This is because it disregards the temporal range when finding the best alignment between two time series. Each land cover class has a specific phenological cycle, and therefore, a good time-series land cover classifier needs to balance between shape matching and temporal alignment. To that end, @Maus:2016 included a temporal weight to the original dynamic time warping method that accounts for seasonality of land cover types. 
 
-The aim of the chapter is to describe the Time-Weighted Dynamic Time Warping algorithm such as it is implemented in [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package. in the next sections we show the steps of the algorithm and highlight the differences compared to the original Dynamic Time Warping algorithm. 
+Here we describe the Time-Weighted Dynamic Time Warping algorithm such as implemented in [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package. The next sections show the steps of the algorithm highlighting the differences between TWDTW and original Dynamic Time Warping algorithm. 
 
 ### Notation
-Let $\mathcal{X}$ be a satellite image time series, such that, $\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}$ where $t$ is the time when a set of measurements $\mathbf{x}$ where taken, *i.e.* $\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}$ and $q$ is the number of measurements. Let us define a second time series $\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}$ with the same attributes as $\mathcal{X}$, however much shorter than that, *i.e* $n \ll m$. If $\mathcal{X}$ is an unknown time series and $\mathcal{Y}$ a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of $\mathcal{X}$ are similar to $\mathcal{Y}$?, and *ii)* How similar to $\mathcal{Y}$ these intervals of $\mathcal{X}$ are? To answer to these questions we follow the workflow in the figure bellow that shows the steps of the algorithm to find the alignments between two time series. 
+Let $\mathcal{X}$ be a satellite image time series, such that, $\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}$ where $t$ is the time when a set of measurements $\mathbf{x}$ where taken, *i.e.* $\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}$ and $q$ is the number of measurements. Let us define a second time series $\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}$ with the same attributes as $\mathcal{X}$, however much shorter than that, *i.e* $n \ll m$. If $\mathcal{X}$ is an unknown time series and $\mathcal{Y}$ a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of $\mathcal{X}$ are similar to $\mathcal{Y}$?, and *ii)* How similar to $\mathcal{Y}$ these intervals of $\mathcal{X}$ are? The TWDTW method finds the matching points and computes an associated distance measure for each subinterval of $\mathcal{X}$ that is similar to $\mathcal{Y}$, such as illustrated bellow
+```{r twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Matches of the temporal pattens $\\mathcal{Y}$ to the long-term time series $\\mathcal{Y}$.'}
+aux = alig2
+n = 1:nrow(getAlignments(aux))
+names(aux@alignments) = "Alignment"
+df_dist = getAlignments(alig2)
+df_dist$label = paste("Distance:",round(df_dist$distance,2))
+df_dist$y = 1.8 
+plotMatch(aux, attr="evi", p.names = rep("Alignment",length(n)), n = n) + 
+  ylab("Time series                 Pattern") + 
+  geom_text(data=df_dist, mapping = aes_string(x='to', y='y', label='label'),
+            size = 3, family=font_family) +
+  theme(text = element_text(size = font_size, family=font_family))
+```
+Note that alignments are independent from each other, therefore we can use the distance measure to rank the them. This is important because we use this distance measure to perform the classification of the subintervals. 
 
-```{r twdtw-workflow, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/12, fig.align='center', fig.cap='Workflow showing the steps to find the alignments between the time series $\\mathcal{X}$ and $\\mathcal{Y}$.'}
+In the workflow bellow we show the TWDTW steps that will be better discussed in the following sections. 
+```{r twdtw-workflow, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/12, fig.align='center', fig.cap='Workflow to find the alignments between two time series using TWDTW.'}
 library(png)
 library(grid)
 grid.raster(readPNG("twdtw_algorithm.png"))
@@ -79,7 +92,7 @@ $$
     \; \textrm{and}\;i=1,...,n.
     \label{eq:local_cost}
 $$
-Where $\phi$ is a distance function and $\omega$ is the time weight function. Most of the DTW approaches define $\phi$ as an Euclidean distance. The time weight $\omega$ is what distinguishes TWDTW from DTW, *i.e* if $\omega=0$ then the equation bellow has the same form as the original DTW formulation. The time weight $\omega$ depends on the time $t$ when the satellite image was collected. @Maus:2016 proposed two functions to compute the temporal weight, a linear with slope $\theta$
+Where $\phi$ is the distance function and $\omega$ is the time weight function. Most of the DTW approaches define $\phi$ as an Euclidean distance. The time weight $\omega$ is what distinguishes TWDTW from DTW, *i.e* if $\omega=0$ then the equation above returns to the original DTW formulation. The time weight $\omega$ depends on the time $t$ when the satellite image was collected. @Maus:2016 proposed two functions to compute the temporal weight, a linear with slope $\theta$
 $$
     \omega_{j,i} = \theta g(t_j,t_i),
     \label{eq:lineartw}
@@ -89,20 +102,29 @@ $$
     \omega_{j,i} = \frac{1}{1 + e^{-\alpha(g(t_j,t_i)-\beta)} }.
     \label{eq:nonlineartw}
 $$
-The function $g(t_j,t_i)$ is the elapsed time in days between the dates $t_j$ in the time series $\mathcal{X}$ and $t_i$ in the time series $\mathcal{Y}$. The time weighting creates a global constraint reducing the chances of a temporal inconsistent matching, such as, the alignment of a summer crop profile to the winter period. The figure bellow shows an example of local cost matrix for DTW and Time-Weighted DTW. 
+The function $g$ is the absolute difference in days between the dates $t_j$ in the time series $\mathcal{X}$ and $t_i$ in the time series $\mathcal{Y}$, *i.e* $|t_j-t_i|$. These two time-weight functions are illustrated bellow 
+```{r time-weight-functions, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences.'}
+log_fun = logisticWeight(alpha = -0.1, beta = 70)
+lin_fun = linearWeight(a = 1/(266/2))
+Difference = 0:(266/2)
+df_weight = data.frame(Difference, Logistic=log_fun(Difference), Linear=lin_fun(Difference))
+df_weight = melt(df_weight, id.vars = "Difference")
+ggplot(df_weight, aes_string(x="Difference", y="value", group="variable", linetype="variable")) + 
+  geom_line() + ylab("Weight") + xlab("Time difference (days)") + 
+  theme(text = element_text(size = font_size, family=font_family))
+```
 
-```{r local-cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Examples of local cost matrix for DTW and Time-Weighted DTW algorithms. The matrix in the top has no time weight and in bottom has a logistic time weight using $alpha=0.1$ and $beta=100\\,days$.'}
+The time weight is crucial for an accurate identification of temporal patterns bounded to seasons [@Maus:2016], such as the phenological cycle of the vegetation observed through remote sensing time series [@Zhang:2003]. The time weight creates a global constraint reducing the number of low-cost paths in the local cost matrix, consequently, reducing also the chances of temporal inconsistent matching. In the figure bellow we illustrate the difference between the local cost matrices of DTW and Time-Weighted DTW. 
+```{r local-cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of DTW local cost matrix (top) and Time-Weighted DTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths.'}
 plot(twdtw_x_dtw, type="cost", matrix.name = "localMatrix") + 
   theme(text = element_text(size = font_size, family=font_family)) + 
   xlab("j") + ylab("i")
 ```
 
-### Accumulated cost matrix computation
-The accumulated cost matrix $\mathbf{D}$ results from a recursive sum of minimal distances restricted by a step pattern. Various step patterns have been proposed in the literature [see @Rabiner:1993; @Giorgino:2009]. Bellow we presents the graphical and mathematical representation of a symmetric step patterns commonly used in the accumulated cost matrix computation. 
 
-```{r symmtric-step, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width/5, fig.height=page_width/12, fig.align='center'}
-grid.raster(readPNG("step_symmetric_step.png"))
-```
+### Accumulated cost matrix computation
+The next step of the algorithm is the computation of an accumulated cost matrix $\mathbf{D}$ based on the local cost matrix $\Psi$. The accumulated cost matrix $\mathbf{D}$ results from a recursive sum of minimal distances under a local constraint given by the step type. Here we use a symmetric step given by
+
 $$
       d_{i,j} =  \psi_{i,j} + 
                   min\left\{\begin{array}{l}
@@ -111,10 +133,7 @@ $$
                     d_{j-1, i  }
                   \end{array}\right.
 $$
-
-Other global constraints can be used in the accumulative cost computation [@Sakoe:1978; @Rabiner:1993; @Giorgino:2009; @Petitjean:2012]. However, we consider the time weighting proposed by [@Maus:2015] sufficient constraint for satellite image time series analysis, and therefore the [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implementation does not address other global constraint algorithms.
-
-Assuming that we want to perform the accumulated cost computation using the symmetric step pattern, then the algorithm is subjected to the following boundary conditions
+and its boundaries conditions 
 $$
   d_{j,i} = \left\{
          \begin{array}{lll}
@@ -126,13 +145,19 @@ $$
       \label{eq:dtwboundary}
 $$
 
-With these conditions the algorithm runs the recursive sum of minimal distances over $\mathbf{D}$ using $\Psi$ as input that will give an accumulated cost matrix, such as
-```{r cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Examples of accumulated cost matrix for DTW and Time-Weighted DTW algorithms. The matrix in top has no time weight and in botton has a logistic time weight using $alpha=0.1$ and $beta=100\\,days$.'}
+This symmetric step uses only the first order neighbors to compute the recursive sum of minimal distances, *i.e* $min(d_{j,i-1}, d_{j-1,i-1}, d_{j-1,i})$, as we can see in the following graphical representation 
+```{r symmtric-step, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width/4, fig.height=page_width/8, fig.align='center'}
+grid.raster(readPNG("step_symmetric_step.png"))
+```
+
+Using these conditions the algorithm runs a recursive sum of minimal distances using $\Psi$ as input. The result of this computation is the accumulated cost matrix $\mathbf{D}$, illustrated bellow. 
+```{r cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of the DTW accumulated cost matrix (top) and the Time-Weighted DTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series.'}
 plot(twdtw_x_dtw, type="cost", matrix.name = "costMatrix") + 
   theme(text = element_text(size = font_size, family=font_family)) + 
   xlab("j") + ylab("i")
 ```
 
+Other step types and global constraints have been proposed to compute the accumulated cost matrix [see @Sakoe:1978; @Rabiner:1993; @Giorgino:2009; @Petitjean:2012]. However, we consider the time weighting proposed by [@Maus:2015] sufficient constraint for satellite image time series analysis, and therefore the [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implementation does not address other global constraint algorithms.
 
 
 ### Subintervals and reverse algorithm
@@ -158,8 +183,9 @@ $$
 $$
 
 Bellow we illustrate the results of the reverse algorithm. This example shows the starting and ending points ($a$ and $b$) of four warping paths that are independent from each other. Each path in the accumulated cost matrix has a TWDTW distance $\delta$ associated that is the value in the last point in the alignment indicated by $d_{b_k,n}$. 
-```{r minimumpath-cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Example of paths in the the accumulated cost matrix $\\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively.'}
-df.path = do.call("rbind", lapply(1:4, function(i){
+```{r minimum-path-twdtw, include = FALSE, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Example of paths in the the accumulated cost matrix $\\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively.'}
+n = 1:nrow(getAlignments(alig2))
+df.path = do.call("rbind", lapply(n, function(i){
   data.frame(getMatches(alig2)[[1]][[i]], alignment=i, 
              a=min(getMatches(alig2)[[1]][[i]]$index2),
              b=max(getMatches(alig2)[[1]][[i]]$index2) )
@@ -168,8 +194,8 @@ df.ab = df.path[df.path$index1==min(df.path$index1),]
 df.ab = rbind(df.ab, data.frame(index1=max(df.path$index1), df.ab[,-1]))
 df.text = melt(df.ab[df.ab$index1==max(df.path$index1), c("index1","a","b")], id="index1")
 df.text$alignment = df.ab$alignment
-df.text$value = df.text$value + c(rep(-2, 4), rep(3, 4))
-df.text$index1 = df.text$index1 + c(rep(-max(df.path$index1)+2, 4), rep(-.4, 4))
+df.text$value = df.text$value + c(rep(-2, length(n)), rep(3, length(n)))
+df.text$index1 = df.text$index1 + c(rep(-max(df.path$index1)+2, length(n)), rep(-.4, length(n)))
 
 plot(x=alig2, type="cost", matrix.name="costMatrix") + 
   theme(text = element_text(size = font_size, family=font_family),
@@ -185,6 +211,64 @@ plot(x=alig2, type="cost", matrix.name="costMatrix") +
   geom_text(data = df.text, aes(y=index1, x=value, 
             label=paste(variable, "[", alignment, "]", sep = "")), parse = TRUE, size=3)
 ```
+
+
+
+```{r minimum-paths-dtw-twdtw, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Example of paths in the the accumulated cost matrix $\\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively.'}
+n1 = 1:nrow(getAlignments(alig1))
+df1.path = do.call("rbind", lapply(n1, function(i){
+  data.frame(getMatches(alig1)[[1]][[i]], alignment=i, 
+             a=min(getMatches(alig1)[[1]][[i]]$index2),
+             b=max(getMatches(alig1)[[1]][[i]]$index2) )
+}))
+df1.ab = df1.path[df1.path$index1==min(df1.path$index1),]
+df1.ab = rbind(df1.ab, data.frame(index1=max(df1.path$index1), df1.ab[,-1]))
+df1.text = melt(df1.ab[df1.ab$index1==max(df1.path$index1), c("index1","a","b")], id="index1")
+df1.text$alignment = df1.ab$alignment
+df1.text$value = df1.text$value + c(rep(-2, length(n1)), rep(3, length(n1)))
+df1.text$index1 = df1.text$index1 + c(rep(-max(df1.path$index1)+2, length(n1)), rep(-.4, length(n1)))
+df1.text$Pattern = "DTW"
+df1.ab$Pattern = "DTW"
+df1.path$Pattern = "DTW"
+
+n2 = 1:nrow(getAlignments(alig2))
+df2.path = do.call("rbind", lapply(n2, function(i){
+  data.frame(getMatches(alig2)[[1]][[i]], alignment=i, 
+             a=min(getMatches(alig2)[[1]][[i]]$index2),
+             b=max(getMatches(alig2)[[1]][[i]]$index2) )
+}))
+# df2.path$index1 = df2.path$index1 + max(df1.path$index1)
+df2.ab = df2.path[df2.path$index1==min(df2.path$index1),]
+df2.ab = rbind(df2.ab, data.frame(index1=max(df2.path$index1), df2.ab[,-1]))
+df2.text = melt(df2.ab[df2.ab$index1==max(df2.path$index1), c("index1","a","b")], id="index1")
+df2.text$alignment = df2.ab$alignment
+df2.text$value = df2.text$value + c(rep(-2, length(n2)), rep(3, length(n2)))
+df2.text$index1 = df2.text$index1 + c(rep(-max(df2.path$index1)+2, length(n2)), rep(-.4, length(n2))) 
+df2.text$index1 = df2.text$index1 + max(df1.text$index1)
+df2.ab$index1 = df2.ab$index1 + max(df1.ab$index1)
+df2.path$index1 = df2.path$index1 + max(df1.path$index1)
+
+df2.text$Pattern = "TWDTW"
+df2.ab$Pattern = "TWDTW"
+df2.path$Pattern = "TWDTW"
+
+df.ab =   rbind(df1.ab, df2.ab)
+df.text = rbind(df1.text, df2.text)
+df.path = rbind(df1.path, df2.path)
+  
+plot(x=twdtw_x_dtw, type="cost", matrix.name="costMatrix") + 
+  theme(text = element_text(size = font_size, family=font_family)) + 
+  xlab("j") + 
+  ylab("i") + 
+  geom_path(data=df.path, aes_string(y='index1', x='index2', group='alignment'), colour = "red") + 
+  geom_line(data=df.ab, aes_string(y='index1', x='a', group='alignment'), 
+            colour = "white", linetype = 2) + 
+  geom_line(data=df.ab, aes_string(y='index1', x='b', group='alignment'), 
+            colour = "white", linetype = 2) +
+  geom_text(data = df.text, aes(y=index1, x=value, 
+            label=paste(variable, "[", alignment, "]", sep = "")), parse = TRUE, size=3)
+```
+
 
 
 ### Conclusions

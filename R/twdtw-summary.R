@@ -12,34 +12,43 @@
 #                                                             #
 ###############################################################
 
-
-#' @title Logistic weight function 
+#' @title Summary method for twdtw-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Builds a logistic time weight 
-#' function to compute the TWDTW local cost matrix [1]
+#' @description Summary the alignments for each pattern in the 
+#' twdtw-class object 
 #' 
-#' @param alpha numeric. The steepness of logistic weight
-#' @param beta numeric. The midpoint of logistic weight 
+#' @param object An \code{\link[dtwSat]{twdtw-class}} object
+#' @param ... additional arguments passed to summary
 #' 
 #' @docType methods
-#' @return An \code{\link[base]{function}} object
 #' 
+#' @return A \link[base]{data.frame} object with the the summary 
+#' for each pattern 
 #' 
-#' @seealso \code{\link[dtwSat]{twdtw}}
-#' 
-#' @references 
-#' [1] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-#' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
-#' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
-#' IEEE Journal of, X, XX-XX.
-#' 
+#' @seealso 
+#' \code{\link[dtwSat]{twdtw-class}}, and 
+#' \code{\link[dtwSat]{twdtw}}
+#'  
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' weight.fun
+#' 
+#' alig = twdtw(x=template, patterns=patterns.list)
+#'        
+#' show(alig)
+#' summary(alig)
 #' 
 #' @export
-logisticWeight = function(alpha, beta){
-  function(psi) 1 / (1 + exp(1) ^ (alpha * (psi - beta )))
+setMethod("summary", 
+          signature(object = "twdtw"),
+          function(object, ...){
+            summary.twdtw(object, ...)
+          }
+)
+
+summary.twdtw = function(object, ...){
+  res1 = do.call("rbind", lapply(object@alignments, function(pattern){
+    c(N.Alig=length(pattern$distance), summary(pattern$distance))
+  }))
+  data.frame(res1)
 }
 

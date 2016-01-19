@@ -1,7 +1,7 @@
 ---
 title: "Timw-Weighted Dynamic Time Warping"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
-date: "2016-01-18"
+date: "2016-01-19"
 output: 
   rmarkdown::html_vignette:
 bibliography: references.bib
@@ -11,25 +11,30 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-TWDTW is an adaptation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as a global constraint to perform the alignment. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series of phenomenons with strong time dependency, such as phenological stages of the vegetation observed in remote sensing time series. TWDTW finds the possible alignments of a well known temporal pattern within a long-term satellite image time series and gives a similarity measure for each alignment.
+Time-Weighted Dynamic Time Warping is a variation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as constraint to perform a time series alignment. It works by comparing a temporal pattern of a known event observed through a sequence of satellite images (e.g. the phenological cycle of the vegetation) to an unknown long-term satellite time series. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series with strong time dependency, such as phenological the stages of vegetation.
 
 ### Introduction
 
-Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series.
-
-Methods based on Dynamic Time Warping (DTW) are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining (Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007). Originally, DTW was developed to compare speech records (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978) but it has shown great potential in other areas, such as, in remote sensing (Petitjean, Inglada, and Gancarski 2012; Maus et al. 2016). Here we describe the Time-Weighted Dynamic Time Warping (TWDTW) algorithm for satellite images time series analysis proposed by Maus et al. (2016).
+Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis (Reed et al. 1994; A.R. Huete et al. 1997, A Huete et al. (2002)). Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series. Methods based on Dynamic Time Warping (DTW), for example, are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining (Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007). Originally, DTW was developed to compare speech records (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978) but it has shown great potential in other areas, such as, in remote sensing [Petitjean, Inglada, and Gancarski (2012);
 
 The original dynamic time warping method works well for shape matching but it is not suited for remote sensing time series classification. This is because it disregards the temporal range when finding the best alignment between two time series. Each land cover class has a specific phenological cycle, and therefore, a good time-series land cover classifier needs to balance between shape matching and temporal alignment. To that end, Maus et al. (2016) included a temporal weight to the original dynamic time warping method that accounts for seasonality of land cover types.
 
-The aim of the chapter is to describe the Time-Weighted Dynamic Time Warping algorithm such as it is implemented in [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package. in the next sections we show the steps of the algorithm and highlight the differences compared to the original Dynamic Time Warping algorithm.
+Here we describe the Time-Weighted Dynamic Time Warping algorithm such as implemented in [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package. The next sections show the steps of the algorithm highlighting the differences between TWDTW and original Dynamic Time Warping algorithm.
 
 ### Notation
 
-Let \(\mathcal{X}\) be a satellite image time series, such that, \(\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}\) where \(t\) is the time when a set of measurements \(\mathbf{x}\) where taken, *i.e.* \(\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}\) and \(q\) is the number of measurements. Let us define a second time series \(\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}\) with the same attributes as \(\mathcal{X}\), however much shorter than that, *i.e* \(n \ll m\). If \(\mathcal{X}\) is an unknown time series and \(\mathcal{Y}\) a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of \(\mathcal{X}\) are similar to \(\mathcal{Y}\)?, and *ii)* How similar to \(\mathcal{Y}\) these intervals of \(\mathcal{X}\) are? To answer to these questions we follow the workflow in the figure bellow that shows the steps of the algorithm to find the alignments between two time series.
-
-<img src="figure/twdtw-workflow-1.png" alt="Workflow showing the steps to find the alignments between the time series $\mathcal{X}$ and $\mathcal{Y}$."  />
+Let \(\mathcal{X}\) be a satellite image time series, such that, \(\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}\) where \(t\) is the time when a set of measurements \(\mathbf{x}\) where taken, *i.e.* \(\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}\) and \(q\) is the number of measurements. Let us define a second time series \(\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}\) with the same attributes as \(\mathcal{X}\), however much shorter than that, *i.e* \(n \ll m\). If \(\mathcal{X}\) is an unknown time series and \(\mathcal{Y}\) a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of \(\mathcal{X}\) are similar to \(\mathcal{Y}\)?, and *ii)* How similar to \(\mathcal{Y}\) these intervals of \(\mathcal{X}\) are? The TWDTW method finds the matching points and computes an associated distance measure for each subinterval of \(\mathcal{X}\) that is similar to \(\mathcal{Y}\), such as illustrated bellow
+<img src="figure/twdtw-example-1.png" alt="Matches of the temporal pattens $\mathcal{Y}$ to the long-term time series $\mathcal{Y}$."  />
 <p class="caption">
-Workflow showing the steps to find the alignments between the time series \(\mathcal{X}\) and \(\mathcal{Y}\).
+Matches of the temporal pattens \(\mathcal{Y}\) to the long-term time series \(\mathcal{Y}\).
+</p>
+
+Note that alignments are independent from each other, therefore we can use the distance measure to rank the them. This is important because we use this distance measure to perform the classification of the subintervals.
+
+In the workflow bellow we show the TWDTW steps that will be better discussed in the following sections.
+<img src="figure/twdtw-workflow-1.png" alt="Workflow to find the alignments between two time series using TWDTW."  />
+<p class="caption">
+Workflow to find the alignments between two time series using TWDTW.
 </p>
 
 ### Local cost matrix computation
@@ -41,35 +46,36 @@ As showed before the algorithm starts by computing a local cost matrix \(\Psi(\m
     \;j=1,...,m,
     \; \textrm{and}\;i=1,...,n.
     \label{eq:local_cost}
-\] Where \(\phi\) is a distance function and \(\omega\) is the time weight function. Most of the DTW approaches define \(\phi\) as an Euclidean distance. The time weight \(\omega\) is what distinguishes TWDTW from DTW, *i.e* if \(\omega=0\) then the equation bellow has the same form as the original DTW formulation. The time weight \(\omega\) depends on the time \(t\) when the satellite image was collected. Maus et al. (2016) proposed two functions to compute the temporal weight, a linear with slope \(\theta\) \[
+\] Where \(\phi\) is the distance function and \(\omega\) is the time weight function. Most of the DTW approaches define \(\phi\) as an Euclidean distance. The time weight \(\omega\) is what distinguishes TWDTW from DTW, *i.e* if \(\omega=0\) then the equation above returns to the original DTW formulation. The time weight \(\omega\) depends on the time \(t\) when the satellite image was collected. Maus et al. (2016) proposed two functions to compute the temporal weight, a linear with slope \(\theta\) \[
     \omega_{j,i} = \theta g(t_j,t_i),
     \label{eq:lineartw}
 \] and a logistic model with midpoint \(\beta\), and steepness \(\alpha\), given by \[
     \omega_{j,i} = \frac{1}{1 + e^{-\alpha(g(t_j,t_i)-\beta)} }.
     \label{eq:nonlineartw}
-\] The function \(g(t_j,t_i)\) is the elapsed time in days between the dates \(t_j\) in the time series \(\mathcal{X}\) and \(t_i\) in the time series \(\mathcal{Y}\). The time weighting creates a global constraint reducing the chances of a temporal inconsistent matching, such as, the alignment of a summer crop profile to the winter period. The figure bellow shows an example of local cost matrix for DTW and Time-Weighted DTW.
-
-<img src="figure/local-cost-matrix-1.png" alt="Examples of local cost matrix for DTW and Time-Weighted DTW algorithms. The matrix in the top has no time weight and in bottom has a logistic time weight using $alpha=0.1$ and $beta=100\,days$."  />
+\] The function \(g\) is the absolute difference in days between the dates \(t_j\) in the time series \(\mathcal{X}\) and \(t_i\) in the time series \(\mathcal{Y}\), *i.e* \(|t_j-t_i|\). These two time-weight functions are illustrated bellow
+<img src="figure/time-weight-functions-1.png" alt="Illustration of liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences."  />
 <p class="caption">
-Examples of local cost matrix for DTW and Time-Weighted DTW algorithms. The matrix in the top has no time weight and in bottom has a logistic time weight using \(alpha=0.1\) and \(beta=100\,days\).
+Illustration of liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences.
+</p>
+
+The time weight is crucial for an accurate identification of temporal patterns bounded to seasons (Maus et al. 2016), such as the phenological cycle of the vegetation observed through remote sensing time series (Zhang et al. 2003). The time weight creates a global constraint reducing the number of low-cost paths in the local cost matrix, consequently, reducing also the chances of temporal inconsistent matching. In the figure bellow we illustrate the difference between the local cost matrices of DTW and Time-Weighted DTW.
+<img src="figure/local-cost-matrix-1.png" alt="Illustration of DTW local cost matrix (top) and Time-Weighted DTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths."  />
+<p class="caption">
+Illustration of DTW local cost matrix (top) and Time-Weighted DTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths.
 </p>
 
 ### Accumulated cost matrix computation
 
-The accumulated cost matrix \(\mathbf{D}\) results from a recursive sum of minimal distances restricted by a step pattern. Various step patterns have been proposed in the literature (see Rabiner and Juang 1993; Giorgino 2009). Bellow we presents the graphical and mathematical representation of a symmetric step patterns commonly used in the accumulated cost matrix computation.
+The next step of the algorithm is the computation of an accumulated cost matrix \(\mathbf{D}\) based on the local cost matrix \(\Psi\). The accumulated cost matrix \(\mathbf{D}\) results from a recursive sum of minimal distances under a local constraint given by the step type. Here we use a symmetric step given by
 
-<img src="figure/symmtric-step-1.png" title="" alt="" style="display: block; margin: auto;" /> \[
+\[
       d_{i,j} =  \psi_{i,j} + 
                   min\left\{\begin{array}{l}
                     d_{j  , i-1} \\
                     d_{j-1, i-1} \\
                     d_{j-1, i  }
                   \end{array}\right.
-\]
-
-Other global constraints can be used in the accumulative cost computation (H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Giorgino 2009; Petitjean, Inglada, and Gancarski 2012). However, we consider the time weighting proposed by (Maus et al. 2015) sufficient constraint for satellite image time series analysis, and therefore the [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implementation does not address other global constraint algorithms.
-
-Assuming that we want to perform the accumulated cost computation using the symmetric step pattern, then the algorithm is subjected to the following boundary conditions \[
+\] and its boundaries conditions \[
   d_{j,i} = \left\{
          \begin{array}{lll}
             \psi_{j,i}              & j=1   ,& i = 1 \\
@@ -80,11 +86,15 @@ Assuming that we want to perform the accumulated cost computation using the symm
       \label{eq:dtwboundary}
 \]
 
-With these conditions the algorithm runs the recursive sum of minimal distances over \(\mathbf{D}\) using \(\Psi\) as input that will give an accumulated cost matrix, such as
-<img src="figure/cost-matrix-1.png" alt="Examples of accumulated cost matrix for DTW and Time-Weighted DTW algorithms. The matrix in top has no time weight and in botton has a logistic time weight using $alpha=0.1$ and $beta=100\,days$."  />
+This symmetric step uses only the first order neighbors to compute the recursive sum of minimal distances, *i.e* \(min(d_{j,i-1}, d_{j-1,i-1}, d_{j-1,i})\), as we can see in the following graphical representation <img src="figure/symmtric-step-1.png" title="" alt="" style="display: block; margin: auto;" />
+
+Using these conditions the algorithm runs a recursive sum of minimal distances using \(\Psi\) as input. The result of this computation is the accumulated cost matrix \(\mathbf{D}\), illustrated bellow.
+<img src="figure/cost-matrix-1.png" alt="Illustration of the DTW accumulated cost matrix (top) and the Time-Weighted DTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series."  />
 <p class="caption">
-Examples of accumulated cost matrix for DTW and Time-Weighted DTW algorithms. The matrix in top has no time weight and in botton has a logistic time weight using \(alpha=0.1\) and \(beta=100\,days\).
+Illustration of the DTW accumulated cost matrix (top) and the Time-Weighted DTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series.
 </p>
+
+Other step types and global constraints have been proposed to compute the accumulated cost matrix (see H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Giorgino 2009; Petitjean, Inglada, and Gancarski 2012). However, we consider the time weighting proposed by (Maus et al. 2015) sufficient constraint for satellite image time series analysis, and therefore the [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implementation does not address other global constraint algorithms.
 
 ### Subintervals and reverse algorithm
 
@@ -107,7 +117,8 @@ However, we might be interested in find also the matching points between \(\math
 \]
 
 Bellow we illustrate the results of the reverse algorithm. This example shows the starting and ending points (\(a\) and \(b\)) of four warping paths that are independent from each other. Each path in the accumulated cost matrix has a TWDTW distance \(\delta\) associated that is the value in the last point in the alignment indicated by \(d_{b_k,n}\).
-<img src="figure/minimumpath-cost-matrix-1.png" alt="Example of paths in the the accumulated cost matrix $\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively."  />
+
+<img src="figure/minimum-paths-dtw-twdtw-1.png" alt="Example of paths in the the accumulated cost matrix $\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively."  />
 <p class="caption">
 Example of paths in the the accumulated cost matrix \(\mathbf{D}\) after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of \(\mathcal{X}\), \(a\) and \(b\) are the \(jth\) indices of start and end of the alignments, respectively.
 </p>
@@ -122,6 +133,10 @@ Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Fi
 
 Giorgino, Toni. 2009. “Computing and Visualizing Dynamic Time Warping Alignments in R: The dtw Package.” *Journal of Statistical Software* 31 (7): 1–24. doi:[10.18637/jss.v031.i07](http://dx.doi.org/10.18637/jss.v031.i07).
 
+Huete, A, K Didan, T Miura, E.P Rodriguez, X Gao, and L.G Ferreira. 2002. “Overview of the Radiometric and Biophysical Performance of the MODIS Vegetation Indices.” *Remote Sensing of Environment* 83 (1-2): 195–213. doi:[10.1016/S0034-4257(02)00096-2](http://dx.doi.org/10.1016/S0034-4257(02)00096-2).
+
+Huete, A.R., H.Q. Liu, K. Batchily, and W. van Leeuwen. 1997. “A Comparison of Vegetation Indices over a Global Set of TM Images for EOS-MODIS.” *Remote Sensing of Environment* 59 (3): 440–51. doi:[http://dx.doi.org/10.1016/S0034-4257(96)00112-5](http://dx.doi.org/http://dx.doi.org/10.1016/S0034-4257(96)00112-5).
+
 Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
 
 Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Fernando M. Ramos, Alber Sanchez, and Gilberto Q. Ribeiro. 2015. “Open Boundary Dynamic Time Warping for Satellite Image Time Series Classification.” In *Geoscience and Remote Sensing Symposium (IGARSS), 2015 IEEE International*, 3349–52. doi:[10.1109/IGARSS.2015.7326536](http://dx.doi.org/10.1109/IGARSS.2015.7326536).
@@ -134,11 +149,15 @@ Petitjean, F., J. Inglada, and P. Gancarski. 2012. “Satellite Image Time Serie
 
 Rabiner, Lawrence, and Biing-Hwang Juang. 1993. *Fundamentals of Speech Recognition*. Prentice-Hall International, Inc.
 
+Reed, Bradley C., Jesslyn F. Brown, Darrel VanderZee, Thomas R. Loveland, James W. Merchant, and Donald O. Ohlen. 1994. “Measuring Phenological Variability from Satellite Imagery.” *Journal of Vegetation Science* 5 (5): 703–14. doi:[10.2307/3235884](http://dx.doi.org/10.2307/3235884).
+
 Sakoe, H., and S. Chiba. 1978. “Dynamic Programming Algorithm Optimization for Spoken Word Recognition.” *Acoustics, Speech and Signal Processing, IEEE Transactions on* 26 (1): 43–49. doi:[10.1109/TASSP.1978.1163055](http://dx.doi.org/10.1109/TASSP.1978.1163055).
 
 Sakoe, Hiroaki, and Seibi Chiba. 1971. “A Dynamic Programming Approach to Continuous Speech Recognition.” In *Proceedings of the Seventh International Congress on Acoustics, Budapest*, 3:65–69. Budapest: Akadémiai Kiadó.
 
 Velichko, V.M., and N.G. Zagoruyko. 1970. “Automatic Recognition of 200 Words.” *International Journal of Man-Machine Studies* 2 (3): 223–34. doi:[10.1016/S0020-7373(70)80008-6](http://dx.doi.org/10.1016/S0020-7373(70)80008-6).
+
+Zhang, Xiaoyang, Mark A. Friedl, Crystal B. Schaaf, Alan H. Strahler, John C.F. Hodges, Feng Gao, Bradley C. Reed, and Alfredo Huete. 2003. “Monitoring Vegetation Phenology Using MODIS.” *Remote Sensing of Environment* 84 (3): 471–75. doi:[10.1016/S0034-4257(02)00135-9](http://dx.doi.org/10.1016/S0034-4257(02)00135-9).
 
 [1] National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.
 

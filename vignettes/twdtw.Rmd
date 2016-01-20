@@ -58,7 +58,7 @@ Here we describe the Time-Weighted Dynamic Time Warping algorithm such as implem
 
 ### Notation
 Let $\mathcal{X}$ be a satellite image time series, such that, $\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}$ where $t$ is the time when a set of measurements $\mathbf{x}$ where taken, *i.e.* $\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}$ and $q$ is the number of measurements. Let us define a second time series $\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}$ with the same attributes as $\mathcal{X}$, however much shorter than that, *i.e* $n \ll m$. If $\mathcal{X}$ is an unknown time series and $\mathcal{Y}$ a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of $\mathcal{X}$ are similar to $\mathcal{Y}$?, and *ii)* How similar to $\mathcal{Y}$ these intervals of $\mathcal{X}$ are? The TWDTW method finds the matching points and computes an associated distance measure for each subinterval of $\mathcal{X}$ that is similar to $\mathcal{Y}$, such as illustrated bellow
-```{r twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Matches of the temporal pattens $\\mathcal{Y}$ to the long-term time series $\\mathcal{Y}$.'}
+```{r twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Alignments of the pattern $\\mathcal{Y}$ to subintervals of a vegetation index time series $\\mathcal{X}$. The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern ordered by their associated distance measure, and the gray dashed lines are the matching points.'}
 aux = alig2
 n = 1:nrow(getAlignments(aux))
 names(aux@alignments) = "Alignment"
@@ -74,7 +74,7 @@ plotMatch(aux, attr="evi", p.names = rep("Alignment",length(n)), n = n) +
 Note that alignments are independent from each other, therefore we can use the distance measure to rank the them. This is important because we use this distance measure to perform the classification of the subintervals. 
 
 In the workflow bellow we show the TWDTW steps that will be better discussed in the following sections. 
-```{r twdtw-workflow, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/12, fig.align='center', fig.cap='Workflow to find the alignments between two time series using TWDTW.'}
+```{r twdtw-workflow, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/12, fig.align='center', fig.cap='Workflow of TWDTW algorithm to find the alignments between two time series.'}
 library(png)
 library(grid)
 grid.raster(readPNG("twdtw_algorithm.png"))
@@ -103,7 +103,7 @@ $$
     \label{eq:nonlineartw}
 $$
 The function $g$ is the absolute difference in days between the dates $t_j$ in the time series $\mathcal{X}$ and $t_i$ in the time series $\mathcal{Y}$, *i.e* $|t_j-t_i|$. These two time-weight functions are illustrated bellow 
-```{r time-weight-functions, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences.'}
+```{r time-weight-functions, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of the liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences.'}
 log_fun = logisticWeight(alpha = -0.1, beta = 70)
 lin_fun = linearWeight(a = 1/(266/2))
 Difference = 0:(266/2)
@@ -115,7 +115,7 @@ ggplot(df_weight, aes_string(x="Difference", y="value", group="variable", linety
 ```
 
 The time weight is crucial for an accurate identification of temporal patterns bounded to seasons [@Maus:2016], such as the phenological cycle of the vegetation observed through remote sensing time series [@Zhang:2003]. The time weight creates a global constraint reducing the number of low-cost paths in the local cost matrix, consequently, reducing also the chances of temporal inconsistent matching. In the figure bellow we illustrate the difference between the local cost matrices of DTW and Time-Weighted DTW. 
-```{r local-cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of DTW local cost matrix (top) and Time-Weighted DTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths.'}
+```{r local-cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='DTW local cost matrix (top) and TWDTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths.'}
 plot(twdtw_x_dtw, type="cost", matrix.name = "localMatrix") + 
   theme(text = element_text(size = font_size, family=font_family)) + 
   xlab("j") + ylab("i")
@@ -151,7 +151,7 @@ grid.raster(readPNG("step_symmetric_step.png"))
 ```
 
 Using these conditions the algorithm runs a recursive sum of minimal distances using $\Psi$ as input. The result of this computation is the accumulated cost matrix $\mathbf{D}$, illustrated bellow. 
-```{r cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of the DTW accumulated cost matrix (top) and the Time-Weighted DTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series.'}
+```{r cost-matrix, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='DTW accumulated cost matrix (top) and TWDTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series.'}
 plot(twdtw_x_dtw, type="cost", matrix.name = "costMatrix") + 
   theme(text = element_text(size = font_size, family=font_family)) + 
   xlab("j") + ylab("i")
@@ -162,15 +162,14 @@ Other step types and global constraints have been proposed to compute the accumu
 
 ### Subintervals and reverse algorithm
 
-The starting point for the reverse algorithm is the last point of each alignment. Therefore, before tracing back the low cost paths we find the minimum points in last line in the accumulated cost matrix, such that
+The reverse algorithm traces the time series alignments through the low-cost paths ‘’valleys’’ of the accumulated cost matrix. It is a backward computation because it begins in the last point of each alignment, *i.e.* it starts from the last line of the accumulated cost matrix $d_{j,i=n}, j=1,...,m$. For that we first find the minimum points in last line of the matrix $\mathbf{D}$, such that
 $$
-  b_k = argmin_k(d_{j,n}),\quad\;j=1,...,m\;\mathrm{and}\;k=1,...,K.\\
+  b_k = argmin_k(d_{j,n}),\quad\;j=1,...,m\;\mathrm{and}\;k=1,...,K,\\
       \label{eq:minpoints}
 $$
+where $b_k$ is the index of the last point of the alignment $k$, and $K$ is the number of minimum points in last line of the accumulated cost matrix. Each candidate in the last line of $\mathbf{D}$ produces an alignment associated with a TWDTW distance given by $\delta_k = d_{b_k,n}$. These already answers our motivating questions, *i)* $K$ is the number of intervals of $\mathcal{X}$ that are similar to $\mathcal{Y}$, and *ii)* $\delta_k$ gives their similarity.
 
-Each candidate in the last line of $\mathbf{D}$ produces an alignment associated with a TWDTW distance $\delta_k = d_{b_k,n}$ between $\mathcal{Y}$ and the $kth$ interval of $\mathcal{X}$. The variable $b_k$ is the index of the last point of the alignment $k$, and $K$ is the number of minimum points in last line of the accumulated cost matrix. These step already give us the answer for our motivating questions, *i)* $K$ is the number of intervals of $\mathcal{X}$ that are similar to $\mathcal{Y}$, and *ii)* $\delta_k$ gives the similarity measure between $\mathcal{Y}$ and the intervals of $\mathcal{X}$.
-
-However, we might be interested in find also the matching points between $\mathcal{Y}$ and the interval of $\mathcal{X}$. For that we use a reverse algorithm that maps the warping path $\mathbf{P}_k=(p_1,...,p_L)$ along the $kth$ low cost ''valley'' in $\mathbf{D}$. The algorithm starts in $p_{l=L} = (j=b_k,i=n)$ and ends when $i=1$, *i.e.* $p_{l=1} = (j=a_k, i=1)$. Therefore, $\mathbf{P}_k$ contains the matching points of the alignment between $\mathcal{Y}$ and the $kth$ interval of $\mathcal{X}$, such that $p_L$ denotes the last pair of coordinates $(j=b_k,i=n)$ and $p_1$ the first pair of coordinates  $(j=a_k, i=1)$. Note that the backward algorithm implies the monotonicity condition [@Muller:2007], *i.e.* the alignment preserves the order of the time series. The reverse algorithm in bellow is based on the symmetric step pattern,
+However, if we want to have the complete information of the alignments (including matching points, length, and starting dates) we need to run the reverse algorithm and map the warping path $\mathbf{P}_k=(p_1,...,p_L)$ along the $kth$ low-cost ''valley'' in $\mathbf{D}$. The algorithm starts in $p_{l=L} = (j=b_k,i=n)$ and ends when $i=1$, *i.e.* $p_{l=1} = (j=a_k, i=1)$. Therefore, $\mathbf{P}_k$ contains the matching points of the alignment between $\mathcal{Y}$ and the $kth$ interval of $\mathcal{X}$, such that $p_L$ denotes the last pair of indices $(j=b_k,i=n)$ and $p_1$ the first pair of indices $(j=a_k, i=1)$. Note that the backward algorithm uses the same step type as the accumulated cost computation, which implies the monotonicity condition [@Muller:2007], *i.e.* the alignment preserves the order of the time series. The reverse algorithm using symmetric steps is given by
 $$
     p_{l-1} = \left\{
     \begin{array}{ll}
@@ -182,39 +181,8 @@ $$
     \label{eq:dtwoptimalwarping}
 $$
 
-Bellow we illustrate the results of the reverse algorithm. This example shows the starting and ending points ($a$ and $b$) of four warping paths that are independent from each other. Each path in the accumulated cost matrix has a TWDTW distance $\delta$ associated that is the value in the last point in the alignment indicated by $d_{b_k,n}$. 
-```{r minimum-path-twdtw, include = FALSE, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Example of paths in the the accumulated cost matrix $\\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively.'}
-n = 1:nrow(getAlignments(alig2))
-df.path = do.call("rbind", lapply(n, function(i){
-  data.frame(getMatches(alig2)[[1]][[i]], alignment=i, 
-             a=min(getMatches(alig2)[[1]][[i]]$index2),
-             b=max(getMatches(alig2)[[1]][[i]]$index2) )
-}))
-df.ab = df.path[df.path$index1==min(df.path$index1),]
-df.ab = rbind(df.ab, data.frame(index1=max(df.path$index1), df.ab[,-1]))
-df.text = melt(df.ab[df.ab$index1==max(df.path$index1), c("index1","a","b")], id="index1")
-df.text$alignment = df.ab$alignment
-df.text$value = df.text$value + c(rep(-2, length(n)), rep(3, length(n)))
-df.text$index1 = df.text$index1 + c(rep(-max(df.path$index1)+2, length(n)), rep(-.4, length(n)))
-
-plot(x=alig2, type="cost", matrix.name="costMatrix") + 
-  theme(text = element_text(size = font_size, family=font_family),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) + 
-  xlab("j") + 
-  ylab("i") + 
-  geom_path(data=df.path, aes_string(y='index1', x='index2', group='alignment'), colour = "red") + 
-  geom_line(data=df.ab, aes_string(y='index1', x='a', group='alignment'), 
-            colour = "white", linetype = 2) + 
-  geom_line(data=df.ab, aes_string(y='index1', x='b', group='alignment'), 
-            colour = "white", linetype = 2) +
-  geom_text(data = df.text, aes(y=index1, x=value, 
-            label=paste(variable, "[", alignment, "]", sep = "")), parse = TRUE, size=3)
-```
-
-
-
-```{r minimum-paths-dtw-twdtw, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Example of paths in the the accumulated cost matrix $\\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively.'}
+The reverse algorithm maps each low-cost path independently from each other. In the illustration bellow we present all low-cost paths mapped using DTW and TWDTW approaches. Note that DTW has weaker time constraint than TWDTW, therefore, it finds more alignments than the least. Some of the DTW alignments have an inconsistent match to the period of the year. Our temporal pattern ranges from November to March, therefore, it should not be found in other periods of the year as we see, for example, in the DTW alignments 1 and 2.
+```{r minimum-paths-dtw-twdtw, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Low-cost paths in the accumulated cost matrix $\\mathbf{D}$ using the reverse algorithm for DTW (top) and TWDTW (bottom). The red lines are the low-cost paths; the dashed white lines show the subintervals of $\\mathcal{X}$ matching $\\mathcal{Y}$; $a_k$ is the start of the $kth$ alignment; and $b_k$ is the end of the $kth$ alignment.'}
 n1 = 1:nrow(getAlignments(alig1))
 df1.path = do.call("rbind", lapply(n1, function(i){
   data.frame(getMatches(alig1)[[1]][[i]], alignment=i, 
@@ -269,6 +237,27 @@ plot(x=twdtw_x_dtw, type="cost", matrix.name="costMatrix") +
             label=paste(variable, "[", alignment, "]", sep = "")), parse = TRUE, size=3)
 ```
 
+The inconsistent temporal matching becomes more evident in the illustration bellow, where we show the matching points of the alignments of DTW and TWDTW. We see that DTW fitted the temporal pattern to the first and second phenological cycles in the same year, while this temporal pattern should be found only in the first cycle, from November to March. 
+```{r match-dtw, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/1.5, fig.align='center', fig.cap='Illustration showing all alignments found by DTW (top) and by TWDTW (bottom). The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern, and the gray dashed lines are the matching points.'}
+n1 = 1:nrow(getAlignments(alig1))
+gp1 = plotMatch(alig1, attr="evi", p.names = rep("Soybean",length(n1)), n = n1)
+gp1$facet = facet_wrap(~method, ncol = 1)
+gp1$data$method = "DTW"
+gp1$layers[[2]]$data$method = "DTW"
+gp1$layers[[3]]$data$method = "DTW"
+n2 = 1:nrow(getAlignments(alig2))
+gp2 = plotMatch(alig2, attr="evi", p.names = rep("Soybean",length(n2)), n = n2) 
+gp2$facet = facet_wrap(~method, ncol = 1)
+gp2$data$method = "TWDTW"
+gp2$layers[[2]]$data$method = "TWDTW"
+gp2$layers[[3]]$data$method = "TWDTW"
+gp = gp1 
+gp$data = rbind(gp1$data, gp2$data)
+gp$layers[[2]]$data = rbind(gp1$layers[[2]]$data, gp2$layers[[2]]$data)
+gp$layers[[3]]$data = rbind(gp1$layers[[3]]$data, gp2$layers[[3]]$data)
+gp + theme(text = element_text(size = font_size, family=font_family),
+           legend.position = "none") + ylab("Vegetation index")
+```
 
 
 ### Conclusions

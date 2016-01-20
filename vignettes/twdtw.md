@@ -1,7 +1,7 @@
 ---
 title: "Timw-Weighted Dynamic Time Warping"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
-date: "2016-01-19"
+date: "2016-01-20"
 output: 
   rmarkdown::html_vignette:
 bibliography: references.bib
@@ -24,17 +24,17 @@ Here we describe the Time-Weighted Dynamic Time Warping algorithm such as implem
 ### Notation
 
 Let \(\mathcal{X}\) be a satellite image time series, such that, \(\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}\) where \(t\) is the time when a set of measurements \(\mathbf{x}\) where taken, *i.e.* \(\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}\) and \(q\) is the number of measurements. Let us define a second time series \(\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}\) with the same attributes as \(\mathcal{X}\), however much shorter than that, *i.e* \(n \ll m\). If \(\mathcal{X}\) is an unknown time series and \(\mathcal{Y}\) a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of \(\mathcal{X}\) are similar to \(\mathcal{Y}\)?, and *ii)* How similar to \(\mathcal{Y}\) these intervals of \(\mathcal{X}\) are? The TWDTW method finds the matching points and computes an associated distance measure for each subinterval of \(\mathcal{X}\) that is similar to \(\mathcal{Y}\), such as illustrated bellow
-<img src="figure/twdtw-example-1.png" alt="Matches of the temporal pattens $\mathcal{Y}$ to the long-term time series $\mathcal{Y}$."  />
+<img src="figure/twdtw-example-1.png" alt="Alignments of the pattern $\mathcal{Y}$ to subintervals of a vegetation index time series $\mathcal{X}$. The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern ordered by their associated distance measure, and the gray dashed lines are the matching points."  />
 <p class="caption">
-Matches of the temporal pattens \(\mathcal{Y}\) to the long-term time series \(\mathcal{Y}\).
+Alignments of the pattern \(\mathcal{Y}\) to subintervals of a vegetation index time series \(\mathcal{X}\). The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern ordered by their associated distance measure, and the gray dashed lines are the matching points.
 </p>
 
 Note that alignments are independent from each other, therefore we can use the distance measure to rank the them. This is important because we use this distance measure to perform the classification of the subintervals.
 
 In the workflow bellow we show the TWDTW steps that will be better discussed in the following sections.
-<img src="figure/twdtw-workflow-1.png" alt="Workflow to find the alignments between two time series using TWDTW."  />
+<img src="figure/twdtw-workflow-1.png" alt="Workflow of TWDTW algorithm to find the alignments between two time series."  />
 <p class="caption">
-Workflow to find the alignments between two time series using TWDTW.
+Workflow of TWDTW algorithm to find the alignments between two time series.
 </p>
 
 ### Local cost matrix computation
@@ -53,15 +53,15 @@ As showed before the algorithm starts by computing a local cost matrix \(\Psi(\m
     \omega_{j,i} = \frac{1}{1 + e^{-\alpha(g(t_j,t_i)-\beta)} }.
     \label{eq:nonlineartw}
 \] The function \(g\) is the absolute difference in days between the dates \(t_j\) in the time series \(\mathcal{X}\) and \(t_i\) in the time series \(\mathcal{Y}\), *i.e* \(|t_j-t_i|\). These two time-weight functions are illustrated bellow
-<img src="figure/time-weight-functions-1.png" alt="Illustration of liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences."  />
+<img src="figure/time-weight-functions-1.png" alt="Illustration of the liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences."  />
 <p class="caption">
-Illustration of liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences.
+Illustration of the liner time-weight (dashed line) and logistic time-weight (solid line). The linear function implies high cost for small time differences, while the logistic function is more flexible for small time differences.
 </p>
 
 The time weight is crucial for an accurate identification of temporal patterns bounded to seasons (Maus et al. 2016), such as the phenological cycle of the vegetation observed through remote sensing time series (Zhang et al. 2003). The time weight creates a global constraint reducing the number of low-cost paths in the local cost matrix, consequently, reducing also the chances of temporal inconsistent matching. In the figure bellow we illustrate the difference between the local cost matrices of DTW and Time-Weighted DTW.
-<img src="figure/local-cost-matrix-1.png" alt="Illustration of DTW local cost matrix (top) and Time-Weighted DTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths."  />
+<img src="figure/local-cost-matrix-1.png" alt="DTW local cost matrix (top) and TWDTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths."  />
 <p class="caption">
-Illustration of DTW local cost matrix (top) and Time-Weighted DTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths.
+DTW local cost matrix (top) and TWDTW local cost matrix (bottom). The dark areas in the matrices indicate the low-cost candidate paths.
 </p>
 
 ### Accumulated cost matrix computation
@@ -89,23 +89,21 @@ The next step of the algorithm is the computation of an accumulated cost matrix 
 This symmetric step uses only the first order neighbors to compute the recursive sum of minimal distances, *i.e* \(min(d_{j,i-1}, d_{j-1,i-1}, d_{j-1,i})\), as we can see in the following graphical representation <img src="figure/symmtric-step-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 Using these conditions the algorithm runs a recursive sum of minimal distances using \(\Psi\) as input. The result of this computation is the accumulated cost matrix \(\mathbf{D}\), illustrated bellow.
-<img src="figure/cost-matrix-1.png" alt="Illustration of the DTW accumulated cost matrix (top) and the Time-Weighted DTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series."  />
+<img src="figure/cost-matrix-1.png" alt="DTW accumulated cost matrix (top) and TWDTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series."  />
 <p class="caption">
-Illustration of the DTW accumulated cost matrix (top) and the Time-Weighted DTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series.
+DTW accumulated cost matrix (top) and TWDTW accumulated cost matrix (bottom). The dark color "valleys" indicate the low-cost paths, *i.e* the candidates to match the temporal pattern to the long-term time series.
 </p>
 
 Other step types and global constraints have been proposed to compute the accumulated cost matrix (see H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Giorgino 2009; Petitjean, Inglada, and Gancarski 2012). However, we consider the time weighting proposed by (Maus et al. 2015) sufficient constraint for satellite image time series analysis, and therefore the [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implementation does not address other global constraint algorithms.
 
 ### Subintervals and reverse algorithm
 
-The starting point for the reverse algorithm is the last point of each alignment. Therefore, before tracing back the low cost paths we find the minimum points in last line in the accumulated cost matrix, such that \[
-  b_k = argmin_k(d_{j,n}),\quad\;j=1,...,m\;\mathrm{and}\;k=1,...,K.\\
+The reverse algorithm traces the time series alignments through the low-cost paths ‘’valleys’’ of the accumulated cost matrix. It is a backward computation because it begins in the last point of each alignment, *i.e.* it starts from the last line of the accumulated cost matrix \(d_{j,i=n}, j=1,...,m\). For that we first find the minimum points in last line of the matrix \(\mathbf{D}\), such that \[
+  b_k = argmin_k(d_{j,n}),\quad\;j=1,...,m\;\mathrm{and}\;k=1,...,K,\\
       \label{eq:minpoints}
-\]
+\] where \(b_k\) is the index of the last point of the alignment \(k\), and \(K\) is the number of minimum points in last line of the accumulated cost matrix. Each candidate in the last line of \(\mathbf{D}\) produces an alignment associated with a TWDTW distance given by \(\delta_k = d_{b_k,n}\). These already answers our motivating questions, *i)* \(K\) is the number of intervals of \(\mathcal{X}\) that are similar to \(\mathcal{Y}\), and *ii)* \(\delta_k\) gives their similarity.
 
-Each candidate in the last line of \(\mathbf{D}\) produces an alignment associated with a TWDTW distance \(\delta_k = d_{b_k,n}\) between \(\mathcal{Y}\) and the \(kth\) interval of \(\mathcal{X}\). The variable \(b_k\) is the index of the last point of the alignment \(k\), and \(K\) is the number of minimum points in last line of the accumulated cost matrix. These step already give us the answer for our motivating questions, *i)* \(K\) is the number of intervals of \(\mathcal{X}\) that are similar to \(\mathcal{Y}\), and *ii)* \(\delta_k\) gives the similarity measure between \(\mathcal{Y}\) and the intervals of \(\mathcal{X}\).
-
-However, we might be interested in find also the matching points between \(\mathcal{Y}\) and the interval of \(\mathcal{X}\). For that we use a reverse algorithm that maps the warping path \(\mathbf{P}_k=(p_1,...,p_L)\) along the \(kth\) low cost ''valley'' in \(\mathbf{D}\). The algorithm starts in \(p_{l=L} = (j=b_k,i=n)\) and ends when \(i=1\), *i.e.* \(p_{l=1} = (j=a_k, i=1)\). Therefore, \(\mathbf{P}_k\) contains the matching points of the alignment between \(\mathcal{Y}\) and the \(kth\) interval of \(\mathcal{X}\), such that \(p_L\) denotes the last pair of coordinates \((j=b_k,i=n)\) and \(p_1\) the first pair of coordinates \((j=a_k, i=1)\). Note that the backward algorithm implies the monotonicity condition (Müller 2007), *i.e.* the alignment preserves the order of the time series. The reverse algorithm in bellow is based on the symmetric step pattern, \[
+However, if we want to have the complete information of the alignments (including matching points, length, and starting dates) we need to run the reverse algorithm and map the warping path \(\mathbf{P}_k=(p_1,...,p_L)\) along the \(kth\) low-cost ''valley'' in \(\mathbf{D}\). The algorithm starts in \(p_{l=L} = (j=b_k,i=n)\) and ends when \(i=1\), *i.e.* \(p_{l=1} = (j=a_k, i=1)\). Therefore, \(\mathbf{P}_k\) contains the matching points of the alignment between \(\mathcal{Y}\) and the \(kth\) interval of \(\mathcal{X}\), such that \(p_L\) denotes the last pair of indices \((j=b_k,i=n)\) and \(p_1\) the first pair of indices \((j=a_k, i=1)\). Note that the backward algorithm uses the same step type as the accumulated cost computation, which implies the monotonicity condition (Müller 2007), *i.e.* the alignment preserves the order of the time series. The reverse algorithm using symmetric steps is given by \[
     p_{l-1} = \left\{
     \begin{array}{ll}
         (a_k=j, i) & if\quad i=1 \\
@@ -116,11 +114,16 @@ However, we might be interested in find also the matching points between \(\math
     \label{eq:dtwoptimalwarping}
 \]
 
-Bellow we illustrate the results of the reverse algorithm. This example shows the starting and ending points (\(a\) and \(b\)) of four warping paths that are independent from each other. Each path in the accumulated cost matrix has a TWDTW distance \(\delta\) associated that is the value in the last point in the alignment indicated by \(d_{b_k,n}\).
-
-<img src="figure/minimum-paths-dtw-twdtw-1.png" alt="Example of paths in the the accumulated cost matrix $\mathbf{D}$ after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of $\mathcal{X}$, $a$ and $b$ are the $jth$ indices of start and end of the alignments, respectively."  />
+The reverse algorithm maps each low-cost path independently from each other. In the illustration bellow we present all low-cost paths mapped using DTW and TWDTW approaches. Note that DTW has weaker time constraint than TWDTW, therefore, it finds more alignments than the least. Some of the DTW alignments have an inconsistent match to the period of the year. Our temporal pattern ranges from November to March, therefore, it should not be found in other periods of the year as we see, for example, in the DTW alignments 1 and 2.
+<img src="figure/minimum-paths-dtw-twdtw-1.png" alt="Low-cost paths in the accumulated cost matrix $\mathbf{D}$ using the reverse algorithm for DTW (top) and TWDTW (bottom). The red lines are the low-cost paths; the dashed white lines show the subintervals of $\mathcal{X}$ matching $\mathcal{Y}$; $a_k$ is the start of the $kth$ alignment; and $b_k$ is the end of the $kth$ alignment."  />
 <p class="caption">
-Example of paths in the the accumulated cost matrix \(\mathbf{D}\) after the reverse algorithm. The red lines are the low cost paths, the white lines indicate the start and end of the subintervals of \(\mathcal{X}\), \(a\) and \(b\) are the \(jth\) indices of start and end of the alignments, respectively.
+Low-cost paths in the accumulated cost matrix \(\mathbf{D}\) using the reverse algorithm for DTW (top) and TWDTW (bottom). The red lines are the low-cost paths; the dashed white lines show the subintervals of \(\mathcal{X}\) matching \(\mathcal{Y}\); \(a_k\) is the start of the \(kth\) alignment; and \(b_k\) is the end of the \(kth\) alignment.
+</p>
+
+The inconsistent temporal matching becomes more evident in the illustration bellow, where we show the matching points of the alignments of DTW and TWDTW. We see that DTW fitted the temporal pattern to the first and second phenological cycles in the same year, while this temporal pattern should be found only in the first cycle, from November to March.
+<img src="figure/match-dtw-1.png" alt="Illustration showing all alignments found by DTW (top) and by TWDTW (bottom). The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern, and the gray dashed lines are the matching points."  />
+<p class="caption">
+Illustration showing all alignments found by DTW (top) and by TWDTW (bottom). The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern, and the gray dashed lines are the matching points.
 </p>
 
 ### Conclusions

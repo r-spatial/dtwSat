@@ -1,7 +1,7 @@
 ---
 title: "Land use changes analysis using dtwSat"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
-date: "2016-01-19"
+date: "2016-01-20"
 output: 
   rmarkdown::html_vignette:
 bibliography: references.bib

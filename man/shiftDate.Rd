@@ -10,7 +10,7 @@ shiftDate(x, year)
 \arguments{
 \item{x}{a \link[zoo]{zoo} object}
 
-\item{year}{An integer}
+\item{year}{An integer. The base year to shift the dates of the time series to}
 }
 \value{
 a \link[zoo]{zoo} object shifted to the given year

@@ -22,13 +22,13 @@ knitr::opts_chunk$set(
 
 [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implements the Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. It includes methods for analysis and visualization of results and for land use and land cover changes analysis. In this chapter we present an application for land use and land cover changes analysis using satellite image time series. We show step-by-step how to create typical temporal patterns using field samples and how to perform the TWDTW analysis for time series stored as sequence of raster files. In the end of this chapter we also present an example of land use and land cover changes analysis as well as the accuracy assessment. 
 
-## Introduction
+# Introduction
 
 Land use and land cover changes studies require accurate spatiotemporal data that usually is not available for many regions of the world [@Fritz:2013]. This has lead to much recent development of automated and semiautomated methods for use and land cover classification, *e.g* land cover mapping [@Griffiths:2013], detecting forest disturbance and recovery [@Kennedy:2010; @Zhu:2012; @DeVries:2015], crop classification [@Xiao:2005; @Wardlow:2007; @Petitjean:2012; @Maus:2016], planted forest mapping [@Maire:2014], and crop expansion and intensification [Galford:2008; Sakamoto:2009]. Particularly, the Time-Weighted Dynamic Time Warping (TWDTW) by [@Maus:2016] is flexible to account for multiyear crops, single cropping and double cropping. It is also robust to account for other land cover types such as forest and pasture and works with a small amount of training samples. 
 
 The aim of this chapter is to present an example of land use and land cover changes analysis using [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html). For that we run a TWDTW analysis in a small area with rapid land use changes in Mato Grosso, Brazil. We also present and a land use changes analysis as well as the accuracy assessment. 
 
-## Data 
+# Data 
 
 The inputs of the algorithm are: *i)* a sequence of satellite images ordered over time, and *ii)* a set of ground truth samples. The case study is in a tropical forest area, in Mato Grosso, Brazil, and the time domain ranges from 2007 to 2013. We also use a set of 603 ground truth samples of the following land classes: forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet.
 
@@ -43,7 +43,7 @@ Here we use the MODIS product [MOD13Q1](https://lpdaac.usgs.gov/dataset_discover
 The folder *lucc_MT* installed with [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package provides the raster files and the ground truth samples for the study are. The raster files are ordered according to the time of the image acquisition in *GeoTIFF* format. Each file has 7 bands (ndvi, evi, red, nir, mir, blue, and doy) extracted from the MODIS product MOD13Q1. The ground truth samples are an *Esri Shapefile*. Besides the location, the shapefile also provides the time range (*from* *to*) and the land class (*group*) of each ground truth sample. 
 
 
-## Build inputs 
+# Build inputs 
 
 [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) has interface to [raster](https://cran.r-project.org/web/packages/raster/index.html) and [sp](https://cran.r-project.org/web/packages/sp/index.html) packages. This way one can easily apply the TWDTW analysis for different areas and build temporal patterns using their own set of field samples. 
 
@@ -102,7 +102,7 @@ names(field_samples)
 table(field_samples$group)
 ```
 
-## Extract time series and create temporal patterns
+# Extract time series and create temporal patterns
 
 In this section we show how to create the typical temporal patterns for each land use class in the samples. For that we extract the time series for each sample from the `raster::RasterStack` list stored in `raster_timeseries`. The extraction process might take a few minutes because it has to read several raster files in order to get the complete time series (~4 minutes using 1 cores with 2.4 GHz clock). Note that the extraction is much faster if we use `raster::RasterBrick` instead of `raster::RasterStack` (~4.5 seconds using 1 cores with 2.4 GHz clock). Linux users can also speedup the processing by setting larger number of cores in the parameter `mc.cores`.
 ```{r, echo = TRUE, eval = TRUE}
@@ -133,7 +133,7 @@ plotPatterns(patterns_list) +
         legend.position = "bottom")
 ```
 
-## Land use mapping
+# Land use mapping
 
 In this section we use [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) to classify our small study area in the Brazilian Amazon into land use types over time. The function `twdtwApply` performs the TWDTW analysis over all pixel locations and returns a `raster::RasterBrick` object whose layers have the final classification for each time period. To use this function we define some classification parameters, such that
 ```{r, echo = TRUE, eval = TRUE}
@@ -281,13 +281,13 @@ ggplot(df, aes(x=Group, y=value)) +
 ```
 
 
-### Conclusions
+# Conclusions
 
 [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) provides an accurate interface for R users to carry out land use and land cover changes analysis. Its interface to [raster](https://cran.r-project.org/web/packages/raster/index.html, [sp](https://cran.r-project.org/web/packages/sp/index.html), and  [mgcv](https://cran.r-project.org/web/packages/mgcv/index.html) allows users to create their own temporal patterns and to perform TWDTW analysis using remote sensing time series.
 
 To get good results the TWDTW algorithm, the spatial and temporal resolutions of the data should capture the properties of the landscape, and the pattern samples should also represent well the temporal variation of land cover. If these conditions are met, we expect that the TWDTW algorithm will be successful for large-scale land cover classification of remote sensing time series.
 
-## References
+# References
 
 
 

@@ -1,5 +1,5 @@
 ---
-title: "Timw-Weighted Dynamic Time Warping"
+title: "Time-Weighted Dynamic Time Warping"
 author: "Victor Maus^[National Institute for Space Research, Avenida dos Astronautas 1758, 12227010, São José dos Campos, Brazil.], ^[Institute for Geoinformatics, University of Münster, Heisenbergstraße 2, 48149 Münster, Germany]"
 date: "`r Sys.Date()`"
 output: 
@@ -48,15 +48,15 @@ twdtw_x_dtw = new("twdtw", call=match.call(), alignments=res)
 
 Time-Weighted Dynamic Time Warping is a variation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as constraint to perform a time series alignment. It works by comparing a temporal pattern of a known event observed through a sequence of satellite images (e.g. the phenological cycle of the vegetation) to an unknown long-term satellite time series. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series with strong time dependency, such as phenological the stages of vegetation. 
 
-### Introduction 
+# Introduction 
 
-Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis [@Reed:1994; @Huete:1997, @Huete:2002]. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series. Methods based on Dynamic Time Warping (DTW), for example, are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining [@Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007]. Originally, DTW was developed to compare speech records [@Velichko:1970; @Sakoe:1971; @Sakoe:1978] but it has shown great potential in other areas, such as, in remote sensing [@Petitjean:2012; 
+Remote sensors have collected large amount of data bringing unique information about the Earth. This archive of satellite images builds up into time series, which allow studying and better understanding the Earth system. However, inter- and intra-annual variability of some Earth system processes combined with noise and gaps in remotely sensed data have challenged the satellite data analysis [@Reed:1994; @Huete:1997, @Huete:2002]. Recently, there has been a great effort to develop new methods capable of dealing with irregularly sampled and out-of-phase remote sensing time series. Methods based on Dynamic Time Warping (DTW), for example, are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series data mining [@Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007]. Originally, DTW was developed to compare speech records [@Velichko:1970; @Sakoe:1971; @Sakoe:1978] but it has shown great potential in other areas, such as, in remote sensing [@Petitjean:2012]; 
 
 The original dynamic time warping method works well for shape matching but it is not suited for remote sensing time series classification. This is because it disregards the temporal range when finding the best alignment between two time series. Each land cover class has a specific phenological cycle, and therefore, a good time-series land cover classifier needs to balance between shape matching and temporal alignment. To that end, @Maus:2016 included a temporal weight to the original dynamic time warping method that accounts for seasonality of land cover types. 
 
 Here we describe the Time-Weighted Dynamic Time Warping algorithm such as implemented in [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) package. The next sections show the steps of the algorithm highlighting the differences between TWDTW and original Dynamic Time Warping algorithm. 
 
-### Notation
+# Notation
 Let $\mathcal{X}$ be a satellite image time series, such that, $\mathcal{X}=\{\mathbf{x}(t_1), \mathbf{x}(t_2),\, ...,\, \mathbf{x}(t_m)\}$ where $t$ is the time when a set of measurements $\mathbf{x}$ where taken, *i.e.* $\mathbf{x}(t)=\{x_1(t),\, x_2(t),\, ...,\, x_q(t)\}$ and $q$ is the number of measurements. Let us define a second time series $\mathcal{Y}=\{\mathbf{y}(t_1), \mathbf{y}(t_2),\, ...,\, \mathbf{y}(t_n)\}$ with the same attributes as $\mathcal{X}$, however much shorter than that, *i.e* $n \ll m$. If $\mathcal{X}$ is an unknown time series and $\mathcal{Y}$ a well known temporal profile of an event in the earth surface observed through satellite images, we might be interested in the following questions: *i)* How many intervals of $\mathcal{X}$ are similar to $\mathcal{Y}$?, and *ii)* How similar to $\mathcal{Y}$ these intervals of $\mathcal{X}$ are? The TWDTW method finds the matching points and computes an associated distance measure for each subinterval of $\mathcal{X}$ that is similar to $\mathcal{Y}$, such as illustrated bellow
 ```{r twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Alignments of the pattern $\\mathcal{Y}$ to subintervals of a vegetation index time series $\\mathcal{X}$. The solid black line is the long-term time series, the colored lines are the different alignments of the same pattern ordered by their associated distance measure, and the gray dashed lines are the matching points.'}
 aux = alig2
@@ -81,7 +81,7 @@ grid.raster(readPNG("twdtw_algorithm.png"))
 ```
 
 
-### Local cost matrix computation
+# Local cost matrix computation
 
 As showed before the algorithm starts by computing a local cost matrix $\Psi(\mathcal{X},\mathcal{Y})$ $n$-by-$m$, whose elements are given by
 $$
@@ -122,7 +122,7 @@ plot(twdtw_x_dtw, type="cost", matrix.name = "localMatrix") +
 ```
 
 
-### Accumulated cost matrix computation
+# Accumulated cost matrix computation
 The next step of the algorithm is the computation of an accumulated cost matrix $\mathbf{D}$ based on the local cost matrix $\Psi$. The accumulated cost matrix $\mathbf{D}$ results from a recursive sum of minimal distances under a local constraint given by the step type. Here we use a symmetric step given by
 
 $$
@@ -160,7 +160,7 @@ plot(twdtw_x_dtw, type="cost", matrix.name = "costMatrix") +
 Other step types and global constraints have been proposed to compute the accumulated cost matrix [see @Sakoe:1978; @Rabiner:1993; @Giorgino:2009; @Petitjean:2012]. However, we consider the time weighting proposed by [@Maus:2015] sufficient constraint for satellite image time series analysis, and therefore the [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implementation does not address other global constraint algorithms.
 
 
-### Subintervals and reverse algorithm
+# Subintervals and reverse algorithm
 
 The reverse algorithm traces the time series alignments through the low-cost paths ‘’valleys’’ of the accumulated cost matrix. It is a backward computation because it begins in the last point of each alignment, *i.e.* it starts from the last line of the accumulated cost matrix $d_{j,i=n}, j=1,...,m$. For that we first find the minimum points in last line of the matrix $\mathbf{D}$, such that
 $$
@@ -260,9 +260,9 @@ gp + theme(text = element_text(size = font_size, family=font_family),
 ```
 
 
-### Conclusions
+# Conclusions
 
 The TWDTW algorithm is suitable for applications of remote sensing time series where the temporal variation is more important than the spatial variation for classifying remote sensing data sets. The inclusion of a temporal restriction allows for phase-shifts due to seasonal changes of natural and cultivated vegetation types. 
 
-### References
+# References
 

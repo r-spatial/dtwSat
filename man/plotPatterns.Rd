@@ -5,7 +5,7 @@
 \alias{plotPatterns}
 \title{Plotting temporal patterns}
 \usage{
-plotPatterns(x, p.names)
+plotPatterns(x, p.names, year = 2005)
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{twdtw-class}} object or a list of 
@@ -14,6 +14,9 @@ plotPatterns(x, p.names)
 \item{p.names}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 will plot the paths for all patterns}
+
+\item{year}{An integer. The base year to shift the dates of the time series to. 
+If NULL then it does not shif the time series. Default is 2005}
 }
 \value{
 A \link[ggplot2]{ggplot} object

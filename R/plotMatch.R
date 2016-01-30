@@ -76,7 +76,11 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   }
   
   if(missing(n)) n = rep(1, length(p.names))
-  if(!length(n)==length(p.names))
+  if(length(n)==1) {
+    p.names = rep(p.names, each = n)
+    n = rep(1:n, length(unique(p.names)))
+  }
+  if(length(n)!=length(p.names))
     stop("n is not the same length as p.names")
   
   names(n) = p.names

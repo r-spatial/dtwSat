@@ -23,6 +23,8 @@
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' will plot the paths for all patterns 
+#' @param year An integer. The base year to shift the dates of the time series to. 
+#' If NULL then it does not shif the time series. Default is 2005 
 #' @docType methods
 #' 
 #' @return A \link[ggplot2]{ggplot} object
@@ -50,7 +52,7 @@
 #' 
 #' 
 #' @export
-plotPatterns = function(x, p.names){
+plotPatterns = function(x, p.names, year=2005){
   
   # Get temporal patterns
   if(is(x, "twdtw")){
@@ -69,7 +71,7 @@ plotPatterns = function(x, p.names){
     stop("patterns should be a list of zoo objects")
   
   # Shift dates 
-  x = lapply(x[p.names], shiftDate, year=2005)
+  if(!is.null(year)) x = lapply(x[p.names], shiftDate, year=year)
   
   # Build data.frame
   df.p = do.call("rbind", lapply(p.names, function(p)

@@ -20,17 +20,63 @@ knitr::opts_chunk$set(
 )
 ```
 
-[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implements the Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. It includes methods for analysis and visualization of results and for land use and land cover changes analysis. In this chapter we show the usage of [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) to perform a time series analysis and give some examples of the visualization methods. We use some predefined temporal patterns and a few samples of time series to highlight the potential of TWDTW for land use and land cover changes analysis using remote sensing time series. 
+[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) implements the Time-Weighted Dynamic Time Warping (TWDTW) for multi-band satellite image time series analysis. It includes methods for analysis and visualization of results and for land use and land cover changes analysis. In this chapter we present the usage of [dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) to perform a time series analysis and give some examples of the visualization methods. We use some predefined temporal patterns and a few samples of time series to highlight the potential of TWDTW for land use and land cover changes analysis using remote sensing time series. 
 
-### Introduction 
+# Introduction 
 
-[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) provides a Time-Weighted Dynamic Time Warping for remote sensing time series analysis developed. Its implementation allows the user define the weighting function, which can be used together with several families of step patterns imported from [dtw](https://cran.r-project.org/web/packages/dtw/index.html) [@Giorgino:2009]. The package has a set of methods for time series analysis and visualization as well as for land use and land cover changes analysis. 
+[dtwSat](https://cran.r-project.org/web/packages/dtwSat/index.html) provides an implementation of the Time-Weighted Dynamic Time Warping [@Maus:2016]. The package extends the method allowing generic time-weight functions and multi-band satellite time series analysis using the package [raster](https://cran.r-project.org/web/packages/raster/index.html). Using the package the user can also create typical temporal patterns of events observed in remote sensing time series, and use a set of methods for analysis and visualization of time series. In this chapter we give some details of the package implementation an examples of its usage for satellite time series analysis and classification.
 
-In this chapter give some details of the package implementation an examples of its usage for satellite time series analysis and classification. 
+# Data
 
-### 
+The inputs for the TWDTW algorithm are an unknown time series, and a set of well-known temporal patterns. The package installation provides a dataset used in the next examples. Here, we use the typical temporal patterns of ''Soybean'', ''Cotton'', and ''Maize'' in `patterns.list` that is a list of [zoo](https://cran.r-project.org/web/packages/zoo/index.html) objects (see chapter 4 for further discussions on the patterns conception). Each element of the list is a multi-band time series based on MODIS product MOD13Q1. We use the TWDTW algorithm to find the well-known temporal patterns within an unknown `template` time series also extracted from the MODIS product MOD13Q1. The template time series is irregularly sampled and much longer than the temporal patterns. The attributes in both time series (i.e. temporal patterns and template) are: *ndvi*, *evi*, *red*, *nir*, *blue*, and *mir*, as we see in the example below. 
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+library(dtwSat)
+names(patterns.list)
+# The temporal patterns have regular sampling 
+unique(diff(index(patterns.list[["Soybean"]])))
+# The template time series has irregular sampling 
+unique(diff(index(template))) 
+head(template)
+```
 
-### References
+```{r temporal-patterns.list, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize (top) and the template time series (bottom). The time series are based on MODIS product MOD13Q1.'}
+library(ggplot2)
+library(gridExtra)
+gp1 = plotPatterns(patterns.list) + 
+  theme(text = element_text(size = 8, family="Helvetica"),
+        legend.position = "none") 
+gp2 = autoplot(template, facets = NULL) + 
+  theme(text = element_text(size = 8, family="Helvetica"),
+        legend.position = "bottom") + xlab("Time") + 
+  guides(col = guide_legend(nrow = 1))
+grid.arrange(gp1, gp2)
+```
+
+```{r, echo = FALSE, eval = TRUE, results = 'markup'}
+library(xtable)
+library(knitr)
+kable(
+    rbind(
+      c("2010/1", "2010/2", "2011/1", "2011/2", "2012/1", "2012/2", "2013/1", "2013/2"),
+      c("Soybean", "Cotton", "Soybean", "Cotton", "Soybean", "Maize", "Soybean", "Maize")
+      ), caption = "Land use sequence of the template time series."
+    )
+```
+
+# Time series alignment
+We perform the time series alignment using the function `twdtw`. This function returns an object `twdtw-class` with all possible alignments between the temporal patterns and the template time series. The example below shows the first 6 possible alignments of the crop soybean to the template time series using a symmetric step type with the original DTW formulation, {\it i.e} without time weight (see chapter 1 for details).
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+alig = twdtw(x = template, patterns = patterns.list["Soybean"])
+class(alig)
+alig
+```
+
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+alig = twdtw(x = template, patterns = patterns.list["Soybean"], 
+             weight.fun = logisticWeight(alpha = -0.1, beta = 50))
+alig
+```
+# References
 
 
 

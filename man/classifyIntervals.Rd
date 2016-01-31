@@ -50,8 +50,7 @@ interval of classification based on the TWDTW distance
 
 weight.fun = logisticWeight(alpha=-0.1, beta=100)
 
-alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
-        normalize.patterns=TRUE, patterns.length=23)
+alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
          
 # Classify interval
 from = as.Date("2009-09-01")

@@ -44,8 +44,7 @@
 #' 
 #' weight.fun = logisticWeight(alpha=-0.1, beta=100)
 #' 
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
-#'         normalize.patterns=TRUE, patterns.length=23)
+#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
 #'          
 #' # Classify interval
 #' from = as.Date("2009-09-01")
@@ -88,8 +87,7 @@ classifyIntervals = function(x, breaks=NULL, from=NULL, to=NULL, by=NULL,
   if(is.null(breaks))
     breaks = seq(as.Date(from), as.Date(to), by=by)
   
-  if(!is(breaks,"Dates"))
-    breaks = as.Date(breaks)
+  breaks = as.Date(breaks)
   
   res = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
     .bestInterval(x, start=breaks[i-1], end=breaks[i], overlap, Unclassified)
@@ -122,24 +120,19 @@ classifyIntervals = function(x, breaks=NULL, from=NULL, to=NULL, by=NULL,
 
 
 .bestInterval = function(x, start, end,  overlap, Unclassified){
-  
-  I = lapply( 1:nrow(x), function(i){
-    dates = seq(x$from[i], x$to[i], 1)
-    dates_in = which(start <= dates & dates < end)
-    r1 = length(dates_in) / as.numeric(end-start)
-    if( overlap < r1 & r1 < 2-overlap )
-      return(i)
-    NULL
-  })
-  I = unlist(I)
-  
+  x = x[(x$from <= end & x$to >= start) ,]
+  x$from[x$from < start] = start
+  x$to[end < x$to] = end
+  r1 = as.numeric(x$to - x$from) / as.numeric(end-start)
+
+  I = overlap < r1 & r1 < 2-overlap
   res = list()
   res$pattern = if(is(x$pattern, "character")){"Unclassified"}else{Unclassified}
   res$from = start
   res$to = end - 1
   res$distance = Inf
   
-  if(!is.null(I)){
+  if(any(I)){
     i_min = which.min(x$distance[I])
     res$pattern = x$pattern[I][i_min]
     res$from = start

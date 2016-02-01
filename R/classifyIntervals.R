@@ -20,7 +20,7 @@
 #' interval of classification based on the TWDTW distance
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object or 
-#' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}} 
+#' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''

@@ -13,46 +13,48 @@
 ###############################################################
 
 
-#' @title Plotting paths of twdtw alignments
+#' @title Plotting twdtw paths 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Method for plotting the minimum paths in the 
-#' cost matrix of Time-Weighted DTW
+#' cost matrix of TWDTW.
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
-#' will plot the paths for all patterns 
-#' @param n.alignments An \link[base]{integer} vector. The alignment indices 
-#' to plot. If not declared the function will plot all possible alignments 
+#' will plot the paths for all patterns. 
+#' @param n An \link[base]{integer} vector. The indices of the paths 
+#' to plot. If not declared the function will plot all possible paths.
 #' @docType methods
 #' 
-#' @return A \link[ggplot2]{ggplot} object
+#' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
+#' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
-#' \code{\link[dtwSat]{plotAlignment}},
-#' \code{\link[dtwSat]{plotMatch}}, and
-#' \code{\link[dtwSat]{plotGroup}}
+#' \code{\link[dtwSat]{plotAlignments}}, 
+#' \code{\link[dtwSat]{plotMatches}}, 
+#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotPatterns}}.
 #'  
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #'        
-#' gp1 = plotPath(alig, n.alignments=1:4)
+#' gp1 = plotPaths(matches, n=1:4)
 #' 
 #' gp1
 #' 
-#' gp2 = plotPath(alig, p.names=c("Cotton","Maize"), n.alignments=1:4)
+#' gp2 = plotPaths(matches, p.names=c("Cotton","Maize"), n=1:4)
 #' 
 #' gp2
 #' 
 #' @export
-plotPath = function(x, p.names, n.alignments=NULL){
+plotPaths = function(x, p.names, n=NULL){
   
   if(missing(p.names)) {
     p.names = getPatternNames(x)
@@ -70,7 +72,7 @@ plotPath = function(x, p.names, n.alignments=NULL){
     matching   = getMatches(x, p)
     
     tx = index(internals[[p]]$x)
-    ty = index(shiftDate(x=internals[[p]]$pattern, year=2005))
+    ty = index(shiftDates(x=internals[[p]]$pattern, year=2005))
     m = internals[[p]]$costMatrix
     res = melt(m)
     res$Pattern = p
@@ -85,14 +87,14 @@ plotPath = function(x, p.names, n.alignments=NULL){
     ## Get data
     matching = getMatches(x, p)
     
-    if(is.null(n.alignments)) n.alignments = seq_along(matching[[p]])
-    k = which(n.alignments > length(matching[[p]]))
+    if(is.null(n)) n = seq_along(matching[[p]])
+    k = which(n > length(matching[[p]]))
     if(length(k)>0){
-      warning("parameter n.alignments out of bounds")
-      n.alignments = n.alignments[-k]
+      warning("parameter n out of bounds")
+      n = n[-k]
     }
     
-    res = do.call("rbind", lapply(n.alignments, function(i){
+    res = do.call("rbind", lapply(n, function(i){
       data.frame(matching[[p]][[i]], alignment=i)
     }))
     

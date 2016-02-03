@@ -13,28 +13,27 @@
 ###############################################################
 
 
-#' @title Plotting matching points of twdtw alignments
+#' @title Plotting twdtw matching points 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Method for plotting the matching points of 
-#' Time-Weighted DTW alignments
+#' @description Method for plotting the matching points from   
+#' TWDTW analysis 
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object.
 #' @param p.names A \link[base]{character} or \link[base]{integer}
 #' vector with the patterns identification. If not declared the function 
 #' will plot one alignment for each pattern in the 
-#' \code{\link[dtwSat]{twdtw-class}} object
-#' @param n An \link[base]{integer} vector the same length as \code{p.names}.
-#' The indices of the alignments for plotting. The alignments in the 
-#' \code{\link[dtwSat]{twdtw-class}} object are ordered by TWDTW distance in 
-#' ascending order. If not declared the function will plot the best alignment 
-#' for each pattern
+#' \code{\link[dtwSat]{twdtw-class}} object.
+#' @param n An \link[base]{integer} vector with the number of alignments to plot.
+#' It can be use as vector of indices combined with the \code{p.names} to plot 
+#' specific matches. If not declared the function will plot the best match for 
+#' each pattern.
 #' @param attr An \link[base]{integer} or \link[base]{character} vector 
 #' indicating the attribute for plotting, \emph{i.e.} a column of the \code{pattern}. 
-#' Default is 1
+#' Default is 1.
 #' @param shift A number, it shifts the pattern position in the \code{x}
-#' direction. Default is 0.5
-#' @param show.dist show the distance for each alignment. Default is FALSE
+#' direction. Default is 0.5.
+#' @param show.dist show the distance for each alignment. Default is FALSE.
 #' @docType methods
 #' 
 #' @return A \link[ggplot2]{ggplot} object
@@ -42,32 +41,34 @@
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotPath}}, 
+#' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
-#' \code{\link[dtwSat]{plotAlignment}}, and
-#' \code{\link[dtwSat]{plotGroup}}
+#' \code{\link[dtwSat]{plotAlignments}}, 
+#' \code{\link[dtwSat]{plotMatches}}, 
+#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotPatterns}}.
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
-#' gp = plotMatch(alig)
+#' gp = plotMatches(matches)
 #' gp
 #' 
-#' gp = plotMatch(x=alig, p.names=1)
+#' gp = plotMatches(x=matches, p.names=1)
 #' gp
 #' 
-#' gp = plotMatch(x=alig, p.names="Cotton")
+#' gp = plotMatches(x=matches, p.names="Cotton")
 #' gp
 #' 
-#' gp = plotMatch(x=alig, p.names=c("Cotton","Cotton","Cotton","Cotton"), 
-#'      n = c(1:4))
+#' gp = plotMatches(x=matches, p.names=c("Soybean","Soybean","Cotton","Cotton"), 
+#'      n = c(1,2,1,2))
 #' gp
 #' 
 #' @export
-plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
+plotMatches = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   
   if(missing(p.names)) {
     p.names = getPatternNames(x)
@@ -125,7 +126,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
     df.match.x = df.x[map$index2,]
     df.match.x$alig = paste(1:nrow(map),p,n[i],sep="_")
     df.match = rbind(df.match.pt, df.match.x)
-    df.pt$Match = paste(p,n[i])
+    df.pt$Matches = paste(p,n[i])
     df.dist = data.frame(Time=max(ty[map$index1]+delay)+diff(range(df.pt$Time))/3,
                          max(df.pt[,names(yy)]),Dist=alignments$distance[n[i]])
     names(df.dist) = c("Time", names(yy), "Dist")
@@ -139,7 +140,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   gp = ggplot(data=df.x, aes_string(x='Time', y=eval(attr_names))) +
     geom_line() +
     geom_line(data=df.pt, aes_string(x='Time', y=eval(attr_names), 
-                                     group='Match', colour='Match')) + 
+                                     group='Matches', colour='Matches')) + 
     geom_line(data=df.match, linetype = 2, colour = "grey", 
               aes_string(x='Time', y=eval(attr_names), group='alig')) + 
     scale_y_continuous(breaks=y.breaks, labels=y.labels) +

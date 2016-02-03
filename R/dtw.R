@@ -76,7 +76,7 @@
    res = list()
    res$costMatrix = out$CM[-1,]
    res$directionMatrix = out$DM[-1,]
-   res$startingIndex = out$VM[-1,]
+   res$startingMatrix = out$VM[-1,]
    res$stepPattern = step.matrix
    res$N = n - 1
    res$M = m

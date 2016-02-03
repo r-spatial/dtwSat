@@ -6,7 +6,7 @@
 \title{Plotting land use/cover changes (LUCC)}
 \usage{
 plotLUCC(x, type = "area", layer.levels, layer.labels = NULL,
-  levels = NULL, labels = NULL, colors = NULL)
+  class.levels = NULL, class.labels = NULL, class.colors = NULL)
 }
 \arguments{
 \item{x}{A \code{\link[raster]{Raster-class}}
@@ -14,28 +14,29 @@ plotLUCC(x, type = "area", layer.levels, layer.labels = NULL,
 A \link[base]{character} with the raster file name is also accepted.}
 
 \item{type}{A \link[base]{character}. The plot type, ''map'', 
-''area'', or ''change''. Default is ''map''}
+''area'', or ''change''. Default is ''map''.}
 
 \item{layer.levels}{A \link[base]{character} or \link[base]{numeric}
-vector with the layers to compute the changes. The minimum length 
+vector with the layers to plot. For plot type ''change'' the minimum length 
 is two}
 
 \item{layer.labels}{A \link[base]{character} or \link[base]{numeric}
 vector with the labels of the layers. It must have the same 
-length as layer.levels. Default is NULL}
+length as layer.levels. Default is NULL.}
 
-\item{levels}{A \link[base]{character} or \link[base]{numeric}
-vector with the levels of the raster values. Default is NULL}
+\item{class.levels}{A \link[base]{character} or \link[base]{numeric}
+vector with the levels of the raster values. Default is NULL.}
 
-\item{labels}{A \link[base]{character} or \link[base]{numeric}
+\item{class.labels}{A \link[base]{character} or \link[base]{numeric}
 vector with the labels of the raster values. It must have the same 
-length as levels. Default is NULL}
+length as class.levels. Default is NULL.}
 
-\item{colors}{a set of aesthetic values to map data values to. See 
-\link[ggplot2]{scale_fill_manual} for details}
+\item{class.colors}{a set of aesthetic values. It must have the same 
+length as class.levels. Default is NULL. See 
+\link[ggplot2]{scale_fill_manual} for details.}
 }
 \value{
-A \link[ggplot2]{ggplot} object
+A \link[ggplot2]{ggplot} object.
 }
 \description{
 Method for plotting the land use and land cover 
@@ -52,17 +53,20 @@ x = system.file('lucc_MT.tif',  package = 'dtwSat')
 
 ### Plot maps
 #gp1 = plotLUCC(x = x, type = "map", layer.labels = 2008:2013, 
-#        levels = levels, labels = labels, colors = colors)
+#        class.levels = levels, class.labels = labels, 
+#        class.colors = colors)
 #gp1 
 
 # Plot area 
 #gp2 = plotLUCC(x = x, type = "area", layer.labels = 2008:2013, 
-#        levels = levels, labels = labels, colors = colors) 
+#        class.levels = levels, class.labels = labels, 
+#        class.colors = colors)
 #gp2
 
 # Plot land use changes 
 #gp3 = plotLUCC(x = x, type = "change", layer.labels = 2008:2013, 
-#        levels = levels, labels = labels, colors = colors) 
+#        class.levels = levels, class.labels = labels, 
+#        class.colors = colors)
 #gp3
 
 }
@@ -70,11 +74,8 @@ x = system.file('lucc_MT.tif',  package = 'dtwSat')
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{twdtw-class}}, 
-\code{\link[dtwSat]{twdtw}}, 
-\code{\link[dtwSat]{plotCostMatrix}},
-\code{\link[dtwSat]{plotAlignment}},
-\code{\link[dtwSat]{plotMatch}}, and
-\code{\link[dtwSat]{plotGroup}}
+\code{\link[dtwSat]{twdtwApply}}, 
+\code{\link[raster]{brick}}, and
+\code{\link[raster]{stack}}
 }
 

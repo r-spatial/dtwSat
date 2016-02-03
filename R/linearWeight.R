@@ -35,8 +35,8 @@
 #' IEEE Journal of, X, XX-XX.
 #' 
 #' @examples
-#' weight.fun = linearWeight(a=0.1)
-#' weight.fun
+#' lin_fun = linearWeight(a=0.1)
+#' lin_fun
 #' 
 #' @export
 linearWeight = function(a, b=0){

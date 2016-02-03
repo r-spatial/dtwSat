@@ -16,46 +16,50 @@
 #' @title Plotting cost matrices
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Method for plotting the internal matrices
+#' @description Method for plotting the internal matrices used during the 
+#' TWDTW computation.
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object.
 #' @param matrix.name A character. The name of the matrix to plot,
-#' "costMatrix", "localMatrix", or "timeWeight". 
-#' Default is "costMatrix"
+#' "costMatrix" for accumulated cost, "localMatrix" for local cost, 
+#' or "timeWeight" for time-weight. 
+#' Default is "costMatrix".
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
-#' will plot the matrices for all patterns
+#' will plot the matrices for all patterns.
 #' 
-#' @return A \link[ggplot2]{ggplot} object 
+#' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotPath}}, 
-#' \code{\link[dtwSat]{plotAlignment}},
-#' \code{\link[dtwSat]{plotMatch}}, and
-#' \code{\link[dtwSat]{plotGroup}}
+#' \code{\link[dtwSat]{plotPaths}}, 
+#' \code{\link[dtwSat]{plotCostMatrix}},
+#' \code{\link[dtwSat]{plotAlignments}}, 
+#' \code{\link[dtwSat]{plotMatches}}, 
+#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotPatterns}}.
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Plot local cost for all patterns
-#' gp1 = plotCostMatrix(x=alig, matrix.name="localMatrix")
+#' gp1 = plotCostMatrix(x=matches, matrix.name="localMatrix")
 #' gp1
 #' 
 #' # Plot time weight for all patterns
-#' gp2 = plotCostMatrix(x=alig, matrix.name="timeWeight")
+#' gp2 = plotCostMatrix(x=matches, matrix.name="timeWeight")
 #' gp2
 #' 
 #' # Plot accumulated cost for all patterns
-#' gp3 = plotCostMatrix(x=alig, matrix.name="costMatrix")
+#' gp3 = plotCostMatrix(x=matches, matrix.name="costMatrix")
 #' gp3
 #' 
 #' # Plot accumulated cost for Cotton and Soybean
-#' gp4 = plotCostMatrix(x=alig, matrix.name="costMatrix", 
+#' gp4 = plotCostMatrix(x=matches, matrix.name="costMatrix", 
 #'      p.names=c("Cotton","Soybean"))
 #' 
 #' gp4
@@ -85,7 +89,7 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
     matching   = getMatches(x, p)
     
     tx = index(internals[[p]]$x)
-    ty = index(shiftDate(x=internals[[p]]$pattern, year=2005))
+    ty = index(shiftDates(x=internals[[p]]$pattern, year=2005))
     m = internals[[p]][[matrix.name]]
     res = melt(m)
     res$Pattern = p

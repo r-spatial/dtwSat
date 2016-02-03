@@ -21,18 +21,18 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
-In this quick dome we will perform a TWDTW analysis for a single time series. Suppose that we want to know the crop type of each subinterval in following `template` time series:
+In this quick dome we will perform a TWDTW analysis for a single time series. Suppose that we want to know the crop type of each subinterval in following `example_ts` time series:
 
 ``` r
 library(dtwSat)
 library(ggplot2)
-autoplot(template, facets = NULL) + 
+autoplot(example_ts, facets = NULL) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 
-<img src="figure/plot-template-ts-1.png" alt="Fig. 1. Template time series."  />
+<img src="figure/plot-example_ts-ts-1.png" alt="Fig. 1. example_ts time series."  />
 <p class="caption">
-Fig. 1. Template time series.
+Fig. 1. example\_ts time series.
 </p>
 
 We know that in the region where the time series was observed we have *soybean*, *cotton*, and *maize*, whose typical temporal pattern are:
@@ -50,24 +50,24 @@ Fig. 2. Typical temporal patterns of *soybean*, *cotton*, and *maize*.
 Using the these temporal patterns we run the TWDTW analysis, such that
 
 ``` r
-weight.fun = logisticWeight(alpha=-0.1, beta=100) # Logistic time-weight
-alig = twdtw(x=template, patterns=patterns.list, 
+log_fun = logisticWeight(alpha=-0.1, beta=100) # Logistic time-weight
+matches = twdtw(x=example_ts, patterns=patterns.list, 
              normalize.patterns = TRUE, patterns.length = 23,
-             weight.fun = weight.fun, keep=TRUE) 
+             weight.fun = log_fun, keep=TRUE) 
 ```
 
 The result is a `twdtw` object with all possible matches of the patterns to the time series
 
 ``` r
-class(alig)
-print(alig)
-summary(alig)
+class(matches)
+print(matches)
+summary(matches)
 ```
 
 We can use several plot methods to visualize the `twdtw` object. To plot alignments
 
 ``` r
-plot(x = alig, type = "alignment") + 
+plot(x = matches, type = "alignments") + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 
@@ -79,7 +79,7 @@ Fig. 3. TWDTW alignments over time and cost (distance) in y-axis.
 to plot matching point
 
 ``` r
-plot(x = alig, type = "match", attr = "evi") + 
+plot(x = matches, type = "match", attr = "evi") + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 
@@ -91,7 +91,7 @@ Fig. 4. The best match for each crop type.
 to plot minimum cost paths
 
 ``` r
-plot(type = "path", x = alig) + 
+plot(x = matches, type = "paths") + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 
@@ -100,10 +100,10 @@ plot(type = "path", x = alig) +
 Fig. 5. The minimum cost path of the TWDTW alignment for each crop type.
 </p>
 
-and, finally to classify the subintervals of the template time series
+and, finally to classify the subintervals of the example\_ts time series
 
 ``` r
-plot(x = alig, type = "group",
+plot(x = matches, type = "classification",
      from = "2009-09-01", to = "2013-09-01", 
      by = "6 month", overlap = 0.3) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
@@ -120,7 +120,7 @@ To see more example please check the [R vignettes](#vignettes) and if you want t
 
 1.  [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
 2.  [Time series analysis and visualization using dtwSat](./vignettes/dtwSat_usage.md)
-3.  [Land use classification using dtwSat](./vignettes/lucc.md)
+3.  [Land use changes analysis using dtwSat](./vignettes/lucc.md)
 
 ### References
 

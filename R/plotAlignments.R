@@ -13,53 +13,55 @@
 ###############################################################
 
 
-#' @title Plotting twdtw alignments
+#' @title Plotting twdtw alignments 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Method for plotting the alignments and respective TWDTW 
-#' distances 
+#' dissimilarity measures.
 #' 
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object. 
 #' @param p.names A \link[base]{character} or \link[base]{integer}
 #' vector with the patterns identification. If not declared the function 
-#' will plot alignments for all patterna in the 
-#' \code{\link[dtwSat]{twdtw-class}} object
+#' will plot the alignments for all patterna in the 
+#' \code{\link[dtwSat]{twdtw-class}} object.
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
 #' indicating the attribute for plotting, \emph{i.e.} a column of the \code{pattern}. 
-#' Default is 1
+#' Default is 1.
 #' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
-#' cost for consideration. Default is \code{Inf}
+#' cost for consideration. Default is \code{Inf}.
 #' @docType methods
 #' 
-#' @return A \link[ggplot2]{ggplot} object
+#' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotPath}}, 
+#' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
-#' \code{\link[dtwSat]{plotMatch}}, and
-#' \code{\link[dtwSat]{plotGroup}}
+#' \code{\link[dtwSat]{plotAlignments}}, 
+#' \code{\link[dtwSat]{plotMatches}}, 
+#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotPatterns}}.
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
-#' gp = plotAlignment(alig, attr=c("ndvi","evi"))
+#' gp = plotAlignments(matches, attr=c("ndvi","evi"))
 #' gp
 #' 
-#' gp = plotAlignment(alig, attr=c("ndvi","evi"), threshold=4)
+#' gp = plotAlignments(matches, attr=c("ndvi","evi"), threshold=4)
 #' gp
 #' 
-#' gp = plotAlignment(x=alig, p.names="Cotton", 
+#' gp = plotAlignments(x=matches, p.names="Cotton", 
 #'                    attr=c("ndvi","evi"), threshold=6)
 #' gp
 #' 
 #' @export
-plotAlignment = function(x, p.names, attr=1, threshold=Inf){
+plotAlignments = function(x, p.names, attr=1, threshold=Inf){
   
   if(missing(p.names)) {
     p.names = getPatternNames(x)

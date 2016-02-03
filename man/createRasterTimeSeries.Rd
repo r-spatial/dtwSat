@@ -46,7 +46,7 @@ a list of \code{\link[raster]{RasterBrick-class}} or
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{twdtw}}, 
-\code{\link[dtwSat]{classifyIntervals}}
+\code{\link[dtwSat]{twdtwApply}}, 
+\code{\link[dtwSat]{plotLUCC}}
 }
 

@@ -30,36 +30,45 @@
 #' and ''Maize'', whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''.
 #' Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
 #' and ''mir''.
-#' @seealso \link[dtwSat]{template}
+#' @seealso 
+#' \link[dtwSat]{example_ts},
+#' \link[dtwSat]{example_ts.list}, and 
+#' \link[dtwSat]{createPattern}.
+#'  
 #' @seealso MOD13Q1 documentation: See 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
 #' 
 "patterns.list"
 
-#' @title Data: template time series
+#' @title Data: A example of satellite time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This dataset has a template time series based on the 
+#' @description This dataset has a time series based on the 
 #' MODIS product MOD13Q1 250 m 16 days. It is an irregular time series 
 #' using the real date of each pixel from ''2009-08-05'' to ''2013-07-31''.
 #' @docType data
 #' @format A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}} 
 #' in the format ''yyyy-mm-dd''. Each node has 6 attributes: ''ndvi'', 
 #' ''evi'', ''red'', ''nir'', ''blue'', and ''mir''.
-#' @seealso \link[dtwSat]{patterns.list}
-#' @seealso Package \pkg{rwtss} provides a client for Web Time 
+#' 
+#' @seealso 
+#' \link[dtwSat]{example_ts.list},
+#' \link[dtwSat]{patterns.list}. 
+#' 
+#' @seealso The package \pkg{rwtss} provides a client for Web Time 
 #' Series Service \url{https://github.com/albhasan/rwtss.git}.
+#' 
 #' @seealso MOD13Q1 documentation: 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
 #' 
-"template"
+"example_ts"
 
 
 
-#' @title Data: list of template time series
+#' @title Data: A list of satellite time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This dataset has a list of template time series based 
+#' @description This dataset has a list of time series based 
 #' on the MODIS product MOD13Q1 250 m 16 days. It is an irregular time 
 #' series using the real date of each pixel.
 #' @docType data
@@ -67,13 +76,18 @@
 #' whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''. 
 #' Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
 #' and ''mir''.
-#' @seealso \link[dtwSat]{patterns.list}
-#' @seealso Package \pkg{rwtss} provides a client for Web Time 
+#' 
+#' @seealso 
+#' \link[dtwSat]{example_ts}, 
+#' \link[dtwSat]{patterns.list}. 
+#' 
+#' @seealso The package \pkg{rwtss} provides a client for Web Time 
 #' Series Service \url{https://github.com/albhasan/rwtss.git}.
+#' 
 #' @seealso MOD13Q1 documentation: 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
 #' 
-"template.list"
+"example_ts.list"
 
 
 #' @title Data: patterns time series

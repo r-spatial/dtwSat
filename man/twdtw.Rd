@@ -7,27 +7,27 @@
 \usage{
 twdtw(x, ..., patterns = list(...), normalize.patterns = FALSE,
   patterns.length = NULL, weight.fun = NULL, dist.method = "Euclidean",
-  step.matrix = symmetric1, n.alignments = NULL, span = 0, theta = 0.5,
+  step.matrix = symmetric1, n = NULL, span = NULL, theta = 0.5,
   keep = FALSE)
 }
 \arguments{
 \item{x}{A \link[zoo]{zoo} object with a time series similar 
 to \code{patterns}. \code{x} must have the same number of attributes
 and be equal to or longer than the \code{patterns}, 
-\emph{i.e.} \code{nrow(patterns)<=nrow(x)}}
+\emph{i.e.} \code{nrow(patterns)<=nrow(x)}.}
 
-\item{...}{\link[zoo]{zoo} objects}
+\item{...}{\link[zoo]{zoo} objects.}
 
-\item{patterns}{a list of \link[zoo]{zoo} objects}
+\item{patterns}{a list of \link[zoo]{zoo} objects.}
 
-\item{normalize.patterns}{Normalize queries length. Default is FALSE}
+\item{normalize.patterns}{Normalize queries length. Default is FALSE.}
 
-\item{patterns.length}{An integer. Queries length used with normalize. If not declared 
-the length of the output queries will be the length of the longest patterns}
+\item{patterns.length}{An integer. Queries length used with normalize. 
+If not declared the length of the output queries will be the length of 
+the longest patterns.}
 
-\item{weight.fun}{A function to be applied to each element of the local cost matrix 
-\code{phi} and the time cost matrix \code{psi}. If not declared the time weight is zero, 
-\emph{i.e.} \code{weight.fun = function(phi, psi) 1*phi + 0*psi}. See 'Details'}
+\item{weight.fun}{A function that receives a matrix of time differences in days and 
+returns a matrix of time-weights. If not declared the time-weight is zero.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
@@ -35,56 +35,50 @@ Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package
 
 \item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [1]}
 
-\item{n.alignments}{An integer. The maximun number of alignments to 
-perform. NULL will return all possible alignments}
+\item{n}{An integer. The maximun number of alignments to perform. 
+NULL will return all possible alignments without overlaps.}
 
-\item{span}{Span between two points of minimum in days, \emph{i.e.} the minimum
-interval between two alignments, for details see [2]}
+\item{span}{A number. Span between two matches, \emph{i.e.} the minimum
+interval between two matches, for details see [2]. If not declared it removes
+all overlapping matches of the same pattern.}
 
 \item{theta}{numeric between 0 and 1. The weight of the time 
 for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
 \emph{i.e.} to run the original DTW algorithm. Default is 0.5.}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
-Default is FALSE}
+Default is FALSE.}
 }
 \value{
-A \code{\link[dtwSat]{twdtw-class}} object
+A \code{\link[dtwSat]{twdtw-class}} object.
 }
 \description{
 This function performs a multidimensional Time-Weighted DTW 
-analysis and retrieves the alignments between the temporal patterns and 
+analysis and retrieves the matches between the temporal patterns and 
 the time series.
 }
-\details{
-\code{weight.fun} must have two matrices as arguments. The first is a distance 
-matrix that comes from the difference in the bands values pont-to-point between the 
-pattern and the time series. The second matrix is the difference in days pont-to-point 
-between the pattern and the time series. For a logistic time weight 
-see \link[dtwSat]{logisticWeight} function, see [3] for details.
-}
 \examples{
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
+log_fun = logisticWeight(alpha=-0.1, beta=100)
 
 # Perform twdtw analysis for a single pixel 
-alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
              keep=TRUE)
-getPatternNames(alig)
-getAlignments(alig)
-getMatches(alig)
-getInternals(alig)
+getPatternNames(matches)
+getAlignments(matches)
+getMatches(matches)
+getInternals(matches)
 
 # Perform twdtw for a list pixel 
-aligs = lapply(template.list, FUN=twdtw, patterns=patterns.list, 
-               weight.fun = weight.fun, keep=TRUE)
+matches = lapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
+               weight.fun = log_fun, keep=TRUE)
 
-aligs
+matches
 
 ### Perform twdtw in parallel for a list pixel 
 # require(parallel)
-# aligs = mclapply(template.list, FUN=twdtw, patterns=patterns.list, 
-#                  weight.fun = weight.fun, keep=TRUE, mc.cores=2)
-# aligs
+# matches = mclapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
+#                  weight.fun = log_fun, keep=TRUE, mc.cores=2)
+# matches
                
 }
 \author{
@@ -103,6 +97,15 @@ mapping. Selected Topics in Applied Earth Observations and Remote Sensing,
 IEEE Journal of, X, XX-XX.
 }
 \seealso{
-\code{\link[dtwSat]{twdtw-class}}
+\code{\link[dtwSat]{twdtw-class}},
+\code{\link[dtwSat]{linearWeight}}, 
+\code{\link[dtwSat]{logisticWeight}},
+\code{\link[dtwSat]{summary-twdtw-method}},  
+\code{\link[dtwSat]{plot-twdtw-ANY-method}}, 
+\code{\link[dtwSat]{getPatternNames}},
+\code{\link[dtwSat]{getAlignments}}, 
+\code{\link[dtwSat]{getMatches}},
+\code{\link[dtwSat]{getInternals}}, and 
+\code{\link[dtwSat]{nmatches}}.
 }
 

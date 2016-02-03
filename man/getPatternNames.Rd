@@ -12,7 +12,7 @@ getPatternNames(object, p.names)
 
 \item{p.names}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
-retrieves the names for all patterns}
+retrieves the names for all patterns.}
 }
 \value{
 A \code{\link[base]{character}}
@@ -20,17 +20,17 @@ or \code{\link[base]{numeric}} vector
 }
 \description{
 This function retrieves pattern names in the 
-\link[dtwSat]{twdtw-class} object
+\link[dtwSat]{twdtw-class} object.
 }
 \examples{
 
-alig = twdtw(x=template, patterns=patterns.list)
+matches = twdtw(x=example_ts, patterns=patterns.list)
 
-getPatternNames(alig)
+getPatternNames(matches)
 
-getPatternNames(alig, p.names=c(1,3))
+getPatternNames(matches, p.names=c(1,3))
 
-getPatternNames(alig, p.names="Maize")
+getPatternNames(matches, p.names="Maize")
 
 }
 \author{

@@ -61,7 +61,7 @@ createPattern = function(x, from, to, freq=1, attr, formula, ...){
   
   # Shift dates to match the same period  
   df = do.call("rbind", lapply(x, function(xx){
-    res = shiftDate(xx, year=as.numeric(format(to, "%Y")))
+    res = shiftDates(xx, year=as.numeric(format(to, "%Y")))
     res = window(res, start = from, end = to)
     res = data.frame(time=index(res), res)
   }))

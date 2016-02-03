@@ -5,56 +5,60 @@
 \alias{plot,twdtw,ANY-method}
 \title{Plotting twdtw objects}
 \usage{
-\S4method{plot}{twdtw,ANY}(x, type = "path", ...)
+\S4method{plot}{twdtw,ANY}(x, type = "matches", ...)
 }
 \arguments{
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object}
 
-\item{type}{A character for the plot type, ''path'', ''match'', 
-''alignment'', ''group'', ''cost''. Default is ''path''}
+\item{type}{A character for the plot type: ''paths'', ''matches'', 
+''alignments'', ''classification'', ''cost'', or ''patterns''. 
+Default is ''matches''.}
 
-\item{...}{additional arguments passed to plotting functions
-\code{\link[dtwSat]{twdtw-class}}, \code{\link[dtwSat]{twdtw}}, 
-\code{\link[dtwSat]{plotPath}}, \code{\link[dtwSat]{plotCostMatrix}},
-\code{\link[dtwSat]{plotAlignment}}, \code{\link[dtwSat]{plotMatch}}, and
-\code{\link[dtwSat]{plotGroup}}}
+\item{...}{additional arguments passed to plotting functions.
+\code{\link[dtwSat]{plotPaths}}, 
+\code{\link[dtwSat]{plotCostMatrix}},
+\code{\link[dtwSat]{plotAlignments}}, 
+\code{\link[dtwSat]{plotMatches}}, 
+\code{\link[dtwSat]{plotClassification}}, and 
+\code{\link[dtwSat]{plotPatterns}}.}
 }
 \value{
-A \link[ggplot2]{ggplot} object
+A \link[ggplot2]{ggplot} object.
 }
 \description{
 Methods for plotting the results of the 
-Time-Weighted DTW analysis
+TTWDTW analysis
 }
 \examples{
 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
-alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+log_fun = logisticWeight(alpha=-0.1, beta=100)
+matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 
 # Plot paths
-gp1 = plot(alig, type="path", n.alignments=1:4)
+gp1 = plot(matches, type="paths", n=1:4)
 gp1
 
 # Plot matches 
-gp2 = plot(alig, type="match", attr="evi")
+gp2 = plot(matches, type="matches", attr="evi")
 gp2
 
 # Plot alignments 
-gp3 = plot(alig, type="alignment", attr=c("ndvi","evi"), threshold=4)
+gp3 = plot(matches, type="alignments", attr=c("ndvi","evi"), threshold=4)
 gp3
 
 ## Plot classification
-gp4 = plot(alig, type="group", attr="evi", from=as.Date("2009-09-01"),  
-           to=as.Date("2013-09-01"), by = "6 month", overlap=.3)
+gp4 = plot(matches, type="classification", attr="evi", 
+      from=as.Date("2009-09-01"),  to=as.Date("2013-09-01"), 
+      by = "6 month", overlap=.3)
 gp4
 
 # Plot cost matrix
-gp5 = plot(alig, type="cost", matrix.name="costMatrix")
+gp5 = plot(matches, type="cost", matrix.name="costMatrix")
 gp5
 
 # Plot cost matrix
-gp6 = plot(alig, type="pattern")
+gp6 = plot(matches, type="patterns")
 gp6
 
 }
@@ -64,10 +68,11 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
-\code{\link[dtwSat]{plotPath}}, 
+\code{\link[dtwSat]{plotPaths}}, 
 \code{\link[dtwSat]{plotCostMatrix}},
-\code{\link[dtwSat]{plotAlignment}},
-\code{\link[dtwSat]{plotMatch}}, and
-\code{\link[dtwSat]{plotGroup}}
+\code{\link[dtwSat]{plotAlignments}}, 
+\code{\link[dtwSat]{plotMatches}}, 
+\code{\link[dtwSat]{plotClassification}}, and 
+\code{\link[dtwSat]{plotPatterns}}.
 }
 

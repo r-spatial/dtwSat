@@ -16,34 +16,36 @@
 #' @title Plotting temporal patterns 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Method for plotting the temporal patterns 
+#' @description Method for plotting the temporal patterns.
 #' 
 #' @param x An \code{\link[dtwSat]{twdtw-class}} object or a list of 
-#' \code{\link[zoo]{zoo}} objects
+#' \code{\link[zoo]{zoo}} objects.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
-#' will plot the paths for all patterns 
+#' will plot the paths for all patterns. 
 #' @param year An integer. The base year to shift the dates of the time series to. 
-#' If NULL then it does not shif the time series. Default is 2005 
+#' If NULL then it does not shif the time series. Default is 2005. 
 #' @docType methods
 #' 
-#' @return A \link[ggplot2]{ggplot} object
+#' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
+#' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
-#' \code{\link[dtwSat]{plotAlignment}},
-#' \code{\link[dtwSat]{plotMatch}}, and
-#' \code{\link[dtwSat]{plotGroup}}
+#' \code{\link[dtwSat]{plotAlignments}}, 
+#' \code{\link[dtwSat]{plotMatches}}, 
+#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotPatterns}}.
 #'  
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #'        
-#' gp1 = plotPatterns(alig)
+#' gp1 = plotPatterns(matches)
 #' gp1
 #' 
 #' gp2 = plotPatterns(patterns.list)
@@ -71,7 +73,7 @@ plotPatterns = function(x, p.names, year=2005){
     stop("patterns should be a list of zoo objects")
   
   # Shift dates 
-  if(!is.null(year)) x = lapply(x[p.names], shiftDate, year=year)
+  if(!is.null(year)) x = lapply(x[p.names], shiftDates, year=year)
   
   # Build data.frame
   df.p = do.call("rbind", lapply(p.names, function(p)

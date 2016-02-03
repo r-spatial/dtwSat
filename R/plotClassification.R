@@ -13,32 +13,34 @@
 ###############################################################
 
 
-#' @title Plotting time interval groups 
+#' @title Plotting subintervals classification  
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Method for plotting the group of each 
-#' time intervals based on \code{\link[dtwSat]{twdtw}} analysis 
+#' @description Method for plotting the classification of each 
+#' subinterval of the time series based on \code{\link[dtwSat]{twdtw}} 
+#' analysis. 
 #' 
-#' @param x A \code{\link[dtwSat]{twdtw-class}} object
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object.
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
 #' indicating the attribute for plotting, \emph{i.e.} a column of the \code{x}. 
-#' If not declared the function will plot all attributes
-#' @param ... additional arguments passed to \code{\link[dtwSat]{classifyIntervals}}
+#' If not declared the function will plot all attributes.
+#' @param ... additional arguments passed to \code{\link[dtwSat]{classifyIntervals}}.
 #' 
-#' @return A \link[ggplot2]{ggplot} object
+#' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotPath}}, 
+#' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
-#' \code{\link[dtwSat]{plotAlignment}},
-#' \code{\link[dtwSat]{plotMatch}}, and
-#' \code{\link[dtwSat]{classifyIntervals}}
+#' \code{\link[dtwSat]{plotAlignments}}, 
+#' \code{\link[dtwSat]{plotMatches}}, 
+#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotPatterns}}.
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #' 
 #' # Classify interval
@@ -47,17 +49,18 @@
 #' by = "6 month"
 #' 
 #' # All classes
-#' gp = plotGroup(x=alig, from=from, to=to, by=by, overlap=.3)
+#' gp = plotClassification(x=matches, from=from, to=to, by=by, overlap=.3)
 #' gp
 #' 
 #' # Cotton and Maize 
-#' gp = plotGroup(x=alig, attr=c("ndvi","evi"), from=from, to=to, by=by, 
-#'              overlap=.3, p.names=c("Cotton","Maize"))
+#' gp = plotClassification(x=matches, attr=c("ndvi","evi"), 
+#'                         from=from, to=to, by=by, 
+#'                         overlap=.3, p.names=c("Cotton","Maize"))
 #' gp
 #' 
 #' 
 #' @export
-plotGroup = function(x, attr, ...){
+plotClassification = function(x, attr, ...){
   
   ## Get data
   internals = getInternals(x, 1)[[1]]
@@ -84,15 +87,15 @@ plotGroup = function(x, attr, ...){
     data.frame(
       Time = c(best_class$from[i], best_class$to[i], best_class$to[i], best_class$from[i]),
       Group = rep(i, 4),
-      Pattern = rep(best_class$pattern[i], 4),
+      Class = rep(best_class$pattern[i], 4),
       value = rep(range(y.breaks, na.rm = TRUE), each=2))
   }))
   df.pol$Group = factor(df.pol$Group)
-  df.pol$Pattern = factor(df.pol$Pattern)
+  df.pol$Class = factor(df.pol$Class)
   
   gp = ggplot() +
     geom_polygon(data=df.pol, aes_string(x='Time', y='value', 
-                                         group='Group', fill='Pattern'), alpha=.7) +
+                                         group='Group', fill='Class'), alpha=.7) +
     scale_fill_brewer(palette="Set3") + 
     geom_line(data=df.x, aes_string(x='Time', y='value', colour='variable')) +
     scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=y.labels) +

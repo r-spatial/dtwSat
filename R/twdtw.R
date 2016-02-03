@@ -17,43 +17,38 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
-#' analysis and retrieves the alignments between the temporal patterns and 
+#' analysis and retrieves the matches between the temporal patterns and 
 #' the time series.
 #' 
-#' @param ... \link[zoo]{zoo} objects
-#' @param patterns a list of \link[zoo]{zoo} objects
-#' @param normalize.patterns Normalize queries length. Default is FALSE
-#' @param patterns.length An integer. Queries length used with normalize. If not declared 
-#' the length of the output queries will be the length of the longest patterns
+#' @param ... \link[zoo]{zoo} objects.
+#' @param patterns a list of \link[zoo]{zoo} objects.
+#' @param normalize.patterns Normalize queries length. Default is FALSE.
+#' @param patterns.length An integer. Queries length used with normalize. 
+#' If not declared the length of the output queries will be the length of 
+#' the longest patterns.
 #' @param x A \link[zoo]{zoo} object with a time series similar 
 #' to \code{patterns}. \code{x} must have the same number of attributes
 #' and be equal to or longer than the \code{patterns}, 
-#' \emph{i.e.} \code{nrow(patterns)<=nrow(x)}
-#' @param weight.fun A function to be applied to each element of the local cost matrix 
-#' \code{phi} and the time cost matrix \code{psi}. If not declared the time weight is zero, 
-#' \emph{i.e.} \code{weight.fun = function(phi, psi) 1*phi + 0*psi}. See 'Details'
+#' \emph{i.e.} \code{nrow(patterns)<=nrow(x)}.
+#' @param weight.fun A function that receives a matrix of time differences in days and 
+#' returns a matrix of time-weights. If not declared the time-weight is zero. 
 #' @param dist.method A character. Method to derive the local cost matrix.
 #' Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
 #' \pkg{proxy}.
 #' @param step.matrix see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [1]
-#' @param n.alignments An integer. The maximun number of alignments to 
-#' perform. NULL will return all possible alignments
-#' @param span Span between two points of minimum in days, \emph{i.e.} the minimum  
-#' interval between two alignments, for details see [2]
+#' @param n An integer. The maximun number of alignments to perform. 
+#' NULL will return all possible alignments without overlaps. 
 #' @param theta numeric between 0 and 1. The weight of the time 
 #' for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
 #' \emph{i.e.} to run the original DTW algorithm. Default is 0.5. 
 #' @param keep preserves the cost matrix, inputs, and other internal structures. 
-#' Default is FALSE
-#' 
-#' @details \code{weight.fun} must have two matrices as arguments. The first is a distance 
-#' matrix that comes from the difference in the bands values pont-to-point between the 
-#' pattern and the time series. The second matrix is the difference in days pont-to-point 
-#' between the pattern and the time series. For a logistic time weight 
-#' see \link[dtwSat]{logisticWeight} function, see [3] for details. 
+#' Default is FALSE. 
+#' @param span A number. Span between two matches, \emph{i.e.} the minimum  
+#' interval between two matches, for details see [2]. If not declared it removes
+#' all overlapping matches of the same pattern. 
 #' 
 #' @docType methods
-#' @return A \code{\link[dtwSat]{twdtw-class}} object
+#' @return A \code{\link[dtwSat]{twdtw-class}} object.
 #' 
 #' @references 
 #' [1] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
@@ -67,36 +62,45 @@
 #' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
 #' IEEE Journal of, X, XX-XX.
 #' 
-#' @seealso \code{\link[dtwSat]{twdtw-class}}
+#' @seealso 
+#' \code{\link[dtwSat]{twdtw-class}},
+#' \code{\link[dtwSat]{linearWeight}}, 
+#' \code{\link[dtwSat]{logisticWeight}},
+#' \code{\link[dtwSat]{summary-twdtw-method}},  
+#' \code{\link[dtwSat]{plot-twdtw-ANY-method}}, 
+#' \code{\link[dtwSat]{getPatternNames}},
+#' \code{\link[dtwSat]{getAlignments}}, 
+#' \code{\link[dtwSat]{getMatches}},
+#' \code{\link[dtwSat]{getInternals}}, and 
+#' \code{\link[dtwSat]{nmatches}}.
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
 #' 
 #' # Perform twdtw analysis for a single pixel 
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, 
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'              keep=TRUE)
-#' getPatternNames(alig)
-#' getAlignments(alig)
-#' getMatches(alig)
-#' getInternals(alig)
+#' getPatternNames(matches)
+#' getAlignments(matches)
+#' getMatches(matches)
+#' getInternals(matches)
 #' 
 #' # Perform twdtw for a list pixel 
-#' aligs = lapply(template.list, FUN=twdtw, patterns=patterns.list, 
-#'                weight.fun = weight.fun, keep=TRUE)
+#' matches = lapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
+#'                weight.fun = log_fun, keep=TRUE)
 #' 
-#' aligs
+#' matches
 #' 
 #' ### Perform twdtw in parallel for a list pixel 
 #' # require(parallel)
-#' # aligs = mclapply(template.list, FUN=twdtw, patterns=patterns.list, 
-#' #                  weight.fun = weight.fun, keep=TRUE, mc.cores=2)
-#' # aligs
+#' # matches = mclapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
+#' #                  weight.fun = log_fun, keep=TRUE, mc.cores=2)
+#' # matches
 #'                
 #' @export
 twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE, 
                   patterns.length=NULL, weight.fun=NULL, dist.method="Euclidean", 
-                  step.matrix = symmetric1, n.alignments=NULL, span=0, 
-                  theta = 0.5, keep=FALSE)
+                  step.matrix = symmetric1, n=NULL, span=NULL, theta = 0.5, keep=FALSE)
 {
   
   if(!is(patterns, "list"))
@@ -116,12 +120,12 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     patterns = normalizePatterns(patterns=patterns, patterns.length=patterns.length)
   
   res = .twdtw(x, patterns, weight.fun, dist.method, 
-               step.matrix, n.alignments, span, theta, keep)
+               step.matrix, n, span, theta, keep)
   res
 }
 
 .twdtw =  function(x, patterns, weight.fun, dist.method, 
-                   step.matrix, n.alignments, span, theta, keep)
+                   step.matrix, n, span, theta, keep)
 {
   
   res = lapply(patterns, function(pattern){
@@ -147,29 +151,36 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     internals$timeWeight = matrix(psi, nrow = nrow(psi))
     internals$localMatrix = matrix(cm, nrow = nrow(cm))
     
-    # Find low cost candidate 
-    a = internals$startingIndex[internals$N,1:internals$M]
+    # Find low cost candidates 
     d = internals$costMatrix[internals$N,1:internals$M]
-    candidate   = data.frame(a, d)
-    candidate   = candidate[ candidate$d==ave(candidate$d, candidate$a, FUN=min), ]
-    candidate$b = as.numeric(row.names(candidate))
-    I = order(candidate$d)
-    # endPoints = .findMin(d, index(x), span=span)
+    a = internals$startingMatrix[internals$N,1:internals$M]
+    if(is.null(span)){
+      candidates   = data.frame(a, d)
+      candidates   = candidates[ candidates$d==ave(candidates$d, candidates$a, FUN=min), ]
+      candidates$b = as.numeric(row.names(candidates))
+    }
+    else {
+      b = .findMin(d, index(x), span = span)
+      candidates = data.frame(a[b], d[b], b)
+    }
+    
+    # Order maches by similarity 
+    I = order(candidates$d)
     if(length(I)<1) return(NULL)
     
     # Sellect alignments 
-    if(is.null(n.alignments)) n.alignments = length(I)
-    if(length(I) > n.alignments) I = I[1:n.alignments]
+    if(is.null(n)) n = length(I)
+    if(length(I) > n) I = I[1:n]
     
     alignments = list()
-    alignments$from       = index(x)[candidate$a[I]] # This is a vector of Dates
-    alignments$to         = index(x)[candidate$b[I]] # This is a vector of Dates
-    alignments$distance   = candidate$d[I]           # This is a numeric vector 
+    alignments$from       = index(x)[candidates$a[I]] # This is a vector of Dates
+    alignments$to         = index(x)[candidates$b[I]] # This is a vector of Dates
+    alignments$distance   = candidates$d[I]           # This is a numeric vector 
     alignments$K          = length(I)                # This is an interger 
     
     if(keep){
       # Trace low cost paths (k-th paths)
-      matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidate$b[I])
+      matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidates$b[I])
       alignments$internals = internals       # These is a list variables used in the TWDTW computation 
       alignments$internals$pattern = pattern # Thes is a zoo object
       alignments$internals$x = x             # This is a zoo object 
@@ -180,24 +191,24 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
   new("twdtw", call=match.call(), alignments=res)
 }
 
-# .findMin = function(x, timeline, span){
-#   NonNA = which(!is.na(x))
-#   dx = diff(x[NonNA])
-#   index_min = NonNA[which(dx[-length(dx)] < 0 & dx[-1] >= 0)] + 1
-#   if(tail(dx,1) < 0)
-#     index_min = c(index_min,length(x))
-#   order_min = index_min[order(x[index_min])]
-#   min_out = array()
-#   for(i in seq_along(index_min)){
-#     min_out[i] = order_min[i]
-#     lower_bound = timeline[order_min[i]] - span
-#     upper_bound = timeline[order_min[i]] + span
-#     in_span = lower_bound <= timeline[order_min] & timeline[order_min] <= upper_bound
-#     order_min[in_span] = NA
-#   }
-#   res = min_out[!is.na(min_out)]
-#   res
-# }
+.findMin = function(x, timeline, span){
+  NonNA = which(!is.na(x))
+  dx = diff(x[NonNA])
+  index_min = NonNA[which(dx[-length(dx)] < 0 & dx[-1] >= 0)] + 1
+  if(tail(dx,1) < 0)
+    index_min = c(index_min,length(x))
+  order_min = index_min[order(x[index_min])]
+  min_out = array()
+  for(i in seq_along(index_min)){
+    min_out[i] = order_min[i]
+    lower_bound = timeline[order_min[i]] - span
+    upper_bound = timeline[order_min[i]] + span
+    in_span = lower_bound <= timeline[order_min] & timeline[order_min] <= upper_bound
+    order_min[in_span] = NA
+  }
+  res = min_out[!is.na(min_out)]
+  res
+}
 
 .removeConcurrent = function(I, startPoints, endPoints, d){
   res = !(I | duplicated(startPoints, fromLast = TRUE))

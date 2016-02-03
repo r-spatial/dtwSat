@@ -39,8 +39,9 @@
 #' @docType methods
 #' @return A \code{\link[dtwSat]{twdtw-class}} object
 #' 
-#' @seealso \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{classifyIntervals}}
+#' @seealso 
+#' \code{\link[dtwSat]{twdtwApply}}, 
+#' \code{\link[dtwSat]{plotLUCC}}
 #' 
 #' @examples
 #' 

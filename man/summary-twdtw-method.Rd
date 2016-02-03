@@ -22,10 +22,10 @@ twdtw-class object
 }
 \examples{
 
-alig = twdtw(x=template, patterns=patterns.list)
+matches = twdtw(x=example_ts, patterns=patterns.list)
        
-show(alig)
-summary(alig)
+show(matches)
+summary(matches)
 
 }
 \author{

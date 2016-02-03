@@ -42,9 +42,9 @@
 #' for each interval
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
 #' 
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
 #'          
 #' # Classify interval
 #' from = as.Date("2009-09-01")
@@ -52,15 +52,15 @@
 #' by = "6 month"
 #' 
 #' # All classes
-#' classifyIntervals(x=alig, from=from, to=to, by = by,
+#' classifyIntervals(x=matches, from=from, to=to, by = by,
 #'              overlap=.3, threshold=Inf)
 #' 
 #' # Cotton and Maize 
-#' classifyIntervals(x=alig, from=from, to=to, by = by,
+#' classifyIntervals(x=matches, from=from, to=to, by = by,
 #'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 #' 
 #' # Simplify Cotton and Maize 
-#' classifyIntervals(x=alig, from=from, to=to, by = by, simplify= TRUE,
+#' classifyIntervals(x=matches, from=from, to=to, by = by, simplify= TRUE,
 #'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 #'              
 #' @export

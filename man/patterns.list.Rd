@@ -22,7 +22,9 @@ package \link[mgcv]{gam}.
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\link[dtwSat]{template}
+\link[dtwSat]{example_ts},
+\link[dtwSat]{example_ts.list}, and 
+\link[dtwSat]{createPattern}.
 
 MOD13Q1 documentation: See 
 \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}

@@ -23,32 +23,30 @@
 #' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects. 
 #' A \link[base]{character} with the raster file name is also accepted.
 #' @param type A \link[base]{character}. The plot type, ''map'', 
-#' ''area'', or ''change''. Default is ''map''
+#' ''area'', or ''change''. Default is ''map''.
 #' @param layer.levels A \link[base]{character} or \link[base]{numeric}
-#' vector with the layers to compute the changes. The minimum length 
+#' vector with the layers to plot. For plot type ''change'' the minimum length 
 #' is two 
 #' @param layer.labels A \link[base]{character} or \link[base]{numeric}
 #' vector with the labels of the layers. It must have the same 
-#' length as layer.levels. Default is NULL
-#' @param levels A \link[base]{character} or \link[base]{numeric}
-#' vector with the levels of the raster values. Default is NULL 
-#' @param labels A \link[base]{character} or \link[base]{numeric}
+#' length as layer.levels. Default is NULL.
+#' @param class.levels A \link[base]{character} or \link[base]{numeric}
+#' vector with the levels of the raster values. Default is NULL. 
+#' @param class.labels A \link[base]{character} or \link[base]{numeric}
 #' vector with the labels of the raster values. It must have the same 
-#' length as levels. Default is NULL
-#' @param colors a set of aesthetic values to map data values to. See 
-#' \link[ggplot2]{scale_fill_manual} for details 
+#' length as class.levels. Default is NULL.
+#' @param class.colors a set of aesthetic values. It must have the same 
+#' length as class.levels. Default is NULL. See 
+#' \link[ggplot2]{scale_fill_manual} for details.
 #' 
 #' @docType methods
 #' 
-#' @return A \link[ggplot2]{ggplot} object
+#' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{twdtw-class}}, 
-#' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotCostMatrix}},
-#' \code{\link[dtwSat]{plotAlignment}},
-#' \code{\link[dtwSat]{plotMatch}}, and
-#' \code{\link[dtwSat]{plotGroup}}
+#' \code{\link[dtwSat]{twdtwApply}}, 
+#' \code{\link[raster]{brick}}, and
+#' \code{\link[raster]{stack}}
 #'  
 #' @examples
 #' 
@@ -61,22 +59,25 @@
 #' 
 #' ### Plot maps
 #' #gp1 = plotLUCC(x = x, type = "map", layer.labels = 2008:2013, 
-#' #        levels = levels, labels = labels, colors = colors)
+#' #        class.levels = levels, class.labels = labels, 
+#' #        class.colors = colors)
 #' #gp1 
 #' 
 #' # Plot area 
 #' #gp2 = plotLUCC(x = x, type = "area", layer.labels = 2008:2013, 
-#' #        levels = levels, labels = labels, colors = colors) 
+#' #        class.levels = levels, class.labels = labels, 
+#' #        class.colors = colors)
 #' #gp2
 #' 
 #' # Plot land use changes 
 #' #gp3 = plotLUCC(x = x, type = "change", layer.labels = 2008:2013, 
-#' #        levels = levels, labels = labels, colors = colors) 
+#' #        class.levels = levels, class.labels = labels, 
+#' #        class.colors = colors)
 #' #gp3
 #' 
 #' @export
 plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL, 
-                    levels=NULL, labels=NULL, colors=NULL){
+                    class.levels=NULL, class.labels=NULL, class.colors=NULL){
   
   if(is(x, "character"))
     x = brick(x)
@@ -97,17 +98,17 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   if( is.null(colors) | length(colors)<length(x_levels) )
     colors = brewer.pal(length(x_levels), "Set1")
   
-  if(is.null(levels))
-    levels = sort(x_levels)
+  if(is.null(class.levels))
+    class.levels = sort(x_levels)
   
-  if(is.null(labels))
-    labels = levels
+  if(is.null(class.labels))
+    class.labels = class.levels
   
-  if(length(levels)!=length(labels))
-    stop("levels and labels have different length")  
+  if(length(class.levels)!=length(class.labels))
+    stop("class.levels and class.labels have different length")  
   
-  names(colors) = labels
-  names(levels) = labels
+  names(colors) = class.labels
+  names(class.levels) = class.labels
   
   pt = pmatch(type,c("map","area","change"))
   
@@ -116,14 +117,14 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   names(layer.labels) = names(x)
   
   switch(pt,
-         .plotLUMap(x, layer.levels, layer.labels, levels, labels, colors),
-         .plotLUArea(x, layer.levels, layer.labels, levels, labels, colors),
-         .plotLUChange(x, layer.levels, layer.labels, levels, labels, colors)
+         .plotLUMap(x, layer.levels, layer.labels, class.levels, class.labels, colors),
+         .plotLUArea(x, layer.levels, layer.labels, class.levels, class.labels, colors),
+         .plotLUChange(x, layer.levels, layer.labels, class.levels, class.labels, colors)
   )
   
 }
 
-.plotLUChange = function(x, layer.levels, layer.labels, levels, labels, colors){
+.plotLUChange = function(x, layer.levels, layer.labels, class.levels, class.labels, colors){
   
   if(length(layer.levels)<2)
     stop("the vector layer.levels is shorter than two")
@@ -137,8 +138,8 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     res
   }))
   
-  df$from = factor(df$from, levels = levels, labels = labels)
-  df$to   = factor(df$to, levels = levels, labels = labels)
+  df$from = factor(df$from, levels = class.levels, labels = class.labels)
+  df$to   = factor(df$to, levels = class.levels, labels = class.labels)
   df$from = factor(df$from)
   df$to   = factor(df$to)
   I = df$from!=df$to
@@ -160,11 +161,11 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   
 }
 
-.plotLUMap = function(x, layer.levels, layer.labels, levels, labels, colors){
+.plotLUMap = function(x, layer.levels, layer.labels, class.levels, class.labels, colors){
   
   df.map = data.frame(coordinates(x), x[] )
   df.map = melt(df.map, id.vars = c("x", "y"))
-  df.map$value = factor(df.map$value, levels = levels, labels = labels)
+  df.map$value = factor(df.map$value, levels = class.levels, labels = class.labels)
   
   df.map$variable = factor(df.map$variable, labels = layer.labels)
   
@@ -182,11 +183,11 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   
 }
 
-.plotLUArea = function(x, layer.levels, layer.labels, levels, labels, colors){
+.plotLUArea = function(x, layer.levels, layer.labels, class.levels, class.labels, colors){
   
   df.map = data.frame(coordinates(x), x[] )
   df.map = melt(df.map, id.vars = c("x", "y"))
-  df.map$value = factor(df.map$value, levels = levels, labels = labels)
+  df.map$value = factor(df.map$value, levels = class.levels, labels = class.labels)
   
   df.area = data.frame(prop.table(xtabs(~ variable + value, df.map), 1))
   # df.area$Time = factor(as.numeric(df.area$variable), labels = layer.labels)

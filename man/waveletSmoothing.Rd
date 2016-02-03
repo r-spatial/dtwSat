@@ -38,10 +38,10 @@ smoothing for each dimension in the imput time series.
 }
 \examples{
 ## Wavelet filter
-sy = waveletSmoothing(x=template, frequency=16, wf = "la8", J=1, 
+sy = waveletSmoothing(x=example_ts, frequency=16, wf = "la8", J=1, 
      boundary = "periodic")
 
-evi = merge(Raw=zoo(template$evi), Wavelet=zoo(sy$evi))
+evi = merge(Raw=zoo(example_ts$evi), Wavelet=zoo(sy$evi))
 if(require(ggplot2)){
    ## Plot raw EVI and filtered EVI
    gp = autoplot(evi, facets = NULL)

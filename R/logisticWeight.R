@@ -35,8 +35,8 @@
 #' IEEE Journal of, X, XX-XX.
 #' 
 #' @examples
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' weight.fun
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' log_fun
 #' 
 #' @export
 logisticWeight = function(alpha, beta){

@@ -16,12 +16,12 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves pattern names in the 
-#' \link[dtwSat]{twdtw-class} object
+#' \link[dtwSat]{twdtw-class} object.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
-#' retrieves the names for all patterns 
+#' retrieves the names for all patterns.
 #' 
 #' @docType methods
 #' 
@@ -34,13 +34,13 @@
 #' 
 #' @examples
 #' 
-#' alig = twdtw(x=template, patterns=patterns.list)
+#' matches = twdtw(x=example_ts, patterns=patterns.list)
 #' 
-#' getPatternNames(alig)
+#' getPatternNames(matches)
 #' 
-#' getPatternNames(alig, p.names=c(1,3))
+#' getPatternNames(matches, p.names=c(1,3))
 #' 
-#' getPatternNames(alig, p.names="Maize")
+#' getPatternNames(matches, p.names="Maize")
 #' 
 #' @export
 setGeneric("getPatternNames", 

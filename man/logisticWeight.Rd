@@ -20,8 +20,8 @@ Builds a logistic time weight
 function to compute the TWDTW local cost matrix [1]
 }
 \examples{
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
-weight.fun
+log_fun = logisticWeight(alpha=-0.1, beta=100)
+log_fun
 
 }
 \author{

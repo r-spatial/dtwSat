@@ -20,8 +20,8 @@ Builds a linear time weight
 function to compute the TWDTW local cost matrix [1]
 }
 \examples{
-weight.fun = linearWeight(a=0.1)
-weight.fun
+lin_fun = linearWeight(a=0.1)
+lin_fun
 
 }
 \author{

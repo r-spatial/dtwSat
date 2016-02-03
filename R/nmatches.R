@@ -12,14 +12,16 @@
 #                                                             #
 ###############################################################
 
-#' @title Get the number of alignments from twdtw object
+#' @title Get the number of matches from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the number of alignments 
-#' from the object \link[dtwSat]{twdtw-class}
+#' @description This function retrieves the number of matches  
+#' from a \link[dtwSat]{twdtw-class} object.
 #' 
-#' @param object A \link[dtwSat]{twdtw-class} object
-#' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
+#' @param object A \link[dtwSat]{twdtw-class} object.
+#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' vector with the patterns identification. If not declared the function 
+#' retrieves the total number of matches considering all patterns.  
 #' 
 #' @docType methods
 #' @return A \link[base]{numeric} 
@@ -30,19 +32,19 @@
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
 #' 
-#' nalignments(alig)
+#' nmatches(matches)
 #' 
-#' nalignments(alig, p.names="Soybean")
+#' nmatches(matches, p.names="Soybean")
 #' 
-#' nalignments(alig, p.names=c(2,3))
+#' nmatches(matches, p.names=c(2,3))
 #' 
 #' @export
-setGeneric("nalignments", 
-           function(object, ...) {
-               x = getAlignments(object, ...)
+setGeneric("nmatches", 
+           function(object, p.names) {
+               x = getAlignments(object, p.names)
                nrow(x)
            }
 )

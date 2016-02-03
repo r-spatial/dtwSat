@@ -18,15 +18,17 @@
 #' @description This function retrieves the alignments 
 #' from the object \link[dtwSat]{twdtw-class}
 #' 
-#' @param object A \link[dtwSat]{twdtw-class} object
-#' @param ... additional arguments passed to \code{\link[dtwSat]{getPatternNames}}
+#' @param object A \link[dtwSat]{twdtw-class} object.
+#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' vector with the patterns identification. If not declared the function 
+#' retrieves the alignments for all patterns. 
 #' 
 #' @docType methods
-#' @return A \link[base]{data.frame} with the following columns:  
+#' @return A \link[base]{data.frame} with the following attributes:  
 #'       \cr\code{pattern}: the pattern identification,
 #'       \cr\code{from}: starting date,
 #'       \cr\code{to}: ending date, and
-#' 	     \cr\code{distance}: TWDTW distances.
+#' 	     \cr\code{distance}: TWDTW dissimilarity.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
@@ -34,19 +36,19 @@
 #' 
 #' @examples
 #' 
-#' weight.fun = logisticWeight(alpha=-0.1, beta=100)
-#' alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
+#' log_fun = logisticWeight(alpha=-0.1, beta=100)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
 #' 
-#' getAlignments(alig)
+#' getAlignments(matches)
 #' 
-#' getAlignments(alig, p.names="Soybean")
+#' getAlignments(matches, p.names="Soybean")
 #' 
-#' getAlignments(alig, p.names=c(2,3))
+#' getAlignments(matches, p.names=c(2,3))
 #' 
 #' @export
 setGeneric("getAlignments", 
-           function(object, ...) {
-             p.names = getPatternNames(object, ...)
+           function(object, p.names) {
+             p.names = getPatternNames(object, p.names)
              if(any(is.na(p.names)))
                stop("the patterns identification is invalid")
              .getAlignments(object, p.names)

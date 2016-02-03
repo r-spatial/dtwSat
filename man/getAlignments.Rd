@@ -5,19 +5,21 @@
 \alias{getAlignments}
 \title{Get alignments from twdtw object}
 \usage{
-getAlignments(object, ...)
+getAlignments(object, p.names)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{twdtw-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
+\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+retrieves the alignments for all patterns.}
 }
 \value{
-A \link[base]{data.frame} with the following columns:  
+A \link[base]{data.frame} with the following attributes:  
       \cr\code{pattern}: the pattern identification,
       \cr\code{from}: starting date,
       \cr\code{to}: ending date, and
-	     \cr\code{distance}: TWDTW distances.
+	     \cr\code{distance}: TWDTW dissimilarity.
 }
 \description{
 This function retrieves the alignments 
@@ -25,14 +27,14 @@ from the object \link[dtwSat]{twdtw-class}
 }
 \examples{
 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
-alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun)
+log_fun = logisticWeight(alpha=-0.1, beta=100)
+matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
 
-getAlignments(alig)
+getAlignments(matches)
 
-getAlignments(alig, p.names="Soybean")
+getAlignments(matches, p.names="Soybean")
 
-getAlignments(alig, p.names=c(2,3))
+getAlignments(matches, p.names=c(2,3))
 
 }
 \author{

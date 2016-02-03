@@ -5,12 +5,14 @@
 \alias{getInternals}
 \title{Get internals from twdtw object}
 \usage{
-getInternals(object, ...)
+getInternals(object, p.names)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{twdtw-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{...}{additional arguments passed to \code{\link[dtwSat]{getPatternNames}}}
+\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+retrieves the internals for all patterns.}
 }
 \value{
 A \code{\link[base]{list}} whose 
@@ -20,8 +22,9 @@ A \code{\link[base]{list}} whose
       \cr\code{localMatrix}: local cost matrix,
       \cr\code{costMatrix}: cumulative cost matrix,
       \cr\code{directionMatrix}: directions of steps that would be taken in the alignments,
+      \cr\code{startingMatrix}: the index of the first point that contributed for the cost computation,
       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
-      computation, see package \code{\link[dtw]{dtw}}
+      computation, see package \code{\link[dtw]{dtw}},
       \cr\code{pattern}: pattern time series, 
       \cr\code{x}: satellite image time series,
       \cr\code{N}: \code{pattern} length, and 
@@ -29,20 +32,21 @@ A \code{\link[base]{list}} whose
 }
 \description{
 This function retrieves cost matrix, inputs, and other 
-internal structures from \link[dtwSat]{twdtw-class} object
+internal structures from \link[dtwSat]{twdtw-class} object.
 }
 \examples{
 
-weight.fun = logisticWeight(alpha=-0.1, beta=100)
-alig = twdtw(x=template, patterns=patterns.list, weight.fun = weight.fun, keep=TRUE)
+log_fun = logisticWeight(alpha=-0.1, beta=100)
+matches = twdtw(x=example_ts, patterns=patterns.list, 
+             weight.fun = log_fun, keep=TRUE)
 
-a = getInternals(alig)
+a = getInternals(matches)
 names(a) 
 
-a = getInternals(alig, p.names="Maize")
+a = getInternals(matches, p.names="Maize")
 names(a) 
 
-a = getInternals(alig, p.names=c(1,2))
+a = getInternals(matches, p.names=c(1,2))
 names(a) 
 
 

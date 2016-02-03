@@ -19,7 +19,7 @@ a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAli
 
 \item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
 
-\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''}
+\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month"}
 
 \item{overlap}{A number between 0 and 1. The minimum overlapping 
 between the one alignment and the interval of classification. 

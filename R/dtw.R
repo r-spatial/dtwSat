@@ -24,6 +24,7 @@
         out = .Fortran("computecost", 
                 CM = matrix(as.double(cm), n, m),
                 DM = matrix(as.integer(0), n, m),
+                VM = matrix(as.integer(0), n, m),
                 SM = matrix(as.integer(step.matrix), nrow(step.matrix), ncol(step.matrix)),
                 N  = as.integer(n),
                 M  = as.integer(m),
@@ -36,7 +37,8 @@
         nsteps = dim(step.matrix)[1]
         lm[1,1] = cm[1,1]
         sm = matrix(NA, nrow=n, ncol=m)
-
+        vm = matrix(NA, nrow=n, ncol=m)
+        
         dir = step.matrix
         ns = attr(dir,"npat")
         trash = lapply(1:m, function(j){
@@ -45,16 +47,18 @@
               return(NULL)
             
             clist = numeric(ns)+NA
+            IL = NA
+            JL = NA
             for(k in 1:nsteps){
               p = dir[k,1]
-              I = i-dir[k,2]
-              J = j-dir[k,3]
-              if(I>=1 && J>=1) {
+              IL[k] = i-dir[k,2]
+              JL[k] = j-dir[k,3]
+              if(IL[k]>=1 && JL[k]>=1) {
                 w = dir[k,4]
                 if(w == -1) {
-                  clist[p] = lm[I,J]
+                  clist[p] = lm[IL[k],JL[k]]
                 }else{
-                  clist[p] = clist[p]+w*cm[I,J]
+                  clist[p] = clist[p]+w*cm[IL[k],JL[k]]
                 }
               }
             }
@@ -62,15 +66,17 @@
             if(length(minc) > 0){
               lm[i,j] <<- clist[minc]
               sm[i,j] <<- minc
+              vm[i,j] <<- vm[i-IL[k],j-JL[k]]
             }
           })
         })
         
-        out = list(CM = lm, DM = sm)
+        out = list(CM = lm, DM = sm, VM = vm)
    }
    res = list()
    res$costMatrix = out$CM[-1,]
    res$directionMatrix = out$DM[-1,]
+   res$startingIndex = out$VM[-1,]
    res$stepPattern = step.matrix
    res$N = n - 1
    res$M = m

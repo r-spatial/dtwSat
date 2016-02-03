@@ -4,7 +4,6 @@
 # Other files
 README.md
 corinho.R
-dtwSat_lucc.R
 tardis.f
 tardis.o
 .git
@@ -16,4 +15,3 @@ tardis.o
 ^README-.*\.png$
 ^cran-comments\.md
 ^NEWS\.md$
-^lucc\.md$

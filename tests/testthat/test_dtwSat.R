@@ -74,7 +74,7 @@ best_class
 
 gp = plotGroup(x=alig, from=as.Date("2009-09-01"),  
               to=as.Date("2013-09-01"), by = "6 month",
-              overlap=.3)
+              overlap=.4)
 gp
 # ggsave("classify.png", plot=gp, width = 8.9, height=5.9/1.5, units="in",
 #         family="Helvetica", type = "cairo-png")

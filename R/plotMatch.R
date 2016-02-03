@@ -75,6 +75,13 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
     p.names = getPatternNames(x, p.names)
   }
   
+  ## Get data
+  internals  = getInternals(x, p.names)
+  if(is.null(internals))
+    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
+  matches   = getMatches(x, p.names)
+  alignments = getAlignments(x, p.names)
+  
   if(missing(n)) n = rep(1, length(p.names))
   if(length(n)==1) {
     p.names = rep(p.names, each = n)
@@ -84,13 +91,6 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
     stop("n is not the same length as p.names")
   
   names(n) = p.names
-  
-  ## Get data
-  internals  = getInternals(x, p.names)
-  if(is.null(internals))
-    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
-  matching   = getMatches(x, p.names)
-  alignments = getAlignments(x, p.names)
   
   xx = internals[[p.names[1]]]$x[,attr,drop=FALSE]
   tx = index(xx)
@@ -107,12 +107,12 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
     yy = internals[[p]]$pattern[,attr,drop=FALSE]
     ty = index(yy)
     
-    if(n[i]>length(matching[[p]])){
+    if(n[i]>length(matches[[p]])){
       warning("alignment index out of bounds", call. = TRUE)
       return(NULL)
     } 
       
-    map = data.frame(matching[[p]][[n[i]]])
+    map = data.frame(matches[[p]][[n[i]]])
     delay = tx[map$index2[1]]-ty[1]
     if(delay>0)
       delay = delay + diff(range(ty, na.rm = TRUE))*shift
@@ -125,7 +125,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
     df.match.x = df.x[map$index2,]
     df.match.x$alig = paste(1:nrow(map),p,n[i],sep="_")
     df.match = rbind(df.match.pt, df.match.x)
-    df.pt$Pattern = paste(p,n[i])
+    df.pt$Match = paste(p,n[i])
     df.dist = data.frame(Time=max(ty[map$index1]+delay)+diff(range(df.pt$Time))/3,
                          max(df.pt[,names(yy)]),Dist=alignments$distance[n[i]])
     names(df.dist) = c("Time", names(yy), "Dist")
@@ -139,7 +139,7 @@ plotMatch = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   gp = ggplot(data=df.x, aes_string(x='Time', y=eval(attr_names))) +
     geom_line() +
     geom_line(data=df.pt, aes_string(x='Time', y=eval(attr_names), 
-                                     group='Pattern', colour='Pattern')) + 
+                                     group='Match', colour='Match')) + 
     geom_line(data=df.match, linetype = 2, colour = "grey", 
               aes_string(x='Time', y=eval(attr_names), group='alig')) + 
     scale_y_continuous(breaks=y.breaks, labels=y.labels) +

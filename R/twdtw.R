@@ -147,60 +147,67 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     internals$timeWeight = matrix(psi, nrow = nrow(psi))
     internals$localMatrix = matrix(cm, nrow = nrow(cm))
     
-    # Find low cost candidate paths 
+    # Find low cost candidate 
+    a = internals$startingIndex[internals$N,1:internals$M]
     d = internals$costMatrix[internals$N,1:internals$M]
-    endPoints = .findMin(d, index(x), span=span)
+    candidate   = data.frame(a, d)
+    candidate   = candidate[ candidate$d==ave(candidate$d, candidate$a, FUN=min), ]
+    candidate$b = as.numeric(row.names(candidate))
+    I = order(candidate$d)
+    # endPoints = .findMin(d, index(x), span=span)
+    if(length(I)<1) return(NULL)
     
-    # Trace back low cost paths
-    if(length(endPoints)<1){
-      alignments = NULL
-    }else{
-      endPoints = endPoints[order(d[endPoints])]
-      if(is.null(n.alignments))
-        n.alignments = length(endPoints)
-      if(length(endPoints) > n.alignments)
-        endPoints = endPoints[1:n.alignments]
+    # Sellect alignments 
+    if(is.null(n.alignments)) n.alignments = length(I)
+    if(length(I) > n.alignments) I = I[1:n.alignments]
+    
+    alignments = list()
+    alignments$from       = index(x)[candidate$a[I]] # This is a vector of Dates
+    alignments$to         = index(x)[candidate$b[I]] # This is a vector of Dates
+    alignments$distance   = candidate$d[I]           # This is a numeric vector 
+    alignments$K          = length(I)                # This is an interger 
+    
+    if(keep){
       # Trace low cost paths (k-th paths)
-      matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, 
-                            jmin=endPoints)
-      # Get starting point of each path
-      startPoints = unlist(lapply(matching, function(map){
-        return(map$index2[1])
-      }))
-      
-      alignments = list()
-      alignments$from       = index(x)[startPoints] # This is a vector of Dates
-      alignments$to         = index(x)[endPoints] # This is a vector of Dates
-      alignments$distance   = d[endPoints] # This is a numeric vector 
-      alignments$K          = length(endPoints)
-      alignments$matching   = matching # This is a list of data.frames
-      if(keep){
-        alignments$internals = internals
-        alignments$internals$pattern = pattern # Thes is a zoo object
-        alignments$internals$x = x # This is a zoo object 
-      }
+      matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidate$b[I])
+      alignments$internals = internals       # These is a list variables used in the TWDTW computation 
+      alignments$internals$pattern = pattern # Thes is a zoo object
+      alignments$internals$x = x             # This is a zoo object 
+      alignments$matching = matching         # This is a list of data.frames with the matching points 
     }
     alignments
   })
   new("twdtw", call=match.call(), alignments=res)
 }
 
-.findMin = function(x, timeline, span){
-  NonNA = which(!is.na(x))
-  dx = diff(x[NonNA])
-  index_min = NonNA[which(dx[-length(dx)] < 0 & dx[-1] >= 0)] + 1
-  if(tail(dx,1) < 0)
-    index_min = c(index_min,length(x))
-  order_min = index_min[order(x[index_min])]
-  min_out = array()
-  for(i in seq_along(index_min)){
-    min_out[i] = order_min[i]
-    lower_bound = timeline[order_min[i]] - span
-    upper_bound = timeline[order_min[i]] + span
-    in_span = lower_bound < timeline[order_min] & timeline[order_min] < upper_bound
-    order_min[in_span] = NA
-  }
-  res = min_out[!is.na(min_out)]
+# .findMin = function(x, timeline, span){
+#   NonNA = which(!is.na(x))
+#   dx = diff(x[NonNA])
+#   index_min = NonNA[which(dx[-length(dx)] < 0 & dx[-1] >= 0)] + 1
+#   if(tail(dx,1) < 0)
+#     index_min = c(index_min,length(x))
+#   order_min = index_min[order(x[index_min])]
+#   min_out = array()
+#   for(i in seq_along(index_min)){
+#     min_out[i] = order_min[i]
+#     lower_bound = timeline[order_min[i]] - span
+#     upper_bound = timeline[order_min[i]] + span
+#     in_span = lower_bound <= timeline[order_min] & timeline[order_min] <= upper_bound
+#     order_min[in_span] = NA
+#   }
+#   res = min_out[!is.na(min_out)]
+#   res
+# }
+
+.removeConcurrent = function(I, startPoints, endPoints, d){
+  res = !(I | duplicated(startPoints, fromLast = TRUE))
+  J = unlist(lapply(unique(startPoints[!res]), function(i){
+    J = which(startPoints==i)
+    min_j = rep(FALSE, length(J))
+    min_j[which.min(d[endPoints[J]])] = TRUE
+    min_j
+  }))
+  res[!res] = J
   res
 }
 

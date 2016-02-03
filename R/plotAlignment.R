@@ -84,7 +84,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
   df.alignments$Pattern = NA
   df.alignments$group = df.alignments$variable 
   df.alignments$facets = 1
-  df.alignments$facets = factor(df.alignments$facets, levels = c(1,2), labels = c("Time series","TWDTW alignments distance"))
+  df.alignments$facets = factor(df.alignments$facets, levels = c(1,2), labels = c("Time series","TWDTW dissimilarity measure"))
   
   # Get matching points
   df.matches = list()
@@ -97,7 +97,7 @@ plotAlignment = function(x, p.names, attr=1, threshold=Inf){
   df.matches$group = as.character(rep(1:length(alignments$pattern), 2))
   df.matches$facets = 2
   df.matches = data.frame(df.matches, stringsAsFactors = FALSE)
-  df.matches$facets = factor(df.matches$facets, levels = c(1,2), labels = c("Time series","TWDTW alignments distance"))
+  df.matches$facets = factor(df.matches$facets, levels = c(1,2), labels = c("Time series","TWDTW dissimilarity measure"))
   
   I = which(df.matches$value>threshold)
   if(length(I)>0)

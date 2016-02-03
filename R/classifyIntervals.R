@@ -23,7 +23,7 @@
 #' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} ''6 month''
+#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month"
 #' @param breaks A vector of class \code{\link[base]{Dates}}
 #' @param overlap A number between 0 and 1. The minimum overlapping 
 #' between the one alignment and the interval of classification. 

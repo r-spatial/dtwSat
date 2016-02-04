@@ -15,14 +15,15 @@
 
 #' @title Get dates from year and day of the year
 #' 
-#' @description This function retrieves the date corresponding to year 
-#' and day of the year
+#' @description This function retrieves the date corresponding to the ginven 
+#' year and day of the year.
 #' 
-#' @param year An vector with the years
-#' @param doy An vector with the day of the year
+#' @param year An vector with the years.
+#' @param doy An vector with the day of the year.
+#' 
 #' @docType methods
 #' 
-#' @return A \code{\link[base]{Dates}} object
+#' @return A \code{\link[base]{Dates}} object.
 #' 
 #' @seealso \link[dtwSat]{getModisTimeSequence} and \link[dtwSat]{getModisTimeIndex}
 #' 

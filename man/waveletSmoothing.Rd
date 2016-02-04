@@ -9,7 +9,7 @@ waveletSmoothing(x, timeline = NULL, frequency = NULL, wf = "la8",
   J = 1, boundary = "periodic", ...)
 }
 \arguments{
-\item{x}{A \code{\link[zoo]{zoo}} object with the time series}
+\item{x}{A \code{\link[zoo]{zoo}} object with the time series.}
 
 \item{timeline}{A vector of dates for the output time series.
 It must have a regular frequency.}
@@ -17,19 +17,19 @@ It must have a regular frequency.}
 \item{frequency}{The frequncy for the output time series}
 
 \item{wf}{Name of the wavelet filter used in the decomposition. 
-Default is "la8"}
+Default is "la8".}
 
 \item{J}{Specifies the depth of the decomposition. This must be a number 
-less than or equal to log(length(x),2). Default is 1}
+less than or equal to log(length(x),2). Default is 1.}
 
 \item{boundary}{Character string specifying the boundary condition. 
-Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.}
+Default is "periodic". See \code{\link[waveslim]{mra}}.}
 
 \item{...}{other arguments to pass to the function \code{\link[waveslim]{mra}} in the 
-packege \pkg{waveslim}}
+packege \pkg{waveslim}.}
 }
 \value{
-A \code{\link[zoo]{zoo}} object
+A \code{\link[zoo]{zoo}} object.
 }
 \description{
 This function performs a smoothing algorithm to
@@ -58,6 +58,6 @@ if(require(ggplot2)){
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\link[waveslim]{mra}
+\link[waveslim]{mra}.
 }
 

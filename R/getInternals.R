@@ -16,7 +16,7 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function retrieves cost matrix, inputs, and other 
-#' internal structures from \link[dtwSat]{twdtw-class} object.
+#' internal structures from \link[dtwSat]{twdtw}.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
@@ -41,7 +41,7 @@
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
-#' \code{\link[dtwSat]{twdtw}}
+#' \code{\link[dtwSat]{twdtw}}.
 #' 
 #' @examples
 #' 

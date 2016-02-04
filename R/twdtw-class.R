@@ -17,7 +17,7 @@
 #' @name twdtw-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
-#' @description Class for Time-Weighted Dynamic Time Warping alignments
+#' @description Class for Time-Weighted Dynamic Time Warping matches.
 #' 
 #' 
 #' @section Slots :

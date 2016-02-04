@@ -3,7 +3,7 @@
 \docType{data}
 \name{example_ts}
 \alias{example_ts}
-\title{Data: A example of satellite time series}
+\title{Data: An example of satellite time series}
 \format{A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}} 
 in the format ''yyyy-mm-dd''. Each node has 6 attributes: ''ndvi'', 
 ''evi'', ''red'', ''nir'', ''blue'', and ''mir''.}
@@ -12,11 +12,16 @@ example_ts
 }
 \description{
 This dataset has a time series based on the 
-MODIS product MOD13Q1 250 m 16 days. It is an irregular time series 
+MODIS product MOD13Q1 250 m 16 days [1]. It is an irregularly sampled time series 
 using the real date of each pixel from ''2009-08-05'' to ''2013-07-31''.
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
+}
+\references{
+[1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
+MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
+datasets. Remote Sensing of Environment, 114(1), 168 182.
 }
 \seealso{
 \link[dtwSat]{example_ts.list},
@@ -26,7 +31,7 @@ The package \pkg{rwtss} provides a client for Web Time
 Series Service \url{https://github.com/albhasan/rwtss.git}.
 
 MOD13Q1 documentation: 
-\url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}
+\url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
 }
 \keyword{datasets}
 

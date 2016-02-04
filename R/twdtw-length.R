@@ -12,31 +12,32 @@
 #                                                             #
 ###############################################################
 
-
-#' @title Get Modis time index from date
+#' @title Length method for twdtw-class
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the nearest time 
-#' index to a date
+#' @description Retrieves the number of matches in the 
+#' twdtw-class object.
 #' 
-#' @param date A \code{\link[base]{Dates}} object
-#' @param frequency An integer with the frequency in days. Default is 16 days
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object.
 #' 
-#' @docType methods 
+#' @docType methods
 #' 
-#' @return An \code{\link[base]{integer}} object.
+#' @return An \link[base]{integer}.
 #' 
 #' @seealso 
-#' \link[dtwSat]{getModisTimeSequence}, and
-#' \link[dtwSat]{getDatesFromDOY}.
-#' 
+#' \code{\link[dtwSat]{twdtw-class}}, and 
+#' \code{\link[dtwSat]{twdtw}}
+#'  
 #' @examples
-#' i = getModisTimeIndex(date=as.Date("2000-01-01"))
-#' i
-#'
+#' 
+#' matches = twdtw(x=example_ts, patterns=patterns.list)
+#'        
+#' length(matches)
+#' 
+#' @rdname length-method
+#' 
 #' @export
-getModisTimeIndex = function(date, frequency=16){
-  dates = getModisTimeSequence(frequency=frequency)
-  res = which.min(abs(dates-date))
-  res
+length.twdtw = function(x){
+  nrow(getAlignments(x))
 }
 

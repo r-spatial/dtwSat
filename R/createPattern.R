@@ -16,23 +16,34 @@
 #' @title Create temporal patterns 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function fits a gam model and retrieves a smoothed 
-#' temporal pattern 
+#' @description This function fits a Generalized Additive Model model 
+#' to the samples and retrieves a smoothed temporal pattern. 
 #' 
 #' @param x A \code{\link[base]{list}} of \code{\link[zoo]{zoo}} such as 
 #' retrived by \code{\link[dtwSat]{extractTimeSeries}}. 
+#' 
 #' @param from A character or \code{\link[base]{Dates}} object in the format 
 #' "yyyy-mm-dd". If not informed it is equal to the smallest date of the 
-#' first element in x 
+#' first element in x. See details. 
+#'  
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
 #' object in the format "yyyy-mm-dd". If not informed it is equal to the 
-#' greatest date of the first element in x 
-#' @param attr A vector character or numeric. The attributes in \code{x} to use 
-#' @param freq An integer. The frequency of the output patterns 
-#' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}
-#' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
-#' packege \pkg{mgcv}
+#' greatest date of the first element in x. See details. 
 #' 
+#' @param attr A vector character or numeric. The attributes in \code{x} to be used. 
+#' If not declared the function uses all attributes.  
+#' 
+#' @param freq An integer. The sampling frequency of the output patterns.
+#'  
+#' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}. 
+#' 
+#' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
+#' packege \pkg{mgcv}.
+#' 
+#' @details The hidden assumption is that the temporal pattern is a cycle the repeats itself 
+#' within a given time interval. Therefore, all time series samples in \code{x} are aligned 
+#' to each other keeping the time sequence of each sample and its respective day of the year. 
+#' After that the function fits a Generalized Additive Model to the samples.  
 #' 
 #' @docType methods
 #' 
@@ -40,8 +51,13 @@
 #' 
 #' @examples
 #' 
-#' ###
+#' names(ts_vignette.list)
 #' 
+#' samples = ts_vignette.list$`Soybean-cotton`
+#' 
+#' p = createPattern(x = samples, formula = y ~ s(time, bs = "cc"))
+#' 
+#' plotPatterns(p)
 #' 
 #' @export
 createPattern = function(x, from, to, freq=1, attr, formula, ...){

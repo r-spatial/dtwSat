@@ -15,14 +15,14 @@
 #' @title Plotting twdtw objects
 #' 
 #' @description Methods for plotting the results of the 
-#' TTWDTW analysis
+#' TWDTW analysis.
 #' 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object
 #' @param type A character for the plot type: ''paths'', ''matches'', 
-#' ''alignments'', ''classification'', ''cost'', or ''patterns''. 
-#' Default is ''matches''.
+#' ''alignments'', ''classification'', ''cost'', or ''patterns''.
+#' Default is ''matches''. See details. 
 #' @param ... additional arguments passed to plotting functions.
 #' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
@@ -32,6 +32,14 @@
 #' \code{\link[dtwSat]{plotPatterns}}.
 #'  
 #' @return A \link[ggplot2]{ggplot} object.
+#' 
+#' @details 
+#' \cr"paths": 
+#' \cr"matches": 
+#' \cr"alignments": 
+#' \cr"classification": 
+#' \cr"cost": 
+#' \cr"patterns": 
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
@@ -75,6 +83,8 @@
 #' gp6 = plot(matches, type="patterns")
 #' gp6
 #' 
+#' @rdname plot-method
+#' 
 #' @export
 setMethod("plot", 
           signature(x = "twdtw"),
@@ -92,6 +102,6 @@ setMethod("plot",
                    plotCostMatrix(x, ...),
                    plotPatterns(x, ...)
             )
-          } 
+          }
 )
 

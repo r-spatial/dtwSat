@@ -17,14 +17,16 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function normalizes the length of a pattern or 
-#' list of patterns
+#' list of patterns.
 #' 
-#' @param ... \link[zoo]{zoo} objects
-#' @param patterns a list of \link[zoo]{zoo} objects
-#' @param patterns.length An integer. Default is the length of the longest pattern
+#' @param ... \link[zoo]{zoo} objects.
+#' @param patterns a list of \link[zoo]{zoo} objects.
+#' @param patterns.length An integer. Default is the length of the longest pattern.
+#' 
 #' @docType methods
+#' 
 #' @return A \link[base]{list} of \link[zoo]{zoo} objects with normalized 
-#' length 
+#' length, \emph{i.e.} the same number of points. 
 #'
 #' @examples
 #' new.patterns.list = normalizePatterns(patterns = patterns.list, patterns.length = 23)

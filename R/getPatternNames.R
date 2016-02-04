@@ -18,7 +18,7 @@
 #' @description This function retrieves pattern names in the 
 #' \link[dtwSat]{twdtw-class} object.
 #' 
-#' @param object A \link[dtwSat]{twdtw-class} object
+#' @param object A \link[dtwSat]{twdtw-class} object.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the names for all patterns.
@@ -26,11 +26,11 @@
 #' @docType methods
 #' 
 #' @return A \code{\link[base]{character}}
-#' or \code{\link[base]{numeric}} vector 
+#' or \code{\link[base]{numeric}} vector.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
-#' \code{\link[dtwSat]{twdtw}}
+#' \code{\link[dtwSat]{twdtw}}.
 #' 
 #' @examples
 #' 

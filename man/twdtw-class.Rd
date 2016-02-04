@@ -4,7 +4,7 @@
 \alias{twdtw-class}
 \title{twdtw-class}
 \description{
-Class for Time-Weighted Dynamic Time Warping alignments
+Class for Time-Weighted Dynamic Time Warping matches.
 }
 \section{Slots }{
 

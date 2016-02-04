@@ -5,46 +5,49 @@
 \alias{classifyIntervals}
 \title{Classify time intervals}
 \usage{
-classifyIntervals(x, breaks = NULL, from = NULL, to = NULL, by = NULL,
+classifyIntervals(x, from = NULL, to = NULL, by = NULL, breaks = NULL,
   overlap = 0.3, threshold = Inf, simplify = FALSE, levels = NULL,
-  labels = NULL, Unclassified = 255, ...)
+  labels = NULL, Unclassified = 255, p.names)
 }
 \arguments{
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object or 
-a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}}
+a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}.}
 
-\item{breaks}{A vector of class \code{\link[base]{Dates}}}
+\item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
 
-\item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
+\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
 
-\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"}
+\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month".}
 
-\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month"}
+\item{breaks}{A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
+\code{to}, and \code{by}.}
 
 \item{overlap}{A number between 0 and 1. The minimum overlapping 
-between the one alignment and the interval of classification. 
-Default is 1, \emph{i.e.} 100\%}
+between one match and the interval of classification. Default is 0.3, 
+\emph{i.e.} an overlap minimum of 30\%.}
 
-\item{threshold}{A number. The TWDTW threshold, i.e. the maximum TWDTW 
-cost for consideration. Default is \code{Inf}}
+\item{threshold}{A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
+cost for consideration in the classification. Default is \code{Inf}.}
 
-\item{simplify}{return only the best pattenr for each interval. Default is FALSE}
+\item{simplify}{return only the best pattern for each interval. Default is FALSE.}
 
-\item{levels}{A character or numeric vector. The categories for classification}
+\item{levels}{A character or numeric vector. The levels for the classification.}
 
-\item{labels}{A character or numeric vector. The labels for each category}
+\item{labels}{A character or numeric vector. The labels for each level.}
 
-\item{Unclassified}{A numeric to fill gaps. Default is 255}
+\item{Unclassified}{A numeric to fill classification gaps. Default is 255.}
 
-\item{...}{other argument passed to \code{\link[dtwSat]{getPatternNames}}}
+\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+considers all patterns in the classification.}
 }
 \value{
-A \code{\link[base]{data.frame}} with the best alignment 
-for each interval
+A \code{\link[base]{data.frame}} with the best match 
+for each interval of classification.
 }
 \description{
-This function retrieves the best alignment within each 
-interval of classification based on the TWDTW distance
+This function retrieves the best match within each 
+predefined period based on the TWDTW dissimilarity measure.
 }
 \examples{
 

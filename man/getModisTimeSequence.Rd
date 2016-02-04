@@ -3,18 +3,18 @@
 \docType{methods}
 \name{getModisTimeSequence}
 \alias{getModisTimeSequence}
-\title{Create time sequence}
+\title{Get Modis time sequence}
 \usage{
 getModisTimeSequence(year = 2000:format(Sys.time(), "\%Y"), frequency = 16)
 }
 \arguments{
-\item{year}{A vector with the years. Default 
-is form 2000 to the system time year \code{format(Sys.time(), ''\%Y'')}}
+\item{year}{A vector with the years. Default is form 2000 to the year in 
+the system time.}
 
-\item{frequency}{An integer with the frequency in days. Default is 16 days}
+\item{frequency}{An integer with the frequency in days. Default is 16 days.}
 }
 \value{
-A vector of \code{\link[base]{Dates}}
+A vector of \code{\link[base]{Dates}} .
 }
 \description{
 This function creates a sequence of dates for 

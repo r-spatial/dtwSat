@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plotMatches}
 \alias{plotMatches}
-\title{Plotting twdtw matching points}
+\title{Plotting TWDTW matching points}
 \usage{
 plotMatches(x, p.names, n, attr = 1, shift = 0.5, show.dist = FALSE)
 }
@@ -12,17 +12,15 @@ plotMatches(x, p.names, n, attr = 1, shift = 0.5, show.dist = FALSE)
 
 \item{p.names}{A \link[base]{character} or \link[base]{integer}
 vector with the patterns identification. If not declared the function 
-will plot one alignment for each pattern in the 
-\code{\link[dtwSat]{twdtw-class}} object.}
+will plot one alignment for each pattern in \code{x}.}
 
 \item{n}{An \link[base]{integer} vector with the number of alignments to plot.
-It can be use as vector of indices combined with the \code{p.names} to plot 
+It can be use as vector of indices combined with \code{p.names} to plot 
 specific matches. If not declared the function will plot the best match for 
 each pattern.}
 
 \item{attr}{An \link[base]{integer} or \link[base]{character} vector 
-indicating the attribute for plotting, \emph{i.e.} a column of the \code{pattern}. 
-Default is 1.}
+indicating the attribute for plotting. Default is 1.}
 
 \item{shift}{A number, it shifts the pattern position in the \code{x}
 direction. Default is 0.5.}
@@ -34,7 +32,7 @@ A \link[ggplot2]{ggplot} object
 }
 \description{
 Method for plotting the matching points from   
-TWDTW analysis
+TWDTW analysis.
 }
 \examples{
 
@@ -65,7 +63,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotPaths}}, 
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
-\code{\link[dtwSat]{plotMatches}}, 
 \code{\link[dtwSat]{plotClassification}}, and 
 \code{\link[dtwSat]{plotPatterns}}.
 }

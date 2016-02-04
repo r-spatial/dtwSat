@@ -24,11 +24,11 @@
 #' retrieves the total number of matches considering all patterns.  
 #' 
 #' @docType methods
-#' @return A \link[base]{numeric} 
+#' @return A \link[base]{numeric}.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
-#' \code{\link[dtwSat]{twdtw}}
+#' \code{\link[dtwSat]{twdtw}}.
 #' 
 #' @examples
 #' 

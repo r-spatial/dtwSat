@@ -15,20 +15,19 @@
 #' @title Summary method for twdtw-class
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Summary the alignments for each pattern in the 
-#' twdtw-class object 
+#' @description Summary of the TWDTW matches for each pattern. 
 #' 
-#' @param object An \code{\link[dtwSat]{twdtw-class}} object
-#' @param ... additional arguments passed to summary
+#' @param object An \code{\link[dtwSat]{twdtw-class}} object.
+#' @param ... additional arguments passed to summary.
 #' 
 #' @docType methods
 #' 
 #' @return A \link[base]{data.frame} object with the the summary 
-#' for each pattern 
+#' for each pattern.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and 
-#' \code{\link[dtwSat]{twdtw}}
+#' \code{\link[dtwSat]{twdtw}}.
 #'  
 #' @examples
 #' 
@@ -36,6 +35,8 @@
 #'        
 #' show(matches)
 #' summary(matches)
+#' 
+#' @rdname summary-method
 #' 
 #' @export
 setMethod("summary", 
@@ -47,7 +48,7 @@ setMethod("summary",
 
 summary.twdtw = function(object, ...){
   res1 = do.call("rbind", lapply(object@alignments, function(pattern){
-    c(N.Alig=length(pattern$distance), summary(pattern$distance))
+    c(N.Alig=length(pattern$distance), summary(pattern$distance, ...))
   }))
   data.frame(res1)
 }

@@ -8,7 +8,7 @@
 getPatternNames(object, p.names)
 }
 \arguments{
-\item{object}{A \link[dtwSat]{twdtw-class} object}
+\item{object}{A \link[dtwSat]{twdtw-class} object.}
 
 \item{p.names}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
@@ -16,7 +16,7 @@ retrieves the names for all patterns.}
 }
 \value{
 A \code{\link[base]{character}}
-or \code{\link[base]{numeric}} vector
+or \code{\link[base]{numeric}} vector.
 }
 \description{
 This function retrieves pattern names in the 
@@ -38,6 +38,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, and
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtw}}.
 }
 

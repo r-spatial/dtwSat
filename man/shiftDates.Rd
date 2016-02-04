@@ -13,7 +13,7 @@ shiftDates(x, year)
 \item{year}{An integer. The base year to shift the dates of the time series to.}
 }
 \value{
-a \link[zoo]{zoo} object shifted to the given year
+a \link[zoo]{zoo} object shifted to the given year.
 }
 \description{
 This function shifts the dates of the time series to a given base year.

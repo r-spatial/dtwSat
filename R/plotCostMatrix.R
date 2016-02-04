@@ -13,7 +13,7 @@
 ###############################################################
 
 
-#' @title Plotting cost matrices
+#' @title Plotting TWDTW cost matrices 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Method for plotting the internal matrices used during the 
@@ -34,7 +34,6 @@
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
 #' \code{\link[dtwSat]{plotPaths}}, 
-#' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
 #' \code{\link[dtwSat]{plotMatches}}, 
 #' \code{\link[dtwSat]{plotClassification}}, and 

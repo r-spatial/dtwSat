@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotCostMatrix.R
 \name{plotCostMatrix}
 \alias{plotCostMatrix}
-\title{Plotting cost matrices}
+\title{Plotting TWDTW cost matrices}
 \usage{
 plotCostMatrix(x, matrix.name = "costMatrix", p.names)
 }
@@ -57,7 +57,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
 \code{\link[dtwSat]{plotPaths}}, 
-\code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
 \code{\link[dtwSat]{plotMatches}}, 
 \code{\link[dtwSat]{plotClassification}}, and 

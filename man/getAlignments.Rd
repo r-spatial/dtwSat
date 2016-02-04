@@ -22,8 +22,7 @@ A \link[base]{data.frame} with the following attributes:
 	     \cr\code{distance}: TWDTW dissimilarity.
 }
 \description{
-This function retrieves the alignments 
-from the object \link[dtwSat]{twdtw-class}
+This function retrieves the TWDTW alignments.
 }
 \examples{
 
@@ -42,6 +41,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, and
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtw}}.
 }
 

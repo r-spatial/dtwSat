@@ -11,8 +11,8 @@
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{type}{A character for the plot type: ''paths'', ''matches'', 
-''alignments'', ''classification'', ''cost'', or ''patterns''. 
-Default is ''matches''.}
+''alignments'', ''classification'', ''cost'', or ''patterns''.
+Default is ''matches''. See details.}
 
 \item{...}{additional arguments passed to plotting functions.
 \code{\link[dtwSat]{plotPaths}}, 
@@ -27,7 +27,15 @@ A \link[ggplot2]{ggplot} object.
 }
 \description{
 Methods for plotting the results of the 
-TTWDTW analysis
+TWDTW analysis.
+}
+\details{
+\cr"paths": 
+\cr"matches": 
+\cr"alignments": 
+\cr"classification": 
+\cr"cost": 
+\cr"patterns":
 }
 \examples{
 

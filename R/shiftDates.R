@@ -23,7 +23,8 @@
 #' @param year An integer. The base year to shift the dates of the time series to.
 #' 
 #' @docType methods
-#' @return a \link[zoo]{zoo} object shifted to the given year 
+#' 
+#' @return a \link[zoo]{zoo} object shifted to the given year.
 #'
 #' @examples
 #' dates = seq(from = as.Date("2014-09-01"), to = as.Date("2015-03-01"), by = "15 day")

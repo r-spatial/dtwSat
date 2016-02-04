@@ -32,7 +32,7 @@ A \code{\link[base]{list}} whose
 }
 \description{
 This function retrieves cost matrix, inputs, and other 
-internal structures from \link[dtwSat]{twdtw-class} object.
+internal structures from \link[dtwSat]{twdtw}.
 }
 \examples{
 
@@ -56,6 +56,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, and
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtw}}.
 }
 

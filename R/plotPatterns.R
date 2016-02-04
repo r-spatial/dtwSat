@@ -18,8 +18,8 @@
 #' 
 #' @description Method for plotting the temporal patterns.
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object or a list of 
-#' \code{\link[zoo]{zoo}} objects.
+#' @param x An \code{\link[dtwSat]{twdtw-class}} object, a \code{\link[zoo]{zoo}},
+#' or a list of \code{\link[zoo]{zoo}} objects.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' will plot the paths for all patterns. 
@@ -35,9 +35,8 @@
 #' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
-#' \code{\link[dtwSat]{plotMatches}}, 
-#' \code{\link[dtwSat]{plotClassification}}, and 
-#' \code{\link[dtwSat]{plotPatterns}}.
+#' \code{\link[dtwSat]{plotMatches}}, and 
+#' \code{\link[dtwSat]{plotClassification}}.
 #'  
 #' @examples
 #' 
@@ -66,8 +65,15 @@ plotPatterns = function(x, p.names, year=2005){
     x = lapply(p.names, function(p) getInternals(x)[[p]]$pattern)
   }
   
+  if(is(x, "zoo")) x = list(x)
+  
   if(missing(p.names))
     p.names = names(x)
+  
+  if(is.null(p.names)){
+    p.names = paste("Pattern",seq_along(x))
+    names(x) = p.names
+  } 
   
   if(any(!unlist(lapply(x[p.names], is.zoo))))
     stop("patterns should be a list of zoo objects")

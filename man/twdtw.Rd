@@ -3,7 +3,7 @@
 \docType{methods}
 \name{twdtw}
 \alias{twdtw}
-\title{Perform Time-Weighted Dynamic Time Warping alignment}
+\title{Perform Time-Weighted Dynamic Time Warping}
 \usage{
 twdtw(x, ..., patterns = list(...), normalize.patterns = FALSE,
   patterns.length = NULL, weight.fun = NULL, dist.method = "Euclidean",
@@ -11,43 +11,45 @@ twdtw(x, ..., patterns = list(...), normalize.patterns = FALSE,
   keep = FALSE)
 }
 \arguments{
-\item{x}{A \link[zoo]{zoo} object with a time series similar 
-to \code{patterns}. \code{x} must have the same number of attributes
-and be equal to or longer than the \code{patterns}, 
-\emph{i.e.} \code{nrow(patterns)<=nrow(x)}.}
+\item{x}{A \link[zoo]{zoo} object with a time series.}
 
 \item{...}{\link[zoo]{zoo} objects.}
 
 \item{patterns}{a list of \link[zoo]{zoo} objects.}
 
-\item{normalize.patterns}{Normalize queries length. Default is FALSE.}
+\item{normalize.patterns}{Normalize patterns length. Default is FALSE.
+See \link[dtwSat]{normalizePatterns} for details.}
 
-\item{patterns.length}{An integer. Queries length used with normalize. 
-If not declared the length of the output queries will be the length of 
-the longest patterns.}
+\item{patterns.length}{An integer. Patterns length used with \code{patterns.length}. 
+If not declared the length of the output patterns will be the length of 
+the longest pattern.}
 
 \item{weight.fun}{A function that receives a matrix of time differences in days and 
-returns a matrix of time-weights. If not declared the time-weight is zero.}
+returns a matrix of time-weights. If not declared the time-weight is zero. In this 
+In this case the function runs the standard version of the dynamic time warping. 
+See details.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
-Default is ''Euclidean'' See \code{\link[proxy]{dist}} in package 
+Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
 \pkg{proxy}.}
 
-\item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [1]}
+\item{step.matrix}{see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2].}
 
-\item{n}{An integer. The maximun number of alignments to perform. 
-NULL will return all possible alignments without overlaps.}
+\item{n}{An integer. The maximun number of matches to perform. 
+NULL will return all matches.}
 
 \item{span}{A number. Span between two matches, \emph{i.e.} the minimum
-interval between two matches, for details see [2]. If not declared it removes
-all overlapping matches of the same pattern.}
+interval between two matches, for details see [3]. If not declared it removes
+all overlapping matches of the same pattern. To include overlapping matches 
+of the same pattern use \code{span=0}.}
 
 \item{theta}{numeric between 0 and 1. The weight of the time 
 for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
-\emph{i.e.} to run the original DTW algorithm. Default is 0.5.}
+\emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
+the time has the same weight as the curve shape in the TWDTW analysis.}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
-Default is FALSE.}
+Default is FALSE. For \code{\link[dtwSat]{plot-method}} methods use \code{keep=TRUE}.}
 }
 \value{
 A \code{\link[dtwSat]{twdtw-class}} object.
@@ -55,7 +57,16 @@ A \code{\link[dtwSat]{twdtw-class}} object.
 \description{
 This function performs a multidimensional Time-Weighted DTW 
 analysis and retrieves the matches between the temporal patterns and 
-the time series.
+the time series [1].
+}
+\details{
+The linear \code{linearWeight} and \code{logisticWeight} weight functions 
+can be passed to \code{twdtw} through the argument \code{weight.fun}. This will 
+add a time-weight to the dynamic time warping analysis. The time weight 
+creates a global constraint useful to analyse time series with phenological cycles
+of vegetation that are usually bound to seasons. In previous studies by [1] the 
+logistic weight had better results than the linear for land cover classification. 
+See [1] for details about the method.
 }
 \examples{
 log_fun = logisticWeight(alpha=-0.1, beta=100)
@@ -85,27 +96,29 @@ matches
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \references{
-[1] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
-The dtw Package. Journal of Statistical Software, 31, 1-24.
-
-[2] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
-and Motion (pp. 79-84). London: Springer London, Limited.
-
-[3] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+[1] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
 mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
 IEEE Journal of, X, XX-XX.
+
+[2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
+The dtw Package. Journal of Statistical Software, 31, 1-24.
+
+[3] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
+and Motion (pp. 79-84). London: Springer London, Limited.
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}},
-\code{\link[dtwSat]{linearWeight}}, 
-\code{\link[dtwSat]{logisticWeight}},
-\code{\link[dtwSat]{summary-twdtw-method}},  
-\code{\link[dtwSat]{plot-twdtw-ANY-method}}, 
+\code{\link[dtwSat]{show-method}},  
+\code{\link[dtwSat]{length-method}}, 
+\code{\link[dtwSat]{summary-method}},  
+\code{\link[dtwSat]{plot-method}}, 
 \code{\link[dtwSat]{getPatternNames}},
 \code{\link[dtwSat]{getAlignments}}, 
 \code{\link[dtwSat]{getMatches}},
-\code{\link[dtwSat]{getInternals}}, and 
+\code{\link[dtwSat]{getInternals}},
+\code{\link[dtwSat]{linearWeight}}, 
+\code{\link[dtwSat]{logisticWeight}}, and 
 \code{\link[dtwSat]{nmatches}}.
 }
 

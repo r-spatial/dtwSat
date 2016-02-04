@@ -17,13 +17,12 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Method for plotting the classification of each 
-#' subinterval of the time series based on \code{\link[dtwSat]{twdtw}} 
-#' analysis. 
+#' subinterval of the time series based on TWDTW analysis. 
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object.
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
-#' indicating the attribute for plotting, \emph{i.e.} a column of the \code{x}. 
-#' If not declared the function will plot all attributes.
+#' indicating the attribute for plotting. If not declared the function will plot 
+#' all attributes.
 #' @param ... additional arguments passed to \code{\link[dtwSat]{classifyIntervals}}.
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
@@ -34,8 +33,7 @@
 #' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
-#' \code{\link[dtwSat]{plotMatches}}, 
-#' \code{\link[dtwSat]{plotClassification}}, and 
+#' \code{\link[dtwSat]{plotMatches}}, and 
 #' \code{\link[dtwSat]{plotPatterns}}.
 #' 
 #' @examples

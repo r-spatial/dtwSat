@@ -16,30 +16,45 @@
 #' @title Classify time intervals
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the best alignment within each 
-#' interval of classification based on the TWDTW distance
+#' @description This function retrieves the best match within each 
+#' predefined period based on the TWDTW dissimilarity measure.
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object or 
-#' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}
-#' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd"
-#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month"
-#' @param breaks A vector of class \code{\link[base]{Dates}}
-#' @param overlap A number between 0 and 1. The minimum overlapping 
-#' between the one alignment and the interval of classification. 
-#' Default is 1, \emph{i.e.} 100\%
-#' @param threshold A number. The TWDTW threshold, i.e. the maximum TWDTW 
-#' cost for consideration. Default is \code{Inf}
-#' @param simplify return only the best pattenr for each interval. Default is FALSE 
-#' @param levels A character or numeric vector. The categories for classification
-#' @param labels A character or numeric vector. The labels for each category
-#' @param Unclassified A numeric to fill gaps. Default is 255
-#' @param ... other argument passed to \code{\link[dtwSat]{getPatternNames}}
+#' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}.
 #' 
+#' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".
+#' 
+#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".
+#' 
+#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month".
+#' 
+#' @param breaks A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
+#' \code{to}, and \code{by}.
+#' 
+#' @param overlap A number between 0 and 1. The minimum overlapping 
+#' between one match and the interval of classification. Default is 0.3, 
+#' \emph{i.e.} an overlap minimum of 30\%.
+#' 
+#' @param threshold A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
+#' cost for consideration in the classification. Default is \code{Inf}.
+#' 
+#' @param simplify return only the best pattern for each interval. Default is FALSE.
+#'  
+#' @param levels A character or numeric vector. The levels for the classification.
+#' 
+#' @param labels A character or numeric vector. The labels for each level.
+#' 
+#' @param Unclassified A numeric to fill classification gaps. Default is 255.
+#' 
+#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' vector with the patterns identification. If not declared the function 
+#' considers all patterns in the classification. 
 #' 
 #' @docType methods
-#' @return A \code{\link[base]{data.frame}} with the best alignment 
-#' for each interval
+#' 
+#' @return A \code{\link[base]{data.frame}} with the best match 
+#' for each interval of classification.
+#' 
 #' @examples
 #' 
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)
@@ -64,16 +79,16 @@
 #'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
 #'              
 #' @export
-classifyIntervals = function(x, breaks=NULL, from=NULL, to=NULL, by=NULL,
+classifyIntervals = function(x, from=NULL, to=NULL, by=NULL, breaks=NULL,
                              overlap=.3, threshold=Inf, 
                              simplify=FALSE,
                              levels=NULL,
                              labels=NULL,
                              Unclassified=255,
-                             ...)
+                             p.names)
 {
   
-  p.names = getPatternNames(x, ...)
+  p.names = getPatternNames(x, p.names)
   
   if(is(x, "twdtw"))
     x = getAlignments(x, p.names)

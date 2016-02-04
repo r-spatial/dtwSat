@@ -8,19 +8,19 @@
 normalizePatterns(..., patterns = list(...), patterns.length = NULL)
 }
 \arguments{
-\item{...}{\link[zoo]{zoo} objects}
+\item{...}{\link[zoo]{zoo} objects.}
 
-\item{patterns}{a list of \link[zoo]{zoo} objects}
+\item{patterns}{a list of \link[zoo]{zoo} objects.}
 
-\item{patterns.length}{An integer. Default is the length of the longest pattern}
+\item{patterns.length}{An integer. Default is the length of the longest pattern.}
 }
 \value{
 A \link[base]{list} of \link[zoo]{zoo} objects with normalized 
-length
+length, \emph{i.e.} the same number of points.
 }
 \description{
 This function normalizes the length of a pattern or 
-list of patterns
+list of patterns.
 }
 \examples{
 new.patterns.list = normalizePatterns(patterns = patterns.list, patterns.length = 23)

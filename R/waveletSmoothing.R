@@ -20,23 +20,28 @@
 #' the time series. It computes a discreat wavelet 
 #' smoothing for each dimension in the imput time series.
 #' 
-#' @param x A \code{\link[zoo]{zoo}} object with the time series
+#' @param x A \code{\link[zoo]{zoo}} object with the time series.
+#' 
 #' @param timeline A vector of dates for the output time series.
 #' It must have a regular frequency. 
+#' 
 #' @param frequency The frequncy for the output time series
 #' @param wf Name of the wavelet filter used in the decomposition. 
-#' Default is "la8"
+#' Default is "la8".
+#' 
 #' @param J Specifies the depth of the decomposition. This must be a number 
-#' less than or equal to log(length(x),2). Default is 1
+#' less than or equal to log(length(x),2). Default is 1.
+#' 
 #' @param boundary Character string specifying the boundary condition. 
-#' Default is "periodic". See parameters of \code{\link[waveslim]{mra}}.
+#' Default is "periodic". See \code{\link[waveslim]{mra}}.
+#' 
 #' @param ... other arguments to pass to the function \code{\link[waveslim]{mra}} in the 
-#' packege \pkg{waveslim}
+#' packege \pkg{waveslim}.
 #' 
 #' @docType methods
-#' @return A \code{\link[zoo]{zoo}} object
+#' @return A \code{\link[zoo]{zoo}} object.
 #' 
-#' @seealso \link[waveslim]{mra}
+#' @seealso \link[waveslim]{mra}.
 #' 
 #' @examples
 #' ## Wavelet filter

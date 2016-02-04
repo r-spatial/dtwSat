@@ -8,32 +8,52 @@
 extractTimeSeries(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1)
 }
 \arguments{
-\item{x}{A list of \code{\link[raster]{Raster-class}}
-\code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects}
+\item{x}{A list of Raster* objects \code{\link[raster]{Raster-class}}. To build the 
+raster list use \code{\link[dtwSat]{buildRasterTimeSeries}}.}
 
 \item{y}{A \code{\link[base]{data.frame}} whose attributes are: longitude, 
 latitude, the start ''from'' and the end ''to'' of the time interval 
 for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
-whose attributes are the start ''from'' and the end ''to'' of the time interval}
+whose attributes are the start ''from'' and the end ''to'' of the time interval.}
 
 \item{proj4string}{projection string, see \code{\link[sp]{CRS-class}}. Used 
-if \code{y} is a \code{\link[base]{data.frame}}}
+if \code{y} is a \code{\link[base]{data.frame}}.}
 
-\item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
-for details}
+\item{mc.cores}{The number of cores to use, see \code{\link[parallel]{mclapply}} 
+for details.}
 }
 \value{
-A list of \code{\link[base]{data.frame}} objects, one for each class in \code{x}
+A list of \code{\link[zoo]{zoo}} objects, one for each location given by \code{y}.
 }
 \description{
-This function extracts the time series from a list of 
-raster given set of spatial location
+This function extracts time series from a list of 
+raster using the spatial location and the time period.
 }
 \examples{
 
-###
+ ####
+ #require(raster)
+ ## Read EVI raster file and timeline 
+ #r = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
+ #time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
+ #        as.is=TRUE)
+         
+ ## Build raster time series 
+ #raster_ts = buildRasterTimeSeries(x = r, timeline = dates$date)
+ 
+ # Location and time range 
+ #ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
+ #                        from = "2007-09-01", to = "2013-09-01")
+ 
+ ## Proj string 
+ #crs_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
-
+ ## Extract time series 
+ #ts = extractTimeSeries(x = raster_ts, y = ts_location, proj4string = crs_string)
+ 
+ #library(ggplot2)
+ #autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("EVI")
+ 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

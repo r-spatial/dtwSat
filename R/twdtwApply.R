@@ -17,35 +17,43 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function applies a multidimensional Time-Weighted DTW 
-#' analysis for each pixel location in the raster time series. 
+#' analysis for each pixel location in the raster time series and retrieves 
+#' a classified raster time series.  
 #' 
-#' @param x A list of \code{\link[raster]{Raster-class}}.
-#' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects.
-#' Each layer of the Raster* object is a time step. See Details
+#' @param x A list of \code{\link[raster]{Raster-class}}
+#' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} object.
+#' Each layer of the Raster* object is a time step. 
+#' See \code{\link[dtwSat]{buildRasterTimeSeries}}.
+#' 
 #' @param patterns a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
 #' details.
-#' @param win.fun A function. A function to be applied to the twdtw results. See Details.
+#' 
+#' @param win.fun A function. A function to be applied to the TWDTW results. See Details.
+#' 
 #' @param win.size A numeric vector. The size of a processing window in col x row order.
 #' Default is a single pixel, \emph{i.e.} \code{win.size=c(1,1)}.
-#' @param chunk.overlap A numeric vector. The overlap of neighboring chunks of an 
+#' 
+#' @param chunk.overlap A numeric vector. The overlap of neighboring chunks of a 
 #' raster. Overlap is specified for each dimension of the raster col x row. 
 #' Usefull when \code{win.size} bigger than a single pixel. Normally it is the size of 
 #' the window. 
+#' 
 #' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
 #' for details.
+#' 
 #' @param chunk.size An integer. Set the number of cells for each block, 
-#' See \code{\link[raster]{blockSize}} for details.  
+#' see \code{\link[raster]{blockSize}} for details.  
+#' 
 #' @param ... other arguments to pass to the functions \code{\link[dtwSat]{twdtw}} and 
 #' \code{win.fun}. Note that the 'win.fun' should explicitly name the arguments.
 #' 
-#' @details ...
 #' 
 #' @docType methods
 #' @return A \code{\link[raster]{brick}} object.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{createRasterTimeSeries}}, 
+#' \code{\link[dtwSat]{buildRasterTimeSeries}}, 
 #' \code{\link[dtwSat]{classifyIntervals}}, and  
 #' \code{\link[dtwSat]{plotLUCC}}.
 #' 

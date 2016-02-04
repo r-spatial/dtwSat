@@ -8,8 +8,8 @@
 plotPatterns(x, p.names, year = 2005)
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{twdtw-class}} object or a list of 
-\code{\link[zoo]{zoo}} objects.}
+\item{x}{An \code{\link[dtwSat]{twdtw-class}} object, a \code{\link[zoo]{zoo}},
+or a list of \code{\link[zoo]{zoo}} objects.}
 
 \item{p.names}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
@@ -48,8 +48,7 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotPaths}}, 
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
-\code{\link[dtwSat]{plotMatches}}, 
-\code{\link[dtwSat]{plotClassification}}, and 
-\code{\link[dtwSat]{plotPatterns}}.
+\code{\link[dtwSat]{plotMatches}}, and 
+\code{\link[dtwSat]{plotClassification}}.
 }
 

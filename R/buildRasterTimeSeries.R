@@ -14,42 +14,62 @@
 
 
 
-#' @title Create raster time series 
+#' @title Build raster time series 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function creates a list of raster time series 
+#' @description This function creates a list of raster time series.
 #' 
 #' @param x A list of \code{\link[raster]{RasterBrick-class}} or 
 #' \code{\link[raster]{RasterStack-class}}
-#' Each layer of the Raster* object is a time step
-#' @param timeline A vector of \code{\link[base]{Dates}}
-#' It must have the length of the layers in the \code{\link[raster]{RasterBrick-class}} object 
-#' @param doy optional. A \code{\link[raster]{RasterBrick-class}} or 
-#' \code{\link[raster]{RasterStack-class}} with the same extent as the 
-#' objects in \code{x}
-#' @param filepath A character. The path to save the raster time series. If informed the 
-#' function saves a raster file for each node in the raster list
-#' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
-#' for details
-#' @param ... other arguments to pass to the functions \code{\link[raster]{writeRaster}} 
+#' Each layer of the Raster* object is a time step.
 #' 
-#' @details a list of \code{\link[raster]{RasterBrick-class}} or 
-#' \code{\link[raster]{RasterStack-class}} objects
+#' @param timeline A vector of \code{\link[base]{Dates}}
+#' It must have the length of the layers in the Raster* object. 
+#' 
+#' @param doy optional. A \code{\link[raster]{RasterBrick-class}} or 
+#' \code{\link[raster]{RasterStack-class}} with the same spatial and temporal extent 
+#' as the Raster* objects in \code{x}.
+#' 
+#' @param filepath A character. The path to save the raster time series. If informed the 
+#' function saves a raster file for each Raster* object in the list, \emph{i.e} one file 
+#' for each time series. This way the function retrieves an list of 
+#' \code{\link[raster]{RasterBrick-class}} objects. See details. 
+#' 
+#' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
+#' for details.
+#' 
+#' @param ... other arguments to pass to the function \code{\link[raster]{writeRaster}}.
+#' 
+#' @details The performance the functions \code{\link[dtwSat]{twdtwApply}} and 
+#' \code{\link[dtwSat]{extractTimeSeries}} is improved if the Raster* objects are connected 
+#' to files with the whole time series for each attribute. 
 #' 
 #' @docType methods
-#' @return A \code{\link[dtwSat]{twdtw-class}} object
+#' 
+#' @return details a list of \code{\link[raster]{RasterBrick-class}} or 
+#' \code{\link[raster]{RasterStack-class}} objects.
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{twdtwApply}}, 
-#' \code{\link[dtwSat]{plotLUCC}}
+#' \code{\link[dtwSat]{twdtwApply}}, and
+#' \code{\link[dtwSat]{plotLUCC}}.
 #' 
 #' @examples
 #' 
 #' ####
+#'  #require(raster)
+#'  ## Read EVI raster file and timeline 
+#'  #r = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
+#'  #time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
+#'  #        as.is=TRUE)
+#'          
+#'  ## Build raster time series 
+#'  #raster_ts = buildRasterTimeSeries(x = r, timeline = dates$date)
 #' 
 #' @export
-createRasterTimeSeries = function(x , timeline, doy, filepath=NULL,
+buildRasterTimeSeries = function(x , timeline, doy, filepath=NULL,
                                   mc.cores = 1, ...){
+  
+  if(is(x, "RasterBrick") | is(x, "RasterStack")) x = list(x)
   
   timeline = as.Date(timeline)
   if(missing(doy)) {

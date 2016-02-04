@@ -20,13 +20,14 @@
 #' changes 
 #' 
 #' @param x A \code{\link[raster]{Raster-class}}
-#' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} objects. 
+#' \code{\link[raster]{brick}} or \code{\link[raster]{stack}} object. 
 #' A \link[base]{character} with the raster file name is also accepted.
-#' @param type A \link[base]{character}. The plot type, ''map'', 
-#' ''area'', or ''change''. Default is ''map''.
+#' @param type A \link[base]{character}. The plot type: ''map'' for raster maps, 
+#' ''area'' for the accumulated area over time, or ''change'' for the land changes.
+#' Default is ''map''.
 #' @param layer.levels A \link[base]{character} or \link[base]{numeric}
 #' vector with the layers to plot. For plot type ''change'' the minimum length 
-#' is two 
+#' is two.
 #' @param layer.labels A \link[base]{character} or \link[base]{numeric}
 #' vector with the labels of the layers. It must have the same 
 #' length as layer.levels. Default is NULL.
@@ -46,12 +47,12 @@
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwApply}}, 
 #' \code{\link[raster]{brick}}, and
-#' \code{\link[raster]{stack}}
+#' \code{\link[raster]{stack}}.
 #'  
 #' @examples
 #' 
-#' levels = c(seq_along(patterns.vignette), 255)
-#' labels = c(names(patterns.vignette), "Unclassified")
+#' levels = c(seq_along(patterns_vignette.list), 255)
+#' labels = c(names(patterns_vignette.list), "Unclassified")
 #' colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
 #' names(colors) = labels
 #' 

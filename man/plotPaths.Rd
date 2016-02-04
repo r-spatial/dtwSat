@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plotPaths}
 \alias{plotPaths}
-\title{Plotting twdtw paths}
+\title{Plotting TWDTW paths}
 \usage{
 plotPaths(x, p.names, n = NULL)
 }
@@ -15,7 +15,7 @@ vector with the patterns identification. If not declared the function
 will plot the paths for all patterns.}
 
 \item{n}{An \link[base]{integer} vector. The indices of the paths 
-to plot. If not declared the function will plot all possible paths.}
+to plot. If not declared the function will plot all paths.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.
@@ -45,7 +45,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, 
 \code{\link[dtwSat]{twdtw}}, 
-\code{\link[dtwSat]{plotPaths}}, 
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
 \code{\link[dtwSat]{plotMatches}}, 

@@ -15,7 +15,7 @@ vector with the patterns identification. If not declared the function
 retrieves the total number of matches considering all patterns.}
 }
 \value{
-A \link[base]{numeric}
+A \link[base]{numeric}.
 }
 \description{
 This function retrieves the number of matches  
@@ -38,6 +38,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, and
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtw}}.
 }
 

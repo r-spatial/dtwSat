@@ -17,7 +17,7 @@ retrieves the matching points for all patterns.}
 \value{
 A \code{\link[base]{list}} whose 
  elements have the information for each pattern. 
- Each pattern has then a sublist of matching points such as: 
+ Each pattern has then a sublist of matching points for each alignment, such as: 
       \cr\code{index1}: matching points of the pattern, and
       \cr\code{index2}: matching points of the time series.
 }
@@ -43,6 +43,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, and
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtw}}.
 }
 

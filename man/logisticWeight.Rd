@@ -8,16 +8,25 @@
 logisticWeight(alpha, beta)
 }
 \arguments{
-\item{alpha}{numeric. The steepness of logistic weight}
+\item{alpha}{numeric. The steepness of logistic weight.}
 
-\item{beta}{numeric. The midpoint of logistic weight}
+\item{beta}{numeric. The midpoint of logistic weight.}
 }
 \value{
-An \code{\link[base]{function}} object
+An \code{\link[base]{function}} object.
 }
 \description{
 Builds a logistic time weight 
-function to compute the TWDTW local cost matrix [1]
+function to compute the TWDTW local cost matrix [1].
+}
+\details{
+The linear \code{linearWeight} and \code{logisticWeight} weight functions 
+can be passed to \code{twdtw} through the argument \code{weight.fun}. This will 
+add a time-weight to the dynamic time warping analysis. The time weight 
+creates a global constraint useful to analyse time series with phenological cycles
+of vegetation that are usually bound to seasons. In previous studies by [1] the 
+logistic weight had better results than the linear for land cover classification. 
+See [1] for details about the method.
 }
 \examples{
 log_fun = logisticWeight(alpha=-0.1, beta=100)

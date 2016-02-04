@@ -13,17 +13,18 @@
 ###############################################################
 
 
-#' @title Create time sequence
+#' @title Get Modis time sequence
 #' 
 #' @description This function creates a sequence of dates for 
 #' each year. The sequences start on January 1st of each year.
 #' 
-#' @param year A vector with the years. Default 
-#' is form 2000 to the system time year \code{format(Sys.time(), ''\%Y'')}
-#' @param frequency An integer with the frequency in days. Default is 16 days
+#' @param year A vector with the years. Default is form 2000 to the year in 
+#' the system time.
+#' @param frequency An integer with the frequency in days. Default is 16 days.
+#' 
 #' @docType methods
 #' 
-#' @return A vector of \code{\link[base]{Dates}} 
+#' @return A vector of \code{\link[base]{Dates}} .
 #' 
 #' @seealso \link[dtwSat]{getDatesFromDOY} and \link[dtwSat]{getModisTimeIndex}
 #' 

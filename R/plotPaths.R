@@ -13,7 +13,7 @@
 ###############################################################
 
 
-#' @title Plotting twdtw paths 
+#' @title Plotting TWDTW paths 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Method for plotting the minimum paths in the 
@@ -24,7 +24,7 @@
 #' vector with the patterns identification. If not declared the function 
 #' will plot the paths for all patterns. 
 #' @param n An \link[base]{integer} vector. The indices of the paths 
-#' to plot. If not declared the function will plot all possible paths.
+#' to plot. If not declared the function will plot all paths.
 #' @docType methods
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
@@ -32,7 +32,6 @@
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, 
 #' \code{\link[dtwSat]{twdtw}}, 
-#' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
 #' \code{\link[dtwSat]{plotMatches}}, 

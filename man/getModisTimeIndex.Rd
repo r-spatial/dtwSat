@@ -13,7 +13,7 @@ getModisTimeIndex(date, frequency = 16)
 \item{frequency}{An integer with the frequency in days. Default is 16 days}
 }
 \value{
-An \code{\link[base]{integer}} object
+An \code{\link[base]{integer}} object.
 }
 \description{
 This function retrieves the nearest time 
@@ -25,6 +25,7 @@ i
 
 }
 \seealso{
-\link[dtwSat]{getModisTimeSequence} and \link[dtwSat]{getDatesFromDOY}
+\link[dtwSat]{getModisTimeSequence}, and
+\link[dtwSat]{getDatesFromDOY}.
 }
 

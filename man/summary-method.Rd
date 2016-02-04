@@ -8,17 +8,16 @@
 \S4method{summary}{twdtw}(object, ...)
 }
 \arguments{
-\item{object}{An \code{\link[dtwSat]{twdtw-class}} object}
+\item{object}{An \code{\link[dtwSat]{twdtw-class}} object.}
 
-\item{...}{additional arguments passed to summary}
+\item{...}{additional arguments passed to summary.}
 }
 \value{
 A \link[base]{data.frame} object with the the summary 
-for each pattern
+for each pattern.
 }
 \description{
-Summary the alignments for each pattern in the 
-twdtw-class object
+Summary of the TWDTW matches for each pattern.
 }
 \examples{
 
@@ -33,6 +32,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
 \code{\link[dtwSat]{twdtw-class}}, and 
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtw}}.
 }
 

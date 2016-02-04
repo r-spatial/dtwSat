@@ -17,14 +17,21 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Builds a logistic time weight 
-#' function to compute the TWDTW local cost matrix [1]
+#' function to compute the TWDTW local cost matrix [1].
 #' 
-#' @param alpha numeric. The steepness of logistic weight
-#' @param beta numeric. The midpoint of logistic weight 
+#' @param alpha numeric. The steepness of logistic weight.
+#' @param beta numeric. The midpoint of logistic weight.
 #' 
 #' @docType methods
-#' @return An \code{\link[base]{function}} object
+#' @return An \code{\link[base]{function}} object.
 #' 
+#' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
+#' can be passed to \code{twdtw} through the argument \code{weight.fun}. This will 
+#' add a time-weight to the dynamic time warping analysis. The time weight 
+#' creates a global constraint useful to analyse time series with phenological cycles
+#' of vegetation that are usually bound to seasons. In previous studies by [1] the 
+#' logistic weight had better results than the linear for land cover classification. 
+#' See [1] for details about the method. 
 #' 
 #' @seealso \code{\link[dtwSat]{twdtw}}
 #' 

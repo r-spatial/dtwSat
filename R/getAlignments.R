@@ -15,8 +15,7 @@
 #' @title Get alignments from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the alignments 
-#' from the object \link[dtwSat]{twdtw-class}
+#' @description This function retrieves the TWDTW alignments.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
@@ -32,7 +31,7 @@
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
-#' \code{\link[dtwSat]{twdtw}}
+#' \code{\link[dtwSat]{twdtw}}.
 #' 
 #' @examples
 #' 

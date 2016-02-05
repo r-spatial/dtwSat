@@ -96,8 +96,8 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     stop("layer.levels and layer.labels have different length")
   
   x_levels = unique(as.vector(unique(x[])))
-  if( is.null(colors) | length(colors)<length(x_levels) )
-    colors = brewer.pal(length(x_levels), "Set1")
+  if( is.null(class.colors) | length(class.colors)<length(x_levels) )
+    class.colors = brewer.pal(length(x_levels), "Set3")
   
   if(is.null(class.levels))
     class.levels = sort(x_levels)
@@ -108,7 +108,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   if(length(class.levels)!=length(class.labels))
     stop("class.levels and class.labels have different length")  
   
-  names(colors) = class.labels
+  names(class.colors) = class.labels
   names(class.levels) = class.labels
   
   pt = pmatch(type,c("map","area","change"))
@@ -118,14 +118,14 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   names(layer.labels) = names(x)
   
   switch(pt,
-         .plotLUMap(x, layer.levels, layer.labels, class.levels, class.labels, colors),
-         .plotLUArea(x, layer.levels, layer.labels, class.levels, class.labels, colors),
-         .plotLUChange(x, layer.levels, layer.labels, class.levels, class.labels, colors)
+         .plotLUMap(x, layer.levels, layer.labels, class.levels, class.labels, class.colors),
+         .plotLUArea(x, layer.levels, layer.labels, class.levels, class.labels, class.colors),
+         .plotLUChange(x, layer.levels, layer.labels, class.levels, class.labels, class.colors)
   )
   
 }
 
-.plotLUChange = function(x, layer.levels, layer.labels, class.levels, class.labels, colors){
+.plotLUChange = function(x, layer.levels, layer.labels, class.levels, class.labels, class.colors){
   
   if(length(layer.levels)<2)
     stop("the vector layer.levels is shorter than two")
@@ -150,7 +150,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     geom_bar(data=df[I,], aes_string(x="to", y="Freq", fill="from"), stat="identity") +
     geom_bar(data=df[I,], aes_string(x="from", y="-Freq", fill="to"), stat="identity") +
     facet_wrap(~layer) +
-    scale_fill_manual(name = "Legend", values = colors) + 
+    scale_fill_manual(name = "Legend", values = class.colors) + 
     scale_y_continuous(labels = percent) + 
     xlab("") + 
     geom_hline(yintercept = 0) +
@@ -162,7 +162,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   
 }
 
-.plotLUMap = function(x, layer.levels, layer.labels, class.levels, class.labels, colors){
+.plotLUMap = function(x, layer.levels, layer.labels, class.levels, class.labels, class.colors){
   
   df.map = data.frame(coordinates(x), x[] )
   df.map = melt(df.map, id.vars = c("x", "y"))
@@ -172,7 +172,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   
   gp = ggplot(data=df.map, aes_string(x="x", y="y")) +
     geom_raster(aes_string(fill="value")) + 
-    scale_fill_manual(name="Legend", values = colors) + 
+    scale_fill_manual(name="Legend", values = class.colors) + 
     facet_wrap(~variable) + 
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0)) + 
@@ -184,7 +184,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   
 }
 
-.plotLUArea = function(x, layer.levels, layer.labels, class.levels, class.labels, colors){
+.plotLUArea = function(x, layer.levels, layer.labels, class.levels, class.labels, class.colors){
   
   df.map = data.frame(coordinates(x), x[] )
   df.map = melt(df.map, id.vars = c("x", "y"))
@@ -198,7 +198,7 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
   
   gp = ggplot(data=df.area, aes_string(x="Time", y="Freq", fill="value")) +
     geom_area(position = 'stack') + 
-    scale_fill_manual(name="Legend", values = colors) + 
+    scale_fill_manual(name="Legend", values = class.colors) + 
     scale_x_continuous(expand = c(0.01, 0), breaks = x.breaks, labels = layer.labels) + 
     scale_y_continuous(expand = c(0, 0), labels = percent) +
     theme(legend.position = "bottom",

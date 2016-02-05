@@ -142,13 +142,15 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
   if(normalize.patterns)
     patterns = normalizePatterns(patterns=patterns, patterns.length=patterns.length)
   
+  call = match.call()
+  
   res = .twdtw(x, patterns, weight.fun, dist.method, 
-               step.matrix, n, span, theta, keep)
+               step.matrix, n, span, theta, keep, call)
   res
 }
 
 .twdtw =  function(x, patterns, weight.fun, dist.method, 
-                   step.matrix, n, span, theta, keep)
+                   step.matrix, n, span, theta, keep, call)
 {
   
   res = lapply(patterns, function(pattern){
@@ -211,7 +213,7 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     }
     alignments
   })
-  new("twdtw", call=match.call(), alignments=res)
+  new("twdtw", call=call, alignments=res)
 }
 
 .findMin = function(x, timeline, span){

@@ -30,12 +30,16 @@ Methods for plotting the results of the
 TWDTW analysis.
 }
 \details{
-\cr"paths": 
-\cr"matches": 
-\cr"alignments": 
-\cr"classification": 
-\cr"cost": 
-\cr"patterns":
+\describe{
+	\item{Plot types}{:
+      \cr\code{paths}: Method for plotting the minimum paths in the cost matrix of TWDTW.
+      \cr\code{matches}: Method for plotting the matching points from TWDTW analysis.
+      \cr\code{alignments}: Method for plotting the alignments and respective TWDTW dissimilarity measures.
+      \cr\code{classification}: Method for plotting the classification of each subinterval of the time series based on TWDTW analysis. 
+      \cr\code{cost}: Method for plotting the internal matrices used during the TWDTW computation.
+      \cr\code{patterns}: Method for plotting the temporal patterns.
+      }
+}
 }
 \examples{
 

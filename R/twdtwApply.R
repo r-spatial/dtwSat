@@ -60,8 +60,42 @@
 #' 
 #' @examples
 #' 
-#' #####
+#' ##### 
+#' ##### In the next example we build multi-band raster time series and run  
+#' ##### the TWDTW analyis to it.  
+#' 
+#' #### In this example we build a multi-band MOD13Q1 raster time series. 
+#' #### The 'tif' files in 'lucc_MT/raster_ts' have 999 EVI time series 
+#' #### from 2007-01-01 to 2013-12-19, that means 160 points with temporal 
+#' #### resolution of 16 days. 
+#' # blue = brick(system.file("lucc_MT/raster_ts/blue.tif",  package = "dtwSat"))
+#' # red  = brick(system.file("lucc_MT/raster_ts/red.tif",  package = "dtwSat"))
+#' # nir  = brick(system.file("lucc_MT/raster_ts/nir.tif",  package = "dtwSat"))
+#' # mir  = brick(system.file("lucc_MT/raster_ts/mir.tif",  package = "dtwSat"))
+#' # evi  = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
+#' # ndvi = brick(system.file("lucc_MT/raster_ts/ndvi.tif",  package = "dtwSat"))
+#' # raster_bands = c(blue=blue, red=red, nir=nir, mir=mir, evi=evi, ndvi=ndvi)
+#' # time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
+#' #        as.is=TRUE)
+#' # raster_timeseries = 
+#' #                buildRasterTimeSeries(x = raster_bands, timeline = time$date)
+#' 
+#' #### Run TWDTW analysis (using 1 core )
+#' # land_use_maps = twdtwApply(
+#' #        x = raster_timeseries, patterns = patterns_vignette.list, 
+#' #        win.fun = classifyIntervals, mc.core = 1,
+#' #        weight.fun = logisticWeight(alpha=-0.1, beta=50), 
+#' #        from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
+#' #        by = "12 month", overlap = 0.5, 
+#' #        levels = c(seq_along(patterns_vignette.list), 255),
+#' #        labels = c(names(patterns_vignette.list), "Unclassified"),
+#' #        simplify = TRUE)
 #'  
+#' #### Plot results 
+#' # plotLUCC(land_use_maps, type = "map")
+#' # plotLUCC(land_use_maps, type = "are")
+#' # plotLUCC(land_use_maps, type = "change")
+#' 
 #' @export
 twdtwApply = function(x, patterns, win.fun, 
                       win.size = c(1,1), 
@@ -69,8 +103,15 @@ twdtwApply = function(x, patterns, win.fun,
                       chunk.overlap,
                       mc.cores = 1, ...){
   
+  
+  if(any(!unlist(lapply(x, is, "RasterBrick"))) & any(!unlist(lapply(x, is, "RasterStack"))))
+    stop("Not all elements of x are Raster*")
+  
+  if(!any(names(x)=="doy"))
+    stop("x is missing the day of the year 'doy'. For details see ?buildRasterTimeSeries")
+  
   # Split and set arguments to functions 
-  # args = list(weight.fun = weight.fun, breaks = breaks, levels = levels, labels = labels, simplify= TRUE, patterns = patterns.vignette)
+  # args = list(weight.fun = weight.fun, from = from, to = to, by = by, labels = labels, simplify = simplify, patterns = patterns)
   args = list(..., patterns = patterns)
   win_fun = .setFunArgs(fun = win.fun, args = args)
   twdtw_fun = .setFunArgs(fun = twdtw, args = args)
@@ -87,9 +128,13 @@ twdtwApply = function(x, patterns, win.fun,
   blocks$r2 = blocks$row + blocks$nrows - 1 + chunk.overlap[1]
   blocks$r2[blocks$r2>nrow(x$doy)] = nrow(x$doy)
   
-  # Reshape raster bands to match pattern bands
-  bands = names(patterns[[1]])
-  x = x[c(bands,"doy")]
+  # Match raster bands to pattern bands
+  raster_bands = names(x)
+  pattern_names = names(patterns[[1]])
+  matching_bands = pattern_names %in% raster_bands
+  if(any(!matching_bands))
+    stop(paste0("Attributes (bands) of the raster and patterns do not match. Missing raster attributes: ", paste(pattern_names[!matching_bands],collapse = ",")))
+  x = x[c(pattern_names,"doy")]
   
   # Get time line 
   timeline = as.Date(names(x$doy), format="date.%Y.%m.%d")
@@ -127,7 +172,7 @@ twdtwApply = function(x, patterns, win.fun,
 
 # Crop raster time series. Returns a 3D array 
 .cropTimeSeries = function(x, r1, r2){
-  if(is(x, "RasterBrick")){
+  if(is(x, "RasterBrick") | is(x, "RasterStack")){
     y = extent(x, r1, r2)
     x = crop(x, y)
   } else {

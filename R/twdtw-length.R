@@ -35,6 +35,7 @@
 #' length(matches)
 #' 
 #' @rdname length-method
+#' @name length
 #' 
 #' @export
 length.twdtw = function(x){

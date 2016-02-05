@@ -46,8 +46,42 @@ a classified raster time series.
 }
 \examples{
 
-#####
+##### 
+##### In the next example we build multi-band raster time series and run  
+##### the TWDTW analyis to it.  
+
+#### In this example we build a multi-band MOD13Q1 raster time series. 
+#### The 'tif' files in 'lucc_MT/raster_ts' have 999 EVI time series 
+#### from 2007-01-01 to 2013-12-19, that means 160 points with temporal 
+#### resolution of 16 days. 
+# blue = brick(system.file("lucc_MT/raster_ts/blue.tif",  package = "dtwSat"))
+# red  = brick(system.file("lucc_MT/raster_ts/red.tif",  package = "dtwSat"))
+# nir  = brick(system.file("lucc_MT/raster_ts/nir.tif",  package = "dtwSat"))
+# mir  = brick(system.file("lucc_MT/raster_ts/mir.tif",  package = "dtwSat"))
+# evi  = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
+# ndvi = brick(system.file("lucc_MT/raster_ts/ndvi.tif",  package = "dtwSat"))
+# raster_bands = c(blue=blue, red=red, nir=nir, mir=mir, evi=evi, ndvi=ndvi)
+# time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
+#        as.is=TRUE)
+# raster_timeseries = 
+#                buildRasterTimeSeries(x = raster_bands, timeline = time$date)
+
+#### Run TWDTW analysis (using 1 core )
+# land_use_maps = twdtwApply(
+#        x = raster_timeseries, patterns = patterns_vignette.list, 
+#        win.fun = classifyIntervals, mc.core = 1,
+#        weight.fun = logisticWeight(alpha=-0.1, beta=50), 
+#        from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
+#        by = "12 month", overlap = 0.5, 
+#        levels = c(seq_along(patterns_vignette.list), 255),
+#        labels = c(names(patterns_vignette.list), "Unclassified"),
+#        simplify = TRUE)
  
+#### Plot results 
+# plotLUCC(land_use_maps, type = "map")
+# plotLUCC(land_use_maps, type = "are")
+# plotLUCC(land_use_maps, type = "change")
+
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

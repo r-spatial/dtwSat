@@ -24,34 +24,31 @@
 #' \describe{
 #'  \item{\code{call}:}{An object of class \code{\link[base]{call}}, see 
 #'  \code{\link[base]{match.call}}.}
-#'  \item{\code{alignments}:}{A named \code{\link[base]{list}} whose elements 
-#'  have length identical to the number of alignments.
-#'  The elements are:  
-#'       \cr\code{pattern}: pattern identification,
-#'       \cr\code{from}: starting date,
-#'       \cr\code{to}: ending date, 
-#' 	     \cr\code{distance}: TWDTW distance, and
-#' 	     \cr\code{K}: the number of alignments of the pattern.
-#'       }
-#' 	\item{\code{internals}:}{An object of class \code{\link[base]{list}} whose 
-#'   elements have the internal structures used by \code{\link[dtwSat]{twdtw}}. 
-#'   The elements are: 
+#'  \item{\code{alignments}:}{A named \code{\link[base]{list}} with the same length as 
+#'  the patterns list in the \code{twdtw} call. For each pattern this list stores the 
+#'  results of the TWDTW analysis, that are:
+#'       \cr\code{from}: a vector with the starting dates of each match,
+#'       \cr\code{to}: a vector with the ending dates of each match, 
+#' 	     \cr\code{distance}: a vector with TWDTW dissimilarity measure, and
+#' 	     \cr\code{K}: the number of matches of the pattern.
+#'  }
+#' 	\item{Additional elements:}{ if \code{keep=TRUE} in the \code{twdtw} call then the list is 
+#' 	extended to include internal structures used during the TWDTW computation: 
 #'       \cr\code{costMatrix}: cumulative cost matrix,
-#'       \cr\code{directionMatrix}: directions of steps that would be taken in the alignments,
+#'       \cr\code{directionMatrix}: directions of steps that would be taken from each element of matrix,
+#'       \cr\code{startingMatrix}: the starting points of each element of the matrix,
 #'       \cr\code{stepPattern}: \code{\link[dtw]{stepPattern}} used for the 
-#'       computation, see package \code{\link[dtw]{dtw}}
-#'       \cr\code{N}: \code{pattern} length, 
-#'       \cr\code{M}: \code{x} length, 
+#'       computation, see package \code{\link[dtw]{dtw}},
+#'       \cr\code{N}: the length of the \code{pattern}, 
+#'       \cr\code{M}: the length of the time series \code{x}, 
 #'       \cr\code{timeWeight}: time weight matrix,
 #'       \cr\code{localMatrix}: local cost matrix,
-#'       \cr\code{patterns}: temporal pattern, 
-#'       \cr\code{x}: satellite image time series,
-#'       }
-#' 	\item{\code{matching}:}{An object of class \code{\link[base]{list}} whose 
-#'   elements have the matching points for each alignment between the 
-#'   \code{pattern} and the \code{x}, such that
-#'       \cr\code{index1}: matching points of the temporal pattern, and
-#'       \cr\code{index2}: matching points of the time series.
+#'       \cr\code{patterns}: the temporal pattern, 
+#'       \cr\code{x}: satellite time series,
+#' 	     \cr\code{matching}: A list whose elements have the matching points for 
+#' 	     each match between pattern the time series, such that:
+#'          \cr--\code{index1}: a vector with matching points of the pattern, and
+#'          \cr--\code{index2}: a vector with matching points of the time series.
 #'       }
 #' }
 #' 

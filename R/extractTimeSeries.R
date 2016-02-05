@@ -39,29 +39,40 @@
 #' 
 #' @examples
 #' 
-#'  ####
-#'  #require(raster)
-#'  ## Read EVI raster file and timeline 
-#'  #r = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
-#'  #time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
-#'  #        as.is=TRUE)
-#'          
-#'  ## Build raster time series 
-#'  #raster_ts = buildRasterTimeSeries(x = r, timeline = dates$date)
-#'  
-#'  # Location and time range 
-#'  #ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
-#'  #                        from = "2007-09-01", to = "2013-09-01")
-#'  
-#'  ## Proj string 
-#'  #crs_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #' 
-#'  ## Extract time series 
-#'  #ts = extractTimeSeries(x = raster_ts, y = ts_location, proj4string = crs_string)
+#' ##### In the next example we build, extract and plot a multi-band time series. 
+#' 
+#' #### In this example we build a multi-band MOD13Q1 raster time series. 
+#' #### The 'tif' files in 'lucc_MT/raster_ts' have 999 EVI time series 
+#' #### from 2007-01-01 to 2013-12-19, that means 160 points with temporal 
+#' #### resolution of 16 days. 
+#' # blue = brick(system.file("lucc_MT/raster_ts/blue.tif",  package = "dtwSat"))
+#' # red  = brick(system.file("lucc_MT/raster_ts/red.tif",  package = "dtwSat"))
+#' # nir  = brick(system.file("lucc_MT/raster_ts/nir.tif",  package = "dtwSat"))
+#' # mir  = brick(system.file("lucc_MT/raster_ts/mir.tif",  package = "dtwSat"))
+#' # evi  = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
+#' # ndvi = brick(system.file("lucc_MT/raster_ts/ndvi.tif",  package = "dtwSat"))
+#' # raster_bands = c(blue=blue, red=red, nir=nir, mir=mir, evi=evi, ndvi=ndvi)
+#' # time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
+#' #        as.is=TRUE)
+#' # raster_timeseries = 
+#' #                buildRasterTimeSeries(x = raster_bands, timeline = time$date)
+#'      
+#' ## Location and time range 
+#' # ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
+#' #                        from = "2007-09-01", to = "2013-09-01")
 #'  
-#'  #library(ggplot2)
-#'  #autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("EVI")
+#' ## Proj string 
+#' # crs_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+#' 
+#' ## Extract time series 
+#' # ts = extractTimeSeries(x = raster_timeseries, y = ts_location, 
+#' #                        proj4string = crs_string)
 #'  
+#' #library(ggplot2)
+#' #autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
+#' 
+#' 
 #' @export
 extractTimeSeries = function(x, y, proj4string = CRS(as.character(NA)), mc.cores = 1){
   

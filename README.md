@@ -90,7 +90,7 @@ Fig. 4. The best match for each crop type.
 to plot minimum cost paths
 
 ``` r
-plot(x = matches, type = "paths") + 
+plot(x = matches, type = "paths", n = 1:4) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 
@@ -104,7 +104,7 @@ and, finally to classify the subintervals of the time series
 ``` r
 plot(x = matches, type = "classification",
      from = "2009-09-01", to = "2013-09-01", 
-     by = "6 month", overlap = 0.3) + 
+     by = "6 month", overlap = 0.4) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 

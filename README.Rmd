@@ -96,7 +96,7 @@ k=k+1
 ```
 to plot minimum cost paths 
 ```{r plot-path, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. The minimum cost path of the TWDTW alignment for each crop type.')}
-plot(x = matches, type = "paths") + 
+plot(x = matches, type = "paths", n = 1:4) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 ```{r, echo = FALSE, eval = TRUE}
@@ -106,7 +106,7 @@ and, finally to classify the subintervals of the time series
 ```{r plot-group, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=2, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Classification using the best match for each subinterval.')}
 plot(x = matches, type = "classification",
      from = "2009-09-01", to = "2013-09-01", 
-     by = "6 month", overlap = 0.3) + 
+     by = "6 month", overlap = 0.4) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
 ```{r, echo = FALSE, eval = TRUE}

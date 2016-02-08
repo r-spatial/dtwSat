@@ -29,7 +29,7 @@ time series \code{x}.
 \examples{
 
 log_fun = logisticWeight(alpha=-0.1, beta=100)
-matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
+matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, keep=TRUE)
 
 getMatches(matches)
 

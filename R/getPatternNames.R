@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -53,10 +53,10 @@ setGeneric("getPatternNames",
 )
 
 .getPatternNames = function(object, p.names){
-  if(missing(p.names)) p.names = seq_along(object@alignments)
-  all_names = names(object@alignments)
+  if(missing(p.names)) p.names = seq_along(object@patterns)
+  all_names = names(object@patterns)
   names(all_names) = all_names
-  if(is.null(all_names)) all_names = seq_along(object@alignments)
+  if(is.null(all_names)) all_names = seq_along(object@patterns)
   all_names[p.names]
 }
 

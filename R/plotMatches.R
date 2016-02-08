@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -60,8 +60,11 @@
 #' gp = plotMatches(x=matches, p.names="Cotton")
 #' gp
 #' 
-#' gp = plotMatches(x=matches, p.names=c("Soybean","Soybean","Cotton","Cotton"), 
-#'      n = c(1,2,1,2))
+#' gp = plotMatches(x=matches, p.names="Soybean", n = 4)
+#' gp
+#' 
+#' gp = plotMatches(x=matches, p.names=c("Soybean","Cotton"), 
+#'      n = c(3,3))
 #' gp
 #' 
 #' @export
@@ -77,8 +80,10 @@ plotMatches = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   internals  = getInternals(x, p.names)
   if(is.null(internals))
     stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
-  matches   = getMatches(x, p.names)
-  alignments = getAlignments(x, p.names)
+  matching   = getMatches(x, p.names)
+  alignments = getAlignments(x, p.names)  
+  ts = getTimeSeries(x)
+  patterns = getPatterns(x, p.names)
   
   if(missing(n)) n = rep(1, length(p.names))
   if(length(n)==1) {
@@ -89,8 +94,7 @@ plotMatches = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
     stop("n is not the same length as p.names")
   
   names(n) = p.names
-  
-  xx = internals[[p.names[1]]]$x[,attr,drop=FALSE]
+  xx = ts[,attr,drop=FALSE]
   tx = index(xx)
   
   y.labels = pretty_breaks()(range(xx, na.rm = TRUE))
@@ -99,18 +103,18 @@ plotMatches = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   # Get time series 
   df.x = data.frame(Time=tx, xx)
   
-  # Get matching points
+  # Build matching points data.frame
   df.list = lapply(seq_along(p.names), function(i){
     p = p.names[i]
-    yy = internals[[p]]$pattern[,attr,drop=FALSE]
+    yy = patterns[[p]][,attr,drop=FALSE]
     ty = index(yy)
     
-    if(n[i]>length(matches[[p]])){
+    if(n[i]>length(matching[[p]])){
       warning("alignment index out of bounds", call. = TRUE)
       return(NULL)
-    } 
+    }
       
-    map = data.frame(matches[[p]][[n[i]]])
+    map = data.frame(matching[[p]][[n[i]]])
     delay = tx[map$index2[1]]-ty[1]
     if(delay>0)
       delay = delay + diff(range(ty, na.rm = TRUE))*shift

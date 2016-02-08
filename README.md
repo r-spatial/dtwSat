@@ -11,7 +11,7 @@ dtwSat
 
 ### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
 
-dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification (Maus et al. 2016). It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007; Petitjean, Inglada, and Gancarski 2012). Bellow we show a quick demo of the package and some [R vignettes](#vignettes) about the package usage and the TWDTW method.
+dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification (Maus et al. 2016). It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007). Bellow we show a quick demo of the package and some [R vignettes](#vignettes) about the package usage and the TWDTW method.
 
 ### Install
 
@@ -21,7 +21,7 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
-In this quick dome we will perform a TWDTW analysis for a single time series. Suppose that we want to know the crop type of each subinterval in following `example_ts` time series:
+In this quick dome we will perform a TWDTW analysis for a single time series. Suppose that we want to know the crop type of each subinterval in following time series:
 
 ``` r
 library(dtwSat)
@@ -51,8 +51,7 @@ Using the these temporal patterns we run the TWDTW analysis, such that
 
 ``` r
 log_fun = logisticWeight(alpha=-0.1, beta=100) # Logistic time-weight
-matches = twdtw(x=example_ts, patterns=patterns.list, 
-             normalize.patterns = TRUE, patterns.length = 23,
+matches = twdtw(x=example_ts, patterns=patterns.list,
              weight.fun = log_fun, keep=TRUE) 
 ```
 
@@ -64,7 +63,7 @@ print(matches)
 summary(matches)
 ```
 
-We can use several plot methods to visualize the `twdtw` object. To plot alignments
+We can use several plot methods to visualize the results of the analysis in the `twdtw` object, for example, to plot the alignments
 
 ``` r
 plot(x = matches, type = "alignments") + 
@@ -100,7 +99,7 @@ plot(x = matches, type = "paths") +
 Fig. 5. The minimum cost path of the TWDTW alignment for each crop type.
 </p>
 
-and, finally to classify the subintervals of the example\_ts time series
+and, finally to classify the subintervals of the time series
 
 ``` r
 plot(x = matches, type = "classification",
@@ -119,8 +118,8 @@ To see more example please check the [R vignettes](#vignettes) and if you want t
 ### Vignettes
 
 1.  [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
-2.  [Time series analysis and visualization using dtwSat](./vignettes/dtwSat_usage.md)
-3.  [Land use changes analysis using dtwSat](./vignettes/lucc.md)
+2.  [Time series classification and visualization using dtwSat](./vignettes/dtwSat_usage.md)
+3.  [Producing a land cover map](./vignettes/lucc.md)
 
 ### References
 
@@ -131,8 +130,6 @@ Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynam
 Maus, Victor, Gilberto Câmara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping method for land use and land cover mapping.” *Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (X): XXXX–XX.
 
 Müller, Meinard. 2007. *Information Retrieval for Music and Motion*. London: Springer.
-
-Petitjean, F., J. Inglada, and P. Gancarski. 2012. “Satellite Image Time Series Analysis Under Time Warping.” *Geoscience and Remote Sensing, IEEE Transactions on* 50 (8): 3081–95. doi:[10.1109/TGRS.2011.2179050](http://dx.doi.org/10.1109/TGRS.2011.2179050).
 
 Rabiner, Lawrence, and Biing-Hwang Juang. 1993. *Fundamentals of Speech Recognition*. Prentice-Hall International, Inc.
 

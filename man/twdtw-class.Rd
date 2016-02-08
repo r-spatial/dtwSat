@@ -11,6 +11,8 @@ Class for Time-Weighted Dynamic Time Warping matches.
 \describe{
  \item{\code{call}:}{An object of class \code{\link[base]{call}}, see 
  \code{\link[base]{match.call}}.}
+ \item{\code{x}:}{A \link[zoo]{zoo} object with the satellite time series.}
+ \item{\code{pattern}:}{A list of \link[zoo]{zoo} object with the temporal patterns.}
  \item{\code{alignments}:}{A named \code{\link[base]{list}} with the same length as 
  the patterns list in the \code{twdtw} call. For each pattern this list stores the 
  results of the TWDTW analysis, that are:
@@ -30,8 +32,6 @@ Class for Time-Weighted Dynamic Time Warping matches.
       \cr\code{M}: the length of the time series \code{x}, 
       \cr\code{timeWeight}: time weight matrix,
       \cr\code{localMatrix}: local cost matrix,
-      \cr\code{patterns}: the temporal pattern, 
-      \cr\code{x}: satellite time series,
 	     \cr\code{matching}: A list whose elements have the matching points for 
 	     each match between pattern the time series, such that:
          \cr--\code{index1}: a vector with matching points of the pattern, and

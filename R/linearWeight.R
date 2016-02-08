@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-19-01                             #
+#   R Package dtwSat - 2016-01-19                             #
 #                                                             #
 ###############################################################
 

@@ -8,23 +8,23 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-01-30                             #
+#   R Package dtwSat - 2016-02-08                             #
 #                                                             #
 ###############################################################
 
-#' @title Get the number of matches from twdtw object
+#' @title Get patterns from twdtw object
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function retrieves the number of matches  
-#' from a \link[dtwSat]{twdtw-class} object.
+#' @description This function retrieves temporal patterns used in the
+#' TWDTW analysis.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
 #' @param p.names A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
-#' retrieves the total number of matches considering all patterns.  
+#' retrieves all patterns. 
 #' 
 #' @docType methods
-#' @return A \link[base]{numeric}.
+#' @return A a list of \link[zoo]{zoo} objects
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtw-class}}, and
@@ -33,20 +33,26 @@
 #' @examples
 #' 
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)
-#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, 
+#'              weight.fun = log_fun)
 #' 
-#' nmatches(matches)
+#' a = getPatterns(matches)
+#' names(a) 
 #' 
-#' nmatches(matches, p.names="Soybean")
+#' a = getPatterns(matches, p.names="Maize")
+#' names(a) 
 #' 
-#' nmatches(matches, p.names=c(2,3))
+#' a = getPatterns(matches, p.names=c(1,2))
+#' names(a) 
+#' 
 #' 
 #' @export
-setGeneric("nmatches", 
-           function(object, p.names) {
-               x = getAlignments(object, p.names)
-               nrow(x)
+setGeneric("getPatterns", 
+           function(object, p.names){
+             p.names = getPatternNames(object, p.names)
+             if(any(is.na(p.names)))
+               stop("the patterns identification is invalid")
+             object@patterns[p.names]
            }
 )
-
 

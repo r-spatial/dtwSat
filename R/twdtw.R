@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -128,7 +128,7 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
   
   if(!is(patterns, "list"))
     stop("patterns should be a list of zoo objects")
-  if(any(!unlist(lapply(patterns, is.zoo))))
+  if(any(!sapply(patterns, is.zoo)))
     stop("patterns should be a list of zoo objects")
   if(!is(x, "zoo"))
     stop("x should be of class zoo")
@@ -201,19 +201,16 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     alignments$from       = index(x)[candidates$a[I]] # This is a vector of Dates
     alignments$to         = index(x)[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]           # This is a numeric vector 
-    alignments$K          = length(I)                # This is an interger 
-    
+    alignments$K          = length(I)                 # This is an interger 
     if(keep){
       # Trace low cost paths (k-th paths)
       matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidates$b[I])
-      alignments$internals = internals       # These is a list variables used in the TWDTW computation 
-      alignments$internals$pattern = pattern # Thes is a zoo object
-      alignments$internals$x = x             # This is a zoo object 
-      alignments$matching = matching         # This is a list of data.frames with the matching points 
+      alignments$matching = matching    # This is a list of data.frames with the matching points 
+      alignments$internals = internals  # These is a list variables used in the TWDTW computation
     }
     alignments
   })
-  new("twdtw", call=call, alignments=res)
+  new("twdtw", call=call, x = x, patterns = patterns, alignments = res)
 }
 
 .findMin = function(x, timeline, span){

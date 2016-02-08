@@ -5,14 +5,14 @@
 \alias{plot,twdtw,ANY-method}
 \title{Plotting twdtw objects}
 \usage{
-\S4method{plot}{twdtw,ANY}(x, type = "matches", ...)
+\S4method{plot}{twdtw,ANY}(x, type = "alignments", ...)
 }
 \arguments{
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{type}{A character for the plot type: ''paths'', ''matches'', 
 ''alignments'', ''classification'', ''cost'', or ''patterns''.
-Default is ''matches''. See details.}
+Default is ''alignments''. See details.}
 
 \item{...}{additional arguments passed to plotting functions.
 \code{\link[dtwSat]{plotPaths}}, 

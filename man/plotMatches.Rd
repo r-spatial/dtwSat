@@ -49,8 +49,11 @@ gp
 gp = plotMatches(x=matches, p.names="Cotton")
 gp
 
-gp = plotMatches(x=matches, p.names=c("Soybean","Soybean","Cotton","Cotton"), 
-     n = c(1,2,1,2))
+gp = plotMatches(x=matches, p.names="Soybean", n = 4)
+gp
+
+gp = plotMatches(x=matches, p.names=c("Soybean","Cotton"), 
+     n = c(3,3))
 gp
 
 }

@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -61,17 +61,18 @@ plotPaths = function(x, p.names, n=NULL){
     p.names = getPatternNames(x, p.names)
   }
   
+  ## Get data
+  internals  = getInternals(x, p.names)
+  if(is.null(internals))
+    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
+  ts = getTimeSeries(x)
+  patterns = getPatterns(x, p.names)
+  matching   = getMatches(x, p.names)  
+  
   # Get cost matrix
   df.m = do.call("rbind", lapply(p.names, function(p){
-    
-    ## Get data
-    internals  = getInternals(x, p)
-    if(is.null(internals))
-      stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
-    matching   = getMatches(x, p)
-    
-    tx = index(internals[[p]]$x)
-    ty = index(shiftDates(x=internals[[p]]$pattern, year=2005))
+    tx = index(ts)
+    ty = index(shiftDates(x=patterns[[p]], year=2005))
     m = internals[[p]]$costMatrix
     res = melt(m)
     res$Pattern = p
@@ -82,9 +83,6 @@ plotPaths = function(x, p.names, n=NULL){
   
   # Get minimun cost paths
   df.path = do.call("rbind", lapply(p.names, function(p){
-    
-    ## Get data
-    matching = getMatches(x, p)
     
     if(is.null(n)) n = seq_along(matching[[p]])
     k = which(n > length(matching[[p]]))

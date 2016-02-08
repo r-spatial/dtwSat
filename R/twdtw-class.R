@@ -24,6 +24,8 @@
 #' \describe{
 #'  \item{\code{call}:}{An object of class \code{\link[base]{call}}, see 
 #'  \code{\link[base]{match.call}}.}
+#'  \item{\code{x}:}{A \link[zoo]{zoo} object with the satellite time series.}
+#'  \item{\code{pattern}:}{A list of \link[zoo]{zoo} object with the temporal patterns.}
 #'  \item{\code{alignments}:}{A named \code{\link[base]{list}} with the same length as 
 #'  the patterns list in the \code{twdtw} call. For each pattern this list stores the 
 #'  results of the TWDTW analysis, that are:
@@ -43,8 +45,6 @@
 #'       \cr\code{M}: the length of the time series \code{x}, 
 #'       \cr\code{timeWeight}: time weight matrix,
 #'       \cr\code{localMatrix}: local cost matrix,
-#'       \cr\code{patterns}: the temporal pattern, 
-#'       \cr\code{x}: satellite time series,
 #' 	     \cr\code{matching}: A list whose elements have the matching points for 
 #' 	     each match between pattern the time series, such that:
 #'          \cr--\code{index1}: a vector with matching points of the pattern, and
@@ -59,18 +59,22 @@
 #' \code{\link[dtwSat]{getMatches}}, and 
 #' \code{\link[dtwSat]{getInternals}}
 NULL
+setOldClass("zoo")
 twdtw = setClass(
   Class = "twdtw",
-  slots = c(
-    call = "call",
-    alignments = "list"
-  ),
+  slots = c(call = "call", x = "zoo", patterns = "list", alignments = "list"),
   validity = function(object){
     if(!is(object@call, "call")){
       stop("[twdtw: validation] Invalid call object, class different from call.")
     }else{}
     if(!is(object@alignments, "list")){
-      stop("[twdtw: validation] Invalid TWDTW alignments, class different from data.frema.")
+      stop("[twdtw: validation] Invalid alignments object, class different from list.")
+    }else{}
+    if(!is(object@x, "zoo")){
+      stop("[twdtw: validation] Invalid x object, class different from zoo.")
+    }else{}
+    if( any(!sapply(object@patterns, is.zoo))){
+      stop("[twdtw: validation] Invalid patterns object, class different from list of zoo.")
     }else{}
     return(TRUE)
   }
@@ -79,25 +83,26 @@ twdtw = setClass(
 setMethod("initialize",
   signature = "twdtw",
   definition = 
-    function(.Object, call, alignments){
+    function(.Object, call, x, patterns, alignments){
       .Object@call = new("call")
+      .Object@x = zoo(NULL)
+      .Object@patterns = list(zoo(NULL))
       .Object@alignments = list(list(
                                 from       = numeric(0), 
                                 to         = numeric(0), 
                                 distance   = numeric(0),
                                 K          = numeric(0),
-                                pattern      = numeric(0),
-                                x = numeric(0),
-                                matching   = list(
-                                                index1 = numeric(0), 
-                                                index2 = numeric(0)
-                                                ),
-                                internals  = list(0)
+                                matching   = list(index1 = numeric(0), index2 = numeric(0)),
+                                internals  = list(NULL)
                                 ))
       if(!missing(call))
         .Object@call = call
       if(!missing(alignments))
         .Object@alignments = alignments
+      if(!missing(x))
+        .Object@x = x
+      if(!missing(patterns))
+        .Object@patterns = patterns
       validObject(.Object)
       return(.Object)
   }

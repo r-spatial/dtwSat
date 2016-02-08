@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -38,7 +38,7 @@
 #' @examples
 #' 
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)
-#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
+#' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, keep=TRUE)
 #' 
 #' getMatches(matches)
 #' 

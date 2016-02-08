@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -46,7 +46,7 @@
 #' 
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)
 #' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
-#'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+#'         normalize.patterns=TRUE, patterns.length=23)
 #' 
 #' gp = plotAlignments(matches, attr=c("ndvi","evi"))
 #' gp
@@ -68,14 +68,11 @@ plotAlignments = function(x, p.names, attr=1, threshold=Inf){
   }
   
   ## Get data
-  internals = getInternals(x, 1)[[1]]
-  if(is.null(internals))
-    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
-  
+  ts = getTimeSeries(x)
   alignments = getAlignments(x, p.names)
   
   # Get time series
-  df.x = data.frame(internals$x[,attr,drop=FALSE])
+  df.x = data.frame(ts[,attr,drop=FALSE])
   df.x$Time = as.Date(rownames(df.x))
   df.alignments = melt(df.x, id="Time")
   df.alignments$distance = NA

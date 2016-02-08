@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -22,7 +22,7 @@
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object
 #' @param type A character for the plot type: ''paths'', ''matches'', 
 #' ''alignments'', ''classification'', ''cost'', or ''patterns''.
-#' Default is ''matches''. See details. 
+#' Default is ''alignments''. See details. 
 #' @param ... additional arguments passed to plotting functions.
 #' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
@@ -91,11 +91,7 @@
 #' @export
 setMethod("plot", 
           signature(x = "twdtw"),
-          function(x, type="matches", ...){
-            if(!is(x,"twdtw"))
-              stop("x is not a twdtw object.")
-            if(length(getInternals(x))==0)
-              stop("plot method requires twdtw internals (set keep.internals=TRUE on dtw() call)")
+          function(x, type="alignments", ...){
             pt = pmatch(type,c("paths","matches","alignments","classification","cost","patterns"))
             switch(pt,
                    plotPaths(x, ...),

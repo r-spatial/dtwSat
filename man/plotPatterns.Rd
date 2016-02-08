@@ -28,7 +28,7 @@ Method for plotting the temporal patterns.
 
 log_fun = logisticWeight(alpha=-0.1, beta=100)
 matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
-        normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+        normalize.patterns=TRUE, patterns.length=23)
        
 gp1 = plotPatterns(matches)
 gp1
@@ -36,7 +36,8 @@ gp1
 gp2 = plotPatterns(patterns.list)
 gp2
 
-
+gp3 = plotPatterns(patterns.list$Soybean)
+gp3
 
 }
 \author{

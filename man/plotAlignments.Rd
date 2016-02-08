@@ -31,7 +31,7 @@ dissimilarity measures.
 
 log_fun = logisticWeight(alpha=-0.1, beta=100)
 matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
-        normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+        normalize.patterns=TRUE, patterns.length=23)
 
 gp = plotAlignments(matches, attr=c("ndvi","evi"))
 gp

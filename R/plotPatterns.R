@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -42,7 +42,7 @@
 #' 
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)
 #' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
-#'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+#'         normalize.patterns=TRUE, patterns.length=23)
 #'        
 #' gp1 = plotPatterns(matches)
 #' gp1
@@ -50,7 +50,8 @@
 #' gp2 = plotPatterns(patterns.list)
 #' gp2
 #' 
-#' 
+#' gp3 = plotPatterns(patterns.list$Soybean)
+#' gp3
 #' 
 #' @export
 plotPatterns = function(x, p.names, year=2005){
@@ -62,7 +63,7 @@ plotPatterns = function(x, p.names, year=2005){
     } else {
       p.names = getPatternNames(x, p.names)
     }
-    x = lapply(p.names, function(p) getInternals(x)[[p]]$pattern)
+    x = getPatterns(x, p.names)
   }
   
   if(is(x, "zoo")) x = list(x)
@@ -75,7 +76,7 @@ plotPatterns = function(x, p.names, year=2005){
     names(x) = p.names
   } 
   
-  if(any(!unlist(lapply(x[p.names], is.zoo))))
+  if(any(!sapply(x[p.names], is.zoo)))
     stop("patterns should be a list of zoo objects")
   
   # Shift dates 

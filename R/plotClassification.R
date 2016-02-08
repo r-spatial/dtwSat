@@ -8,7 +8,7 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-16-01                             #
+#   R Package dtwSat - 2016-01-16                             #
 #                                                             #
 ###############################################################
 
@@ -39,7 +39,7 @@
 #' @examples
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)
 #' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
-#'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
+#'         normalize.patterns=TRUE, patterns.length=23)
 #' 
 #' # Classify interval
 #' from = as.Date("2009-09-01")
@@ -50,31 +50,20 @@
 #' gp = plotClassification(x=matches, from=from, to=to, by=by, overlap=.3)
 #' gp
 #' 
-#' # Cotton and Maize 
-#' gp = plotClassification(x=matches, attr=c("ndvi","evi"), 
-#'                         from=from, to=to, by=by, 
-#'                         overlap=.3, p.names=c("Cotton","Maize"))
-#' gp
-#' 
 #' 
 #' @export
 plotClassification = function(x, attr, ...){
   
   ## Get data
-  internals = getInternals(x, 1)[[1]]
-  if(is.null(internals))
-    stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
-  
+  ts = getTimeSeries(x)
   best_class = classifyIntervals(x, ...)
-  # best_class = classifyIntervals(x, from=from, to=to, by=by, overlap=.3, threshold=Inf)
+  tx = index(ts)
   
-  tx = index(internals$x)
+  I = min(best_class$from, na.rm = TRUE)-30 <= index(ts) & 
+    index(ts) <= max(best_class$to, na.rm = TRUE)+30
   
-  I = min(best_class$from, na.rm = TRUE)-30 <= index(internals$x) & 
-    index(internals$x) <= max(best_class$to, na.rm = TRUE)+30
-  
-  if(missing(attr)) attr=names(internals$x)
-  xx = internals$x[I,attr,drop=FALSE]
+  if(missing(attr)) attr=names(ts)
+  xx = ts[I,attr,drop=FALSE]
   tx = index(xx)
   
   df.x = melt(data.frame(Time=tx, xx), id="Time")

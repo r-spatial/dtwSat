@@ -26,14 +26,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="290.94521"
-     inkscape:cy="-46.852142"
+     inkscape:cx="260.3881"
+     inkscape:cy="-7.456193"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      units="cm"
-     inkscape:window-width="1920"
-     inkscape:window-height="1060"
+     inkscape:window-width="1680"
+     inkscape:window-height="1030"
      inkscape:window-x="1364"
      inkscape:window-y="-3"
      inkscape:window-maximized="1" />
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -146,12 +146,12 @@
            y="1025.4399"
            x="259.82214"
            id="tspan4138-8-0"
-           sodipodi:role="line">Find</tspan><tspan
+           sodipodi:role="line">Compute</tspan><tspan
            style="font-weight:bold;font-size:11.25px;text-align:center;text-anchor:middle;fill:#47553f;fill-opacity:1"
            y="1039.5024"
            x="259.82214"
            sodipodi:role="line"
-           id="tspan4188">subintervals</tspan></text>
+           id="tspan4188">distance measure</tspan></text>
     </g>
     <g
        id="g5021"
@@ -181,7 +181,7 @@
            y="1037.8171"
            x="348.9873"
            sodipodi:role="line"
-           id="tspan4194">backward steps</tspan></text>
+           id="tspan4194">alignment</tspan></text>
     </g>
     <g
        id="g4477"
@@ -244,16 +244,16 @@
          x="459.09116"
          y="1024.5637"
          style="font-weight:bold;font-size:11.25px;text-align:center;text-anchor:middle"
-         id="tspan4560">Alignments</tspan><tspan
+         id="tspan4193">Alignments</tspan><tspan
          sodipodi:role="line"
          x="459.09116"
          y="1038.6262"
          style="font-weight:bold;font-size:11.25px;text-align:center;text-anchor:middle"
-         id="tspan4755">between <tspan
+         id="tspan4205">between <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.25px;font-family:cmsy10;-inkscape-font-specification:cmsy10"
    id="tspan4759">X</tspan> and <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.25px;font-family:cmsy10;-inkscape-font-specification:cmsy10"
-   id="tspan4757">Y</tspan></tspan></text>
+   id="tspan4757">Y      </tspan></tspan></text>
     <flowRoot
        xml:space="preserve"
        id="flowRoot4589"

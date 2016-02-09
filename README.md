@@ -9,9 +9,9 @@ rmarkdown::render(input="./vignettes/lucc.Rmd",         output_format=output_for
 dtwSat
 ======
 
-### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
+### Time-Weighted Dynamic Time Warping for satellite image time series analysis
 
-dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification (Maus et al. 2016). It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007). Bellow we show a quick demo of the package and some [R vignettes](#vignettes) about the package usage and the TWDTW method.
+dtwSat provides an open source implementation of Time-Weighted Dynamic Time Warping (TWDTW) method for land use and land cover mapping using satellite image time series (Maus et al. 2016). TWDTW is based on the Dynamic Time Warping technique (Velichko and Zagoruyko 1970; Hiroaki Sakoe and Chiba 1971; H. Sakoe and Chiba 1978; Rabiner and Juang 1993; Berndt and Clifford 1994; Keogh and Ratanamahatana 2005; Müller 2007) and has achieved high accuracy for land use and land cover classification using satellite data (Maus et al. 2016). The method is based on comparing unclassified satellite image time series with a set of known temporal patterns (e.g. phenological cycles of vegetation types). Using dtwSat the user can build temporal patterns for land cover types, apply the TWDTW analysis for satellite datasets, visualize the results of the time series analysis, produce land use and land cover maps, and create temporal plots for land use and land cover changes analysis. Bellow we show a quick demo of the package and some [vignettes](#vignettes).
 
 ### Install
 
@@ -113,13 +113,13 @@ plot(x = matches, type = "classification",
 Fig. 6. Classification using the best match for each subinterval.
 </p>
 
-To see more example please check the [R vignettes](#vignettes) and if you want to learn more about the TWDTW method (see, Maus et al. 2016).
+To see more example please take a look at [vignettes](#vignettes) and if you want to learn more about the TWDTW method (see, Maus et al. 2016).
 
 ### Vignettes
 
-1.  [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
-2.  [Time series classification and visualization using dtwSat](./vignettes/dtwSat_usage.md)
-3.  [Producing a land cover map](./vignettes/lucc.md)
+<!--1. [Timw-Weighted Dynamic Time Warping method](./vignettes/twdtw.md)-->
+1.  [Classifying a time series](./vignettes/dtwSat_usage.md)
+2.  [Producing a land cover map](./vignettes/lucc.md)
 
 ### References
 

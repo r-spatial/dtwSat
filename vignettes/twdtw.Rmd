@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{Timw-Weighted Dynamic Time Warping}
+  %\VignetteIndexEntry{Time-Weighted Dynamic Time Warping}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -46,7 +46,7 @@ names(res) =  c("DTW", "TWDTW")
 twdtw_x_dtw = new("twdtw", call=match.call(), alignments=res)
 ```
 
-Time-Weighted Dynamic Time Warping is a variation of the classical Dynamic Time Warping (DTW) algorithm that includes a time-weight as constraint to perform a time series alignment. It works by comparing a temporal pattern of a known event observed through a sequence of satellite images (e.g. the phenological cycle of the vegetation) to an unknown long-term satellite time series. This is particularly useful when the temporal pattern is much shorter than the target time series, and to compare time series with strong time dependency, such as phenological the stages of vegetation. 
+Time-Weighted Dynamic Time Warping is a variation of the well-known Dynamic Time Warping (DTW) algorithm that includes a time-weight as constraint to perform a time series alignment. It works by comparing unclassified satellite image time series with a set of known temporal patterns (e.g. phenological cycles of vegetation types). This is particularly useful when the temporal pattern is much shorter than the unclassified time series, and to classify time series with strong time dependency, such as phenological the stages of vegetation. 
 
 # Introduction 
 

@@ -30,6 +30,9 @@
 #' for consideration in the classification. Default is Inf.
 #' See \code{\link[dtwSat]{classifyIntervals}} for details. 
 #' 
+#' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
+#' for details.
+#' 
 #' @param ... Other arguments to be passed to \code{\link[dtwSat]{twdtw}}.
 #' 
 #' 

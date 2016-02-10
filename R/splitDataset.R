@@ -17,7 +17,8 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This function splits the set of samples for 
-#' training and validation.
+#' training and validation. The function uses stratified sampling. 
+#' Then a simple random sampling or is applied within each stratum.
 #' 
 #' @param timeseries A list of \code{\link[zoo]{zoo}} objects with the time series.
 #' 
@@ -27,6 +28,12 @@
 #' @param times Number of partitions to create.
 #' 
 #' @param ... Other arguments to be passed to \code{\link[dtwSat]{createPattern}}.
+#' 
+#' @param mc.cores The number of cores to use, See \code{\link[parallel]{mclapply}} 
+#' for details.
+#' 
+#' @param p the percentage of data that goes to training. 
+#' See \code{\link[caret]{createDataPartition}} for details.
 #' 
 #' 
 #' @docType methods

@@ -15,6 +15,12 @@ It must have the same length as \code{x}.}
 
 \item{times}{Number of partitions to create.}
 
+\item{p}{the percentage of data that goes to training. 
+See \code{\link[caret]{createDataPartition}} for details.}
+
+\item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
+for details.}
+
 \item{...}{Other arguments to be passed to \code{\link[dtwSat]{createPattern}}.}
 }
 \value{
@@ -23,7 +29,8 @@ the validation dataset \code{x}, and the reference for the validation dataset \c
 }
 \description{
 This function splits the set of samples for 
-training and validation.
+training and validation. The function uses stratified sampling. 
+Then a simple random sampling or is applied within each stratum.
 }
 \examples{
 

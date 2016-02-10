@@ -48,7 +48,7 @@ setMethod("summary",
 
 summary.twdtw = function(object, ...){
   res1 = do.call("rbind", lapply(object@alignments, function(pattern){
-    c(N.Alig=length(pattern$distance), summary(pattern$distance, ...))
+    c(N.Matches=length(pattern$distance), summary(pattern$distance, ...))
   }))
   data.frame(res1)
 }

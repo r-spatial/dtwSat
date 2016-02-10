@@ -1,0 +1,27 @@
+
+The data for for out TWDTW analysis are: *i)* a sequence of satellite images ordered by time, and *ii)* a set of ground truth samples. The area is located in the tropical forest, in Mato Grosso, Brazil, and the time domain is from 2007 to 2013. The satellite images were extracted from the MODIS product MOD13Q1 collection 5 [@Friedl:2010] and include vegetation indexes "ndvi", "evi", and original bands "nir", "red", "blue", and "mir". This product has 250 m spatial and 16 day temporal resolution, that means a sequence of 160 images with 999 pixels each, *i.e.* approximately $5300 km^2$ over 6 years. We also use a set of 603 ground truth samples of the following classes: "forest", "cotton-fallow", "soybean-cotton", "soybean-maize", and "soybean-millet".
+
+Inputs:
+  - timeseires/:
+      blue.tif: a multi-layer GTiff file with the BLUE band from "2007-01-01" to "2013-12-19".  
+      doy.tif: a multi-layer GTiff file with the day of the year from "2007-01-01" to "2013-12-19".
+      evi.tif: a multi-layer GTiff file with the EVI from "2007-01-01" to "2013-12-19".
+      mir.tif: a multi-layer GTiff file with the MIR band from "2007-01-01" to "2013-12-19".
+      ndvi.tif: a multi-layer GTiff file with the NDVI from "2007-01-01" to "2013-12-19".
+      nir.tif: a multi-layer GTiff file with the NIR band from "2007-01-01" to "2013-12-19".
+      red.tif: a multi-layer GTiff file with the RED band from "2007-01-01" to "2013-12-19".
+      timeline: a text file with the dates of the satellite images.
+  - samples.csv: a CSV file with 5 attributes: "latitude", "longitude", "from", "to", and "class". The CRS projection string is: "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  
+Outputs:
+  - ts_list.RData: A list of zoo objects extracted from the raster files 
+  - assessment.RData: A list of data.frames with the Reference and Predicted class, resulting from several repetitions.  
+  - classification.tif: a multi-layer GTiff file with the final classification. The class are:
+      1. Cotton-fallow
+      2. Forest
+      3. Soybean-cotton
+      4. Soybean-maize
+      5. Soybean-millet
+      255. Unclassified 
+  
+  

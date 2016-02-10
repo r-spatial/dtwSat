@@ -30,9 +30,10 @@
 #' @importFrom grDevices terrain.colors gray.colors
 #' @importFrom plyr alply
 #' @importFrom parallel mclapply
-#' @importFrom sp Polygon Polygons SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates
-#' @importFrom mgcv gam predict.gam
-#' @importFrom RColorBrewer brewer.pal
+#' @importFrom sp Polygon Polygons SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates 
+#' @importFrom mgcv gam predict.gam 
+#' @importFrom RColorBrewer brewer.pal 
+#' @importFrom caret createDataPartition 
 #' 
 NULL
 

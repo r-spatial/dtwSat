@@ -41,7 +41,7 @@ setMethod("show",
           signature = signature(object="twdtw"),
           definition = function(object){
             cat("Time-Weighted DTW alignment object\n")
-            cat("Number of alignments:",nrow(getAlignments(object)),"\n")
+            cat("Number of matches:",nrow(getAlignments(object)),"\n")
             print(head(getAlignments(object)))
             invisible(NULL)
           }

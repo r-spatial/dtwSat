@@ -24,10 +24,11 @@ See \link[dtwSat]{normalizePatterns} for details.}
 If not declared the length of the output patterns will be the length of 
 the longest pattern.}
 
-\item{weight.fun}{A function that receives a matrix of time differences in days and 
-returns a matrix of time-weights. If not declared the time-weight is zero. In this 
-In this case the function runs the standard version of the dynamic time warping. 
-See details.}
+\item{weight.fun}{A function. Any function that receive and performs a 
+computation on a matrix. The function receives a matrix of time differences 
+in days and returns a matrix of time-weights. If not declared the time-weight 
+is zero. In this case the function runs the standard version of the dynamic 
+time warping. See details.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 

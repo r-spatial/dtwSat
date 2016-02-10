@@ -30,7 +30,7 @@ the validation dataset \code{x}, and the reference for the validation dataset \c
 \description{
 This function splits the set of samples for 
 training and validation. The function uses stratified sampling. 
-Then a simple random sampling or is applied within each stratum.
+Then a simple random sampling is applied within each stratum.
 }
 \examples{
 

@@ -18,7 +18,7 @@
 #' 
 #' @description This function splits the set of samples for 
 #' training and validation. The function uses stratified sampling. 
-#' Then a simple random sampling or is applied within each stratum.
+#' Then a simple random sampling is applied within each stratum.
 #' 
 #' @param timeseries A list of \code{\link[zoo]{zoo}} objects with the time series.
 #' 

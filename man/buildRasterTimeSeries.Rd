@@ -5,29 +5,33 @@
 \alias{buildRasterTimeSeries}
 \title{Build raster time series}
 \usage{
-buildRasterTimeSeries(x, timeline, doy, filepath = NULL, mc.cores = 1, ...)
+buildRasterTimeSeries(..., timeline, doy = NULL, filepath = NULL,
+  mc.cores = 1)
 }
 \arguments{
-\item{x}{A list of \code{\link[raster]{RasterBrick-class}} or 
-\code{\link[raster]{RasterStack-class}}
-Each layer of the Raster* object is a time step.}
+\item{...}{\code{\link[raster]{RasterBrick-class}} or 
+\code{\link[raster]{RasterStack-class}} objects with the 
+same spatial and temporal extents. Each layer of the Raster* object is a time step.
+\code{...} also accepts other named arguments to pass to the function 
+\code{\link[raster]{writeRaster}}.}
 
-\item{timeline}{A vector of \code{\link[base]{Dates}}
-It must have the length of the layers in the Raster* object.}
+\item{timeline}{A \code{\link[base]{Dates}} or \code{\link[base]{character}} 
+vector in format "YYYY-MM-DD". It must have the same length as the the layers in 
+the Raster* object.}
 
-\item{doy}{optional. A \code{\link[raster]{RasterBrick-class}} or 
-\code{\link[raster]{RasterStack-class}} with the same spatial and temporal extent 
-as the Raster* objects in \code{x}.}
+\item{doy}{A \code{\link[raster]{RasterBrick-class}} or 
+\code{\link[raster]{RasterStack-class}} with a sequence of days of the year for each pixel. 
+\code{doy} must have the same spatial and temporal extents as the Raster* objects passed to \code{...}.
+If \code{doy} is not informed then at least one Raster* object must be passed through \code{...}.}
 
 \item{filepath}{A character. The path to save the raster time series. If informed the 
 function saves a raster file for each Raster* object in the list, \emph{i.e} one file 
 for each time series. This way the function retrieves an list of 
-\code{\link[raster]{RasterBrick-class}} objects. See details.}
+\code{\link[raster]{RasterBrick-class}}. It is useful when the time series are 
+originally stores in separated files. See details.}
 
 \item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
 for details.}
-
-\item{...}{other arguments to pass to the function \code{\link[raster]{writeRaster}}.}
 }
 \value{
 details a list of \code{\link[raster]{RasterBrick-class}} or 
@@ -43,51 +47,46 @@ to files with the whole time series for each attribute.
 }
 \examples{
 
-#### In this example we build a MOD13Q1 EVI raster time series. 
-#### The file 'evi.tif' has 999 EVI time series from 2007-01-01 to 2013-12-19, 
-#### that means 160 points with temporal resolution of 16 days. 
-# require(raster)
-# evi = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
-# time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
-#        as.is=TRUE)
-# raster_evi_ts = buildRasterTimeSeries(x = evi, timeline = dates$date)
-
-
 #### In this example we build a multi-band MOD13Q1 raster time series. 
-#### The 'tif' files in 'lucc_MT/raster_ts' have 999 EVI time series 
+#### The 'tif' files in 'lucc_MT/tif' have 999 EVI time series 
 #### from 2007-01-01 to 2013-12-19, that means 160 points with temporal 
 #### resolution of 16 days. 
-# blue = brick(system.file("lucc_MT/raster_ts/blue.tif",  package = "dtwSat"))
-# red  = brick(system.file("lucc_MT/raster_ts/red.tif",  package = "dtwSat"))
-# nir  = brick(system.file("lucc_MT/raster_ts/nir.tif",  package = "dtwSat"))
-# mir  = brick(system.file("lucc_MT/raster_ts/mir.tif",  package = "dtwSat"))
-# evi  = brick(system.file("lucc_MT/raster_ts/evi.tif",  package = "dtwSat"))
-# ndvi = brick(system.file("lucc_MT/raster_ts/ndvi.tif",  package = "dtwSat"))
-# raster_bands = c(blue=blue, red=red, nir=nir, mir=mir, evi=evi, ndvi=ndvi)
-# time = read.csv(system.file("lucc_MT/timeline.csv",  package = "dtwSat"), 
-#        as.is=TRUE)
-# raster_timeseries = 
-#                buildRasterTimeSeries(x = raster_bands, timeline = time$date)
-     
-     
+blue = brick(system.file("lucc_MT/timeseries/blue.tif",  package = "dtwSat"))
+red  = brick(system.file("lucc_MT/timeseries/red.tif",  package = "dtwSat"))
+nir  = brick(system.file("lucc_MT/timeseries/nir.tif",  package = "dtwSat"))
+mir  = brick(system.file("lucc_MT/timeseries/mir.tif",  package = "dtwSat"))
+evi  = brick(system.file("lucc_MT/timeseries/evi.tif",  package = "dtwSat"))
+ndvi = brick(system.file("lucc_MT/timeseries/ndvi.tif",  package = "dtwSat"))
+dates = scan(system.file("lucc_MT/timeseries/timeline", package = "dtwSat"), what = "dates")
+raster_timeseries = 
+     buildRasterTimeSeries(blue, red, nir, mir, evi, ndvi, timeline = dates)
+ 
 #### In the next example we extract and plot a multi-band time series from 
 #### our raster time series built in the example above. 
 
 ## Location and time range 
-# ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
-#                        from = "2007-09-01", to = "2013-09-01")
+ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
+                         from = "2007-09-01", to = "2013-09-01")
  
 ## Proj string 
-# crs_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 ## Extract time series 
-# ts = extractTimeSeries(x = raster_timeseries, y = ts_location, 
-#                        proj4string = crs_string)
+ts = extractTimeSeries(x = raster_timeseries, y = ts_location, 
+                       proj4string = crs_string)
  
-#library(ggplot2)
-#autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
+autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
 
+#### The next example creates the raster time series and saves one file for each 
+#### satellite band. This way the function retrieves a rasterBrick object instead 
+#### of rasterStack that improves the performance of the raster processing. 
+#### It is useful when the time series are originally stores in separated files. 
+
+# raster_timeseries = buildRasterTimeSeries(blue, red, nir, mir, evi, ndvi,
+#                      timeline = dates, filepath = "~/test_fun",
+#                      format="GTiff", overwrite=TRUE)
+                     
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

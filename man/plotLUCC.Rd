@@ -50,25 +50,25 @@ labels = c(names(patterns_vignette.list), "Unclassified")
 colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
 names(colors) = labels
 
-x = system.file('lucc_MT.tif',  package = 'dtwSat')
+x = system.file('lucc_MT/classification.tif',  package = 'dtwSat')
 
 ### Plot maps
-#gp1 = plotLUCC(x = x, type = "map", layer.labels = 2008:2013, 
-#        class.levels = levels, class.labels = labels, 
-#        class.colors = colors)
-#gp1 
+# gp1 = plotLUCC(x = x, type = "map", layer.labels = 2008:2013, 
+#         class.levels = levels, class.labels = labels, 
+#         class.colors = colors)
+# gp1 
 
-# Plot area 
-#gp2 = plotLUCC(x = x, type = "area", layer.labels = 2008:2013, 
-#        class.levels = levels, class.labels = labels, 
-#        class.colors = colors)
-#gp2
+### Plot area 
+# gp2 = plotLUCC(x = x, type = "area", layer.labels = 2008:2013, 
+#         class.levels = levels, class.labels = labels, 
+#         class.colors = colors)
+# gp2
 
-# Plot land use changes 
-#gp3 = plotLUCC(x = x, type = "change", layer.labels = 2008:2013, 
-#        class.levels = levels, class.labels = labels, 
-#        class.colors = colors)
-#gp3
+### Plot land use changes 
+# gp3 = plotLUCC(x = x, type = "change", layer.labels = 2008:2013, 
+#         class.levels = levels, class.labels = labels, 
+#         class.colors = colors)
+# gp3
 
 }
 \author{

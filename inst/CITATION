@@ -1,0 +1,23 @@
+
+citEntry(
+  entry="Article",
+  title="Time-Weighted Dynamic Time Warping method for land use and land cover mapping.",
+  journal="Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing",
+  volume= "XX",
+  number="X",
+  pages="XXXX-XXXX",
+  year="2016",
+  author="Victor Maus and Gilberto Camara and Ricardo Cartaxo and Alber Sanchez and Fernando M. Ramos and Gilberto R. de Queiroz.",
+  textVersion="Victor Maus and Gilberto Camara and Ricardo Cartaxo and Alber Sanchez and Fernando M. Ramos and Gilberto R. de Queiroz. (2016) A Time-Weighted Dynamic Time Warping method for land use and land cover mapping. Accepted for Publication in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing." 
+)
+
+citEntry(
+  entry="Manual",
+  title="dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis",
+  year="2016",
+  author="Victor Maus",
+  note="R package version 0.2.0.9000",
+  textVersion="Victor Maus (2016). dtwSat: Time-Weighted Dynamic Time Warping for Satellite
+  Time Series Analysis. R package version 0.2.0.9000." 
+)
+

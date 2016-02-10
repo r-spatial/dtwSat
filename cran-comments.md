@@ -10,15 +10,15 @@ There were no ERRORs or WARNINGs.
 There was 1 NOTE:
 
 * checking installed package size ... NOTE
-  installed size is  6.3Mb
+  installed size is 7.4Mb
   sub-directories of 1Mb or more:
-    tif_MT   5.8Mb
+    lucc_MT  6.0Mb
 
-  The 'tif' files were included in order to give an example of spatiotemporal analysis using dtwSat. This example is the smallest that is still meaningful for a spatiotemporal land use analysis. This files are used in the new vignette about land use changes analysis and in the documentation examples. 
+  The 'tif' files were included in order to give an example of spatiotemporal analysis using dtwSat. This example is the smallest that is still meaningful for a spatiotemporal land use changes. This files are used in the vignettes and documentation examples. 
 
 * Fortran optimization 
   
-  Two functions written in Fortran were included in this version, one to perform the accumulated cost and the second to trace back the alignment paths
+  Two DTW functions written in Fortran were included in this version, one to perform the accumulated cost computation and the second to trace back the time series matches.
 
 
 # v0.1.0

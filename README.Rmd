@@ -31,8 +31,8 @@ rmarkdown::render(input="./vignettes/lucc.Rmd",         output_format=output_for
 dtwSat
 =====
 
-### Time-Weighted Dynamic Time Warping for remote sensing time series analysis
-dtwSat provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) for satellite image time series analysis and land use classification [@Maus:2016]. It is useful to account for natural and cultivated vegetation types with inter-annual climatic and seasonal variability. Methods based on dynamic time warping are flexible to handle with irregular sampling and out of phase time series, and have achieved significant results in time series data mining [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007]. Bellow we show a quick demo of the package and some [R vignettes][Vignettes] about the package usage and the TWDTW method.
+### Time-Weighted Dynamic Time Warping for satellite image time series analysis
+dtwSat provides an open source implementation of Time-Weighted Dynamic Time Warping (TWDTW) method for land use and land cover mapping using satellite image time series [@Maus:2016]. TWDTW is based on the Dynamic Time Warping technique [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007] and has achieved high accuracy for land use and land cover classification using satellite data [@Maus:2016]. The method is based on comparing unclassified satellite image time series with a set of known temporal patterns (e.g. phenological cycles of vegetation types). Using dtwSat the user can build temporal patterns for land cover types, apply the TWDTW analysis for satellite datasets, visualize the results of the time series analysis, produce land use and land cover maps, and create temporal plots for land use and land cover changes analysis. Bellow we show a quick demo of the package and some [vignettes][Vignettes].
 
 ### Install
 ```{r installation, eval = FALSE}
@@ -47,7 +47,6 @@ k=1
 In this quick dome we will perform a TWDTW analysis for a single time series. Suppose that we want to know the crop type of each subinterval in following time series:
 ```{r plot-example_ts-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=2, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. example_ts time series.')}
 library(dtwSat)
-library(ggplot2)
 autoplot(example_ts, facets = NULL) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```
@@ -113,12 +112,12 @@ plot(x = matches, type = "classification",
 k=k+1
 ```
 
-To see more example please check the [R vignettes][Vignettes] and if you want to learn more about the TWDTW method [see, @Maus:2016].
+To see more example please take a look at [vignettes][Vignettes] and if you want to learn more about the TWDTW method [see, @Maus:2016].
 
 
 ###Vignettes
-1. [Timw-Weighted Dynamic Time Warping](./vignettes/twdtw.md)
-2. [Time series classification and visualization using dtwSat](./vignettes/dtwSat_usage.md)
+<!--1. [Timw-Weighted Dynamic Time Warping method](./vignettes/twdtw.md)-->
+2. [Classifying a time series](./vignettes/dtwSat_usage.md)
 3. [Producing a land cover map](./vignettes/lucc.md)
 
 

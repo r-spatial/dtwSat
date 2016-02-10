@@ -7,8 +7,8 @@
 \usage{
 twdtw(x, ..., patterns = list(...), normalize.patterns = FALSE,
   patterns.length = NULL, weight.fun = NULL, dist.method = "Euclidean",
-  step.matrix = symmetric1, n = NULL, span = NULL, theta = 0.5,
-  keep = FALSE)
+  step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0.5,
+  theta = 0.5, keep = FALSE)
 }
 \arguments{
 \item{x}{A \link[zoo]{zoo} object with a time series.}
@@ -43,6 +43,10 @@ interval between two matches, for details see [3]. If not declared it removes
 all overlapping matches of the same pattern. To include overlapping matches 
 of the same pattern use \code{span=0}.}
 
+\item{min.length}{A number between 0 an 1. This argument removes the over fittings.
+Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
+meaning that the matching cannot be shorter than half of the pattern length.}
+
 \item{theta}{numeric between 0 and 1. The weight of the time 
 for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
 \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
@@ -74,10 +78,13 @@ log_fun = logisticWeight(alpha=-0.1, beta=100)
 # Perform twdtw analysis for a single pixel 
 matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
              keep=TRUE)
+             
 getPatternNames(matches)
 getAlignments(matches)
 getMatches(matches)
 getInternals(matches)
+plot(matches)
+plot(matches, type="paths")
 
 # Perform twdtw for a list pixel 
 matches = lapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 

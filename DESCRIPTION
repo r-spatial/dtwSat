@@ -12,10 +12,10 @@ Description: Provides an open source implementation of Time-Weighted Dynamic Tim
              for land cover types, apply the TWDTW analysis for satellite datasets, visualize the results of the time 
              series analysis, produce land use and land cover maps, and create temporal plots for land use and land 
              cover changes analysis. 
-Depends: R (>= 3.0.0), methods, zoo
+Depends: R (>= 3.0.0), zoo, raster, ggplot2, methods
 Imports: 
-    dtw, proxy, waveslim, graphics, ggplot2, scales, reshape2, grDevices, RColorBrewer,
-    utils, plyr, parallel, raster, sp, mgcv
+    dtw, proxy, waveslim, scales, reshape2, grDevices, RColorBrewer,
+    plyr, parallel, sp, mgcv
 Suggests: 
     testthat, knitr, rmarkdown, gridExtra, rgdal, grid, png
 License: GPL (>= 2) | file LICENSE

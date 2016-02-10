@@ -60,6 +60,10 @@
 #' all overlapping matches of the same pattern. To include overlapping matches 
 #' of the same pattern use \code{span=0}.
 #' 
+#' @param min.length A number between 0 an 1. This argument removes the over fittings.
+#' Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
+#' meaning that the matching cannot be shorter than half of the pattern length.
+#' 
 #' @docType methods
 #' @return A \code{\link[dtwSat]{twdtw-class}} object.
 #'  
@@ -103,10 +107,13 @@
 #' # Perform twdtw analysis for a single pixel 
 #' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'              keep=TRUE)
+#'              
 #' getPatternNames(matches)
 #' getAlignments(matches)
 #' getMatches(matches)
 #' getInternals(matches)
+#' plot(matches)
+#' plot(matches, type="paths")
 #' 
 #' # Perform twdtw for a list pixel 
 #' matches = lapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
@@ -123,7 +130,8 @@
 #' @export
 twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE, 
                   patterns.length=NULL, weight.fun=NULL, dist.method="Euclidean", 
-                  step.matrix = symmetric1, n=NULL, span=NULL, theta = 0.5, keep=FALSE)
+                  step.matrix = symmetric1, n=NULL, span=NULL, min.length=0.5,
+                  theta = 0.5, keep=FALSE)
 {
   
   if(!is(patterns, "list"))
@@ -145,12 +153,12 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
   call = match.call()
   
   res = .twdtw(x, patterns, weight.fun, dist.method, 
-               step.matrix, n, span, theta, keep, call)
+               step.matrix, n, span, min.length, theta, keep, call)
   res
 }
 
 .twdtw =  function(x, patterns, weight.fun, dist.method, 
-                   step.matrix, n, span, theta, keep, call)
+                   step.matrix, n, span, min.length, theta, keep, call)
 {
   
   res = lapply(patterns, function(pattern){
@@ -161,13 +169,16 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
       stop("Number of columns in pattern and in x don't match.")
     
     # Get day of the year
-    tx = as.numeric(format(index(pattern), "%j"))
-    ty = as.numeric(format(index(x), "%j"))
+    ty = index(pattern)
+    tx = index(x)
+    doyy = as.numeric(format(index(pattern), "%j"))
+    doyx = as.numeric(format(index(x), "%j"))
+    
     
     # Compute local cost matrix 
     phi = dist(pattern, x, method=dist.method)
     # Time cost matrix 
-    psi = .g(dist(tx, ty, method=dist.method))
+    psi = .g(dist(doyy, doyx, method=dist.method))
     # Weighted local cost matrix 
     cm = (1-theta)*phi + theta*weight.fun(psi)
     
@@ -185,7 +196,7 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
       candidates$b = as.numeric(row.names(candidates))
     }
     else {
-      b = .findMin(d, index(x), span = span)
+      b = .findMin(d, tx, span = span)
       candidates = data.frame(a[b], d[b], b)
     }
     
@@ -197,11 +208,15 @@ twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE,
     if(is.null(n)) n = length(I)
     if(length(I) > n) I = I[1:n]
     
+    # Remove overfit 
+    I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
+    
     alignments = list()
-    alignments$from       = index(x)[candidates$a[I]] # This is a vector of Dates
-    alignments$to         = index(x)[candidates$b[I]] # This is a vector of Dates
+    alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
+    alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]           # This is a numeric vector 
     alignments$K          = length(I)                 # This is an interger 
+    
     if(keep){
       # Trace low cost paths (k-th paths)
       matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidates$b[I])

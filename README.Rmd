@@ -47,7 +47,6 @@ k=1
 In this quick dome we will perform a TWDTW analysis for a single time series. Suppose that we want to know the crop type of each subinterval in following time series:
 ```{r plot-example_ts-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=2, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. example_ts time series.')}
 library(dtwSat)
-library(ggplot2)
 autoplot(example_ts, facets = NULL) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```

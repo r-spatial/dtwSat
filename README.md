@@ -25,7 +25,6 @@ In this quick dome we will perform a TWDTW analysis for a single time series. Su
 
 ``` r
 library(dtwSat)
-library(ggplot2)
 autoplot(example_ts, facets = NULL) + 
      theme(text = element_text(size = 8, family = "Helvetica"))
 ```

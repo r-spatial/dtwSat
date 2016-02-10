@@ -12,6 +12,9 @@ twdtwAssessment(x, mc.cores = 1, overlap = 0.5, threshold = Inf, ...)
 the validation dataset \code{x}, and the reference for the validation dataset \code{ref}.
 See \code{\link[dtwSat]{splitDataset}} for details.}
 
+\item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
+for details.}
+
 \item{overlap}{A number between 0 and 1. The minimum overlapping between one match and the 
 interval of classification. Default is 0.3, i.e. an overlap minimum of 30\%. 
 See \code{\link[dtwSat]{classifyIntervals}} for details.}

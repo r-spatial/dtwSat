@@ -94,11 +94,12 @@ matches = lapply(example_ts.list, FUN=twdtw, patterns=patterns.list,
 matches
 
 ### Perform twdtw in parallel for a list pixel 
-# require(parallel)
-# matches = mclapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
-#                  weight.fun = log_fun, keep=TRUE, mc.cores=2)
-# matches
-               
+\dontrun{
+require(parallel)
+matches = mclapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
+          weight.fun = log_fun, keep=TRUE, mc.cores=2)
+matches
+}               
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

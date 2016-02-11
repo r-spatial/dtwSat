@@ -43,22 +43,23 @@
 #' @seealso 
 #' \code{\link[dtwSat]{splitDataset}}
 #' 
-#' @examples
+#' @examples 
+#' \dontrun{
+#' set.seed(1)
+#' data_folder = system.file("lucc_MT/data", package = "dtwSat")
+#' field_samples = read.csv(paste(data_folder,"samples.csv", sep = "/"))
+#' proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
+#'            what = "character")
+#' reference = as.character(field_samples[["class"]])
+#' load(system.file("lucc_MT/ts_list.RData", package="dtwSat"))
 #' 
-#' # set.seed(1)
-#' # field_samples = read.csv(system.file("lucc_MT/samples.csv", package="dtwSat")) 
-#' # proj_str = scan(file = system.file("lucc_MT/samples_projection", package="dtwSat"), 
-#' #                  what = "character")
-#' # reference = as.character(field_samples[["class"]])
-#' # load(system.file("lucc_MT/ts_list.RData", package="dtwSat"))
+#' x = splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
+#'     times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
+#'     formula = y ~ s(time, bs="cc"))
 #' 
-#' # x = splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
-#' #        times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
-#' #        formula = y ~ s(time, bs="cc"))
-#' 
-#' # assess_table = lapply(x, FUN=twdtwAssessment, overlap = 0.5, 
-#' #             weight.fun = logisticWeight(alpha=-0.1, beta=50))
-#' 
+#' assess_table = lapply(x, FUN=twdtwAssessment, overlap = 0.5, 
+#'              weight.fun = logisticWeight(alpha=-0.1, beta=50))
+#' }
 #' @export
 twdtwAssessment = function(x, mc.cores=1, overlap=0.5, threshold=Inf, ...){
   # Apply TWDTW for each time series 

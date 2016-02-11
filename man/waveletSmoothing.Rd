@@ -42,15 +42,15 @@ sy = waveletSmoothing(x=example_ts, frequency=16, wf = "la8", J=1,
      boundary = "periodic")
 
 evi = merge(Raw=zoo(example_ts$evi), Wavelet=zoo(sy$evi))
-if(require(ggplot2)){
-   ## Plot raw EVI and filtered EVI
-   gp = autoplot(evi, facets = NULL)
-   gp
+
+## Plot raw EVI and filtered EVI
+gp = autoplot(evi, facets = NULL)
+gp
     
-   ## Plot all bands
-   gp = autoplot(sy, facets = NULL)
-   gp
-}
+## Plot all bands
+gp = autoplot(sy, facets = NULL)
+gp
+
 
 
 }

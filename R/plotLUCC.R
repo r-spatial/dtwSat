@@ -50,7 +50,7 @@
 #' \code{\link[raster]{stack}}.
 #'  
 #' @examples
-#' 
+#' \dontrun{
 #' levels = c(seq_along(patterns_vignette.list), 255)
 #' labels = c(names(patterns_vignette.list), "Unclassified")
 #' colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
@@ -59,23 +59,23 @@
 #' x = system.file('lucc_MT/classification.tif',  package = 'dtwSat')
 #' 
 #' ### Plot maps
-#' # gp1 = plotLUCC(x = x, type = "map", layer.labels = 2008:2013, 
-#' #         class.levels = levels, class.labels = labels, 
-#' #         class.colors = colors)
-#' # gp1 
+#' gp1 = plotLUCC(x = x, type = "map", layer.labels = 2008:2013, 
+#'       class.levels = levels, class.labels = labels, 
+#'       class.colors = colors)
+#' gp1 
 #' 
 #' ### Plot area 
-#' # gp2 = plotLUCC(x = x, type = "area", layer.labels = 2008:2013, 
-#' #         class.levels = levels, class.labels = labels, 
-#' #         class.colors = colors)
-#' # gp2
+#' gp2 = plotLUCC(x = x, type = "area", layer.labels = 2008:2013, 
+#'       class.levels = levels, class.labels = labels, 
+#'       class.colors = colors)
+#' gp2
 #' 
 #' ### Plot land use changes 
-#' # gp3 = plotLUCC(x = x, type = "change", layer.labels = 2008:2013, 
-#' #         class.levels = levels, class.labels = labels, 
-#' #         class.colors = colors)
-#' # gp3
-#' 
+#' gp3 = plotLUCC(x = x, type = "change", layer.labels = 2008:2013, 
+#'       class.levels = levels, class.labels = labels, 
+#'       class.colors = colors)
+#' gp3
+#' }
 #' @export
 plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL, 
                     class.levels=NULL, class.labels=NULL, class.colors=NULL){

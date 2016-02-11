@@ -123,11 +123,12 @@
 #' matches
 #' 
 #' ### Perform twdtw in parallel for a list pixel 
-#' # require(parallel)
-#' # matches = mclapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
-#' #                  weight.fun = log_fun, keep=TRUE, mc.cores=2)
-#' # matches
-#'                
+#' \dontrun{
+#' require(parallel)
+#' matches = mclapply(example_ts.list, FUN=twdtw, patterns=patterns.list, 
+#'           weight.fun = log_fun, keep=TRUE, mc.cores=2)
+#' matches
+#' }               
 #' @export
 twdtw =  function(x, ..., patterns=list(...), normalize.patterns=FALSE, 
                   patterns.length=NULL, weight.fun=NULL, dist.method="Euclidean", 

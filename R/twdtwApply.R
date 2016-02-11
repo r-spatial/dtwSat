@@ -59,7 +59,7 @@
 #' 
 #' 
 #' @examples
-#' 
+#' \dontrun{
 #' ##### In the next example we build multi-band raster time series and run  
 #' ##### the TWDTW analyis. 
 #' 
@@ -67,50 +67,51 @@
 #' #### The 'tif' files in 'lucc_MT/tif' have 999 EVI time series 
 #' #### from 2007-01-01 to 2013-12-19, that means 160 points with temporal 
 #' #### resolution of 16 days. 
-#' blue = brick(system.file("lucc_MT/timeseries/blue.tif",  package = "dtwSat"))
-#' red  = brick(system.file("lucc_MT/timeseries/red.tif",  package = "dtwSat"))
-#' nir  = brick(system.file("lucc_MT/timeseries/nir.tif",  package = "dtwSat"))
-#' mir  = brick(system.file("lucc_MT/timeseries/mir.tif",  package = "dtwSat"))
-#' evi  = brick(system.file("lucc_MT/timeseries/evi.tif",  package = "dtwSat"))
-#' ndvi = brick(system.file("lucc_MT/timeseries/ndvi.tif",  package = "dtwSat"))
-#' dates = scan(system.file("lucc_MT/timeseries/timeline", package = "dtwSat"), what = "dates")
+#' data_folder = system.file("lucc_MT/data", package = "dtwSat")
+#' blue = brick(paste(data_folder,"blue.tif", sep = "/"))
+#' red  = brick(paste(data_folder,"red.tif", sep = "/"))
+#' nir  = brick(paste(data_folder,"nir.tif", sep = "/"))
+#' mir  = brick(paste(data_folder,"mir.tif", sep = "/"))
+#' evi  = brick(paste(data_folder,"evi.tif", sep = "/"))
+#' ndvi = brick(paste(data_folder,"ndvi.tif", sep = "/"))
+#' dates = scan(paste(data_folder,"timeline", sep = "/"), what = "dates")
 #' raster_timeseries = 
 #'      buildRasterTimeSeries(blue, red, nir, mir, evi, ndvi, timeline = dates)
 #'  
 #' #### Run TWDTW analysis (~1.2 min using 4 core with 2.4 GHz clock)
-#' # class_names = names(patterns_vignette.list)
-#' # names(class_names) = class_names
-#' # patterns_levels = c(seq_along(class_names), 255)
-#' # patterns_labels = c(class_names, "Unclassified")
-#' # system.time(
-#' # land_use_maps <- 
-#' #      twdtwApply(x = raster_timeseries, 
-#' #      patterns = patterns_vignette.list, 
-#' #      mc.cores = 4, win.fun = classifyIntervals, 
-#' #      weight.fun = logisticWeight(alpha=-0.1, beta=50), 
-#' #      from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
-#' #      by = "12 month", overlap = 0.5, levels = patterns_levels,
-#' #      labels = patterns_labels, simplify= TRUE)
-#' #   )
+#' class_names = names(patterns_vignette.list)
+#' names(class_names) = class_names
+#' patterns_levels = c(seq_along(class_names), 255)
+#' patterns_labels = c(class_names, "Unclassified")
+#' system.time(
+#' land_use_maps <- 
+#'       twdtwApply(x = raster_timeseries, 
+#'       patterns = patterns_vignette.list, 
+#'       mc.cores = 4, win.fun = classifyIntervals, 
+#'       weight.fun = logisticWeight(alpha=-0.1, beta=50), 
+#'       from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
+#'       by = "12 month", overlap = 0.5, levels = patterns_levels,
+#'       labels = patterns_labels, simplify= TRUE)
+#' )
 #' #### Plot results 
-#' # colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
-#' # names(colors) = patterns_labels
+#' colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
+#' names(colors) = patterns_labels
 #' ## Land use maps
-#' # gp1 = plotLUCC(x = land_use_maps, type = "map", layer.labels = 2008:2013, 
-#' #          class.levels = patterns_levels, class.labels = patterns_labels, 
-#' #          class.colors = colors)
-#' # gp1 
+#' gp1 = plotLUCC(x = land_use_maps, type = "map", layer.labels = 2008:2013, 
+#'       class.levels = patterns_levels, class.labels = patterns_labels, 
+#'       class.colors = colors)
+#' gp1 
 #' ## Accumulated area 
-#' # gp2 = plotLUCC(x = land_use_maps, type = "area", layer.labels = 2008:2013, 
-#' #          class.levels = patterns_levels, class.labels = patterns_labels, 
-#' #          class.colors = colors)
-#' # gp2
+#' gp2 = plotLUCC(x = land_use_maps, type = "area", layer.labels = 2008:2013, 
+#'       class.levels = patterns_levels, class.labels = patterns_labels, 
+#'       class.colors = colors)
+#' gp2
 #' ## Land use changes 
-#' # gp3 = plotLUCC(x = land_use_maps, type = "change", layer.labels = 2008:2013, 
-#' #          class.levels = patterns_levels, class.labels = patterns_labels, 
-#' #          class.colors = colors)
-#' # gp3
-#' 
+#' gp3 = plotLUCC(x = land_use_maps, type = "change", layer.labels = 2008:2013, 
+#'       class.levels = patterns_levels, class.labels = patterns_labels, 
+#'       class.colors = colors)
+#' gp3
+#' }
 #' @export
 twdtwApply = function(x, patterns, win.fun, 
                       win.size = c(1,1), 

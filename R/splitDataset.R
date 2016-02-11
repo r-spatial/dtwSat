@@ -45,20 +45,23 @@
 #' 
 #' @examples
 #' 
+#' \dontrun{
 #' set.seed(1)
-#' field_samples = read.csv(system.file("lucc_MT/samples.csv", package="dtwSat")) 
-#' proj_str = scan(file = system.file("lucc_MT/samples_projection", package="dtwSat"), 
-#'                  what = "character")
+#' data_folder = system.file("lucc_MT/data", package = "dtwSat")
+#' field_samples = read.csv(paste(data_folder,"samples.csv", sep = "/"))
+#' proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
+#'            what = "character")
 #' reference = as.character(field_samples[["class"]])
 #' load(system.file("lucc_MT/ts_list.RData", package="dtwSat"))
 #' 
 #' x = splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
-#'        times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
-#'        formula = y ~ s(time, bs="cc"))
+#'     times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
+#'     formula = y ~ s(time, bs="cc"))
 #' 
 #' names(x)
 #' names(x$Resample1)
 #' plotPatterns(x$Resample1$patterns)
+#' }
 #' 
 #' @export
 splitDataset = function(timeseries, ref, times=1, p=0.1, mc.cores=1, ...) {

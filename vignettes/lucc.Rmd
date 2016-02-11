@@ -21,12 +21,9 @@ knitr::opts_chunk$set(
 ```
 
 
-In this chapter we present an application of TWDTW for land use and land cover changes analysis using satellite image time series. We use a set unclassified satellite image time series and temporal patterns based on field samples. We show step-by-step how to create these temporal patterns and how to perform the TWDTW analysis for satellite image time series stored as sequence of raster files. In the end of chapter we also present an example of land use and land cover changes analysis as well as the accuracy assessment. The satellite images and the field samples used in the example come with the \pkg{dtwSat} package. 
+In this section we present an application of TWDTW for land use and land cover changes analysis using satellite image time series. We use a set unclassified satellite image time series and temporal patterns based on field samples. We show step-by-step how to create the set of temporal patterns using field samples of land use classes, and how to perform the TWDTW analysis for a satellite image time series using the raster interface. In the end of this chapter we also present a land use and land cover changes analysis as well as the accuracy assessment. The satellite images and the field samples used in the examples come with \pkg{dtwSat} package. 
 
-
-## Data 
-
-The inputs of the algorithm are: *i)* a sequence of satellite images ordered by time, and *ii)* a set of ground truth samples. Our example is located in a tropical forest area, in Mato Grosso, Brazil, and the time domain is from 2007 to 2013. The images covering our study area were extracted from the MODIS product [MOD13Q1](https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1) collection 5 [@Friedl:2010]. This produt has 250 m spatial and 16 day temporal resolution, that means a sequence of 160 images with 999 pixels each, *i.e.* approximately $5300 km^2$ over 6 years. We also use a set of 603 ground truth samples of the following land classes: "forest", "cotton-fallow", "soybean-cotton", "soybean-maize", and "soybean-millet".
+The data for for out TWDTW analysis are: *i)* a sequence of satellite images ordered by time, and *ii)* a set of ground truth samples. The are is located in the tropical forest, in Mato Grosso, Brazil, and the time domain is from 2007 to 2013. The satellite images were extracted from the MODIS product MOD13Q1 collection 5 [@Friedl:2010] and include vegetation indexes "ndvi", "evi", and original bands "nir", "red", "blue", and "mir". This product has 250 m spatial and 16 day temporal resolution, that means a sequence of 160 images with 999 pixels each, *i.e.* approximately $5300 km^2$ over 6 years. . We also use a set of 603 ground truth samples of the following classes: "forest", "cotton-fallow", "soybean-cotton", "soybean-maize", and "soybean-millet".
 
 \begin{figure}[!h]
 \begin{center} 
@@ -36,160 +33,104 @@ The inputs of the algorithm are: *i)* a sequence of satellite images ordered by 
 \label{fig:study-area}
 \end{figure}
 
-## Building the inputs 
-
-The time series algorithms implemented in \pkg{dtwSat} run usin a list of satellite time series in a list of \pkg{raster} object, \code{RasterBrick} or \code{RasterStack}. Each node in the list has one multi-layer raster object that has one satellite band ordered by time. All raster objects in the list must have the same temporal and spatial extent. \pkg{dtwSat} provides the function \code{buildRasterTimeSeries} to build this multi-band raster time series object. 
-
-The images for our example are in the folder *lucc\_MT* installed with \pkg{dtwSat}. These files are ordered according to the time of the image acquisition in GTiff format. Each file has 7 bands (ndvi, evi, red, nir, mir, blue, and doy) extracted from the MODIS product MOD13Q1. In the code bellow we show how to build the multi-band satellite image time series using the \pkg{raster} objects. 
+\pkg{dtwSat} borrow the objects \code{RasterBrick} and \code{RasterStack} from the \pkg{raster} to handle with the satellite images time series. In the example bellow, we read the satellite images from the GTiff files in the folder *lucc\_MT/timeseries* using \code{raster::stack}. Each file includes vegetation indexes "ndvi", "evi", and original bands "nir", "red", "blue", and "mir" for one date.  EXPLAIN THE TIF FILES  This time information is also part of the name in the GTiff files, such as it usually comes from the data provider. We also need the images acquisition dates in the text file *lucc\_MT/timeseries/timeline*.
 ```{r, echo = TRUE, eval = TRUE}
 library(dtwSat)
-library(raster)
-raster_dir = system.file("lucc_MT",  package = "dtwSat")
-raster_files_list = 
-  paste(raster_dir, dir(raster_dir, pattern = ".tif"), sep = "/")
-ndvi = stack(raster_files_list, bands = 1)
-evi  = stack(raster_files_list, bands = 2)
-red  = stack(raster_files_list, bands = 3)
-nir  = stack(raster_files_list, bands = 4)
-mir  = stack(raster_files_list, bands = 5)
-blue = stack(raster_files_list, bands = 6)
-```
-and, optionally we can also build a raster time series for the real day of the year (doy) for each pixels, such that 
-```{r, echo = TRUE, eval = TRUE}
-doy = stack(raster_files_list, bands = 7)
+blue = brick(system.file("lucc_MT/timeseries/blue.tif",  package = "dtwSat"))
+red  = brick(system.file("lucc_MT/timeseries/red.tif",  package = "dtwSat"))
+nir  = brick(system.file("lucc_MT/timeseries/nir.tif",  package = "dtwSat"))
+mir  = brick(system.file("lucc_MT/timeseries/mir.tif",  package = "dtwSat"))
+evi  = brick(system.file("lucc_MT/timeseries/evi.tif",  package = "dtwSat"))
+ndvi = brick(system.file("lucc_MT/timeseries/ndvi.tif",  package = "dtwSat"))
+day_of_year = 
+  brick(system.file("lucc_MT/timeseries/doy.tif", package = "dtwSat"))
+dates = scan(system.file("lucc_MT/timeseries/timeline", package = "dtwSat"), 
+             what = "dates")
 ```
 
-At this point the \code{raster} time series for each band, however they are without time reference. Therefore, the package \pkg{dtwSat} also provides the acquisition dates of the satellite images in file *lucc\_MT/timeline.csv*. The time information is also part of the name of the *tif* files, such as it usually comes from the data provider. To attach the \code{timeline} to the \code{RasterStack} objects we use the function \code{dtwSat::buildRasterTimeSeries} that will retrieve a list of raster time series, which servers as input for other functions of \pkg{dtwSat}. Note that the access of several time series from *tif* files might become slow. Therefore, \code{buildRasterTimeSeries} also provides an interface to \code{raster::writeRaster} and creates independent files for each time series, *i.e.* it creates one file for each band that allows us to use \code{raster::RasterBrick} instead of \code{RasterStack} objects. As our example is small, we will use the \code{RasterStack} object. 
+The package \pkg{raster} does not support sequences of satellite measurements and multiple satellite attributes in the same object. Therefore we use the function \code{dtwSat::buildRasterTimeSeries} to build a raster time series with multiple satellite attributes. The inputs of this function area a list \code{raster::RasterStack} or \code{raster::RasterBrick} objects with the time series for each satellite attribute and the a vector with the images acquisition dates in the format \code{"YYYY-MM-DD"}. The raster objects in the list must have the same temporal and spatial extent. The resulting object is a list of raster objects with the time information that serves as input for our analysis. Note that to get a time series from several image files might become slow for bigger areas. Therefore, the function \code{buildRasterTimeSeries} also provides an interface to \code{raster::writeRaster} that creates independent files for each time series, *i.e.* it creates one file for each satellite attribute allowing us to use \code{RasterBrick} instead of \code{RasterStack} objects. As our example is small, we will use the \code{RasterStack} object. 
 ```{r, echo = TRUE, eval = TRUE}
-timeline = read.csv(system.file("lucc_MT/timeline.csv", 
-                                  package = "dtwSat"), as.is = TRUE)
 raster_timeseries = 
-  buildRasterTimeSeries(x = list(ndvi, evi, red, nir, mir, blue), 
-                         timeline = timeline$date, doy = doy)
-```
-```{r, echo = FALSE, eval = TRUE}
-# Fast version using raster brick  
-raster_dir = system.file("lucc_MT/raster_ts",  package = "dtwSat")
-fnames = dir(raster_dir, pattern = ".tif")
-flist = paste(raster_dir, fnames, sep = "/")
-fnames = unlist(lapply(fnames, function(x) unlist(strsplit(x, split="[.]"))[1]))
-names(flist) = fnames
-brick_list = lapply(flist[-2], brick)
-doy = brick(flist[2])
-raster_timeseries = buildRasterTimeSeries(x = brick_list, timeline = timeline$date, doy = doy)
+  buildRasterTimeSeries(blue, red, nir, mir, evi, ndvi, 
+                        timeline = dates, doy = day_of_year)
 ```
 
-The next step before we can start our analysis is load the ground truth samples from the shapefile *lucc\_MT/samples\_MT.shp*. In this file, besides the location of each sample, we have the land use class (*class*) and the time period (*from*-*to*) in date format (*i.e.* `yyyy-mm-dd`). This dataset has a total of 603 samples that are: 68 Cotton-fallow, 138 Forest, 79 Soybean-cotton, 134 Soybean-maize, and 184 Soybean-millet. 
+To build the temporal patterns for our land use classes we use the set of ground truth samples in the file *lucc\_MT/samples\_MT.shp*. Besides spatial locations, the shapefile provides the land use class (*class*) and the time period (*from*-*to*) of each sample. This dataset has a total of 603 samples that are: 68 Cotton-fallow, 138 Forest, 79 Soybean-cotton, 134 Soybean-maize, and 184 Soybean-millet. 
 ```{r, echo = TRUE, eval = TRUE}
-library(rgdal)
 field_samples = 
-  readOGR(system.file("lucc_MT/samples_MT.shp", package="dtwSat"), 
-          layer = "samples_MT")
+  read.csv(system.file("lucc_MT/samples.csv", package="dtwSat")) 
+proj_str = scan(file = system.file("lucc_MT/samples_projection", package="dtwSat"), 
+                what = "character")
 ```
 ```{r, echo = TRUE, eval = TRUE}
 names(field_samples)
 table(field_samples[["class"]])
 ```
 
-
-## Extracting time series and creating the temporal patterns
-
-In this section we show how to create the typical temporal patterns for each land use class in the samples. For that we extract the time series for each sample from the \code{RasterStack} list stored in \code{raster_timeseries}. The extraction process might take a few minutes because it has to read several raster files in order to get the complete time series (\~4 minutes using 1 cores with 2.4 GHz clock). Note that the extraction is much faster if we use \code{RasterBrick} instead of \code{RasterStack} (\~4.5 seconds using 1 cores with 2.4 GHz clock). Linux users can also speedup the processing by setting larger number of cores in the parameter \code{mc.cores}.
+We use the function \code{dtwSat::extractTimeSeries} to extract the time series for each sample from the raster time series in the list \code{raster_timeseries}. In this example, the time to extract 1 time series with 23 samples is \~0.3 seconds using 1 cores with 2.4 GHz clock. The output is a list of \code{zoo} objects, one for each sample in \code{field_samples}. 
 ```{r, echo = TRUE, eval = TRUE}
-ts_list = extractTimeSeries(x = raster_timeseries, 
-                            y = field_samples, mc.cores = 1)
+ts_list = extractTimeSeries(x = raster_timeseries, y = field_samples, 
+                            proj4string = proj_str)
 ```
-<!-- 
-t1=system.time(
-  ts_list <- extractTimeSeries(x = raster_timeseries, y = field_samples, mc.cores = 1)
-)
-t2=system.time(
-  ts_list <- extractTimeSeries(x = raster_timeseries, y = field_samples, mc.cores = 1)
-)
--->
 
-In the code bellow we use all time series extracted in the previous step to create typical temporal patterns for each class. The function \code{createPattern} uses a Generalised Additive Model (GAM) (cf. \pkg{mgcv} to create the temporal patterns. To use this function the user has to inform the start (from), the end (to), and the frequency in days of the desired output temporal patterns. Besides the user also has to provide a fitting formula for the \code{mgcv::gam} model (for details see \code{?mgcv::gam}). Here we set the output patterns with frequency of 8 days from "2004-09-01" to "2005-09-0", and cyclic cubic spline model, such that \code{y ~ s(time, bs="cc")}, where \code{time} is the independent variable and \code{y} is one of the satellite bands (for details see \code{?mgcv::s}). 
+The samples time series in \code{ts_list} are the input to create the temporal patterns for each class using the function \code{dtwSat::createPattern}. This function fits a Generalized Additive Model (GAM) [@Wood:2011] to the samples and retrieves a smoothed temporal pattern. In the example below, we set \code{freq=8} to get temporal patterns with frequency of 8 days. We also use a cyclic cubic spline model \code{y ~ s(x, bs="cc")} as the fitting formula of the GAM (see \code{?mgcv::s} for details). 
 ```{r, echo = TRUE, eval = TRUE}
-groups = as.character(unique(field_samples[["class"]]))
-names(groups) = groups
-field_samples_list = lapply(groups, function(x){
+# Get class names 
+class_names = as.character(unique(field_samples[["class"]]))
+names(class_names) = class_names
+# Split samples time series according to the class 
+ts_class_samples = lapply(class_names, function(x){
   ts_list[field_samples[["class"]]==x]
 })
-patterns_list = lapply(field_samples_list, FUN = createPattern, 
-                       freq = 8, formula = y ~ s(time, bs = "cc"))
+# Apply createPattern for each class 
+patterns_list = lapply(ts_class_samples, FUN = createPattern, 
+                       freq = 8, formula = y ~ s(x, bs = "cc"))
 ```
 This will give us the following temporal patterns 
 ```{r temporal-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width, fig.align='center', fig.pos='!h'}
-library(ggplot2)
 plotPatterns(patterns_list) + theme(legend.position = "bottom")
 ```
 
-## Land use classification using TWDTW 
 
-In this section we use \pkg{dtwSat} to classify our small study area in the Brazilian Amazon into land use types over time. The function \code{twdtwApply} performs the TWDTW analysis over all pixel locations and returns a \code{raster::RasterBrick} object whose layers have the classification for each predefined time period. To use this function we set some parameters, such that
 
-- Time-weight function for TWDTW analysis. See ?twdtw for details 
-- Classification function. See ?classifyIntervals for details
-- Classification intervals and overlap. See ?classifyIntervals for details
-- Legend parameter. See ?classifyIntervals for details
-
-Note that we use \code{win.fun=classifyIntervals}, which classifies the time intervals of each pixel location based on the lowest TWDTW distance, *i.e.* a pixel based classification. The users can also define their own classification function using different rules, for example, by using the TWDTW distance of neighborhood. 
-
-The time to process to process 999 time series in a \code{RasterStack} object is ~XXXX minutes using 1 cores with 2.4 GHz clock. This can be improved if we use \code{RasterBrick} instead (\~2 minutes using 1 cores with 2.4 GHz clock). Linux users can also speedup the processing by setting larger number of cores in the parameter \code{mc.cores}.
 ```{r, echo = TRUE, eval = FALSE}
+patterns_levels = c(seq_along(class_names), 255)
+patterns_labels = c(class_names, "Unclassified")
 land_use_maps = 
   twdtwApply(x = raster_timeseries, patterns = patterns_list, 
              mc.cores = 4, win.fun = classifyIntervals, 
              weight.fun = logisticWeight(alpha=-0.1, beta=50), 
              from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
-             by = "12 month", overlap = 0.5, 
-             levels = c(seq_along(patterns_list), 255),
-             labels = c(names(patterns_list), "Unclassified"),
-             simplify= TRUE)
-```
-```{r, echo = FALSE, eval = FALSE}
-proctime = system.time(
-   land_use_maps <- 
-  twdtwApply(x = raster_timeseries, 
-             patterns = patterns_list, 
-             mc.cores = 1, 
-             win.fun = classifyIntervals, 
-             weight.fun = logisticWeight(alpha=-0.1, beta=50), 
-             from = as.Date("2007-09-01"),
-             to = as.Date("2013-09-01"),
-             by = "12 month", 
-             overlap = 0.5, 
-             levels = c(seq_along(patterns_list), 255),
-             labels = c(names(patterns_list), "Unclassified"),
-             simplify= TRUE)
-)
-proctime/60
-# writeRaster(land_use_maps, "./inst/lucc_MT/lucc_MT.tif", overwrite=TRUE)
+             by = "12 month", overlap = 0.5, levels = patterns_levels,
+             labels = patterns_labels, simplify= TRUE)
 ```
 ```{r, echo = FALSE, eval = TRUE}
 # Load classification not to run again 
-land_use_maps = brick(system.file('lucc_MT.tif', package = 'dtwSat'))
+patterns_levels = c(seq_along(class_names), 255)
+patterns_labels = c(class_names, "Unclassified")
+land_use_maps = brick(system.file('lucc_MT/classification.tif', package = 'dtwSat'))
 ```
 
 Lets now take a look at the classification results. This sequence of maps provided here is useful for land use changes analysis. Such results can be linked to other kind of datasets, *e.g.* commodities trading, and help in understanding the spatiotemporal connections of land use changes and its drivers. 
 ```{r plot-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Land use maps for each year from 2008 to 2013.', fig.pos='!h'}
-patterns_levels = c(seq_along(patterns_list), 255)
-patterns_labels = c(names(patterns_list), "Unclassified")
 patterns_colors = c("#996400", "#005500", "#D8B777", 
                     "#E6D219", "#E6BEC8", "#C8C8C8")
 names(patterns_colors) = patterns_labels
 plotLUCC(x = land_use_maps, type = "map", layer.labels = 2008:2013, 
-         class.levels = patterns_levels, class.labels = patterns_labels, class.colors = patterns_colors)
+         class.levels = patterns_levels, class.labels = patterns_labels, 
+         class.colors = patterns_colors)
 ```
 
 For example, we can quantify the accumulated land use changes over time, or even the land use transitions from and to each land class over time, such that
 ```{r plot-area, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Percentage of area for each land use class from 2008 to 2013.', fig.pos='!h'}
 plotLUCC(x = land_use_maps, type = "area", layer.labels = 2008:2013, 
-         class.levels = patterns_levels, class.labels = patterns_labels, class.colors = patterns_colors)
+         class.levels = patterns_levels, class.labels = patterns_labels, 
+         class.colors = patterns_colors)
 ```
 ```{r plot-change, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Percentage of land use changes for each year from 2008 to 2013.', fig.pos='!h'}
 plotLUCC(x = land_use_maps, type = "change", layer.labels = 2008:2013, 
-         class.levels = patterns_levels, class.labels = patterns_labels, class.colors = patterns_colors)
+         class.levels = patterns_levels, class.labels = patterns_labels, 
+         class.colors = patterns_colors)
 ```
 
 ## Accuracy assessment
@@ -197,15 +138,15 @@ plotLUCC(x = land_use_maps, type = "change", layer.labels = 2008:2013,
 Here we use our field samples to assess the accuracy of the classification using TWDTW. For that we split the sample of each class such that: 10% of the samples is used for training and 90% for validation. We run 100 simulation choosing random sample and compute the *user's* and *producer's accuracy*. These results are presented in Fig. (\ref{fig:plot-accuracy}). 
 
 ```{r, echo = TRUE, eval = FALSE}
-library(caret)
-library(parallel)
-library(reshape2)
-source("assessAccuracy.R")
-n = 100 # Number of repetitions 
-p = 0.1 # p% Training (1-p)% Validation 
-reference = as.character(field_samples[["class"]])
+# Split dataset for training and validation 
 set.seed(1)
-assess_list = assessAccuracy(ts_list, reference, n, p)
+n = 2 # Number of repetitions 
+reference = as.character(field_samples[["class"]])
+splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
+      n=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
+      formula = y ~ s(time, bs="cc"))
+assess_table = lapply(splitted_dataset, FUN=twdtwAssessment, overlap = 0.5, 
+               weight.fun = logisticWeight(alpha=-0.1, beta=50), mc.cores=1)
 ```
 
 ```{r, echo = FALSE, eval = FALSE}
@@ -214,12 +155,19 @@ save(assess_list, file="./inst/lucc_MT/assess_list.RData")
 
 ```{r, echo = FALSE, eval = TRUE}
 ## Load classification not to run again 
-load(system.file('lucc_MT/assess_list.RData', package = 'dtwSat'))
+load(system.file('lucc_MT/assessment.RData', package = 'dtwSat'))
 ```
+
+
+```{r, echo = FALSE, eval = FALSE}
+assess_results = do.call("rbind", assessment)
+table(assess_results)
+```
+
 
 ```{r, echo = FALSE, eval = TRUE}
 assess_results = 
-  do.call("rbind", lapply(assess_list, function(class_table){
+  do.call("rbind", lapply(assessment, function(class_table){
     assess_table = table(Predicted=class_table[["Predicted"]],
                          Reference=class_table[["Reference"]]
                          )
@@ -232,17 +180,19 @@ assess_results =
 }))
 ```
 
+
 ```{r plot-accuracy, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='Accuracy assessment of the of the land use classification using TWDTW.', fig.pos='!h'}
-library(reshape2)
 library(scales)
+library(reshape2)
 df = melt(assess_results, id="Group")
 ggplot(df, aes(x=Group, y=value)) + 
   stat_summary(fun.data="median_hilow", width=0.5, 
                geom="crossbar", fill="grey") + 
   geom_point() +  facet_grid(. ~ variable) + 
-  scale_y_continuous(limits = c(0,1), labels = scales::percent) + 
+  scale_y_continuous(limits = c(0,1), labels = percent) + 
   xlab("") + ylab("Accuracy") + coord_flip()
 ```
+
 
 
 # References

@@ -25,9 +25,6 @@
 #' Each layer of the Raster* object is a time step. 
 #' See \code{\link[dtwSat]{buildRasterTimeSeries}}.
 #' 
-#' @param patterns a list of \link[zoo]{zoo} objects. See \code{\link[dtwSat]{twdtw}} for
-#' details.
-#' 
 #' @param win.fun A function. A function to be applied to the TWDTW results. See Details.
 #' 
 #' @param win.size A numeric vector. The size of a processing window in col x row order.
@@ -79,21 +76,20 @@
 #'      buildRasterTimeSeries(blue, red, nir, mir, evi, ndvi, timeline = dates)
 #'  
 #' #### Run TWDTW analysis (~1.2 min using 4 core with 2.4 GHz clock)
+#' log_fun = weight.fun = logisticWeight(alpha=-0.1, beta=50)
+#' system.time(
+#' land_use_maps <- 
+#'       twdtwApply(x = raster_timeseries, 
+#'       mc.cores = 4, win.fun = classifyIntervals, 
+#'       from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
+#'       by = "12 month", overlap = 0.5, simplify= TRUE,
+#'       patterns = patterns_vignette.list, weight.fun = log_fun)
+#' )
+#' #### Plot results 
 #' class_names = names(patterns_vignette.list)
 #' names(class_names) = class_names
 #' patterns_levels = c(seq_along(class_names), 255)
 #' patterns_labels = c(class_names, "Unclassified")
-#' system.time(
-#' land_use_maps <- 
-#'       twdtwApply(x = raster_timeseries, 
-#'       patterns = patterns_vignette.list, 
-#'       mc.cores = 4, win.fun = classifyIntervals, 
-#'       weight.fun = logisticWeight(alpha=-0.1, beta=50), 
-#'       from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
-#'       by = "12 month", overlap = 0.5, levels = patterns_levels,
-#'       labels = patterns_labels, simplify= TRUE)
-#' )
-#' #### Plot results 
 #' colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
 #' names(colors) = patterns_labels
 #' ## Land use maps
@@ -113,13 +109,10 @@
 #' gp3
 #' }
 #' @export
-twdtwApply = function(x, patterns, win.fun, 
-                      win.size = c(1,1), 
-                      chunk.size = 100, 
-                      chunk.overlap,
+twdtwApply = function(x, win.fun, win.size = c(1,1), 
+                      chunk.size = 100, chunk.overlap,
                       mc.cores = 1, ...){
-  
-  
+
   if( any(!(sapply(x, is, "RasterBrick") | sapply(x, is, "RasterStack"))) )
     stop("Not all elements of x are Raster*")
   
@@ -128,7 +121,7 @@ twdtwApply = function(x, patterns, win.fun,
   
   # Split and set arguments to functions 
   # args = list(weight.fun = weight.fun, from = from, to = to, by = by, labels = labels, simplify = simplify, patterns = patterns)
-  args = list(..., patterns = patterns)
+  args = list(...)
   win_fun = .setFunArgs(fun = win.fun, args = args)
   twdtw_fun = .setFunArgs(fun = twdtw, args = args)
   
@@ -146,7 +139,7 @@ twdtwApply = function(x, patterns, win.fun,
   
   # Match raster bands to pattern bands
   raster_bands = names(x)
-  pattern_names = names(patterns[[1]])
+  pattern_names = names(formals(twdtw_fun)$patterns[[1]])
   matching_bands = pattern_names %in% raster_bands
   if(any(!matching_bands))
     stop(paste0("Attributes (bands) of the raster and patterns do not match. Missing raster attributes: ", paste(pattern_names[!matching_bands],collapse = ",")))

@@ -19,12 +19,12 @@
 #' @description Method for plotting the matching points from   
 #' TWDTW analysis.
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object.
-#' @param p.names A \link[base]{character} or \link[base]{integer}
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object.
+#' @param y A \link[base]{character} or \link[base]{integer}
 #' vector with the patterns identification. If not declared the function 
 #' will plot one alignment for each pattern in \code{x}.
 #' @param n An \link[base]{integer} vector with the number of alignments to plot.
-#' It can be use as vector of indices combined with \code{p.names} to plot 
+#' It can be use as vector of indices combined with \code{y} to plot 
 #' specific matches. If not declared the function will plot the best match for 
 #' each pattern.
 #' @param attr An \link[base]{integer} or \link[base]{character} vector 
@@ -54,46 +54,46 @@
 #' gp = plotMatches(matches)
 #' gp
 #' 
-#' gp = plotMatches(x=matches, p.names=1)
+#' gp = plotMatches(x=matches, y=1)
 #' gp
 #' 
-#' gp = plotMatches(x=matches, p.names="Cotton")
+#' gp = plotMatches(x=matches, y="Cotton")
 #' gp
 #' 
-#' gp = plotMatches(x=matches, p.names="Soybean", n = 4)
+#' gp = plotMatches(x=matches, y="Soybean", n = 4)
 #' gp
 #' 
-#' gp = plotMatches(x=matches, p.names=c("Soybean","Cotton"), 
+#' gp = plotMatches(x=matches, y=c("Soybean","Cotton"), 
 #'      n = c(3,3))
 #' gp
 #' 
 #' @export
-plotMatches = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
+plotMatches = function(x, y, n, attr=1, shift=0.5, show.dist=FALSE){
   
-  if(missing(p.names)) {
-    p.names = getPatternNames(x)
+  if(missing(y)) {
+    y = getPatternNames(x)
   } else {
-    p.names = getPatternNames(x, p.names)
+    y = getPatternNames(x, y)
   }
   
   ## Get data
-  internals  = getInternals(x, p.names)
+  internals  = getInternals(x, y)
   if(is.null(internals))
     stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
-  matching   = getMatches(x, p.names)
-  alignments = getAlignments(x, p.names)  
+  matching   = getMatches(x, y)
+  alignments = getAlignments(x, y)  
   ts = getTimeSeries(x)
-  patterns = getPatterns(x, p.names)
+  patterns = getPatterns(x, y)
   
-  if(missing(n)) n = rep(1, length(p.names))
+  if(missing(n)) n = rep(1, length(y))
   if(length(n)==1) {
-    p.names = rep(p.names, each = n)
-    n = rep(1:n, length(unique(p.names)))
+    y = rep(y, each = n)
+    n = rep(1:n, length(unique(y)))
   }
-  if(length(n)!=length(p.names))
-    stop("n is not the same length as p.names")
+  if(length(n)!=length(y))
+    stop("n is not the same length as y")
   
-  names(n) = p.names
+  names(n) = y
   xx = ts[,attr,drop=FALSE]
   tx = index(xx)
   
@@ -104,8 +104,8 @@ plotMatches = function(x, p.names, n, attr=1, shift=0.5, show.dist=FALSE){
   df.x = data.frame(Time=tx, xx)
   
   # Build matching points data.frame
-  df.list = lapply(seq_along(p.names), function(i){
-    p = p.names[i]
+  df.list = lapply(seq_along(y), function(i){
+    p = y[i]
     yy = patterns[[p]][,attr,drop=FALSE]
     ty = index(yy)
     

@@ -19,7 +19,7 @@
 #' from a \link[dtwSat]{twdtw-class} object.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the total number of matches considering all patterns.  
 #' 
@@ -37,14 +37,14 @@
 #' 
 #' nmatches(matches)
 #' 
-#' nmatches(matches, p.names="Soybean")
+#' nmatches(matches, y="Soybean")
 #' 
-#' nmatches(matches, p.names=c(2,3))
+#' nmatches(matches, y=c(2,3))
 #' 
 #' @export
 setGeneric("nmatches", 
-           function(object, p.names) {
-               x = getAlignments(object, p.names)
+           function(object, y) {
+               x = getAlignments(object, y)
                nrow(x)
            }
 )

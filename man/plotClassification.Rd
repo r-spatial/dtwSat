@@ -33,7 +33,7 @@ to = as.Date("2013-09-01")
 by = "6 month"
 
 # All classes
-gp = plotClassification(x=matches, from=from, to=to, by=by, overlap=.3)
+gp = plotClassification(x=matches, from=from, to=to, by=by, overlap=.4)
 gp
 
 

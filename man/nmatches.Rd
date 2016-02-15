@@ -5,12 +5,12 @@
 \alias{nmatches}
 \title{Get the number of matches from twdtw object}
 \usage{
-nmatches(object, p.names)
+nmatches(object, y)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 retrieves the total number of matches considering all patterns.}
 }
@@ -28,9 +28,9 @@ matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
 
 nmatches(matches)
 
-nmatches(matches, p.names="Soybean")
+nmatches(matches, y="Soybean")
 
-nmatches(matches, p.names=c(2,3))
+nmatches(matches, y=c(2,3))
 
 }
 \author{

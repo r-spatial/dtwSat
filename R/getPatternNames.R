@@ -19,7 +19,7 @@
 #' \link[dtwSat]{twdtw-class} object.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the names for all patterns.
 #' 
@@ -38,25 +38,25 @@
 #' 
 #' getPatternNames(matches)
 #' 
-#' getPatternNames(matches, p.names=c(1,3))
+#' getPatternNames(matches, y=c(1,3))
 #' 
-#' getPatternNames(matches, p.names="Maize")
+#' getPatternNames(matches, y="Maize")
 #' 
 #' @export
 setGeneric("getPatternNames", 
-           function(object, p.names){
-             p.names = .getPatternNames(object, p.names)
-             if(any(is.na(p.names)))
+           function(object, y){
+             y = .getPatternNames(object, y)
+             if(any(is.na(y)))
                warning("the patterns identification is invalid", call. = FALSE)
-             p.names
+             y
            }
 )
 
-.getPatternNames = function(object, p.names){
-  if(missing(p.names)) p.names = seq_along(object@patterns)
+.getPatternNames = function(object, y){
+  if(missing(y)) y = seq_along(object@patterns)
   all_names = names(object@patterns)
   names(all_names) = all_names
   if(is.null(all_names)) all_names = seq_along(object@patterns)
-  all_names[p.names]
+  all_names[y]
 }
 

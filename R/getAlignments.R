@@ -18,7 +18,7 @@
 #' @description This function retrieves the TWDTW alignments.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the alignments for all patterns. 
 #' 
@@ -40,24 +40,24 @@
 #' 
 #' getAlignments(matches)
 #' 
-#' getAlignments(matches, p.names="Soybean")
+#' getAlignments(matches, y="Soybean")
 #' 
-#' getAlignments(matches, p.names=c(2,3))
+#' getAlignments(matches, y=c(2,3))
 #' 
 #' @export
 setGeneric("getAlignments", 
-           function(object, p.names) {
-             p.names = getPatternNames(object, p.names)
-             if(any(is.na(p.names)))
+           function(object, y) {
+             y = getPatternNames(object, y)
+             if(any(is.na(y)))
                stop("the patterns identification is invalid")
-             .getAlignments(object, p.names)
+             .getAlignments(object, y)
            }
 )
 
-.getAlignments = function(object, p.names){
+.getAlignments = function(object, y){
   k = 1
-  names(p.names) = NULL
-  do.call("rbind", lapply(p.names, function(p){
+  names(y) = NULL
+  do.call("rbind", lapply(y, function(p){
     x = object@alignments[[p]]
     name = numeric(0)
     r.names = NULL

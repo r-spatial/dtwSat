@@ -5,12 +5,12 @@
 \alias{plotAlignments}
 \title{Plotting TWDTW alignments}
 \usage{
-plotAlignments(x, p.names, attr = 1, threshold = Inf)
+plotAlignments(x, y, attr = 1, threshold = Inf)
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{twdtw-class}} object.}
+\item{x}{A \code{\link[dtwSat]{twdtw-class}} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{integer}
+\item{y}{A \link[base]{character} or \link[base]{integer}
 vector with the patterns identification. If not declared the function 
 will plot the alignments for all patterna in \code{x}.}
 
@@ -39,7 +39,7 @@ gp
 gp = plotAlignments(matches, attr=c("ndvi","evi"), threshold=4)
 gp
 
-gp = plotAlignments(x=matches, p.names="Cotton", 
+gp = plotAlignments(x=matches, y="Cotton", 
                    attr=c("ndvi","evi"), threshold=6)
 gp
 

@@ -19,7 +19,7 @@
 #' TWDTW analysis.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves all patterns. 
 #' 
@@ -39,20 +39,20 @@
 #' a = getPatterns(matches)
 #' names(a) 
 #' 
-#' a = getPatterns(matches, p.names="Maize")
+#' a = getPatterns(matches, y="Maize")
 #' names(a) 
 #' 
-#' a = getPatterns(matches, p.names=c(1,2))
+#' a = getPatterns(matches, y=c(1,2))
 #' names(a) 
 #' 
 #' 
 #' @export
 setGeneric("getPatterns", 
-           function(object, p.names){
-             p.names = getPatternNames(object, p.names)
-             if(any(is.na(p.names)))
+           function(object, y){
+             y = getPatternNames(object, y)
+             if(any(is.na(y)))
                stop("the patterns identification is invalid")
-             object@patterns[p.names]
+             object@patterns[y]
            }
 )
 

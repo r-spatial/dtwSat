@@ -5,12 +5,12 @@
 \alias{getPatternNames}
 \title{Get pattern names from twdtw object}
 \usage{
-getPatternNames(object, p.names)
+getPatternNames(object, y)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 retrieves the names for all patterns.}
 }
@@ -28,9 +28,9 @@ matches = twdtw(x=example_ts, patterns=patterns.list)
 
 getPatternNames(matches)
 
-getPatternNames(matches, p.names=c(1,3))
+getPatternNames(matches, y=c(1,3))
 
-getPatternNames(matches, p.names="Maize")
+getPatternNames(matches, y="Maize")
 
 }
 \author{

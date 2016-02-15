@@ -5,12 +5,12 @@
 \alias{getAlignments}
 \title{Get alignments from twdtw object}
 \usage{
-getAlignments(object, p.names)
+getAlignments(object, y)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 retrieves the alignments for all patterns.}
 }
@@ -31,9 +31,9 @@ matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun)
 
 getAlignments(matches)
 
-getAlignments(matches, p.names="Soybean")
+getAlignments(matches, y="Soybean")
 
-getAlignments(matches, p.names=c(2,3))
+getAlignments(matches, y=c(2,3))
 
 }
 \author{

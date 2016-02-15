@@ -5,12 +5,12 @@
 \alias{getInternals}
 \title{Get internals from twdtw object}
 \usage{
-getInternals(object, p.names)
+getInternals(object, y)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 retrieves the internals for all patterns.}
 }
@@ -43,10 +43,10 @@ matches = twdtw(x=example_ts, patterns=patterns.list,
 a = getInternals(matches)
 names(a) 
 
-a = getInternals(matches, p.names="Maize")
+a = getInternals(matches, y="Maize")
 names(a) 
 
-a = getInternals(matches, p.names=c(1,2))
+a = getInternals(matches, y=c(1,2))
 names(a) 
 
 

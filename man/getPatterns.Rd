@@ -5,12 +5,12 @@
 \alias{getPatterns}
 \title{Get patterns from twdtw object}
 \usage{
-getPatterns(object, p.names)
+getPatterns(object, y)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 retrieves all patterns.}
 }
@@ -30,10 +30,10 @@ matches = twdtw(x=example_ts, patterns=patterns.list,
 a = getPatterns(matches)
 names(a) 
 
-a = getPatterns(matches, p.names="Maize")
+a = getPatterns(matches, y="Maize")
 names(a) 
 
-a = getPatterns(matches, p.names=c(1,2))
+a = getPatterns(matches, y=c(1,2))
 names(a) 
 
 

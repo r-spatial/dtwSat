@@ -47,7 +47,7 @@
 #' by = "6 month"
 #' 
 #' # All classes
-#' gp = plotClassification(x=matches, from=from, to=to, by=by, overlap=.3)
+#' gp = plotClassification(x=matches, from=from, to=to, by=by, overlap=.4)
 #' gp
 #' 
 #' 
@@ -56,7 +56,7 @@ plotClassification = function(x, attr, ...){
   
   ## Get data
   ts = getTimeSeries(x)
-  best_class = classifyIntervals(x, ...)
+  best_class = classifyIntervals(x, simplify = FALSE, ...)
   tx = index(ts)
   
   I = min(best_class$from, na.rm = TRUE)-30 <= index(ts) & 

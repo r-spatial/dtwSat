@@ -19,7 +19,7 @@
 #' internal structures from \link[dtwSat]{twdtw}.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the internals for all patterns. 
 #' 
@@ -52,24 +52,24 @@
 #' a = getInternals(matches)
 #' names(a) 
 #' 
-#' a = getInternals(matches, p.names="Maize")
+#' a = getInternals(matches, y="Maize")
 #' names(a) 
 #' 
-#' a = getInternals(matches, p.names=c(1,2))
+#' a = getInternals(matches, y=c(1,2))
 #' names(a) 
 #' 
 #' 
 #' @export
 setGeneric("getInternals", 
-           function(object, p.names){
-             p.names = getPatternNames(object, p.names)
-             if(any(is.na(p.names)))
+           function(object, y){
+             y = getPatternNames(object, y)
+             if(any(is.na(y)))
                stop("the patterns identification is invalid")
-             .getInternals(object, p.names)
+             .getInternals(object, y)
            }
 )
 
-.getInternals = function(object, p.names) {
-  lapply(p.names, function(p) object@alignments[[p]]$internals)
+.getInternals = function(object, y) {
+  lapply(y, function(p) object@alignments[[p]]$internals)
 }
 

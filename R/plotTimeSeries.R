@@ -20,11 +20,11 @@
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object, a \code{\link[zoo]{zoo}},
 #' or a list of \code{\link[zoo]{zoo}} objects.
-#' @param y A \link[base]{character} or \link[base]{numeric}
-#' vector with the patterns identification. If not declared the function 
-#' will plot the paths for all patterns. 
-#' @param year An integer. The base year to shift the dates of the time series to. 
-#' If NULL then it does not shif the time series. Default is 2005. 
+#' 
+#' @param y An integer. If x is a list \code{y} is an integer or character 
+#' (list name(s)). If missing, all elements in the list will be plotted 
+#' (up to a maximum of 6).
+#' 
 #' @docType methods
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
@@ -44,55 +44,51 @@
 #' matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, 
 #'         normalize.patterns=TRUE, patterns.length=23)
 #'        
-#' gp1 = plotPatterns(matches)
+#' gp1 = plotTimeSeries(matches)
 #' gp1
 #' 
-#' gp2 = plotPatterns(patterns.list)
+#' gp2 = plotTimeSeries(patterns.list)
 #' gp2
 #' 
-#' gp3 = plotPatterns(patterns.list$Soybean)
+#' gp3 = plotTimeSeries(example_ts.list)
 #' gp3
 #' 
 #' @export
-plotPatterns = function(x, y, year=2005){
+plotTimeSeries = function(x, y){
   
-  # Get temporal patterns
-  if(is(x, "twdtw")){
-    if(missing(y)) {
-      y = getPatternNames(x)
-    } else {
-      y = getPatternNames(x, y)
-    }
-    x = getPatterns(x, y)
-  }
-  
-  if(is(x, "zoo")) x = list(x)
+  if(!is(x, "list")) x = list(x)
   
   if(missing(y))
     y = names(x)
   
   if(is.null(y)){
-    y = paste("Pattern",seq_along(x))
+    y = paste("Time series",seq_along(x))
     names(x) = y
   } 
   
-  if(any(!sapply(x[y], is.zoo)))
-    stop("patterns should be a list of zoo objects")
+  if(length(y)>6){
+    y = y[1:6]
+    x = x[1:6]
+  }
+    
+  x = lapply(x, function(x){
+      if(is(x, "twdtw")) x = getTimeSeries(x)
+      x
+  })
   
-  # Shift dates 
-  if(!is.null(year)) x = lapply(x[y], shiftDates, year=year)
+  if(any(!sapply(x[y], is.zoo)))
+    stop("x is not zoo or list of zoo objects")
   
   # Build data.frame
   df.p = do.call("rbind", lapply(y, function(p)
-    data.frame(Time=index(x[[p]]), x[[p]], Pattern=p)
+    data.frame(Time=index(x[[p]]), x[[p]], Series=p)
   ))
-  df.p = melt(df.p, id.vars=c("Time","Pattern"))
+  df.p = melt(df.p, id.vars=c("Time","Series"))
   
   # Plot temporal patterns
   gp = ggplot(df.p, aes_string(x="Time", y="value", colour="variable") ) + 
     geom_line() + 
-    facet_wrap(~Pattern) + 
-    scale_x_date(labels = date_format("%b"))
+    facet_wrap(~Series, scales = "free_x") 
   
   gp
   

@@ -5,13 +5,17 @@
 \alias{classifyIntervals}
 \title{Classify time intervals}
 \usage{
-classifyIntervals(x, from = NULL, to = NULL, by = NULL, breaks = NULL,
-  overlap = 0.3, threshold = Inf, simplify = FALSE, levels = NULL,
-  labels = NULL, Unclassified = 255, p.names)
+classifyIntervals(x, y, from = NULL, to = NULL, by = NULL,
+  breaks = NULL, overlap = 0.3, threshold = Inf, simplify = TRUE,
+  levels = NULL, labels = NULL, Unclassified = 255)
 }
 \arguments{
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object or 
 a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}.}
+
+\item{y}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+considers all patterns in the classification.}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
 
@@ -29,17 +33,14 @@ between one match and the interval of classification. Default is 0.3,
 \item{threshold}{A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
 cost for consideration in the classification. Default is \code{Inf}.}
 
-\item{simplify}{return only the best pattern for each interval. Default is FALSE.}
+\item{simplify}{A logical. TRUE returns a vector with the best pattern for 
+each interval. FALSE returns a data.frame. Default is TRUE.}
 
 \item{levels}{A character or numeric vector. The levels for the classification.}
 
 \item{labels}{A character or numeric vector. The labels for each level.}
 
 \item{Unclassified}{A numeric to fill classification gaps. Default is 255.}
-
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
-vector with the patterns identification. If not declared the function 
-considers all patterns in the classification.}
 }
 \value{
 A \code{\link[base]{data.frame}} with the best match 
@@ -62,16 +63,17 @@ by = "6 month"
 
 # All classes
 classifyIntervals(x=matches, from=from, to=to, by = by,
-             overlap=.3, threshold=Inf)
+             overlap=.4, threshold=Inf, simplify=FALSE)
 
 # Cotton and Maize 
 classifyIntervals(x=matches, from=from, to=to, by = by,
-             overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
+             overlap=.4, threshold=Inf, y=c("Cotton","Maize"),
+             simplify=FALSE)
 
 # Simplify Cotton and Maize 
-classifyIntervals(x=matches, from=from, to=to, by = by, simplify= TRUE,
-             overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
-             
+classifyIntervals(x=matches, from=from, to=to, by = by,
+             overlap=.4, threshold=Inf)
+            
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

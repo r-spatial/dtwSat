@@ -5,12 +5,12 @@
 \alias{plotPaths}
 \title{Plotting TWDTW paths}
 \usage{
-plotPaths(x, p.names, n = NULL)
+plotPaths(x, y, n = NULL)
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{twdtw-class}} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 will plot the paths for all patterns.}
 
@@ -31,11 +31,9 @@ matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun,
         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
        
 gp1 = plotPaths(matches, n=1:4)
-
 gp1
 
-gp2 = plotPaths(matches, p.names=c("Cotton","Maize"), n=1:4)
-
+gp2 = plotPaths(matches, y=c("Cotton","Maize"), n=1:4)
 gp2
 
 }

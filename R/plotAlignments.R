@@ -20,8 +20,8 @@
 #' dissimilarity measures.
 #' 
 #' 
-#' @param x An \code{\link[dtwSat]{twdtw-class}} object. 
-#' @param p.names A \link[base]{character} or \link[base]{integer}
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object. 
+#' @param y A \link[base]{character} or \link[base]{integer}
 #' vector with the patterns identification. If not declared the function 
 #' will plot the alignments for all patterna in \code{x}.
 #' @param attr An \link[base]{integer} or \link[base]{character} vector 
@@ -54,22 +54,22 @@
 #' gp = plotAlignments(matches, attr=c("ndvi","evi"), threshold=4)
 #' gp
 #' 
-#' gp = plotAlignments(x=matches, p.names="Cotton", 
+#' gp = plotAlignments(x=matches, y="Cotton", 
 #'                    attr=c("ndvi","evi"), threshold=6)
 #' gp
 #' 
 #' @export
-plotAlignments = function(x, p.names, attr=1, threshold=Inf){
+plotAlignments = function(x, y, attr=1, threshold=Inf){
   
-  if(missing(p.names)) {
-    p.names = getPatternNames(x)
+  if(missing(y)) {
+    y = getPatternNames(x)
   } else {
-    p.names = getPatternNames(x, p.names)
+    y = getPatternNames(x, y)
   }
   
   ## Get data
   ts = getTimeSeries(x)
-  alignments = getAlignments(x, p.names)
+  alignments = getAlignments(x, y)
   
   # Get time series
   df.x = data.frame(ts[,attr,drop=FALSE])

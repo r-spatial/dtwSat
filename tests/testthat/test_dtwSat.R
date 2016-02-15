@@ -49,12 +49,12 @@ sy = waveletSmoothing(x = example_ts, frequency=8, wf = "la8", J=1,
 
 
 # Plot raw EVI and filtered EVI
-gp = autoplot(sy, facets = NULL)
+gp = plotTimeSeries(sy)
 gp
 
 # Plot all filtered bands
 evi = merge(Raw=zoo(example_ts$evi), Wavelet=zoo(sy$evi))
-gp = autoplot(evi, facets = NULL)
+gp = plotTimeSeries(evi)
 gp
 
 # Normalize queries length
@@ -90,12 +90,12 @@ matches = twdtw(x=example_ts.list[[2]], patterns = patterns.list,
 # Classify interval
 best_class = classifyIntervals(x=matches, from=as.Date("2007-09-01"), 
                                to=as.Date("2013-09-01"), by = "6 month",
-                               overlap=.3, threshold=Inf)
+                               overlap=.4, threshold=Inf)
 best_class
 
 gp = plotClassification(x=matches, attr="evi", from=as.Date("2007-09-01"),  
                to=as.Date("2013-09-01"), by = "6 month",
-               overlap=.3)
+               overlap=.4)
 gp
 
 
@@ -134,12 +134,12 @@ matches = twdtw( x = example_ts.list[[2]], patterns = patterns.list2,
 # Classify interval
 best_class = classifyIntervals(x=matches, from=as.Date("2007-09-01"), 
                                to=as.Date("2013-09-01"), by = "6 month",
-                               overlap=.3, threshold=Inf)
+                               overlap=.4, threshold=Inf)
 best_class
 
 gp = plotClassification(x=matches, from=as.Date("2007-09-01"),  
                to=as.Date("2013-09-01"), by = "6 month",
-               overlap=.3)
+               overlap=.4)
 gp
 
 

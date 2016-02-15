@@ -5,12 +5,12 @@
 \alias{getMatches}
 \title{Get matching points from twdtw object}
 \usage{
-getMatches(object, p.names)
+getMatches(object, y)
 }
 \arguments{
 \item{object}{A \link[dtwSat]{twdtw-class} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
+\item{y}{A \link[base]{character} or \link[base]{numeric}
 vector with the patterns identification. If not declared the function 
 retrieves the matching points for all patterns.}
 }
@@ -33,9 +33,9 @@ matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun, keep
 
 getMatches(matches)
 
-getMatches(matches, p.names="Maize")
+getMatches(matches, y="Maize")
 
-getMatches(matches, p.names=1)
+getMatches(matches, y=1)
 
 }
 \author{

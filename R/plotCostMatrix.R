@@ -24,7 +24,7 @@
 #' "costMatrix" for accumulated cost, "localMatrix" for local cost, 
 #' or "timeWeight" for time-weight. 
 #' Default is "costMatrix".
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' will plot the matrices for all patterns.
 #' 
@@ -59,12 +59,12 @@
 #' 
 #' # Plot accumulated cost for Cotton and Soybean
 #' gp4 = plotCostMatrix(x=matches, matrix.name="costMatrix", 
-#'      p.names=c("Cotton","Soybean"))
+#'      y=c("Cotton","Soybean"))
 #' 
 #' gp4
 #' 
 #' @export
-plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
+plotCostMatrix = function(x, y, matrix.name="costMatrix"){
   
   pt = pmatch(matrix.name,c("costMatrix", "localMatrix", "timeWeight"))
   if(is.na(pt))
@@ -72,21 +72,21 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
   
   legend_name = c("Warp cost", "Local cost", "Time weight")[pt]
   
-  if(missing(p.names)) {
-    p.names = getPatternNames(x)
+  if(missing(y)) {
+    y = getPatternNames(x)
   } else {
-    p.names = getPatternNames(x, p.names)
+    y = getPatternNames(x, y)
   }
   
   ## Get data
-  internals  = getInternals(x, p.names)
+  internals  = getInternals(x, y)
   if(is.null(internals))
     stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
   ts = getTimeSeries(x)
-  patterns = getPatterns(x, p.names)
+  patterns = getPatterns(x, y)
   
   # Get cost matrix
-  df.m = do.call("rbind", lapply(p.names, function(p){
+  df.m = do.call("rbind", lapply(y, function(p){
     
     ## Get data
     tx = index(ts)
@@ -107,10 +107,10 @@ plotCostMatrix = function(x, matrix.name="costMatrix", p.names){
   x.axis = data.frame(x.breaks=x.breaks[x.labels], x.labels = names(x.labels))
   
   fact = 0 
-  for(i in seq_along(p.names)[-1]) fact[i] = fact[i-1] + max(df.m$Var1[df.m$Pattern==p.names[i]])
-  df.m$Var3 = df.m$Var1 + unlist(lapply(seq_along(p.names), function(i) rep(fact[i], length(which(df.m$Pattern==p.names[i])) )))
+  for(i in seq_along(y)[-1]) fact[i] = fact[i-1] + max(df.m$Var1[df.m$Pattern==y[i]])
+  df.m$Var3 = df.m$Var1 + unlist(lapply(seq_along(y), function(i) rep(fact[i], length(which(df.m$Pattern==y[i])) )))
   
-  y.axis = do.call("rbind", lapply(p.names, function(p){
+  y.axis = do.call("rbind", lapply(y, function(p){
     df = df.m[df.m$Pattern==p,]
     y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
     timeline = unique( c(df$ty, y.labels) )

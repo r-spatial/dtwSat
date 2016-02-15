@@ -5,17 +5,17 @@
 \alias{plotMatches}
 \title{Plotting TWDTW matching points}
 \usage{
-plotMatches(x, p.names, n, attr = 1, shift = 0.5, show.dist = FALSE)
+plotMatches(x, y, n, attr = 1, shift = 0.5, show.dist = FALSE)
 }
 \arguments{
-\item{x}{An \code{\link[dtwSat]{twdtw-class}} object.}
+\item{x}{A \code{\link[dtwSat]{twdtw-class}} object.}
 
-\item{p.names}{A \link[base]{character} or \link[base]{integer}
+\item{y}{A \link[base]{character} or \link[base]{integer}
 vector with the patterns identification. If not declared the function 
 will plot one alignment for each pattern in \code{x}.}
 
 \item{n}{An \link[base]{integer} vector with the number of alignments to plot.
-It can be use as vector of indices combined with \code{p.names} to plot 
+It can be use as vector of indices combined with \code{y} to plot 
 specific matches. If not declared the function will plot the best match for 
 each pattern.}
 
@@ -43,16 +43,16 @@ matches = twdtw(x=example_ts, patterns=patterns.list, weight.fun = log_fun,
 gp = plotMatches(matches)
 gp
 
-gp = plotMatches(x=matches, p.names=1)
+gp = plotMatches(x=matches, y=1)
 gp
 
-gp = plotMatches(x=matches, p.names="Cotton")
+gp = plotMatches(x=matches, y="Cotton")
 gp
 
-gp = plotMatches(x=matches, p.names="Soybean", n = 4)
+gp = plotMatches(x=matches, y="Soybean", n = 4)
 gp
 
-gp = plotMatches(x=matches, p.names=c("Soybean","Cotton"), 
+gp = plotMatches(x=matches, y=c("Soybean","Cotton"), 
      n = c(3,3))
 gp
 

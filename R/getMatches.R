@@ -20,7 +20,7 @@
 #' time series \code{x}.
 #' 
 #' @param object A \link[dtwSat]{twdtw-class} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' retrieves the matching points for all patterns.  
 #' 
@@ -42,21 +42,21 @@
 #' 
 #' getMatches(matches)
 #' 
-#' getMatches(matches, p.names="Maize")
+#' getMatches(matches, y="Maize")
 #' 
-#' getMatches(matches, p.names=1)
+#' getMatches(matches, y=1)
 #' 
 #' @export
 setGeneric("getMatches", 
-           function(object, p.names){
-             p.names = getPatternNames(object, p.names)
-             if(any(is.na(p.names)))
+           function(object, y){
+             y = getPatternNames(object, y)
+             if(any(is.na(y)))
                stop("the patterns identification is invalid")
-             .getMatches(object, p.names)
+             .getMatches(object, y)
            }
 )
 
-.getMatches = function(object, p.names){
-  lapply(p.names, function(p) object@alignments[[p]]$matching)
+.getMatches = function(object, y){
+  lapply(y, function(p) object@alignments[[p]]$matching)
 }
 

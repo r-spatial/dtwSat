@@ -38,7 +38,8 @@
 #' @param threshold A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
 #' cost for consideration in the classification. Default is \code{Inf}.
 #' 
-#' @param simplify return only the best pattern for each interval. Default is FALSE.
+#' @param simplify A logical. TRUE returns a vector with the best pattern for 
+#' each interval. FALSE returns a data.frame. Default is TRUE.
 #'  
 #' @param levels A character or numeric vector. The levels for the classification.
 #' 
@@ -46,7 +47,7 @@
 #' 
 #' @param Unclassified A numeric to fill classification gaps. Default is 255.
 #' 
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' considers all patterns in the classification. 
 #' 
@@ -68,30 +69,30 @@
 #' 
 #' # All classes
 #' classifyIntervals(x=matches, from=from, to=to, by = by,
-#'              overlap=.3, threshold=Inf)
+#'              overlap=.4, threshold=Inf, simplify=FALSE)
 #' 
 #' # Cotton and Maize 
 #' classifyIntervals(x=matches, from=from, to=to, by = by,
-#'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
+#'              overlap=.4, threshold=Inf, y=c("Cotton","Maize"),
+#'              simplify=FALSE)
 #' 
 #' # Simplify Cotton and Maize 
-#' classifyIntervals(x=matches, from=from, to=to, by = by, simplify= TRUE,
-#'              overlap=.3, threshold=Inf, p.names=c("Cotton","Maize"))
-#'              
+#' classifyIntervals(x=matches, from=from, to=to, by = by,
+#'              overlap=.4, threshold=Inf)
+#'             
 #' @export
-classifyIntervals = function(x, from=NULL, to=NULL, by=NULL, breaks=NULL,
+classifyIntervals = function(x, y, from=NULL, to=NULL, by=NULL, breaks=NULL,
                              overlap=.3, threshold=Inf, 
-                             simplify=FALSE,
+                             simplify=TRUE,
                              levels=NULL,
                              labels=NULL,
-                             Unclassified=255,
-                             p.names)
+                             Unclassified=255)
 {
   
-  p.names = getPatternNames(x, p.names)
+  y = getPatternNames(x, y)
   
   if(is(x, "twdtw"))
-    x = getAlignments(x, p.names)
+    x = getAlignments(x, y)
   
   if(!is(x, "data.frame"))
     stop("x is not a data.frame or twdtw-class")
@@ -125,11 +126,13 @@ classifyIntervals = function(x, from=NULL, to=NULL, by=NULL, breaks=NULL,
     stop("levels and labels are not the same length")
   
   I = match(res$pattern, labels)
-  res$level = levels[I]
-  names(res$level) = labels[I]
+  res$level = factor(levels[I], levels = levels, labels = labels)
+  # names(res$level) = breaks[-1]
   
-  if(simplify)
-    return(res$level)
+  if(simplify){
+    res = res$level
+    names(res) = paste0("Subinterval", seq_along(breaks[-1]))
+  } 
   res
 }
 

@@ -20,7 +20,7 @@
 #' cost matrix of TWDTW.
 #' 
 #' @param x An \code{\link[dtwSat]{twdtw-class}} object.
-#' @param p.names A \link[base]{character} or \link[base]{numeric}
+#' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' will plot the paths for all patterns. 
 #' @param n An \link[base]{integer} vector. The indices of the paths 
@@ -45,32 +45,30 @@
 #'         normalize.patterns=TRUE, patterns.length=23, keep=TRUE)
 #'        
 #' gp1 = plotPaths(matches, n=1:4)
-#' 
 #' gp1
 #' 
-#' gp2 = plotPaths(matches, p.names=c("Cotton","Maize"), n=1:4)
-#' 
+#' gp2 = plotPaths(matches, y=c("Cotton","Maize"), n=1:4)
 #' gp2
 #' 
 #' @export
-plotPaths = function(x, p.names, n=NULL){
+plotPaths = function(x, y, n=NULL){
   
-  if(missing(p.names)) {
-    p.names = getPatternNames(x)
+  if(missing(y)) {
+    y = getPatternNames(x)
   } else {
-    p.names = getPatternNames(x, p.names)
+    y = getPatternNames(x, y)
   }
   
   ## Get data
-  internals  = getInternals(x, p.names)
+  internals  = getInternals(x, y)
   if(is.null(internals))
     stop("plot methods requires twdtw internals, set keep=TRUE on twdtw() call")
   ts = getTimeSeries(x)
-  patterns = getPatterns(x, p.names)
-  matching   = getMatches(x, p.names)  
+  patterns = getPatterns(x, y)
+  matching   = getMatches(x, y)  
   
   # Get cost matrix
-  df.m = do.call("rbind", lapply(p.names, function(p){
+  df.m = do.call("rbind", lapply(y, function(p){
     tx = index(ts)
     ty = index(shiftDates(x=patterns[[p]], year=2005))
     m = internals[[p]]$costMatrix
@@ -82,7 +80,7 @@ plotPaths = function(x, p.names, n=NULL){
   }))
   
   # Get minimun cost paths
-  df.path = do.call("rbind", lapply(p.names, function(p){
+  df.path = do.call("rbind", lapply(y, function(p){
     
     if(is.null(n)) n = seq_along(matching[[p]])
     k = which(n > length(matching[[p]]))
@@ -107,11 +105,11 @@ plotPaths = function(x, p.names, n=NULL){
   x.axis = data.frame(x.breaks=x.breaks[x.labels], x.labels = names(x.labels))
   
   fact = 0 
-  for(i in seq_along(p.names)[-1]) fact[i] = fact[i-1] + max(df.m$Var1[df.m$Pattern==p.names[i]])
-  df.m$Var3 = df.m$Var1 + unlist(lapply(seq_along(p.names), function(i) rep(fact[i], length(which(df.m$Pattern==p.names[i])) )))
-  df.path$Var3 = df.path$index1 + unlist(lapply(seq_along(p.names), function(i) rep(fact[i], length(which(df.path$Pattern==p.names[i])) )))
+  for(i in seq_along(y)[-1]) fact[i] = fact[i-1] + max(df.m$Var1[df.m$Pattern==y[i]])
+  df.m$Var3 = df.m$Var1 + unlist(lapply(seq_along(y), function(i) rep(fact[i], length(which(df.m$Pattern==y[i])) )))
+  df.path$Var3 = df.path$index1 + unlist(lapply(seq_along(y), function(i) rep(fact[i], length(which(df.path$Pattern==y[i])) )))
   
-  y.axis = do.call("rbind", lapply(p.names, function(p){
+  y.axis = do.call("rbind", lapply(y, function(p){
     df = df.m[df.m$Pattern==p,]
     y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
     timeline = unique( c(df$ty, y.labels) )

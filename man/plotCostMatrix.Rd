@@ -4,19 +4,19 @@
 \alias{plotCostMatrix}
 \title{Plotting TWDTW cost matrices}
 \usage{
-plotCostMatrix(x, matrix.name = "costMatrix", p.names)
+plotCostMatrix(x, y, matrix.name = "costMatrix")
 }
 \arguments{
 \item{x}{An \code{\link[dtwSat]{twdtw-class}} object.}
+
+\item{y}{A \link[base]{character} or \link[base]{numeric}
+vector with the patterns identification. If not declared the function 
+will plot the matrices for all patterns.}
 
 \item{matrix.name}{A character. The name of the matrix to plot,
 "costMatrix" for accumulated cost, "localMatrix" for local cost, 
 or "timeWeight" for time-weight. 
 Default is "costMatrix".}
-
-\item{p.names}{A \link[base]{character} or \link[base]{numeric}
-vector with the patterns identification. If not declared the function 
-will plot the matrices for all patterns.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.
@@ -45,7 +45,7 @@ gp3
 
 # Plot accumulated cost for Cotton and Soybean
 gp4 = plotCostMatrix(x=matches, matrix.name="costMatrix", 
-     p.names=c("Cotton","Soybean"))
+     y=c("Cotton","Soybean"))
 
 gp4
 

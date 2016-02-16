@@ -26,8 +26,9 @@ See \code{\link[dtwSat]{classifyIntervals}} for details.}
 \item{...}{Other arguments to be passed to \code{\link[dtwSat]{twdtw}}.}
 }
 \value{
-A \code{\link[base]{data.frame}} of two attributes \code{Reference} 
-and \code{Predicted}.
+A named \code{\link[base]{list}} with: reference class \code{Reference}, 
+predicted class \code{Predicted}, cross-validation table \code{Cross}, 
+users's accuracy \code{Users}, and roducer's accuracy \code{Producers}.
 }
 \description{
 This function classifies the set of samples time series
@@ -40,9 +41,9 @@ field_samples = read.csv(paste(data_folder,"samples.csv", sep = "/"))
 proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
            what = "character")
 reference = as.character(field_samples[["class"]])
-load(system.file("lucc_MT/ts_list.RData", package="dtwSat"))
+load(system.file("lucc_MT/field_samples_ts.RData", package="dtwSat"))
 
-x = splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
+x = splitted_dataset = splitDataset(timeseries = field_samples_ts, ref = reference, 
     times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
     formula = y ~ s(time, bs="cc"))
 

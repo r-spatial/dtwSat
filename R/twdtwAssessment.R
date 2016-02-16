@@ -37,8 +37,9 @@
 #' 
 #' 
 #' @docType methods
-#' @return A \code{\link[base]{data.frame}} of two attributes \code{Reference} 
-#' and \code{Predicted}.
+#' @return A named \code{\link[base]{list}} with: reference class \code{Reference}, 
+#' predicted class \code{Predicted}, cross-validation table \code{Cross}, 
+#' users's accuracy \code{Users}, and roducer's accuracy \code{Producers}.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{splitDataset}}
@@ -51,9 +52,9 @@
 #' proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
 #'            what = "character")
 #' reference = as.character(field_samples[["class"]])
-#' load(system.file("lucc_MT/ts_list.RData", package="dtwSat"))
+#' load(system.file("lucc_MT/field_samples_ts.RData", package="dtwSat"))
 #' 
-#' x = splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
+#' x = splitted_dataset = splitDataset(timeseries = field_samples_ts, ref = reference, 
 #'     times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
 #'     formula = y ~ s(time, bs="cc"))
 #' 
@@ -67,9 +68,14 @@ twdtwAssessment = function(x, mc.cores=1, overlap=0.5, threshold=Inf, ...){
   # Classify time interval for each pixel 
   pred = sapply(twdtw_results, function(s){
     ts = getTimeSeries(s)
-    classifyIntervals(x = s, from=min(index(ts)), to=max(index(ts)), by=max(index(ts))-min(index(ts)), overlap=overlap, threshold=threshold)$pattern
+    classifyIntervals(x = s, from=min(index(ts)), to=max(index(ts)), by=max(index(ts))-min(index(ts)), overlap=overlap, threshold=threshold, simplify=FALSE)$pattern
   })
-  res = data.frame(Reference=x$ref, Predicted=pred)
+  res = list()
+  res$Reference = x$ref
+  res$Predicted = pred
+  res$Cross = table(data.frame(res))
+  res$Users = diag(res$Cross) / rowSums(res$Cross)
+  res$Producers = diag(res$Cross) / colSums(res$Cross)
   res
 }
 

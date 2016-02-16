@@ -36,10 +36,10 @@
 #' @seealso \code{\link[dtwSat]{twdtw}}
 #' 
 #' @references 
-#' [1] Maus  V,  C\^{a}mara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+#' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 #' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
 #' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
-#' IEEE Journal of, X, XX-XX.
+#' IEEE Journal of, vol.PP, no.99, pp.1-11.
 #' 
 #' @examples
 #' lin_fun = linearWeight(a=0.1)

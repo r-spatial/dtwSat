@@ -63,16 +63,17 @@ raster_timeseries =
  
 #### Run TWDTW analysis (~1.2 min using 4 core with 2.4 GHz clock)
 log_fun = weight.fun = logisticWeight(alpha=-0.1, beta=50)
+load(system.file("lucc_MT/patterns_list.RData", package = "dtwSat"))
 system.time(
 land_use_maps <- 
       twdtwApply(x = raster_timeseries, 
       mc.cores = 4, win.fun = classifyIntervals, 
       from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
       by = "12 month", overlap = 0.5, simplify= TRUE,
-      patterns = patterns_vignette.list, weight.fun = log_fun)
+      patterns = patterns_list, weight.fun = log_fun)
 )
 #### Plot results 
-class_names = names(patterns_vignette.list)
+class_names = names(patterns_list)
 names(class_names) = class_names
 patterns_levels = c(seq_along(class_names), 255)
 patterns_labels = c(class_names, "Unclassified")

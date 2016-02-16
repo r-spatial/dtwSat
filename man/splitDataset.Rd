@@ -3,15 +3,17 @@
 \docType{methods}
 \name{splitDataset}
 \alias{splitDataset}
-\title{split the time series samples and create patterns}
+\title{splits the samples into training and validation 
+and creates temporal patterns}
 \usage{
 splitDataset(timeseries, ref, times = 1, p = 0.1, mc.cores = 1, ...)
 }
 \arguments{
 \item{timeseries}{A list of \code{\link[zoo]{zoo}} objects with the time series.}
 
-\item{ref}{A vector with the identification of each time series. 
-It must have the same length as \code{x}.}
+\item{ref}{A vector identifying each time series. It must have the same length 
+as \code{x}. If \code{ref} is not declared then all samples are taken as belonging 
+to the same stratum.}
 
 \item{times}{Number of partitions to create.}
 
@@ -25,12 +27,12 @@ for details.}
 }
 \value{
 A \code{\link[base]{list}} of three attributes: the trained \code{pattrens},
-the validation dataset \code{x}, and the reference for the validation dataset \code{ref}.
+the validation dataset \code{x}, and the reference for the validation sample \code{ref}.
 }
 \description{
-This function splits the set of samples for 
-training and validation. The function uses stratified sampling. 
-Then a simple random sampling is applied within each stratum.
+This function splits the list of time series into  
+training and validation. The function uses stratified sampling and  
+a simple random sampling for each stratum.
 }
 \examples{
 
@@ -41,9 +43,9 @@ field_samples = read.csv(paste(data_folder,"samples.csv", sep = "/"))
 proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
            what = "character")
 reference = as.character(field_samples[["class"]])
-load(system.file("lucc_MT/ts_list.RData", package="dtwSat"))
+load(system.file("lucc_MT/field_samples_ts.RData", package="dtwSat"))
 
-x = splitted_dataset = splitDataset(timeseries = ts_list, ref = reference, 
+x = splitted_dataset = splitDataset(timeseries = field_samples_ts, ref = reference, 
     times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
     formula = y ~ s(time, bs="cc"))
 

@@ -51,11 +51,17 @@
 #' 
 #' @examples
 #' 
-#' names(ts_vignette.list)
+#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package = "dtwSat"))
+#' proj_str = scan(system.file("lucc_MT/data/samples_projection", package = "dtwSat"), 
+#'                what = "character")
+#' load(system.file("lucc_MT/field_samples_ts.RData", package = "dtwSat"))
 #' 
-#' samples = ts_vignette.list$`Soybean-cotton`
+#' # Sellect Soybean-cotton samples  
+#' I = field_samples$class=="Soybean-cotton"
+#' soybean_cotton_samples = field_samples_ts[I]
 #' 
-#' p = createPattern(x = samples, formula = y ~ s(time, bs = "cc"))
+#' p = createPattern(x = soybean_cotton_samples, 
+#'                    formula = y ~ s(time, bs = "cc"))
 #' 
 #' plotPatterns(p)
 #' 

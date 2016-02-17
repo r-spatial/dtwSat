@@ -40,9 +40,8 @@
 setMethod("show", 
           signature = signature(object="twdtw"),
           definition = function(object){
-            cat("Time-Weighted DTW alignment object\n")
-            cat("Number of matches:",nrow(getAlignments(object)),"\n")
-            print(head(getAlignments(object)))
+            cat("TWDTW alignments: 2 from ",nrow(getAlignments(object)),"\n")
+            print(head(getAlignments(object), 2))
             invisible(NULL)
           }
 )

@@ -19,8 +19,7 @@
 #' @description This function retrieves the best match within each 
 #' predefined period based on the TWDTW dissimilarity measure.
 #' 
-#' @param x A \code{\link[dtwSat]{twdtw-class}} object or 
-#' a \code{\link[base]{data.frame}} such as retrieved by \code{\link[dtwSat]{getAlignments}}.
+#' @param x A \code{\link[dtwSat]{twdtw-class}} object.
 #' 
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".
 #' 
@@ -32,29 +31,25 @@
 #' \code{to}, and \code{by}.
 #' 
 #' @param overlap A number between 0 and 1. The minimum overlapping 
-#' between one match and the interval of classification. Default is 0.3, 
-#' \emph{i.e.} an overlap minimum of 30\%.
+#' between one match and the interval of classification. Default is 0.5, 
+#' \emph{i.e.} an overlap minimum of 50\%.
 #' 
 #' @param threshold A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
 #' cost for consideration in the classification. Default is \code{Inf}.
 #' 
 #' @param simplify A logical. TRUE returns a vector with the best pattern for 
-#' each interval. FALSE returns a data.frame. Default is TRUE.
+#' each interval. FALSE returns a \code{\link[dtwSat]{twdtw-class}} object. 
+#' Default is FALSE.
 #'  
-#' @param levels A character or numeric vector. The levels for the classification.
-#' 
-#' @param labels A character or numeric vector. The labels for each level.
-#' 
-#' @param Unclassified A numeric to fill classification gaps. Default is 255.
-#' 
 #' @param y A \link[base]{character} or \link[base]{numeric}
 #' vector with the patterns identification. If not declared the function 
 #' considers all patterns in the classification. 
 #' 
 #' @docType methods
 #' 
-#' @return A \code{\link[base]{data.frame}} with the best match 
-#' for each interval of classification.
+#' @return A \code{\link[dtwSat]{twdtw-class}} with the best match 
+#' for each classification period or a vector with the best class 
+#' for each period.
 #' 
 #' @examples
 #' 
@@ -68,34 +63,35 @@
 #' by = "6 month"
 #' 
 #' # All classes
-#' classifyIntervals(x=matches, from=from, to=to, by = by,
-#'              overlap=.4, threshold=Inf, simplify=FALSE)
+#' class_1 = classifyIntervals(x=matches, from=from, to=to, by = by,
+#'              overlap=.5)
+#' 
+#' getAlignments(class_1)
+#' plotAlignments(class_1)
+#' plotClassification(class_1)
 #' 
 #' # Cotton and Maize 
-#' classifyIntervals(x=matches, from=from, to=to, by = by,
-#'              overlap=.4, threshold=Inf, y=c("Cotton","Maize"),
-#'              simplify=FALSE)
+#' class_2 = classifyIntervals(x=matches, y=c("Cotton","Maize"), 
+#'                  from=from, to=to, by = by, overlap=.5)
+#' 
+#' getAlignments(class_2)
+#' plotAlignments(class_2)
+#' plotClassification(class_2)
 #' 
 #' # Simplify Cotton and Maize 
 #' classifyIntervals(x=matches, from=from, to=to, by = by,
-#'              overlap=.4, threshold=Inf)
-#'             
+#'              overlap=.5, threshold=Inf, simplify=TRUE)
+#' 
+#'         
 #' @export
 classifyIntervals = function(x, y, from=NULL, to=NULL, by=NULL, breaks=NULL,
-                             overlap=.3, threshold=Inf, 
-                             simplify=TRUE,
-                             levels=NULL,
-                             labels=NULL,
-                             Unclassified=255)
+                             overlap=.5, threshold=Inf, simplify=FALSE)
 {
   
   y = getPatternNames(x, y)
-  
-  if(is(x, "twdtw"))
-    x = getAlignments(x, y)
-  
-  if(!is(x, "data.frame"))
-    stop("x is not a data.frame or twdtw-class")
+
+  if(!is(x, "twdtw"))
+    stop("aligs is not twdtw-class")
   
   if( overlap < 0 & 1 < overlap )
     stop("overlap out of range, it must be a number between 0 and 1")
@@ -105,59 +101,55 @@ classifyIntervals = function(x, y, from=NULL, to=NULL, by=NULL, breaks=NULL,
   
   breaks = as.Date(breaks)
   
-  res = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
-    .bestInterval(x, start=breaks[i-1], end=breaks[i], overlap, Unclassified)
-  }))
+  aligs = getAlignments(x, y)
+  I = sapply(seq_along(breaks)[-1], function(i){
+    .bestMatche(aligs, start=breaks[i-1], end=breaks[i], overlap)
+  })
   
-  d = res$distance
-  I = d>threshold
-  if(any(I)){
-    res$pattern[I] = if(is(x$pattern, "character")){"Unclassified"}else{Unclassified}
-    res$distance[I] = Inf 
+  d = aligs$distance[I]
+  I[ d>threshold ] = NA
+  res = aligs$pattern[I]
+  names(res) = paste0("Period", seq_along(breaks[-1]))
+  
+  if(!simplify){
+    J = !is.na(I)
+    aux_matches = getMatches(x, y)
+    aux_internals = getInternals(x, y)
+    n_matches = sapply(aux_matches, length)
+    P = unlist(sapply(sapply(aux_matches, length), seq, from=1))
+    S = P[seq_along(P)[I[J]]]
+    best_matches = lapply(y, function(p){
+      L = S[aligs$pattern[I[J]]==p]
+      alignments = list()
+      alignments$pattern = res[J][res[J]==p]
+      alignments$from = breaks[-length(breaks)][J][aligs$pattern[I[J]]==p]
+      alignments$to = breaks[-1][J][aligs$pattern[I[J]]==p]
+      alignments$distance = d[J][res[J]==p]
+      alignments$K = length(L)
+      if(n_matches[p]>0){
+        alignments$matching = aux_matches[[p]][L]
+        alignments$internals = aux_matches[[p]][L]
+      }
+      alignments
+    })
+    res = new("twdtw", call=match.call(), x = getTimeSeries(x), patterns = getPatterns(x, y), alignments = best_matches)
   }
-  
-  if(is.null(levels))
-    levels = c(seq_along(unique(x$pattern)), Unclassified)
-  
-  if(is.null(labels))
-    labels = c(unique(x$pattern), "Unclassified")
-  
-  if(!length(levels)==length(labels))
-    stop("levels and labels are not the same length")
-  
-  I = match(res$pattern, labels)
-  res$level = factor(levels[I], levels = levels, labels = labels)
-  # names(res$level) = breaks[-1]
-  
-  if(simplify){
-    res = res$level
-    names(res) = paste0("Subinterval", seq_along(breaks[-1]))
-  } 
-  res
+  res 
 }
 
 
-.bestInterval = function(x, start, end,  overlap, Unclassified){
-  x = x[(x$from <= end & x$to >= start) ,]
+.bestMatche = function(x, start, end, overlap){
+  J = (x$from <= end & x$to >= start)
+  x = x[J,]
   x$from[x$from < start] = start
   x$to[end < x$to] = end
+  # Check for minimum overlap 
   r1 = as.numeric(x$to - x$from) / as.numeric(end-start)
-
   I = overlap < r1 & r1 < 2-overlap
-  res = list()
-  res$pattern = if(is(x$pattern, "character")){"Unclassified"}else{Unclassified}
-  res$from = start
-  res$to = end - 1
-  res$distance = Inf
-  
-  if(any(I)){
-    i_min = which.min(x$distance[I])
-    res$pattern = x$pattern[I][i_min]
-    res$from = start
-    res$to = end - 1
-    res$distance = x$distance[I][i_min]
-  }
-  res = data.frame(res, stringsAsFactors = FALSE)
+  J[which(J)] = I
+  if(!any(I)) return(NA)
+  # Sellect the lowest TWDTW distance 
+  res = which(J)[which.min(x$distance[I])]
   res
 }
 

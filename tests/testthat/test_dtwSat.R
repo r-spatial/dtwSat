@@ -54,67 +54,51 @@ gp
 
 # Plot all filtered bands
 evi = merge(Raw=zoo(example_ts$evi), Wavelet=zoo(sy$evi))
+evi = na.approx(evi)
 gp = plotTimeSeries(evi)
 gp
 
-# Normalize queries length
-new.patterns.list = normalizePatterns(patterns = patterns.list, patterns.length = 23)
-data.frame(Old.Length=sapply(patterns.list, nrow), New.length=sapply(new.patterns.list, nrow))
-
 # Perform twdtw to patterns list 
 log_fun = logisticWeight(alpha=-0.1, beta=100)
-matches = twdtw(x=example_ts, patterns=new.patterns.list, 
+matches = twdtw(x=example_ts, patterns=patterns.list, 
               weight.fun = log_fun, keep=TRUE)
 
 # Classify interval
 best_class = classifyIntervals(x=matches, from=as.Date("2009-09-01"), 
                               to=as.Date("2013-09-01"), by = "6 month",
                               overlap=.3, threshold=Inf)
-best_class
+getAlignments(best_class)
 
-gp = plotClassification(x=matches, from=as.Date("2009-09-01"),  
-              to=as.Date("2013-09-01"), by = "6 month",
-              overlap=.4)
+gp = plotClassification(x=best_class)
 gp
-# ggsave("classify.png", plot=gp, width = 8.9, height=5.9/1.5, units="in",
-#         family="Helvetica", type = "cairo-png")
-
-
 
 # Perform twdtw to patterns list 
 matches = twdtw(x=example_ts.list[[2]], patterns = patterns.list, 
-             weight.fun = log_fun, 
-             normalize.patterns=TRUE, patterns.length = 23,
-              keep=TRUE)
+             weight.fun = log_fun, keep=TRUE)
 
 # Classify interval
 best_class = classifyIntervals(x=matches, from=as.Date("2007-09-01"), 
                                to=as.Date("2013-09-01"), by = "6 month",
                                overlap=.4, threshold=Inf)
-best_class
+getAlignments(best_class)
 
-gp = plotClassification(x=matches, attr="evi", from=as.Date("2007-09-01"),  
-               to=as.Date("2013-09-01"), by = "6 month",
-               overlap=.4)
+gp = plotClassification(x=best_class)
 gp
 
 
 # Apply twdtw to a list of time series 
 matches = lapply(example_ts.list, twdtw, patterns = patterns.list, 
-             weight.fun = log_fun, normalize.patterns=TRUE, 
-             patterns.length = 23, keep=TRUE)
+             weight.fun = log_fun, keep=TRUE)
 
 gp.list = lapply(matches, plotClassification, from=as.Date("2007-09-01"),  
-               to=as.Date("2013-09-01"), by = "6 month", overlap=.3,
-               attr="evi")
+               to=as.Date("2013-09-01"), by = "6 month", overlap=.4)
 
 grid.arrange(grobs=gp.list, ncol=1)
 
 
 # Plot cost matrix 
 matches = twdtw(example_ts.list[[1]], patterns=patterns.list[1], 
-             weight.fun = log_fun, 
-             keep=TRUE)
+             weight.fun = log_fun, keep=TRUE)
  
 gp = plotCostMatrix(x=matches, matrix.name="timeWeight")
 gp
@@ -126,16 +110,15 @@ gp = plotCostMatrix(x=matches, matrix.name="costMatrix")
 gp
 
  
-# Test bands order 
+# Test one band  
 patterns.list2 = lapply(patterns.list, function(qq) qq[,c("evi"), drop=FALSE])
 matches = twdtw( x = example_ts.list[[2]], patterns = patterns.list2, 
-              weight.fun = log_fun, normalize.patterns=TRUE,
-              patterns.length = 23, keep=TRUE)
+              weight.fun = log_fun, keep=TRUE)
 # Classify interval
 best_class = classifyIntervals(x=matches, from=as.Date("2007-09-01"), 
                                to=as.Date("2013-09-01"), by = "6 month",
                                overlap=.4, threshold=Inf)
-best_class
+getAlignments(best_class)
 
 gp = plotClassification(x=matches, from=as.Date("2007-09-01"),  
                to=as.Date("2013-09-01"), by = "6 month",

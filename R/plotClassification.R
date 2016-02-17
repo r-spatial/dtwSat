@@ -57,7 +57,9 @@ plotClassification = function(x, attr, ...){
   
   ## Get data
   ts = getTimeSeries(x)
-  best_class = classifyIntervals(x, simplify = FALSE, ...)
+  if(length(list(...))>0) x = classifyIntervals(x, simplify = FALSE, ...)
+
+  best_class = getAlignments(x)
   tx = index(ts)
   
   I = min(best_class$from, na.rm = TRUE)-30 <= index(ts) & 

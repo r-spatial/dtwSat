@@ -25,7 +25,8 @@
 #' Each layer of the Raster* object is a time step. 
 #' See \code{\link[dtwSat]{buildRasterTimeSeries}}.
 #' 
-#' @param win.fun A function. A function to be applied to the TWDTW results. See Details.
+#' @param win.fun A function. A function to be applied to the TWDTW results. 
+#' Default is \code{\link[dtwSat]{classifyIntervals}}. 
 #' 
 #' @param win.size A numeric vector. The size of a processing window in col x row order.
 #' Default is a single pixel, \emph{i.e.} \code{win.size=c(1,1)}.
@@ -77,17 +78,17 @@
 #'  
 #' #### Run TWDTW analysis (~1.2 min using 4 core with 2.4 GHz clock)
 #' log_fun = weight.fun = logisticWeight(alpha=-0.1, beta=50)
-#' load(system.file("lucc_MT/patterns_list.RData", package = "dtwSat"))
+#' load(system.file("lucc_MT/temporal_patterns.RData", package = "dtwSat"))
 #' system.time(
 #' land_use_maps <- 
 #'       twdtwApply(x = raster_timeseries, 
 #'       mc.cores = 4, win.fun = classifyIntervals, 
 #'       from = as.Date("2007-09-01"),to = as.Date("2013-09-01"),
 #'       by = "12 month", overlap = 0.5, simplify= TRUE,
-#'       patterns = patterns_list, weight.fun = log_fun)
+#'       patterns = temporal_patterns, weight.fun = log_fun)
 #' )
 #' #### Plot results 
-#' class_names = names(patterns_list)
+#' class_names = names(temporal_patterns)
 #' names(class_names) = class_names
 #' patterns_levels = c(seq_along(class_names), 255)
 #' patterns_labels = c(class_names, "Unclassified")
@@ -110,9 +111,8 @@
 #' gp3
 #' }
 #' @export
-twdtwApply = function(x, win.fun, win.size = c(1,1), 
-                      chunk.size = 100, chunk.overlap,
-                      mc.cores = 1, ...){
+twdtwApply = function(x, win.size = c(1,1), win.fun = classifyIntervals, 
+                      chunk.size = 100, chunk.overlap, mc.cores = 1, ...){
 
   if( any(!(sapply(x, is, "RasterBrick") | sapply(x, is, "RasterStack"))) )
     stop("Not all elements of x are Raster*")

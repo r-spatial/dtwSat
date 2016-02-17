@@ -22,6 +22,10 @@
 #' @param x A \code{\link[base]{list}} of \code{\link[zoo]{zoo}} such as 
 #' retrived by \code{\link[dtwSat]{extractTimeSeries}}. 
 #' 
+#' @param ref A vector identifying each time series. It must have the same length 
+#' as \code{x}. If \code{ref} is not declared then all samples are taken as belonging 
+#' to the same class. 
+#' 
 #' @param from A character or \code{\link[base]{Dates}} object in the format 
 #' "yyyy-mm-dd". If not informed it is equal to the smallest date of the 
 #' first element in x. See details. 
@@ -51,6 +55,7 @@
 #' 
 #' @examples
 #' 
+#' \dontrun{
 #' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package = "dtwSat"))
 #' proj_str = scan(system.file("lucc_MT/data/samples_projection", package = "dtwSat"), 
 #'                what = "character")
@@ -60,13 +65,38 @@
 #' I = field_samples$class=="Soybean-cotton"
 #' soybean_cotton_samples = field_samples_ts[I]
 #' 
-#' p = createPattern(x = soybean_cotton_samples, 
-#'                    formula = y ~ s(time, bs = "cc"))
+#' p_soybean_cotton = createPattern(x = soybean_cotton_samples, 
+#'                    formula = y ~ s(x))
 #' 
+#' plotPatterns(p_soybean_cotton)
+#' 
+#' p = createPattern(x = field_samples_ts, ref = field_samples$class,
+#'                   from = "2004-09-01", to = "2005-09-01", formula = y ~ s(x))
+#'
 #' plotPatterns(p)
-#' 
+#' }
 #' @export
-createPattern = function(x, from, to, freq=1, attr, formula, ...){
+createPattern = function(x, ref, from, to, freq=1, attr, formula, ...){
+
+  # Get formula variables
+  if(!is(formula, "formula"))
+    stop("missing object formula")
+  vars = all.vars(formula)
+  
+  if(missing(ref)) ref = rep("class", length(x))
+  unique_ref = as.character(unique(ref))
+  names(unique_ref) = unique_ref  
+  
+  # Split samples time series according to the class 
+  xx = lapply(unique_ref, function(r) x[ref==r] )
+
+  # Apply createPattern for each unique reference  
+  res = lapply(xx, FUN = .createPattern, from, to, freq, attr, formula, ...)
+  res
+}
+
+
+.createPattern = function(x, from, to, freq, attr, formula, ...){
   
   # Pattern period 
   if( missing(from) | missing(to) ){

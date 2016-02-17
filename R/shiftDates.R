@@ -34,20 +34,12 @@
 #' index(y)
 #' 
 #' @export
-#' 
 shiftDates = function(x, year){
-  doy = as.numeric(format(index(x), "%j"))
-  d = .shiftDates(year, doy)
-  index(x) = d
-  x
+  dates = index(x)
+  last_date = tail(dates, 1)
+  shift_days = as.numeric(last_date - as.Date(paste0(year,format(last_date, "-%m-%d"))))
+  d = as.numeric(dates) - shift_days
+  zoo(data.frame(x), as.Date(d))
 }
 
-.shiftDates = function(year, doy){
-  dates = getDatesFromDOY(year, doy)
-  diffdate = diff(dates)
-  I = which(diffdate<0)
-  if(length(I)<1) return(dates)
-  dates = c(.shiftDates(year-1, doy[1:(I[1])]), dates[(I[1]+1):length(doy)])
-  dates
-}
 

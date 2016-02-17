@@ -6,10 +6,10 @@
 \title{splits the samples into training and validation 
 and creates temporal patterns}
 \usage{
-splitDataset(timeseries, ref, times = 1, p = 0.1, mc.cores = 1, ...)
+splitDataset(x, ref, times = 1, p = 0.1, mc.cores = 1, ...)
 }
 \arguments{
-\item{timeseries}{A list of \code{\link[zoo]{zoo}} objects with the time series.}
+\item{x}{A list of \code{\link[zoo]{zoo}} objects with the time series.}
 
 \item{ref}{A vector identifying each time series. It must have the same length 
 as \code{x}. If \code{ref} is not declared then all samples are taken as belonging 

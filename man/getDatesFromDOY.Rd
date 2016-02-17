@@ -10,7 +10,8 @@ getDatesFromDOY(year, doy)
 \arguments{
 \item{year}{An vector with the years.}
 
-\item{doy}{An vector with the day of the year.}
+\item{doy}{An vector with the day of the year. 
+It must have the same lenght as \code{year}}
 }
 \value{
 A \code{\link[base]{Dates}} object.

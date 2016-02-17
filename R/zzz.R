@@ -34,6 +34,7 @@
 #' @importFrom mgcv gam predict.gam 
 #' @importFrom RColorBrewer brewer.pal 
 #' @importFrom caret createDataPartition 
+#' @importFrom stats xtabs ave window
 #' 
 NULL
 

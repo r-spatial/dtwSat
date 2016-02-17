@@ -22,7 +22,7 @@
 #' training and validation. The function uses stratified sampling and  
 #' a simple random sampling for each stratum.
 #' 
-#' @param timeseries A list of \code{\link[zoo]{zoo}} objects with the time series.
+#' @param x A list of \code{\link[zoo]{zoo}} objects with the time series.
 #' 
 #' @param ref A vector identifying each time series. It must have the same length 
 #' as \code{x}. If \code{ref} is not declared then all samples are taken as belonging 
@@ -67,17 +67,17 @@
 #' }
 #' 
 #' @export
-splitDataset = function(timeseries, ref, times=1, p=0.1, mc.cores=1, ...) {
+splitDataset = function(x, ref, times=1, p=0.1, mc.cores=1, ...) {
   
-  if(missing(ref)) ref = rep("sample", length(timeseries))
+  if(missing(ref)) ref = rep("sample", length(x))
   
   partitions = createDataPartition(y = ref, times = times, p = p, list = TRUE)
   
   res = mclapply(partitions, mc.cores = mc.cores, 
                  mc.preschedule = FALSE, function(I){
                    # Split training and validation samples 
-                   ts_training = timeseries[I]
-                   ts_validation = timeseries[-I]
+                   ts_training = x[I]
+                   ts_validation = x[-I]
                    ref_training = ref[I]
                    ref_validation = ref[-I]
                    
@@ -88,7 +88,7 @@ splitDataset = function(timeseries, ref, times=1, p=0.1, mc.cores=1, ...) {
                    
                    # Create temporal patterns 
                    samples_list = lapply(J, function(j) ts_training[j] )
-                   patterns_list = lapply(samples_list, createPattern, ...)
+                   patterns_list = lapply(samples_list, .createPattern, ...)
                    ts_partitions = list(patterns = patterns_list, x = ts_validation, ref = ref_validation)
                    ts_partitions
                  })

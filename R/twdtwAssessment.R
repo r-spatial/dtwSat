@@ -39,7 +39,7 @@
 #' @docType methods
 #' @return A named \code{\link[base]{list}} with: reference class \code{Reference}, 
 #' predicted class \code{Predicted}, cross-validation table \code{Cross}, 
-#' users's accuracy \code{Users}, and roducer's accuracy \code{Producers}.
+#' users's accuracy \code{Users}, and producer's accuracy \code{Producers}.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{splitDataset}}

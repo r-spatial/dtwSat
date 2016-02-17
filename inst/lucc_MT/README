@@ -16,7 +16,7 @@ Inputs:
   
 Outputs:
   - field_samples_ts.RData: A list of zoo objects extracted from the raster files.
-  - patterns_list.RData: This is a list of patterns with the phenological cycle of: "forest", "cotton-fallow", "soybean-cotton", "soybean-maize", and "soybean-millet". The patterns were build from ground truth samples of each crop using Generalized Additive Models (GAM), see ?createPattern.
+  - temporal_patterns.RData: This is a list of patterns with the phenological cycle of: "forest", "cotton-fallow", "soybean-cotton", "soybean-maize", and "soybean-millet". The patterns were build from ground truth samples of each crop using Generalized Additive Models (GAM), see ?createPattern.
   - cross_validation.RData: A list of data.frames with the Reference and Predicted class, resulting from several repetitions.  
   - classification.tif: a multi-layer GTiff file with the final classification. The class are:
       1. Cotton-fallow

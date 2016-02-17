@@ -1,21 +1,14 @@
 Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis 
-Version: 0.2.0.900
+Version: 0.2.0.9000
 Date: 2016-02-16
 Authors@R: c(person("Victor", "Maus", role = c("aut", "cre"), email = "vwmaus1@gmail.com"))
-Description: Provides an implementation of the Time-Weighted Dynamic Time Warping (TWDTW) method for land use 
-             and land cover mapping using satellite image time series. TWDTW is based on the Dynamic Time Warping 
-             technique and has achieved high accuracy for land use and land cover classification using satellite data. 
-             The method is based on comparing unclassified satellite image time series with a set of known temporal 
-             patterns (e.g. phenological cycles of vegetation types). Using dtwSat the user can build temporal patterns 
-             for land cover types, apply the TWDTW analysis for satellite datasets, visualize the results of the time 
-             series analysis, produce land use and land cover maps, and create temporal plots for land use and land 
-             cover changes analysis. 
+Description: Provides an implementation of the Time-Weighted Dynamic Time Warping (TWDTW) method for land use and land cover mapping using satellite image time series. TWDTW is based on the Dynamic Time Warping technique and has achieved high accuracy for land use and land cover classification using satellite data. The method is based on comparing unclassified satellite image time series with a set of known temporal patterns (e.g. phenological cycles of vegetation types). Using dtwSat the user can build temporal patterns for land cover types, apply the TWDTW analysis for satellite datasets, visualize the results of the time series analysis, produce land use and land cover maps, and create temporal plots for land use and land cover changes analysis. 
 Depends: R (>= 3.0.0), zoo, raster, ggplot2, methods
 Imports: 
     dtw, proxy, waveslim, scales, reshape2, grDevices, RColorBrewer,
-    plyr, parallel, sp, mgcv, caret
+    plyr, stats, parallel, sp, mgcv, caret
 Suggests: 
     testthat, knitr, rmarkdown, gridExtra, grid, png
 License: GPL (>= 2) | file LICENSE
@@ -23,4 +16,3 @@ Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
 RoxygenNote: 5.0.1
-VignetteBuilder: knitr

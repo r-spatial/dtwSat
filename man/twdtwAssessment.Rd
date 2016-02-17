@@ -28,7 +28,7 @@ See \code{\link[dtwSat]{classifyIntervals}} for details.}
 \value{
 A named \code{\link[base]{list}} with: reference class \code{Reference}, 
 predicted class \code{Predicted}, cross-validation table \code{Cross}, 
-users's accuracy \code{Users}, and roducer's accuracy \code{Producers}.
+users's accuracy \code{Users}, and producer's accuracy \code{Producers}.
 }
 \description{
 This function classifies the set of samples time series

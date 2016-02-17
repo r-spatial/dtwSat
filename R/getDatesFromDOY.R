@@ -19,7 +19,8 @@
 #' year and day of the year.
 #' 
 #' @param year An vector with the years.
-#' @param doy An vector with the day of the year.
+#' @param doy An vector with the day of the year. 
+#' It must have the same lenght as \code{year}
 #' 
 #' @docType methods
 #' 
@@ -36,9 +37,6 @@
 #' @export
 getDatesFromDOY = function(year, doy){
   res = as.Date(paste(as.numeric(year), as.numeric(doy)), format="%Y %j", origin="1970-01-01")
-  # Correct leap years 
-  I = which(diff(res)<0)
-  if(length(I)>0) res[I+1] = as.Date(paste0(as.numeric(format(res[I+1], "%Y"))+1,format(res[I+1],"-%m-%d")))
   res
 }
 

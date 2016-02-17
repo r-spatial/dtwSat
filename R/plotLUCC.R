@@ -51,9 +51,9 @@
 #'  
 #' @examples
 #' \dontrun{
-#' load(system.file("lucc_MT/patterns_list.RData", package = "dtwSat"))
-#' levels = c(seq_along(patterns_list), 255)
-#' labels = c(names(patterns_list), "Unclassified")
+#' load(system.file("lucc_MT/temporal_patterns.RData", package = "dtwSat"))
+#' levels = c(seq_along(temporal_patterns), 255)
+#' labels = c(names(temporal_patterns), "Unclassified")
 #' colors = c("#996400", "#005500", "#D8B777", "#E6D219", "#E6BEC8", "#C8C8C8")
 #' names(colors) = labels
 #' 
@@ -97,7 +97,13 @@ plotLUCC = function(x, type="area", layer.levels, layer.labels=NULL,
     stop("layer.levels and layer.labels have different length")
   
   x_levels = unique(as.vector(unique(x[])))
-  if( is.null(class.colors) | length(class.colors)<length(x_levels) )
+  if(!is.null(class.levels))
+    x_levels = class.levels
+  
+  if( is.null(class.colors) )
+    class.colors = brewer.pal(length(x_levels), "Set3")
+  
+  if( length(class.colors)<length(x_levels) )
     class.colors = brewer.pal(length(x_levels), "Set3")
   
   if(is.null(class.levels))

@@ -54,9 +54,9 @@
 #' reference = as.character(field_samples[["class"]])
 #' load(system.file("lucc_MT/field_samples_ts.RData", package="dtwSat"))
 #' 
-#' x = splitted_dataset = splitDataset(timeseries = field_samples_ts, ref = reference, 
+#' x = splitted_dataset = splitDataset(x = field_samples_ts, ref = reference, 
 #'     times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
-#'     formula = y ~ s(time, bs="cc"))
+#'     formula = y ~ s(x))
 #' 
 #' assess_table = lapply(x, FUN=twdtwAssessment, overlap = 0.5, 
 #'              weight.fun = logisticWeight(alpha=-0.1, beta=50))

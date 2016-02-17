@@ -46,7 +46,8 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotPaths}}, 
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
-\code{\link[dtwSat]{plotMatches}}, and 
-\code{\link[dtwSat]{plotClassification}}.
+\code{\link[dtwSat]{plotMatches}}, 
+\code{\link[dtwSat]{plotClassification}}, and 
+\code{\link[dtwSat]{plotPatterns}}.
 }
 

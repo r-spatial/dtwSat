@@ -33,8 +33,9 @@
 #' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
-#' \code{\link[dtwSat]{plotMatches}}, and 
-#' \code{\link[dtwSat]{plotPatterns}}.
+#' \code{\link[dtwSat]{plotMatches}}
+#' \code{\link[dtwSat]{plotPatterns}}, and 
+#' \code{\link[dtwSat]{plotTimeSeries}}.
 #' 
 #' @examples
 #' log_fun = logisticWeight(alpha=-0.1, beta=100)

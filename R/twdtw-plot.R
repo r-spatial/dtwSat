@@ -21,15 +21,16 @@
 #' 
 #' @param x A \code{\link[dtwSat]{twdtw-class}} object
 #' @param type A character for the plot type: ''paths'', ''matches'', 
-#' ''alignments'', ''classification'', ''cost'', or ''patterns''.
+#' ''alignments'', ''classification'', ''cost'', ''patterns'', or ''timeseries''.
 #' Default is ''alignments''. See details. 
 #' @param ... additional arguments passed to plotting functions.
 #' \code{\link[dtwSat]{plotPaths}}, 
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
 #' \code{\link[dtwSat]{plotMatches}}, 
-#' \code{\link[dtwSat]{plotClassification}}, and 
-#' \code{\link[dtwSat]{plotPatterns}}.
+#' \code{\link[dtwSat]{plotClassification}},
+#' \code{\link[dtwSat]{plotPatterns}}, or 
+#' \code{\link[dtwSat]{plotTimeSeries}}.
 #'  
 #' @return A \link[ggplot2]{ggplot} object.
 #' 
@@ -42,6 +43,7 @@
 #'       \cr\code{classification}: Method for plotting the classification of each subinterval of the time series based on TWDTW analysis. 
 #'       \cr\code{cost}: Method for plotting the internal matrices used during the TWDTW computation.
 #'       \cr\code{patterns}: Method for plotting the temporal patterns.
+#'       \cr\code{timeseries}: Method for plotting the temporal patterns.
 #'       }
 #' }
 #' @seealso 
@@ -51,8 +53,9 @@
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
 #' \code{\link[dtwSat]{plotMatches}}, 
-#' \code{\link[dtwSat]{plotClassification}}, and 
-#' \code{\link[dtwSat]{plotPatterns}}.
+#' \code{\link[dtwSat]{plotClassification}},
+#' \code{\link[dtwSat]{plotPatterns}}, and 
+#' \code{\link[dtwSat]{plotTimeSeries}}
 #' 
 #' @examples 
 #' 
@@ -75,7 +78,7 @@
 #' ## Plot classification
 #' gp4 = plot(matches, type="classification", attr="evi", 
 #'       from=as.Date("2009-09-01"),  to=as.Date("2013-09-01"), 
-#'       by = "6 month", overlap=.3)
+#'       by = "6 month", overlap=.5)
 #' gp4
 #' 
 #' # Plot cost matrix
@@ -86,20 +89,25 @@
 #' gp6 = plot(matches, type="patterns")
 #' gp6
 #' 
+#' # Plot cost matrix
+#' gp7 = plot(matches, type="timeseries")
+#' gp7
+#' 
 #' @rdname plot-method
 #' 
 #' @export
 setMethod("plot", 
           signature(x = "twdtw"),
           function(x, type="alignments", ...){
-            pt = pmatch(type,c("paths","matches","alignments","classification","cost","patterns"))
+            pt = pmatch(type,c("paths","matches","alignments","classification","cost","patterns","timeseries"))
             switch(pt,
                    plotPaths(x, ...),
                    plotMatches(x, ...),
                    plotAlignments(x, ...),
                    plotClassification(x, ...),
                    plotCostMatrix(x, ...),
-                   plotPatterns(x, ...)
+                   plotPatterns(x, ...),
+                   plotTimeSeries(x, ...)
             )
           }
 )

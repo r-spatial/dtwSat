@@ -11,7 +11,7 @@
 \item{x}{A \code{\link[dtwSat]{twdtw-class}} object}
 
 \item{type}{A character for the plot type: ''paths'', ''matches'', 
-''alignments'', ''classification'', ''cost'', or ''patterns''.
+''alignments'', ''classification'', ''cost'', ''patterns'', or ''timeseries''.
 Default is ''alignments''. See details.}
 
 \item{...}{additional arguments passed to plotting functions.
@@ -19,8 +19,9 @@ Default is ''alignments''. See details.}
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
 \code{\link[dtwSat]{plotMatches}}, 
-\code{\link[dtwSat]{plotClassification}}, and 
-\code{\link[dtwSat]{plotPatterns}}.}
+\code{\link[dtwSat]{plotClassification}},
+\code{\link[dtwSat]{plotPatterns}}, or 
+\code{\link[dtwSat]{plotTimeSeries}}.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.
@@ -38,6 +39,7 @@ TWDTW analysis.
       \cr\code{classification}: Method for plotting the classification of each subinterval of the time series based on TWDTW analysis. 
       \cr\code{cost}: Method for plotting the internal matrices used during the TWDTW computation.
       \cr\code{patterns}: Method for plotting the temporal patterns.
+      \cr\code{timeseries}: Method for plotting the temporal patterns.
       }
 }
 }
@@ -62,7 +64,7 @@ gp3
 ## Plot classification
 gp4 = plot(matches, type="classification", attr="evi", 
       from=as.Date("2009-09-01"),  to=as.Date("2013-09-01"), 
-      by = "6 month", overlap=.3)
+      by = "6 month", overlap=.5)
 gp4
 
 # Plot cost matrix
@@ -72,6 +74,10 @@ gp5
 # Plot cost matrix
 gp6 = plot(matches, type="patterns")
 gp6
+
+# Plot cost matrix
+gp7 = plot(matches, type="timeseries")
+gp7
 
 }
 \author{
@@ -84,7 +90,8 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotCostMatrix}},
 \code{\link[dtwSat]{plotAlignments}}, 
 \code{\link[dtwSat]{plotMatches}}, 
-\code{\link[dtwSat]{plotClassification}}, and 
-\code{\link[dtwSat]{plotPatterns}}.
+\code{\link[dtwSat]{plotClassification}},
+\code{\link[dtwSat]{plotPatterns}}, and 
+\code{\link[dtwSat]{plotTimeSeries}}
 }
 

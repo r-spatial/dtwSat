@@ -15,7 +15,7 @@ patterns.list
 This dataset has a list of patterns with the phenological cycle of: Soybean,
 Cotton, and Maize. These time series are based on the MODIS product 
 MOD13Q1 250 m 16 days [1]. The patterns were build from ground truth samples of each 
-crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPattern}.
+crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPatterns}.
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
@@ -28,7 +28,7 @@ datasets. Remote Sensing of Environment, 114(1), 168 182.
 \seealso{
 \link[dtwSat]{example_ts},
 \link[dtwSat]{example_ts.list}, and 
-\link[dtwSat]{createPattern}.
+\link[dtwSat]{createPatterns}.
 
 MOD13Q1 documentation: See 
 \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.

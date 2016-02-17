@@ -35,8 +35,9 @@
 #' \code{\link[dtwSat]{plotCostMatrix}},
 #' \code{\link[dtwSat]{plotAlignments}}, 
 #' \code{\link[dtwSat]{plotMatches}}, 
-#' \code{\link[dtwSat]{plotClassification}}, and 
-#' \code{\link[dtwSat]{plotPatterns}}.
+#' \code{\link[dtwSat]{plotClassification}},
+#' \code{\link[dtwSat]{plotPatterns}}, and 
+#' \code{\link[dtwSat]{plotTimeSeries}}.
 #'  
 #' @examples
 #' 

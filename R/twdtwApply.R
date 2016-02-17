@@ -121,7 +121,7 @@ twdtwApply = function(x, win.size = c(1,1), win.fun = classifyIntervals,
     stop("x is missing the day of the year 'doy'. For details see ?buildRasterTimeSeries")
   
   # Split and set arguments to functions 
-  # args = list(weight.fun = weight.fun, from = from, to = to, by = by, labels = labels, simplify = simplify, patterns = patterns)
+  # args = list(weight.fun = weight.fun, from = from, to = to, by = by, patterns = patterns)
   args = list(...)
   win_fun = .setFunArgs(fun = win.fun, args = args)
   twdtw_fun = .setFunArgs(fun = twdtw, args = args)
@@ -162,6 +162,7 @@ twdtwApply = function(x, win.size = c(1,1), win.fun = classifyIntervals,
     
     # Classify time interval for each pixel 
     res = lapply(twdtw_results, FUN = win_fun)
+    res = lapply(res, as.numeric)
     
     # aux = lapply(seq(1,120*6,6), function(i) i:(i+5) )
     M = apply(data.frame(res), 1, function(x) x)

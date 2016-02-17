@@ -23,7 +23,7 @@ See \code{\link[caret]{createDataPartition}} for details.}
 \item{mc.cores}{The number of cores to use, See \code{\link[parallel]{mclapply}} 
 for details.}
 
-\item{...}{Other arguments to be passed to \code{\link[dtwSat]{createPattern}}.}
+\item{...}{Other arguments to be passed to \code{\link[dtwSat]{createPatterns}}.}
 }
 \value{
 A \code{\link[base]{list}} of three attributes: the trained \code{pattrens},
@@ -40,18 +40,16 @@ a simple random sampling for each stratum.
 set.seed(1)
 data_folder = system.file("lucc_MT/data", package = "dtwSat")
 field_samples = read.csv(paste(data_folder,"samples.csv", sep = "/"))
-proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
-           what = "character")
 reference = as.character(field_samples[["class"]])
 load(system.file("lucc_MT/field_samples_ts.RData", package="dtwSat"))
 
-x = splitted_dataset = splitDataset(timeseries = field_samples_ts, ref = reference, 
-    times=2, p=0.1, mc.cores=1, freq=8, from="2007-09-01", to="2008-09-01", 
+ts_partitions = splitDataset(x = field_samples_ts, ref = reference, 
+    times=2, p=0.1, freq=8, from="2007-09-01", to="2008-09-01", 
     formula = y ~ s(time, bs="cc"))
 
-names(x)
-names(x$Resample1)
-plotPatterns(x$Resample1$patterns)
+names(ts_partitions)
+names(ts_partitions$Resample1)
+plotPatterns(ts_partitions$Resample1$patterns)
 }
 
 }

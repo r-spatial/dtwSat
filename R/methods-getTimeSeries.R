@@ -30,6 +30,32 @@
 #' 
 setGeneric("getTimeSeries", function(object, ...) standardGeneric("getTimeSeries"))
 
+
+#' @name getPatterns-method 
+#' @aliases getPatterns
+#' @include methods-getTimeSeries.R
+#' 
+#' @title Get time series 
+#' 
+#' @description Generic method to get temporal patterns from objects of class twdtw*.
+#' 
+#' @inheritParams twdtwTimeSeries-class
+#' @param object an twdtw* object.
+#' @param ... other arguments to be passed to methods.
+#' 
+#' @seealso 
+#' \code{\link[dtwSat]{twdtwMatches-class}}, 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
+#' \code{\link[dtwSat]{twdtwRaster-class}}
+#'
+setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
+
+
+# Get patterns from object of class twdtwMatches by labels 
+getPatterns.twdtwMatches = function(object, labels) {
+  getTimeSeries(object@patterns, labels)
+}
+
 # Get time series from object of class twdtwTimeSeries by labels 
 getTimeSeries.twdtwTimeSeries = function(object, labels){
   if(is.null(labels)) labels = labels(object)
@@ -68,4 +94,17 @@ setMethod("getTimeSeries", "twdtwTimeSeries",
 #' @export
 setMethod("getTimeSeries", "twdtwMatches", 
           function(object, labels=NULL) getTimeSeries.twdtwMatches(object, labels) )
+
+
+#' @inheritParams twdtwMatches-class
+#' 
+#' @examples 
+#' ## Getting patterns from objects of class twdtwMatches 
+#' matches = new("twdtwMatches")
+#' getPatterns(matches)
+#' 
+#' @describeIn twdtwMatches Get patterns from objects of class twdtwMatches
+#' @export
+setMethod("getPatterns", "twdtwMatches", 
+          function(object, labels=NULL) getPatterns.twdtwMatches(object, labels) )
 

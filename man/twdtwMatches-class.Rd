@@ -3,6 +3,7 @@
 \docType{methods}
 \name{twdtwMatches-class}
 \alias{getAlignments,twdtwMatches-method}
+\alias{getPatterns,twdtwMatches-method}
 \alias{getTimeSeries,twdtwMatches-method}
 \alias{is.twdtwMatches}
 \alias{is.twdtwMatches,twdtwMatches-method}
@@ -15,6 +16,8 @@
 \S4method{getAlignments}{twdtwMatches}(object)
 
 \S4method{getTimeSeries}{twdtwMatches}(object, labels = NULL)
+
+\S4method{getPatterns}{twdtwMatches}(object, labels = NULL)
 
 \S4method{is.twdtwMatches}{twdtwMatches}(x)
 
@@ -39,6 +42,8 @@ Class for Time-Weighted Dynamic Time Warping results.
 \item \code{getAlignments}: Get TWDTW alignments from the object of class twdtwMatches
 
 \item \code{getTimeSeries}: Get time series from objects of class twdtwMatches
+
+\item \code{getPatterns}: Get patterns from objects of class twdtwMatches
 
 \item \code{is.twdtwMatches}: Check if the object belongs to the class twdtwMatches
 
@@ -90,6 +95,10 @@ getAlignments(matches)
 ## Getting time series from objects of class twdtwMatches 
 matches = new("twdtwMatches")
 getTimeSeries(matches)
+
+## Getting patterns from objects of class twdtwMatches 
+matches = new("twdtwMatches")
+getPatterns(matches)
 
 # Checking if object belongs to the class twdtwMatches
 matches = new("twdtwMatches")

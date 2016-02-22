@@ -25,8 +25,8 @@
 #' 
 #' @section Slots :
 #' \describe{
-#'  \item{\code{timeseries}:}{A object of class \link[dtwSat]{twdtwTimeSeries} with the satellite time series.}
-#'  \item{\code{pattern}:}{A object of class \link[dtwSat]{twdtwTimeSeries} with the temporal patterns.}
+#'  \item{\code{timeseries}:}{An object of class \link[dtwSat]{twdtwTimeSeries} with the satellite time series.}
+#'  \item{\code{pattern}:}{An object of class \link[dtwSat]{twdtwTimeSeries} with the temporal patterns.}
 #'  \item{\code{alignments}:}{A \code{\link[base]{list}} of TWDTW results with the same length as 
 #'  the \code{timeseries}. Each element in this list has the following results for each temporal pattern 
 #'  in \code{patterns}:
@@ -96,4 +96,32 @@ setMethod("initialize",
             }
 )
 
+
+#' @title Create twdtwMatches object 
+#' @name twdtwMatches
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description Create object of class twdtwMatches.
+#' 
+#' @param timeseries an object of class twdtwTimeSeries.
+#' @param patterns an object of class twdtwTimeSeries.
+#' @param alignments an object of class list with the TWDTW results. 
+#' For more details see slot alignments of twdtwMatches-class.
+#' 
+#' @examples 
+#' # Creating objects of class twdtwMatches 
+#' twdtwMatches(timeseries = twdtwTimeSeries(), 
+#'              patterns = twdtwTimeSeries(), alignments = list())
+#' 
+#' @export
+setGeneric(name = "twdtwMatches",  
+          def = function(timeseries, patterns, alignments) standardGeneric("twdtwMatches")
+)
+
+#' @inheritParams twdtwMatches
+#' @describeIn twdtwMatches Create object of class twdtwMatches.
+setMethod(f = "twdtwMatches",  c("twdtwTimeSeries", "twdtwTimeSeries", "list"),
+          definition = function(timeseries, patterns, alignments)
+             new("twdtwMatches", timeseries=timeseries, patterns=patterns, alignments=alignments)
+          )
 

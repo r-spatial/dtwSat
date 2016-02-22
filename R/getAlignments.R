@@ -13,12 +13,12 @@
 ###############################################################
 
 
-#' @name getAlignments-method 
-#' @aliases getAlignments
-#' 
+#' @include getTimeSeries.R
 #' @title Get TWDTW alignments 
+#' @name getAlignments
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Get TWDTW alignments from objects of class twdtwMatches 
+#' @description Generic method to get the TWDTW alignments from objects of class twdtwMatches 
 #' 
 #' @inheritParams twdtwTimeSeries-class
 #' @param ... other arguments to be passed to methods 
@@ -32,7 +32,15 @@
 #' matches = new("twdtwMatches")
 #' getAlignments(matches)
 #' 
-setGeneric("getAlignments", function(object, ...) standardGeneric("getAlignments"))
+#' @export
+setGeneric("getAlignments", function(object) standardGeneric("getAlignments"))
+
+
+#' @inheritParams getAlignments
+#' @describeIn twdtwMatches Get the TWDTW alignments from objects of class twdtwMatches 
+setMethod(f = "getAlignments", signature = "twdtwMatches", 
+          definition = function(object) getAlignments.twdtwMatches(object) )
+
 
 getAlignments.twdtwMatches = function(object){
   if(length(object@alignments)<1) return(list())
@@ -52,16 +60,4 @@ getAlignments.twdtwMatches = function(object){
   })
   res
 }
-
-#' @inheritParams getTimeSeries-method
-#' 
-#' @examples 
-#' # Getting time series from objects of class twdtwTimeSeries
-#' matches = new("twdtwMatches")
-#' getAlignments(matches)
-#' 
-#' @describeIn twdtwMatches Get TWDTW alignments from the object of class twdtwMatches
-#' @export
-setMethod(f = "getAlignments", signature = "twdtwMatches", 
-          definition = function(object) getAlignments.twdtwMatches(object) )
 

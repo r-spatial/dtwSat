@@ -1,0 +1,235 @@
+###############################################################
+#                                                             #
+#   (c) Victor Maus <vwmaus1@gmail.com>                       #
+#       Institute for Geoinformatics (IFGI)                   #
+#       University of Muenster (WWU), Germany                 #
+#                                                             #
+#       Earth System Science Center (CCST)                    #
+#       National Institute for Space Research (INPE), Brazil  #
+#                                                             #
+#                                                             #
+#   R Package dtwSat - 2016-01-16                             #
+#                                                             #
+###############################################################
+
+#' @title Perform Time-Weighted Dynamic Time Warping 
+#' @name twdtw
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function performs a multidimensional Time-Weighted DTW 
+#' analysis and retrieves the matches between the temporal patterns and 
+#' the time series [1].
+#' 
+#' @inheritParams twdtwTimeSeries-class 
+#' @param x an object of class \link[dtwSat]{twdtwTimeSeries} with the satellite time series.
+#' @param y an object of class \link[dtwSat]{twdtwTimeSeries} with the temporal patterns.
+#' 
+#' @param normalize.patterns Normalize the length of the temporal patterns. Default is FALSE.
+#' See \link[dtwSat]{normalizePatterns} for details.
+#' 
+#' @param patterns.length An integer. Patterns length used with \code{patterns.length}. 
+#' If not declared the length of the output patterns will be the length of 
+#' the longest pattern.
+#' 
+#' @param timeseries A \link[zoo]{zoo} object with a time series.
+#' 
+#' @param weight.fun A function. Any function that receive and performs a 
+#' computation on a matrix. The function receives a matrix of time differences 
+#' in days and returns a matrix of time-weights. If not declared the time-weight 
+#' is zero. In this case the function runs the standard version of the dynamic 
+#' time warping. See details. 
+#' 
+#' @param dist.method A character. Method to derive the local cost matrix.
+#' Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
+#' \pkg{proxy}.
+#' 
+#' @param step.matrix see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2].
+#' 
+#' @param n An integer. The maximun number of matches to perform. 
+#' NULL will return all matches.
+#' 
+#' @param theta numeric between 0 and 1. The weight of the time 
+#' for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
+#' \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
+#' the time has the same weight as the curve shape in the TWDTW analysis.
+#' 
+#' @param keep preserves the cost matrix, inputs, and other internal structures. 
+#' Default is FALSE. For \code{\link[dtwSat]{plot-method}} methods use \code{keep=TRUE}.
+#' 
+#' @param span A number. Span between two matches, \emph{i.e.} the minimum  
+#' interval between two matches, for details see [3]. If not declared it removes
+#' all overlapping matches of the same pattern. To include overlapping matches 
+#' of the same pattern use \code{span=0}.
+#' 
+#' @param min.length A number between 0 an 1. This argument removes the over fittings.
+#' Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
+#' meaning that the matching cannot be shorter than half of the pattern length.
+#' 
+#' @seealso 
+#' \code{\link[dtwSat]{twdtwMatches-class}}, 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
+#' \code{\link[dtwSat]{twdtwRaster-class}}
+#' 
+#' @return A \code{\link[dtwSat]{twdtw-class}} object.
+#'  
+#' @references 
+#' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
+#' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
+#' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
+#' IEEE Journal of, vol.PP, no.99, pp.1-11.
+#' @references 
+#' [2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
+#' The dtw Package. Journal of Statistical Software, 31, 1-24.
+#' @references 
+#' [3] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
+#' and Motion (pp. 79-84). London: Springer London, Limited.
+#' 
+#' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
+#' can be passed to \code{twdtw} through the argument \code{weight.fun}. This will 
+#' add a time-weight to the dynamic time warping analysis. The time weight 
+#' creates a global constraint useful to analyse time series with phenological cycles
+#' of vegetation that are usually bound to seasons. In previous studies by [1] the 
+#' logistic weight had better results than the linear for land cover classification. 
+#' See [1] for details about the method. 
+#'         
+#' @export
+twdtw =  function(timeseries, ..., patterns=list(...), normalize.patterns=FALSE, 
+                  patterns.length=NULL, weight.fun=NULL, dist.method="Euclidean", 
+                  step.matrix = symmetric1, n=NULL, span=NULL, min.length=0.5,
+                  theta = 0.5, keep=FALSE)
+{
+  
+  if(!is(patterns, "list"))
+    stop("patterns should be a list of zoo objects")
+  if(any(!sapply(patterns, is.zoo)))
+    stop("patterns should be a list of zoo objects")
+  if(!is(timeseries, "zoo"))
+    stop("timeseries should be of class zoo")
+  if(!is(step.matrix, "stepPattern"))
+    stop("step.matrix is no stepPattern object")
+  if(is.null(weight.fun))
+    weight.fun = function(psi) 0 
+  if(!is(weight.fun, "function"))
+    stop("weight.fun is not a function")
+  
+  if(normalize.patterns)
+    patterns = normalizePatterns(object=patterns, length=patterns.length)
+  
+  call = match.call()
+  
+  res = .twdtw(timeseries, patterns, weight.fun, dist.method, 
+               step.matrix, n, span, min.length, theta, keep, call)
+  res
+}
+
+.twdtw =  function(timeseries, patterns, weight.fun, dist.method, 
+                   step.matrix, n, span, min.length, theta, keep, call)
+{
+  
+  res = lapply(patterns, function(pattern){
+    # Adjust columns by name if possible  
+    if(!is.null(names(pattern)) & !is.null(names(timeseries)))
+      timeseries = timeseries[,names(pattern), drop=FALSE]
+    if(ncol(pattern)!=ncol(timeseries))
+      stop("Number of columns in pattern and in timeseries don't match.")
+    
+    # Get day of the year
+    ty = index(pattern)
+    tx = index(timeseries)
+    doyy = as.numeric(format(index(pattern), "%j"))
+    doyx = as.numeric(format(index(timeseries), "%j"))
+    
+    
+    # Compute local cost matrix 
+    phi = dist(pattern, timeseries, method=dist.method)
+    # Time cost matrix 
+    psi = .g(dist(doyy, doyx, method=dist.method))
+    # Weighted local cost matrix 
+    cm = (1-theta)*phi + theta*weight.fun(psi)
+    
+    # Compute cost matris 
+    internals = .computecost(cm, step.matrix)
+    internals$timeWeight = matrix(psi, nrow = nrow(psi))
+    internals$localMatrix = matrix(cm, nrow = nrow(cm))
+    
+    # Find low cost candidates 
+    d = internals$costMatrix[internals$N,1:internals$M]
+    a = internals$startingMatrix[internals$N,1:internals$M]
+    if(is.null(span)){
+      candidates   = data.frame(a, d)
+      candidates   = candidates[ candidates$d==ave(candidates$d, candidates$a, FUN=min), ]
+      candidates$b = as.numeric(row.names(candidates))
+    }
+    else {
+      b = .findMin(d, tx, span = span)
+      candidates = data.frame(a[b], d[b], b)
+    }
+    
+    # Order maches by similarity 
+    I = order(candidates$d)
+    if(length(I)<1) return(NULL)
+    
+    # Sellect alignments 
+    if(is.null(n)) n = length(I)
+    if(length(I) > n) I = I[1:n]
+    
+    # Remove overfit 
+    I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
+    
+    alignments = list()
+    alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
+    alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
+    alignments$distance   = candidates$d[I]           # This is a numeric vector 
+    alignments$K          = length(I)                 # This is an interger 
+    
+    if(keep){
+      # Trace low cost paths (k-th paths)
+      matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidates$b[I])
+      alignments$matching = matching    # This is a list of data.frames with the matching points 
+      alignments$internals = internals  # These is a list variables used in the TWDTW computation
+    }
+    alignments
+  })
+  new("twdtw", timeseries = timeseries, patterns = patterns, alignments = res)
+}
+
+.findMin = function(x, timeline, span){
+  NonNA = which(!is.na(x))
+  dx = diff(x[NonNA])
+  index_min = NonNA[which(dx[-length(dx)] < 0 & dx[-1] >= 0)] + 1
+  if(tail(dx,1) < 0)
+    index_min = c(index_min,length(x))
+  order_min = index_min[order(x[index_min])]
+  min_out = array()
+  for(i in seq_along(index_min)){
+    min_out[i] = order_min[i]
+    lower_bound = timeline[order_min[i]] - span
+    upper_bound = timeline[order_min[i]] + span
+    in_span = lower_bound <= timeline[order_min] & timeline[order_min] <= upper_bound
+    order_min[in_span] = NA
+  }
+  res = min_out[!is.na(min_out)]
+  res
+}
+
+.removeConcurrent = function(I, startPoints, endPoints, d){
+  res = !(I | duplicated(startPoints, fromLast = TRUE))
+  J = unlist(lapply(unique(startPoints[!res]), function(i){
+    J = which(startPoints==i)
+    min_j = rep(FALSE, length(J))
+    min_j[which.min(d[endPoints[J]])] = TRUE
+    min_j
+  }))
+  res[!res] = J
+  res
+}
+
+.g = function(x){
+  d1 = as.POSIXlt(Sys.Date())
+  d2 = d1
+  d2$year = d2$year + 1 
+  doy = d2 - d1 
+  x[x>doy/2] = abs(doy - x[x>doy/2])
+  x
+}
+

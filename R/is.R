@@ -12,35 +12,23 @@
 #                                                             #
 ###############################################################
 
-
 setGeneric("is.twdtwTimeSeries", 
-           function(x, ...) standardGeneric("is.twdtwTimeSeries"))
+           function(x) standardGeneric("is.twdtwTimeSeries"))
 
 setGeneric("is.twdtwMatches", 
-           function(x, ...) standardGeneric("is.twdtwMatches"))
+           function(x) standardGeneric("is.twdtwMatches"))
 
 #' @aliases is.twdtwTimeSeries
 #' @inheritParams twdtwTimeSeries-class
-#' 
-#' @examples 
-#' # Checking if object belongs to the class twdtwTimeSeries
-#' ex_ts = twdtwTimeSeries(timeseries = example_ts.list)
-#' is.twdtwTimeSeries(ex_ts)
-#' 
-#' @describeIn twdtwTimeSeries Check if the object belongs to the class twdtwTimeSeries
+#' @describeIn twdtwTimeSeries Check if the object belongs to the class twdtwTimeSeries.
 #' @export
-setMethod("is.twdtwTimeSeries", "twdtwTimeSeries", 
+setMethod("is.twdtwTimeSeries", "ANY", 
           function(x) is(x, "twdtwTimeSeries"))
 
 #' @aliases is.twdtwMatches
 #' @inheritParams twdtwMatches-class
-#' @examples 
-#' # Checking if object belongs to the class twdtwMatches
-#' matches = new("twdtwMatches")
-#' is.twdtwMatches(matches)
-#' 
-#' @describeIn twdtwMatches Check if the object belongs to the class twdtwMatches
+#' @describeIn twdtwMatches Check if the object belongs to the class twdtwMatches.
 #' @export
-setMethod("is.twdtwMatches", "twdtwMatches", 
+setMethod("is.twdtwMatches", "ANY", 
           function(x) is(x, "twdtwMatches"))
 

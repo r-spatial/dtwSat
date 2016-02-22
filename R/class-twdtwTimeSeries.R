@@ -15,7 +15,6 @@
 
 #' @title class "twdtwTimeSeries"
 #' @name twdtwTimeSeries-class
-#' 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for set of irregular time series.
@@ -25,7 +24,9 @@
 #' @param labels a vector with labels of the time series. 
 #' @param object an object of class twdtwTimeSeries.
 #' @param x an object of class twdtwTimeSeries.
-#' 
+#' @param length a number. If not informed the function will use the 
+#' length of the longest pattern. 
+#'
 #' @section Slots :
 #' \describe{
 #'  \item{\code{timeseries}:}{A list of \code{\link[zoo]{zoo}} objects.}
@@ -46,16 +47,16 @@ twdtwTimeSeries = setClass(
   slots = c(timeseries = "list", labels = "factor"),
   validity = function(object){
     if(!is(object@timeseries, "list")){
-      stop("[twdtw: validation] Invalid timeseries object, class different from list.")
+      stop("[twdtwTimeSeries: validation] Invalid timeseries object, class different from list.")
     }else{}
     if(any(!sapply(object@timeseries, is.zoo))){
-      stop("[twdtw: validation] Invalid timeseries object, class different from list of zoo objects.")
+      stop("[twdtwTimeSeries: validation] Invalid timeseries object, class different from list of zoo objects.")
     }else{}
     if(!is(object@labels, "factor")){
-      stop("[twdtw: validation] Invalid labels object, class different from character.")
+      stop("[twdtwTimeSeries: validation] Invalid labels object, class different from character.")
     }else{}
     if( length(object@labels)!=0 & length(object@labels)!=length(object@timeseries) ){
-      stop("[twdtw: validation] Invalid length, labels and timeseries do not have the same length.")
+      stop("[twdtwTimeSeries: validation] Invalid length, labels and timeseries do not have the same length.")
     }else{}
     return(TRUE)
   }
@@ -79,11 +80,12 @@ setMethod("initialize",
   }
 )
 
-setGeneric(name = "twdtwTimeSeries",  
-          def = function(...) standardGeneric("twdtwTimeSeries")
-)
-
-#' @aliases twdtwTimeSeries
+#' @title Create twdtwTimeSeries object 
+#' @name twdtwTimeSeries
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description Create object of class twdtwTimeSeries.
+#' 
 #' @inheritParams twdtwTimeSeries-class
 #' 
 #' @examples 
@@ -95,11 +97,15 @@ setGeneric(name = "twdtwTimeSeries",
 #' twdtwTimeSeries(timeseries = example_ts.list, labels = c(1,2))
 #' twdtwTimeSeries(example_ts.list[[1]], example_ts.list[[2]])
 #' 
-#' @describeIn twdtwTimeSeries Create object of class twdtwTimeSeries  
 #' @export
+setGeneric(name = "twdtwTimeSeries",  
+          def = function(..., timeseries, labels) standardGeneric("twdtwTimeSeries")
+)
+
+#' @inheritParams twdtwTimeSeries
+#' @describeIn twdtwTimeSeries Create object of class twdtwTimeSeries.
 setMethod(f = "twdtwTimeSeries",  
           definition = function(..., timeseries = list(...), labels)
              new("twdtwTimeSeries", timeseries = timeseries, labels = labels)
           )
-
 

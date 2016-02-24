@@ -31,13 +31,13 @@
 setGeneric("getTimeSeries", function(object, labels=NULL) standardGeneric("getTimeSeries"))
 
 #' @inheritParams getTimeSeries
-#' @describeIn twdtwTimeSeries Get time series from objects of class twdtwTimeSeries 
-setMethod("getTimeSeries", c("twdtwTimeSeries", "ANY"),
+#' @describeIn twdtwTimeSeries Get subset of time series from objects of class twdtwTimeSeries.
+setMethod("getTimeSeries", c("twdtwTimeSeries","ANY"),
           function(object, labels) getTimeSeries.twdtwTimeSeries(object, labels) )
 
 #' @inheritParams getTimeSeries
-#' @describeIn twdtwMatches Get time series from objects of class twdtwMatches 
-setMethod("getTimeSeries", c("twdtwMatches", "ANY"),
+#' @describeIn twdtwMatches Get subset of time series from objects of class twdtwMatches.
+setMethod("getTimeSeries", c("twdtwMatches","ANY"),
           function(object, labels) getTimeSeries.twdtwMatches(object, labels) )
 
 # Get time series from object of class twdtwTimeSeries by labels 
@@ -52,3 +52,4 @@ getTimeSeries.twdtwTimeSeries = function(object, labels){
 getTimeSeries.twdtwMatches = function(object, labels) {
   getTimeSeries.twdtwTimeSeries(object@timeseries, labels)
 }
+

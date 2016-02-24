@@ -35,12 +35,14 @@
 #' 
 #' @examples 
 #' # Creating new object of class twdtwTimeSeries  
-#' new("twdtwTimeSeries")
-#' 
-#' sapply(example_ts.list, class)
-#' new("twdtwTimeSeries", timeseries = example_ts.list)
-#' new("twdtwTimeSeries", timeseries = example_ts.list, labels = c(1,2))
-#' 
+#' ptt = new("twdtwTimeSeries", timeseries = patterns.list, labels = names(patterns.list))
+#' class(ptt)
+#' length(ptt)
+#' nrow(ptt)
+#' ncol(ptt)
+#' dim(ptt)
+#' ptt[1]
+#' ptt[[1]]
 NULL
 twdtwTimeSeries = setClass(
   Class = "twdtwTimeSeries",
@@ -90,12 +92,8 @@ setMethod("initialize",
 #' 
 #' @examples 
 #' # Creating objects of class twdtwTimeSeries 
-#' class(example_ts)
-#' twdtwTimeSeries(example_ts)
-#' sapply(example_ts.list, class)
-#' twdtwTimeSeries(timeseries = example_ts.list)
-#' twdtwTimeSeries(timeseries = example_ts.list, labels = c(1,2))
-#' twdtwTimeSeries(example_ts.list[[1]], example_ts.list[[2]])
+#' ptt = twdtwTimeSeries(timeseries = patterns.list)
+#' ptt 
 #' 
 #' @export
 setGeneric(name = "twdtwTimeSeries",  

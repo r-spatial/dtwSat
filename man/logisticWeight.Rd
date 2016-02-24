@@ -21,8 +21,8 @@ function to compute the TWDTW local cost matrix [1].
 }
 \details{
 The linear \code{linearWeight} and \code{logisticWeight} weight functions 
-can be passed to \code{twdtw} through the argument \code{weight.fun}. This will 
-add a time-weight to the dynamic time warping analysis. The time weight 
+can be passed to \code{\link[dtwSat]{twdtwApply}} through the argument \code{weight.fun}. 
+This will add a time-weight to the dynamic time warping analysis. The time weight 
 creates a global constraint useful to analyse time series with phenological cycles
 of vegetation that are usually bound to seasons. In previous studies by [1] the 
 logistic weight had better results than the linear for land cover classification. 
@@ -43,6 +43,6 @@ mapping. Selected Topics in Applied Earth Observations and Remote Sensing,
 IEEE Journal of, vol.PP, no.99, pp.1-11.
 }
 \seealso{
-\code{\link[dtwSat]{twdtw}}
+\code{\link[dtwSat]{twdtwApply}}
 }
 

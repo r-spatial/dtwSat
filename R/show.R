@@ -21,39 +21,42 @@ show.twdtwTimeSeries = function(object){
   invisible(NULL)
 }
 
-
 # Show objects of class twdtwMatches 
 show.twdtwMatches = function(object){
   cat("An object of class \"twdtwMatches\"\n")
   cat("Number of time series:",length(object@timeseries),"\n")
   cat("Number of Alignments:",length(object),"\n")
-  cat("Patterns labels:",labels(object@patterns),"\n")
+  cat("Patterns labels:",as.character(labels(object@patterns)),"\n")
   invisible(NULL)
 }
 
+# Show objects of class twdtwRaster 
+show.twdtwRaster = function(object){
+  cat("An object of class \"twdtwRaster\"\n")
+  cat("Time series layers:",as.character(labels(object)),"\n")
+  cat("Time range:",paste(min(object@timeline)),"...",paste(max(object@timeline)),"\n")
+  cat("dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
+  cat("resolution:",res(object)," (x, y)\n")
+  cat("extent    :",as.vector(extent(object)), "(xmin, xmax, ymin, ymax)\n")
+  cat("coord.ref.:",projection(object),"\n") 
+  invisible(NULL)
+}
 
 #' @inheritParams twdtwTimeSeries-class
-#' 
-#' @examples 
-#' # Showing objects of class twdtwTimeSeries 
-#' ex_ts = twdtwTimeSeries(timeseries = example_ts.list, labels = c(1,2))
-#' show(ex_ts)
-#' 
-#' @describeIn twdtwTimeSeries Show object of class twdtwTimeSeries  
-#' @export 
+#' @rdname twdtwTimeSeries-class
+#' @export
 setMethod(f = "show", "twdtwTimeSeries",
           definition = show.twdtwTimeSeries)
 
-
 #' @inheritParams twdtwMatches-class
-#' 
-#' @examples 
-#' # Showing objects of class twdtwMatches 
-#' matches = new("twdtwMatches")
-#' show(matches)
-#' 
-#' @describeIn twdtwMatches Show object of class twdtwMatches  
-#' @export 
+#' @rdname twdtwMatches-class
+#' @export
 setMethod(f = "show", "twdtwMatches",
           definition = show.twdtwMatches)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod(f = "show", "twdtwRaster",
+          definition = show.twdtwRaster)
 

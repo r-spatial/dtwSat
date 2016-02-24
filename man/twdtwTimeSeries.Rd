@@ -18,12 +18,8 @@ Create object of class twdtwTimeSeries.
 }
 \examples{
 # Creating objects of class twdtwTimeSeries 
-class(example_ts)
-twdtwTimeSeries(example_ts)
-sapply(example_ts.list, class)
-twdtwTimeSeries(timeseries = example_ts.list)
-twdtwTimeSeries(timeseries = example_ts.list, labels = c(1,2))
-twdtwTimeSeries(example_ts.list[[1]], example_ts.list[[2]])
+ptt = twdtwTimeSeries(timeseries = patterns.list)
+ptt 
 
 }
 \author{

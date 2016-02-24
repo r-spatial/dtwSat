@@ -25,8 +25,8 @@
 #' 
 #' @section Slots :
 #' \describe{
-#'  \item{\code{timeseries}:}{An object of class \link[dtwSat]{twdtwTimeSeries} with the satellite time series.}
-#'  \item{\code{pattern}:}{An object of class \link[dtwSat]{twdtwTimeSeries} with the temporal patterns.}
+#'  \item{\code{timeseries}:}{An object of class \code{\link[dtwSat]{twdtwTimeSeries-class}} with the satellite time series.}
+#'  \item{\code{pattern}:}{An object of class \code{\link[dtwSat]{twdtwTimeSeries-class}} with the temporal patterns.}
 #'  \item{\code{alignments}:}{A \code{\link[base]{list}} of TWDTW results with the same length as 
 #'  the \code{timeseries}. Each element in this list has the following results for each temporal pattern 
 #'  in \code{patterns}:
@@ -53,10 +53,19 @@
 #'       }
 #' }
 #' 
-#' @examples 
-#' # Creating new object of class twdtwTimeSeries  
-#' new("twdtwMatches")
+#'  
+#' @seealso \code{\link[dtwSat]{twdtwApply}} and 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}
 #' 
+#' @examples 
+#' ts = twdtwTimeSeries(timeseries=example_ts.list)
+#' patterns = twdtwTimeSeries(timeseries=patterns.list)
+#' matches = twdtwApply(x = ts, y = patterns, mc.cores=2)
+#' class(matches)
+#' length(matches)
+#' matches[1]
+#' matches[[1]]
+#' matches[]
 NULL
 setOldClass("twdtwTimeSeries")
 twdtwMatches = setClass(
@@ -107,12 +116,15 @@ setMethod("initialize",
 #' @param patterns an object of class twdtwTimeSeries.
 #' @param alignments an object of class list with the TWDTW results. 
 #' For more details see slot alignments of twdtwMatches-class.
-#' 
+#'  
+#' @seealso \code{\link[dtwSat]{twdtwApply}} and 
+#' \code{\link[dtwSat]{twdtwMatches-class}}
+#'
 #' @examples 
 #' # Creating objects of class twdtwMatches 
 #' twdtwMatches(timeseries = twdtwTimeSeries(), 
 #'              patterns = twdtwTimeSeries(), alignments = list())
-#' 
+#'
 #' @export
 setGeneric(name = "twdtwMatches",  
           def = function(timeseries, patterns, alignments) standardGeneric("twdtwMatches")

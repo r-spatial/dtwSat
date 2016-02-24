@@ -29,12 +29,12 @@
 #' \code{\link[dtwSat]{twdtwRaster-class}}
 #' 
 #' @export
-setGeneric("getPatterns", function(object, labels) standardGeneric("getPatterns"))
+setGeneric("getPatterns", function(object, labels=NULL) standardGeneric("getPatterns"))
 
 #' @inheritParams getPatterns
 #' @describeIn twdtwMatches Get temporal patterns from objects of class twdtwMatches.
-setMethod("getPatterns", c("twdtwTimeSeries", "ANY"),
-          function(object, labels=NULL) getPatterns.twdtwMatches(object, labels) )
+setMethod("getPatterns", c("twdtwMatches","ANY"),
+          function(object, labels) getPatterns.twdtwMatches(object, labels) )
 
 getPatterns.twdtwMatches = function(object, labels) {
   getTimeSeries(object@patterns, labels)

@@ -4,7 +4,7 @@
 \alias{getPatterns}
 \title{Get patterns}
 \usage{
-getPatterns(object, labels)
+getPatterns(object, labels = NULL)
 }
 \arguments{
 \item{object}{an twdtwMatches object.}

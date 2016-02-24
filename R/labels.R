@@ -12,15 +12,20 @@
 #                                                             #
 ###############################################################
 
-
 #' @inheritParams twdtwTimeSeries-class
-#' @describeIn twdtwTimeSeries Labels of the time series in object of class twdtwTimeSeries.
+#' @rdname twdtwTimeSeries-class
 #' @export
 setMethod("labels", signature = signature(object="twdtwTimeSeries"),
           definition = function(object) object@labels)
 
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod("labels", signature = signature(object="twdtwRaster"),
+          definition = function(object) object@labels)
+          
 #' @inheritParams twdtwMatches-class
-#' @describeIn twdtwMatches Labels of the time series in object of class twdtwMatches.
+#' @rdname twdtwMatches-class
 #' @export
 setMethod("labels", 
           signature = signature(object="twdtwMatches"),

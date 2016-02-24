@@ -29,16 +29,17 @@
 #' @examples 
 #' ## 
 #' 
-#' @export joinAlignments 
+#' @export  
 setGeneric(name = "joinAlignments",  
           def = function(...) standardGeneric("joinAlignments")
 )
 
 #' @inheritParams joinAlignments
 #' @describeIn twdtwMatches Join TWDTW alignments from two or more objects of class twdtwMatches 
+#' @export
 setMethod("joinAlignments", "twdtwMatches",
           definition = function(...) joinAlignments.twdtwMatches(list(...)))
-         
+
 joinAlignments.twdtwMatches = function(x){
   n = length(x)
   if(n==1) return(x[[1]])

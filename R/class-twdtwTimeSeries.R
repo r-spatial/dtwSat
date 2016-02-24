@@ -32,7 +32,13 @@
 #'  \item{\code{timeseries}:}{A list of \code{\link[zoo]{zoo}} objects.}
 #'  \item{\code{labels}:}{A vector of class \code{\link[base]{factor}} with time series labels.}
 #' }
-#' 
+#'
+#' @seealso   
+#' \code{\link[dtwSat]{twdtwApply}}, 
+#' \code{\link[dtwSat]{getTimeSeries}},
+#' \code{\link[dtwSat]{twdtwMatches-class}}, and 
+#' \code{\link[dtwSat]{twdtwRaster-class}}
+#'
 #' @examples 
 #' # Creating new object of class twdtwTimeSeries  
 #' ptt = new("twdtwTimeSeries", timeseries = patterns.list, labels = names(patterns.list))
@@ -90,6 +96,11 @@ setMethod("initialize",
 #' 
 #' @inheritParams twdtwTimeSeries-class
 #' 
+#' @seealso   
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}},
+#' \code{\link[dtwSat]{getTimeSeries}}, and 
+#' \code{\link[dtwSat]{twdtwApply}}
+#'
 #' @examples 
 #' # Creating objects of class twdtwTimeSeries 
 #' ptt = twdtwTimeSeries(timeseries = patterns.list)

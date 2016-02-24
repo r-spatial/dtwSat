@@ -3,18 +3,25 @@
 \docType{methods}
 \name{twdtwApply}
 \alias{twdtwApply}
+\alias{twdtwApply,twdtwRaster-method}
 \alias{twdtwApply,twdtwTimeSeries-method}
+\alias{twdtwApply-twdtwRaster}
 \alias{twdtwApply-twdtwTimeSeries}
 \title{Apply TWDTW analysis}
 \usage{
-twdtwApply(x, y, normalize = FALSE, length = NULL, weight.fun = NULL,
+twdtwApply(x, y, resample = FALSE, length = NULL, weight.fun = NULL,
   dist.method = "Euclidean", step.matrix = symmetric1, n = NULL,
   span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE, ...)
 
-\S4method{twdtwApply}{twdtwTimeSeries}(x, y, normalize = FALSE,
+\S4method{twdtwApply}{twdtwTimeSeries}(x, y, resample = FALSE,
   length = NULL, weight.fun = NULL, dist.method = "Euclidean",
   step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0.5,
   theta = 0.5, keep = FALSE, ...)
+
+\S4method{twdtwApply}{twdtwRaster}(x, y, resample = FALSE, length = NULL,
+  weight.fun = NULL, dist.method = "Euclidean", step.matrix = symmetric1,
+  n = NULL, span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE,
+  ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -23,8 +30,8 @@ Usually, it is a set of unclassified time series.}
 \item{y}{an object of class \link[dtwSat]{twdtwTimeSeries}. 
 The temporal patterns.}
 
-\item{normalize}{Normalize patterns length. Default is FALSE.
-See \link[dtwSat]{normalizePatterns} for details.}
+\item{resample}{resample the patterns to have the same length. Default is FALSE.
+See \link[dtwSat]{resampleTimeSeries} for details.}
 
 \item{length}{An integer. Patterns length used with \code{patterns.length}. 
 If not declared the length of the output patterns will be the length of 
@@ -83,7 +90,17 @@ logistic weight had better results than the linear for land cover classification
 See [1] for details about the method.
 }
 \examples{
-## 
+# Applying TWDTW analysis to objects of class twdtwTimeSeries
+ts = twdtwTimeSeries(timeseries=example_ts.list)
+patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+matches = twdtwApply(x=ts, y=patterns)
+matches
+
+# Applying TWDTW analysis to objects of class twdtwTimeSeries
+ts = twdtwTimeSeries(timeseries=example_ts.list)
+patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+matches = twdtwApply(x=ts, y=patterns)
+matches 
 
 }
 \author{
@@ -98,7 +115,14 @@ IEEE Journal of, vol.PP, no.99, pp.1-11.
 [2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
 The dtw Package. Journal of Statistical Software, 31, 1-24.
 
-[3] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
+[3] Muller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 and Motion (pp. 79-84). London: Springer London, Limited.
+}
+\seealso{
+\code{\link[dtwSat]{twdtwMatches-class}}, 
+\code{\link[dtwSat]{twdtwTimeSeries-class}}, 
+\code{\link[dtwSat]{twdtwRaster-class}}, 
+\code{\link[dtwSat]{getTimeSeries}}, and 
+\code{\link[dtwSat]{createPatterns}}
 }
 

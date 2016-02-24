@@ -64,7 +64,13 @@
 #'        with levels and labels of the values in the Raster* objects. This 
 #'        is useful for categorical Raster* values of land use classes.}
 #' }
-#' 
+#'
+#' @seealso   
+#' \code{\link[dtwSat]{twdtwApply}}, 
+#' \code{\link[dtwSat]{getTimeSeries}},
+#' \code{\link[dtwSat]{twdtwMatches-class}}, and 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}
+#'
 #' @examples 
 #' # Creating new object of class twdtwTimeSeries 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
@@ -136,6 +142,11 @@ setMethod("initialize",
 #' @details The performance the functions \code{\link[dtwSat]{twdtwApply}} and 
 #' \code{\link[dtwSat]{getTimeSeries}} is improved if the Raster* objects are connected 
 #' to files with the whole time series for each attribute. 
+#' 
+#' @seealso   
+#' \code{\link[dtwSat]{twdtwRaster-class}},
+#' \code{\link[dtwSat]{getTimeSeries}}, and 
+#' \code{\link[dtwSat]{twdtwApply}}
 #'
 #' @examples 
 #' # Creating objects of class twdtwRaster 

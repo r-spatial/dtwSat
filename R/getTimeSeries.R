@@ -12,85 +12,107 @@
 #                                                             #
 ###############################################################
 
-#' @title Get time series 
+#' @title Get time series
 #' @name getTimeSeries
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#'
+#' @description Generic method to get time series subsets from objects of class twdtw*.
 #' 
-#' @description Generic method to get time series from objects of class twdtw*.
+#' @inheritParams joinTimeSeries
 #' 
-#' @param object an twdtw* object.
-#' @param labels a vector with the time series labels. If not informed the 
-#' function retrieves all time series. 
-#' 
-#' @seealso 
-#' \code{\link[dtwSat]{twdtwMatches-class}}, 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
-#' \code{\link[dtwSat]{twdtwRaster-class}}
-#' 
-#' @export
-setGeneric("getTimeSeries", function(object, ...) standardGeneric("getTimeSeries"))
-
-#' @inheritParams getTimeSeries
-#' @describeIn twdtwTimeSeries Get subset of time series from objects of class twdtwTimeSeries.
-setMethod("getTimeSeries", "twdtwTimeSeries",
-          function(object, labels=NULL) getTimeSeries.twdtwTimeSeries(object=object, labels=labels) )
-
-#' @inheritParams getTimeSeries
-#' @describeIn twdtwMatches Get subset of time series from objects of class twdtwMatches.
-setMethod("getTimeSeries", "twdtwMatches",
-          function(object, labels=NULL) getTimeSeries.twdtwMatches(object=object, labels=labels) )
-
-#' @inheritParams getTimeSeries
-#' 
-#' @param object an object of class \code{\link[dtwSat]{twdtwRaster}}.
+#' @param object an object of class of class twdtw*.
+#'
+#' @param ... other arguments to pass to specific methods. 
+#'
 #' @param samples a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
 #' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
 #' whose attributes are the start ''from'' and the end ''to'' of the time interval.
 #' If missing ''from'' and/or ''to'', their are set to the time range of the object
-#' \code{object}. 
-#' As additional attribute of \code{samples} can be used as labels for each sample. 
-#' See \code{id.labels}. 
+#' \code{object}. As additional attribute of \code{samples} can be used as labels 
+#' for each sample. See \code{id.labels}. 
 #' 
 #' @param id.labels a numeric or character with an attribute of \code{samples} to 
 #' be used as labels of the samples. Optional.
 #' 
-#' @param labels character vector with samples labels. It must have one label for each 
-#' sample. Optional.
+#' @param labels character vector with time series labels. For signature 
+#' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
+#' labels for each \code{sample}, or it can be combined with \code{id.labels} 
+#' to select samples with a specific label.
 #' 
 #' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
 #' if \code{samples} is a \code{\link[base]{data.frame}}.
 #'
 #' @param join.labels a logical. It TRUE the function joins labels that are identical 
 #' to a factor. If FALSE a different label is kept for each samples. 
+#' 
+#' @return An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
 #'
+#' @seealso 
+#' \code{\link[dtwSat]{twdtwRaster-class}}, and 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}
+#' 
+#' @export
+setGeneric("getTimeSeries", function(object, ...) standardGeneric("getTimeSeries"))
+
+#' @rdname getTimeSeries
+#' @aliases getTimeSeries-twdtwTimeSeries
+#' @examples
+#' # Getting time series from objects of class twdtwTimeSeries
+#' ts = twdtwTimeSeries(timeseries=example_ts.list)
+#' getTimeSeries(ts, 2)
+#' 
+#' @export
+setMethod("getTimeSeries", "twdtwTimeSeries",
+          function(object, labels=NULL) getTimeSeries.twdtwTimeSeries(object=object, labels=labels) )
+
+#' @rdname getTimeSeries
+#' @aliases getTimeSeries-twdtwMatches
+#' @examples
+#' # Getting time series from objects of class twdtwTimeSeries
+#' ts = twdtwTimeSeries(timeseries=example_ts.list)
+#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+#' matches = twdtwApply(x=ts, y=patterns)
+#' getTimeSeries(matches, 2)
+#'
+#' @export
+setMethod("getTimeSeries", "twdtwMatches",
+          function(object, labels=NULL) getTimeSeries.twdtwMatches(object=object, labels=labels) )
+
+#' @rdname getTimeSeries
+#' @aliases getTimeSeries-twdtwRaster
 #' @examples 
-#' # Creating objects of class twdtwRaster 
+#' ## This example creates a twdtwRaster object and extract a subset of time series from it. 
+#'
+#' # Creating objects of class twdtwRaster with evi and ndvi time series 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
+#' rts = twdtwRaster(evi, ndvi, timeline=timeline)
 #' 
 #' # Read field samples 
-#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
-#' proj_str = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), 
-#'            what="character")
+#' ## Location and time range 
+#' ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
+#'                          from = "2007-09-01", to = "2013-09-01")
+#' prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #' 
-#' # Get time series 
-#' ts_samples = getTimeSeries(rts, samples=field_samples, proj4string = proj_str, id.labels="label")
+#' ## Extract time series 
+#' ts = getTimeSeries(rts, samples = ts_location, proj4string = prj_string)
+#'  
+#' autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 #' 
-#' @describeIn twdtwRaster Get subsets of time series from objects of class twdtwRaster.
+#' @export 
 setMethod("getTimeSeries", "twdtwRaster",
-          function(object, samples, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL, 
-                   join.labels = TRUE){
-              if(!is.null(id.labels)) samples$label = as.character(samples[[id.labels]])
-              if(!is.null(labels)) samples$label = as.character(labels)
+          function(object, samples, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL, join.labels = TRUE){
               if(!"label"%in%names(samples)) samples$label = paste0("ts",row.names(samples))
+              if(!is.null(id.labels)) samples$label = as.character(samples[[id.labels]])
+              if(!is.null(id.labels) & !is.null(labels)){
+                I = which(!is.na(match(as.character(samples$label), as.character(labels))))
+                if(length(I)<1) 
+                   stop("there is no matches between id.labels and labels")
+              } else if(!is.null(labels)) { 
+                        samples$label = as.character(labels)
+              }
               if(is(samples, "data.frame")){
                 if(!is(proj4string, "CRS")) proj4string = try(CRS(proj4string))
                   samples = SpatialPointsDataFrame(samples[,c("longitude","latitude")], samples, proj4string = proj4string)
@@ -113,15 +135,10 @@ extractTimeSeries.twdtwRaster = function(x, y, join.labels){
     warning(paste("raster extent does not overlap samples:",paste(pto, collapse = ",")), call. = FALSE)
   
   # Extract time series 
-  ts_list = lapply(x, FUN = extract, y = y[pto,])
+  ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
   
   # Crop period
-  if(join.labels){
-    res = do.call("joinPatterns", lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x)))
-  } else {
-    res = do.call("joinTimeSeries", lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x)))
-  }
-  res
+  do.call("joinTimeSeries", c(lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x)), join.labels=join.labels))
 }
 
 # Get time series from object of class twdtwTimeSeries by labels 

@@ -21,21 +21,30 @@
 #' 
 #' @param ... objects of class twdtwMatches 
 #' 
-#' @seealso 
-#' \code{\link[dtwSat]{twdtwMatches-class}}, 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
-#' \code{\link[dtwSat]{twdtwRaster-class}}
+#' @return an object of class \code{\link[dtwSat]{twdtwMatches}}
 #' 
-#' @examples 
-#' ## 
+#' @seealso 
+#' \code{\link[dtwSat]{twdtwMatches-class}}, and 
+#' \code{\link[dtwSat]{joinTimeSeries}}
 #' 
 #' @export  
 setGeneric(name = "joinAlignments",  
           def = function(...) standardGeneric("joinAlignments")
 )
 
-#' @inheritParams joinAlignments
-#' @describeIn twdtwMatches Join TWDTW alignments from two or more objects of class twdtwMatches 
+
+#' @rdname joinAlignments
+#' @aliases joinAlignments-twdtwMatches
+#' @examples
+#' # Join TWDTW align from objects of class twdtwTimeSeries
+#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+#' ts1 = twdtwTimeSeries(timeseries=example_ts.list[1], labels="A")
+#' ts2 = twdtwTimeSeries(timeseries=example_ts.list[2], labels="B")
+#' mat1 = twdtwApply(x=ts1, y=patterns)
+#' mat2 = twdtwApply(x=ts2, y=patterns)
+#' matches = joinAlignments(mat1, mat2)
+#' matches
+#' 
 #' @export
 setMethod("joinAlignments", "twdtwMatches",
           definition = function(...) joinAlignments.twdtwMatches(list(...)))
@@ -46,8 +55,8 @@ joinAlignments.twdtwMatches = function(x){
   align = x[[n]]@alignments
   if(length(align)<1) return(joinAlignments.twdtwMatches(x[-n]))
   x[[1]]@alignments = c(x[[1]]@alignments, align)
-  x[[1]]@timeseries = joinTimeSeries(x[[1]]@timeseries, x[[n]]@timeseries)
-  x[[1]]@patterns = joinPatterns(x[[1]]@patterns, x[[n]]@patterns)
+  x[[1]]@timeseries = joinTimeSeries(x[[1]]@timeseries, x[[n]]@timeseries, join.labels=FALSE)
+  x[[1]]@patterns = joinTimeSeries(x[[1]]@patterns, x[[n]]@patterns, join.labels=TRUE)
   joinAlignments.twdtwMatches(x[-n])
 }
 

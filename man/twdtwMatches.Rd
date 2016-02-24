@@ -27,7 +27,7 @@ twdtwMatches(timeseries = twdtwTimeSeries(),
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{twdtwApply}} and 
-\code{\link[dtwSat]{twdtwMatches-class}}
+\code{\link[dtwSat]{twdtwMatches-class}} and 
+\code{\link[dtwSat]{twdtwApply}}
 }
 

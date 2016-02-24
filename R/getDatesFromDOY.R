@@ -20,13 +20,13 @@
 #' 
 #' @param year An vector with the years.
 #' @param doy An vector with the day of the year. 
-#' It must have the same lenght as \code{year}
+#' It must have the same lenght as \code{year}.
 #' 
 #' @docType methods
 #' 
 #' @return A \code{\link[base]{Dates}} object.
 #' 
-#' @seealso \link[dtwSat]{getModisTimeSequence} and \link[dtwSat]{getModisTimeIndex}
+#' @seealso \link[dtwSat]{shiftDates} 
 #' 
 #' @examples
 #' year = c(2000, 2001)

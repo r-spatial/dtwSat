@@ -57,4 +57,9 @@ rts=twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
+\seealso{
+\code{\link[dtwSat]{twdtwRaster-class}},
+\code{\link[dtwSat]{getTimeSeries}}, and 
+\code{\link[dtwSat]{twdtwApply}}
+}
 

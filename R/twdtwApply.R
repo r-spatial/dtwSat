@@ -12,7 +12,7 @@
 #                                                             #
 ###############################################################
 
-#' @include utils.R
+#' @include methods.R
 #' @title Apply TWDTW analysis 
 #' @name twdtwApply
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
@@ -30,8 +30,8 @@
 #' @param ... arguments to pass to specifique methods for each twdtw* signature 
 #' and other arguments for parallel processing to pass to \code{\link[parallel]{mclapply}}.
 #'
-#' @param normalize Normalize patterns length. Default is FALSE.
-#' See \link[dtwSat]{normalizePatterns} for details.
+#' @param resample resample the patterns to have the same length. Default is FALSE.
+#' See \link[dtwSat]{resampleTimeSeries} for details.
 #' 
 #' @param length An integer. Patterns length used with \code{patterns.length}. 
 #' If not declared the length of the output patterns will be the length of 
@@ -78,7 +78,7 @@
 #' [2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
 #' The dtw Package. Journal of Statistical Software, 31, 1-24.
 #' @references 
-#' [3] M\"uller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
+#' [3] Muller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 #' and Motion (pp. 79-84). London: Springer London, Limited.
 #' 
 #' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
@@ -91,19 +91,32 @@
 #' 
 #' @return An object of class twdtw*.
 #' 
-#' @examples 
-#' ## 
+#' @seealso 
+#' \code{\link[dtwSat]{twdtwMatches-class}}, 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
+#' \code{\link[dtwSat]{twdtwRaster-class}}, 
+#' \code{\link[dtwSat]{getTimeSeries}}, and 
+#' \code{\link[dtwSat]{createPatterns}}
 #' 
 #' @export  
 setGeneric(name = "twdtwApply", 
-          def = function(x, y, normalize=FALSE, length=NULL, weight.fun=NULL, 
+          def = function(x, y, resample=FALSE, length=NULL, weight.fun=NULL, 
                   dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
                   span=NULL, min.length=0.5, theta = 0.5, keep=FALSE, ...) standardGeneric("twdtwApply"))
 
-#' @aliases twdtwApply-twdtwTimeSeries 
+
 #' @rdname twdtwApply 
+#' @aliases twdtwApply-twdtwTimeSeries 
+#' @examples
+#' # Applying TWDTW analysis to objects of class twdtwTimeSeries
+#' ts = twdtwTimeSeries(timeseries=example_ts.list)
+#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+#' matches = twdtwApply(x=ts, y=patterns)
+#' matches
+#'
+#' @export
 setMethod(f = "twdtwApply", "twdtwTimeSeries",
-          def = function(x, y, normalize, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...){
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...){
                   if(!is(y, "twdtwTimeSeries"))
                     stop("y is not of class twdtwTimeSeries")
                   if(!is(step.matrix, "stepPattern"))
@@ -112,11 +125,40 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
                     weight.fun = function(psi) 0 
                   if(!is(weight.fun, "function"))
                     stop("weight.fun is not a function")
-                  if(normalize)
-                    y = normalizePatterns(object=y, length=length)
+                  if(resample)
+                    y = resampleTimeSeries(object=y, length=length)
                   twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...)
            })
 
+           
+           
+#' @rdname twdtwApply 
+#' @aliases twdtwApply-twdtwRaster
+#' @examples
+#' # Applying TWDTW analysis to objects of class twdtwTimeSeries
+#' ts = twdtwTimeSeries(timeseries=example_ts.list)
+#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+#' matches = twdtwApply(x=ts, y=patterns)
+#' matches 
+#' 
+#' @export
+setMethod(f = "twdtwApply", "twdtwRaster",
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...){
+                  if(!is(y, "twdtwTimeSeries"))
+                    stop("y is not of class twdtwTimeSeries")
+                  if(!is(step.matrix, "stepPattern"))
+                    stop("step.matrix is not of class stepPattern")
+                  if(is.null(weight.fun))
+                    weight.fun = function(psi) 0 
+                  if(!is(weight.fun, "function"))
+                    stop("weight.fun is not a function")
+                  if(resample)
+                    y = resampleTimeSeries(object=y, length=length)
+                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...)
+           })
+           
+           
+           
 twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, 
 mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE, mc.cores = getOption("mc.cores", 1L), mc.cleanup = TRUE){
     if(mc.cores>1){

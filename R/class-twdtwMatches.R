@@ -54,8 +54,10 @@
 #' }
 #' 
 #'  
-#' @seealso \code{\link[dtwSat]{twdtwApply}} and 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}
+#' @seealso   
+#' \code{\link[dtwSat]{twdtwApply}}, 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
+#' \code{\link[dtwSat]{twdtwRaster-class}}
 #' 
 #' @examples 
 #' ts = twdtwTimeSeries(timeseries=example_ts.list)
@@ -117,8 +119,9 @@ setMethod("initialize",
 #' @param alignments an object of class list with the TWDTW results. 
 #' For more details see slot alignments of twdtwMatches-class.
 #'  
-#' @seealso \code{\link[dtwSat]{twdtwApply}} and 
-#' \code{\link[dtwSat]{twdtwMatches-class}}
+#' @seealso  
+#' \code{\link[dtwSat]{twdtwMatches-class}} and 
+#' \code{\link[dtwSat]{twdtwApply}}
 #'
 #' @examples 
 #' # Creating objects of class twdtwMatches 

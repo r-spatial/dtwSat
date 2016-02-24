@@ -61,7 +61,7 @@ nlayers.twdtwRaster = function(x){
 }
 
 levels.twdtwRaster = function(x){
-  levels(object@labels)
+  levels(x@labels)
 }
 
 names.twdtwRaster = function(x){
@@ -74,6 +74,10 @@ length.twdtwRaster = function(x){
 
 index.twdtwRaster = function(x){
   x@timeline 
+}
+
+index.twdtwTimeSeries = function(x){
+  lapply(x@timeseries, index)
 }
 
 length.twdtwTimeSeries = function(x){
@@ -151,6 +155,12 @@ setMethod(f = "nlayers", "twdtwRaster",
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
+setMethod(f = "levels", "twdtwRaster",
+          definition = levels.twdtwRaster)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
 setMethod(f = "names", "twdtwRaster",
           definition = names.twdtwRaster)
           
@@ -159,7 +169,13 @@ setMethod(f = "names", "twdtwRaster",
 #' @export
 setMethod(f = "index", "twdtwRaster",
           definition = index.twdtwRaster)
-          
+   
+#' @inheritParams twdtwTimeSeries-class
+#' @rdname twdtwTimeSeries-class
+#' @export
+setMethod(f = "index", "twdtwTimeSeries",
+          definition = index.twdtwTimeSeries)
+           
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
@@ -271,3 +287,108 @@ setMethod("[[", c("twdtwMatches", "numeric"), function(x, i) {
   x@alignments[[i]]
 })
 
+#' @inheritParams twdtwTimeSeries-class
+#' @rdname twdtwTimeSeries-class
+#' @export
+setMethod("labels", signature = signature(object="twdtwTimeSeries"),
+          definition = function(object) object@labels)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod("labels", signature = signature(object="twdtwRaster"),
+          definition = function(object) labels(object@labels))
+          
+#' @inheritParams twdtwMatches-class
+#' @rdname twdtwMatches-class
+#' @export
+setMethod("labels", 
+          signature = signature(object="twdtwMatches"),
+          definition = function(object){
+            list(timeseries = labels(object@timeseries), 
+                 patterns = labels(object@patterns))
+          }
+)
+
+# Show objects of class twdtwTimeSeries 
+show.twdtwTimeSeries = function(object){
+  cat("An object of class \"twdtwTimeSeries\"\n")
+  cat("Slot \"timeseries\" length:",length(object),"\n")
+  cat("Slot \"labels\": ")
+  I = match(1:3, seq_along(object))
+  print(labels(object)[na.omit(I)])
+  invisible(NULL)
+}
+
+# Show objects of class twdtwMatches 
+show.twdtwMatches = function(object){
+  cat("An object of class \"twdtwMatches\"\n")
+  cat("Number of time series:",length(object@timeseries),"\n")
+  cat("Number of Alignments:",length(object),"\n")
+  cat("Patterns labels:",as.character(labels(object@patterns)),"\n")
+  invisible(NULL)
+}
+
+# Show objects of class twdtwRaster 
+show.twdtwRaster = function(object){
+  cat("An object of class \"twdtwRaster\"\n")
+  cat("Time series layers:",names(object),"\n")
+  cat("Time range:",paste(min(object@timeline)),"...",paste(max(object@timeline)),"\n")
+  cat("dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
+  cat("resolution:",res(object)," (x, y)\n")
+  cat("extent    :",as.vector(extent(object)), "(xmin, xmax, ymin, ymax)\n")
+  cat("coord.ref.:",projection(object),"\n") 
+  invisible(NULL)
+}
+
+#' @inheritParams twdtwTimeSeries-class
+#' @rdname twdtwTimeSeries-class
+#' @export
+setMethod(f = "show", "twdtwTimeSeries",
+          definition = show.twdtwTimeSeries)
+
+#' @inheritParams twdtwMatches-class
+#' @rdname twdtwMatches-class
+#' @export
+setMethod(f = "show", "twdtwMatches",
+          definition = show.twdtwMatches)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod(f = "show", "twdtwRaster",
+          definition = show.twdtwRaster)
+
+          
+setGeneric("is.twdtwTimeSeries", 
+           function(x) standardGeneric("is.twdtwTimeSeries"))
+
+setGeneric("is.twdtwMatches", 
+           function(x) standardGeneric("is.twdtwMatches"))
+
+setGeneric("is.twdtwRaster", 
+           function(x) standardGeneric("is.twdtwRaster"))
+           
+#' @aliases is.twdtwTimeSeries
+#' @inheritParams twdtwTimeSeries-class
+#' @describeIn twdtwTimeSeries Check if the object belongs to the class twdtwTimeSeries.
+#' @export
+setMethod("is.twdtwTimeSeries", "ANY", 
+          function(x) is(x, "twdtwTimeSeries"))
+
+#' @aliases is.twdtwMatches
+#' @inheritParams twdtwMatches-class
+#' @describeIn twdtwMatches Check if the object belongs to the class twdtwMatches.
+#' @export
+setMethod("is.twdtwMatches", "ANY", 
+          function(x) is(x, "twdtwMatches"))
+          
+#' @aliases is.twdtwRaster
+#' @inheritParams twdtwRaster-class
+#' @describeIn twdtwRaster Check if the object belongs to the class twdtwRaster.
+#' @export
+setMethod("is.twdtwRaster", "ANY", 
+          function(x) is(x, "twdtwRaster"))        
+          
+          
+          

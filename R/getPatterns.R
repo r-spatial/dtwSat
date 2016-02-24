@@ -23,16 +23,26 @@
 #' @param labels a vector with the patterns labels. If not informed the 
 #' function retrieves all patterns. 
 #' 
+#' @return a list of class \code{\link[zoo]{zoo}} 
+#' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwMatches-class}}, 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
-#' \code{\link[dtwSat]{twdtwRaster-class}}
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
+#' \code{\link[dtwSat]{getTimeSeries}}
 #' 
 #' @export
 setGeneric("getPatterns", function(object, labels=NULL) standardGeneric("getPatterns"))
 
-#' @inheritParams getPatterns
-#' @describeIn twdtwMatches Get temporal patterns from objects of class twdtwMatches.
+#' @rdname getPatterns
+#' @aliases getPatterns-twdtwMatches
+#' @examples
+#' # Get patterns from objects of class twdtwTimeSeries
+#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
+#' ts = twdtwTimeSeries(timeseries=example_ts.list)
+#' matches = twdtwApply(x=ts, y=patterns)
+#' getPatterns(matches)
+#' 
+#' @export
 setMethod("getPatterns", c("twdtwMatches","ANY"),
           function(object, labels) getPatterns.twdtwMatches(object, labels) )
 

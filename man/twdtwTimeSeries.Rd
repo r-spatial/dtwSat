@@ -25,4 +25,9 @@ ptt
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
+\seealso{
+\code{\link[dtwSat]{twdtwTimeSeries-class}},
+\code{\link[dtwSat]{getTimeSeries}}, and 
+\code{\link[dtwSat]{twdtwApply}}
+}
 

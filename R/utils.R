@@ -12,8 +12,13 @@
 #                                                             #
 ###############################################################
 
-
 as.list.twdtwTimeSeries = function(x) lapply(seq_along(x), function(i) x[i] )
+
+as.list.twdtwRaster = function(x) {
+    I = names(x)
+    names(I) = I
+    lapply(I, function(i) x[[i]])
+  }
 
 as.list.twdtwMatches = function(x) lapply(seq_along(x@alignments), 
             function(i) new("twdtwMatches", timeseries=x@timeseries[i], patterns=x@patterns, alignments=x[i, drop=FALSE]) )
@@ -52,11 +57,19 @@ nrow.twdtwRaster = function(x){
 }
 
 nlayers.twdtwRaster = function(x){
-  length(x@timeseries)
+  length(names(x))
+}
+
+levels.twdtwRaster = function(x){
+  levels(object@labels)
+}
+
+names.twdtwRaster = function(x){
+  x@layers
 }
 
 length.twdtwRaster = function(x){
-  length(x@timeline)
+  nlayers(x)
 }
 
 index.twdtwRaster = function(x){
@@ -138,6 +151,12 @@ setMethod(f = "nlayers", "twdtwRaster",
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
+setMethod(f = "names", "twdtwRaster",
+          definition = names.twdtwRaster)
+          
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
 setMethod(f = "index", "twdtwRaster",
           definition = index.twdtwRaster)
           
@@ -181,6 +200,11 @@ setMethod("as.list", "twdtwTimeSeries", as.list.twdtwTimeSeries)
 #' @export
 setMethod("as.list", "twdtwMatches", as.list.twdtwMatches)
 
+#' @inheritParams twdtwMatches-class
+#' @rdname twdtwMatches-class
+#' @export
+setMethod("as.list", "twdtwRaster", as.list.twdtwRaster)
+
 #' @inheritParams twdtwTimeSeries-class
 #' @param i indices of the time series.
 #' @rdname twdtwTimeSeries-class
@@ -195,6 +219,27 @@ setMethod("[", "twdtwTimeSeries", function(x, i) {
 #' @rdname twdtwTimeSeries-class
 #' @export
 setMethod("[[", "twdtwTimeSeries", function(x, i) {
+  if(any(is.na(i))) stop("NA index not permitted")
+  x@timeseries[[i]]
+})
+
+#' @inheritParams twdtwRaster-class
+#' @param i indices of the time series.
+#' @rdname twdtwRaster-class
+#' @export
+setMethod("[", "twdtwRaster", function(x, i) {
+  if(missing(i)) i = 2:nlayers(x)
+  i = i[i>1]
+  if(any(i > nlayers(x)))
+    stop("subscript out of bounds")
+  if(any(is.na(i))) stop("NA index not permitted")
+  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[1]])
+})
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod("[[", "twdtwRaster", function(x, i) {
   if(any(is.na(i))) stop("NA index not permitted")
   x@timeseries[[i]]
 })

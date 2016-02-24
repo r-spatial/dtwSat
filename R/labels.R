@@ -22,7 +22,7 @@ setMethod("labels", signature = signature(object="twdtwTimeSeries"),
 #' @rdname twdtwRaster-class
 #' @export
 setMethod("labels", signature = signature(object="twdtwRaster"),
-          definition = function(object) object@labels)
+          definition = function(object) labels(object@labels))
           
 #' @inheritParams twdtwMatches-class
 #' @rdname twdtwMatches-class

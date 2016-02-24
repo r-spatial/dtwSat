@@ -4,7 +4,7 @@
 \alias{getTimeSeries}
 \title{Get time series}
 \usage{
-getTimeSeries(object, labels = NULL)
+getTimeSeries(object, ...)
 }
 \arguments{
 \item{object}{an twdtw* object.}

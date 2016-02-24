@@ -55,3 +55,4 @@ joinPatterns.twdtwTimeSeries = function(x){
   x[[1]] = twdtwTimeSeries(timeseries=patterns, labels=c(l1, ln))
   joinPatterns.twdtwTimeSeries(x[-n])
 }
+

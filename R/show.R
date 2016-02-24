@@ -17,7 +17,8 @@ show.twdtwTimeSeries = function(object){
   cat("An object of class \"twdtwTimeSeries\"\n")
   cat("Slot \"timeseries\" length:",length(object),"\n")
   cat("Slot \"labels\": ")
-  print(labels(object))
+  I = match(1:3, seq_along(object))
+  print(labels(object)[na.omit(I)])
   invisible(NULL)
 }
 
@@ -33,7 +34,7 @@ show.twdtwMatches = function(object){
 # Show objects of class twdtwRaster 
 show.twdtwRaster = function(object){
   cat("An object of class \"twdtwRaster\"\n")
-  cat("Time series layers:",as.character(labels(object)),"\n")
+  cat("Time series layers:",names(object),"\n")
   cat("Time range:",paste(min(object@timeline)),"...",paste(max(object@timeline)),"\n")
   cat("dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
   cat("resolution:",res(object)," (x, y)\n")

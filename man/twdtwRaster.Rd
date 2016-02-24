@@ -4,7 +4,8 @@
 \alias{twdtwRaster}
 \title{Create twdtwRaster object}
 \usage{
-twdtwRaster(..., timeline, doy = NULL, layers = NULL, filepath = NULL)
+twdtwRaster(..., timeline, doy = NULL, layers = NULL, labels = NULL,
+  filepath = NULL)
 }
 \arguments{
 \item{...}{objects of class \code{\link[raster]{RasterBrick-class}} or 
@@ -20,7 +21,11 @@ If \code{doy} is not informed then at least one Raster* object must be passed th
 
 \item{layers}{a vector with the names of the \code{Raster*} objects 
 passed to "\code{...}". If not informed the layers are set to the 
-names of the Raster* objects.}
+names of objects in "\code{...}".}
+
+\item{labels}{a vector of class \code{\link[base]{factor}} with 
+levels and labels of the values in the Raster* objects. This is 
+useful for categorical Raster* values of land use classes.}
 
 \item{filepath}{A character. The path to save the raster time series. If informed the 
 function saves a raster file for each Raster* object in the list, \emph{i.e} one file 
@@ -45,8 +50,7 @@ red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
 nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
 mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), 
-           what="date")
+timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts=twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
 
 }

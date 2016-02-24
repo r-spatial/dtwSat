@@ -53,6 +53,7 @@ Collate:
     'class-twdtwTimeSeries.R'
     'data.R'
     'dtw.R'
+    'getDatesFromDOY.R'
     'getTimeSeries.R'
     'getPatterns.R'
     'is.R'

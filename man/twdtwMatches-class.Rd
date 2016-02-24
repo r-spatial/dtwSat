@@ -5,6 +5,7 @@
 \alias{[,twdtwMatches,ANY,ANY,ANY-method}
 \alias{[[,twdtwMatches,numeric,ANY-method}
 \alias{as.list,twdtwMatches-method}
+\alias{as.list,twdtwRaster-method}
 \alias{getPatterns,twdtwMatches-method}
 \alias{getTimeSeries,twdtwMatches-method}
 \alias{is.twdtwMatches}
@@ -35,6 +36,8 @@
 \S4method{length}{twdtwMatches}(x)
 
 \S4method{as.list}{twdtwMatches}(x)
+
+\S4method{as.list}{twdtwRaster}(x)
 
 \S4method{[}{twdtwMatches,ANY,ANY,ANY}(x, i, drop = TRUE)
 

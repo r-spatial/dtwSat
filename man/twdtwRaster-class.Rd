@@ -19,6 +19,7 @@
 \alias{projection,twdtwRaster-method}
 \alias{res,twdtwRaster-method}
 \alias{show,twdtwRaster-method}
+\alias{twdtwRaster}
 \alias{twdtwRaster,ANY-method}
 \alias{twdtwRaster-class}
 \title{class "twdtwRaster"}
@@ -123,6 +124,19 @@ to files with the whole time series for each attribute.
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = new("twdtwRaster", timeseries = evi, timeline = timeline)
+
+# Creating objects of class twdtwRaster 
+evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+ts_evi = twdtwRaster(evi, timeline=timeline)
+
+ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
 
 }
 \author{

@@ -18,8 +18,6 @@
 #'
 #' @description Generic method to get time series subsets from objects of class twdtw*.
 #' 
-#' @inheritParams joinTimeSeries
-#' 
 #' @param object an object of class of class twdtw*.
 #'
 #' @param ... other arguments to pass to specific methods. 
@@ -42,9 +40,6 @@
 #' 
 #' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
 #' if \code{samples} is a \code{\link[base]{data.frame}}.
-#'
-#' @param join.labels a logical. It TRUE the function joins labels that are identical 
-#' to a factor. If FALSE a different label is kept for each samples. 
 #' 
 #' @return An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
 #'
@@ -77,7 +72,7 @@ setMethod("getTimeSeries", "twdtwTimeSeries",
 #'
 #' @export
 setMethod("getTimeSeries", "twdtwMatches",
-          function(object, labels=NULL) getTimeSeries.twdtwMatches(object=object, labels=labels) )
+          function(object) getTimeSeries.twdtwMatches(object=object) )
 
 #' @rdname getTimeSeries
 #' @aliases getTimeSeries-twdtwRaster
@@ -90,8 +85,7 @@ setMethod("getTimeSeries", "twdtwMatches",
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 #' rts = twdtwRaster(evi, ndvi, timeline=timeline)
 #' 
-#' # Read field samples 
-#' ## Location and time range 
+#' # Location and time range 
 #' ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
 #'                          from = "2007-09-01", to = "2013-09-01")
 #' prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -103,7 +97,7 @@ setMethod("getTimeSeries", "twdtwMatches",
 #' 
 #' @export 
 setMethod("getTimeSeries", "twdtwRaster",
-          function(object, samples, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL, join.labels = TRUE){
+          function(object, samples, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL){
               if(!"label"%in%names(samples)) samples$label = paste0("ts",row.names(samples))
               if(!is.null(id.labels)) samples$label = as.character(samples[[id.labels]])
               if(!is.null(id.labels) & !is.null(labels)){
@@ -119,10 +113,10 @@ setMethod("getTimeSeries", "twdtwRaster",
               }
               if(!(is(samples, "SpatialPoints") | is(samples, "SpatialPointsDataFrame")))
                   stop("samples is not SpatialPoints or SpatialPointsDataFrame")
-              extractTimeSeries.twdtwRaster(x=object, y=samples, join.labels=join.labels)
+              extractTimeSeries.twdtwRaster(x=object, y=samples)
           })
           
-extractTimeSeries.twdtwRaster = function(x, y, join.labels){
+extractTimeSeries.twdtwRaster = function(x, y){
     
   # Reproject points to raster projection 
   y = spTransform(y, CRS(projection(x)))
@@ -138,7 +132,7 @@ extractTimeSeries.twdtwRaster = function(x, y, join.labels){
   ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
   
   # Crop period
-  do.call("joinTimeSeries", c(lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x)), join.labels=join.labels))
+  do.call("twdtwTimeSeries", lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x)))
 }
 
 # Get time series from object of class twdtwTimeSeries by labels 
@@ -150,8 +144,8 @@ getTimeSeries.twdtwTimeSeries = function(object, labels){
 }
 
 # Get time series from object of class twdtwMatches by labels 
-getTimeSeries.twdtwMatches = function(object, labels) {
-  getTimeSeries.twdtwTimeSeries(object@timeseries, labels)
+getTimeSeries.twdtwMatches = function(object) {
+  getTimeSeries(object@timeseries)
 }
 
 

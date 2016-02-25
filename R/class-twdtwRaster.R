@@ -15,6 +15,7 @@
 
 #' @title class "twdtwRaster"
 #' @name twdtwRaster-class
+#' @aliases twdtwRaster
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for set of satellite time series.
@@ -131,43 +132,31 @@ setMethod("initialize",
   }
 )
 
-#' @title Create twdtwRaster object 
-#' @name twdtwRaster
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Create object of class twdtwRaster.
-#' 
-#' @inheritParams twdtwRaster-class
-#' 
-#' @details The performance the functions \code{\link[dtwSat]{twdtwApply}} and 
-#' \code{\link[dtwSat]{getTimeSeries}} is improved if the Raster* objects are connected 
-#' to files with the whole time series for each attribute. 
-#' 
-#' @seealso   
-#' \code{\link[dtwSat]{twdtwRaster-class}},
-#' \code{\link[dtwSat]{getTimeSeries}}, and 
-#' \code{\link[dtwSat]{twdtwApply}}
+
+setGeneric(name = "twdtwRaster",  
+          def = function(..., timeline, doy=NULL, layers=NULL, labels=NULL, filepath=NULL) 
+            standardGeneric("twdtwRaster")
+)
+
+
+#' @inheritParams twdtwRaster
+#' @describeIn twdtwRaster Create object of class twdtwRaster.
 #'
 #' @examples 
 #' # Creating objects of class twdtwRaster 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+#' ts_evi = twdtwRaster(evi, timeline=timeline)
+#' 
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
 #' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
 #' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 #' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' rts=twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
+#' rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
 #' 
 #' @export
-setGeneric(name = "twdtwRaster",  
-          def = function(..., timeline, doy=NULL, layers=NULL, labels=NULL, filepath=NULL) 
-            standardGeneric("twdtwRaster")
-)
-
-#' @inheritParams twdtwRaster
-#' @describeIn twdtwRaster Create object of class twdtwRaster.
 setMethod(f = "twdtwRaster",  
           definition = function(..., timeline, doy, layers, labels, filepath){
               arg_names = names(list(...))

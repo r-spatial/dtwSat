@@ -81,7 +81,7 @@ index.twdtwTimeSeries = function(x){
 }
 
 length.twdtwTimeSeries = function(x){
-  length(labels(x))
+  length(x@timeseries)
 }
 
 length.twdtwMatches = function(x){
@@ -245,11 +245,11 @@ setMethod("[[", "twdtwTimeSeries", function(x, i) {
 #' @export
 setMethod("[", "twdtwRaster", function(x, i) {
   if(missing(i)) i = 2:nlayers(x)
-  i = i[i>1]
+  if(length(i)>1) i = i[i>1]
   if(any(i > nlayers(x)))
     stop("subscript out of bounds")
   if(any(is.na(i))) stop("NA index not permitted")
-  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[1]])
+  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[i]])
 })
 
 #' @inheritParams twdtwRaster-class
@@ -293,11 +293,17 @@ setMethod("[[", c("twdtwMatches", "numeric"), function(x, i) {
 setMethod("labels", signature = signature(object="twdtwTimeSeries"),
           definition = function(object) object@labels)
 
+#' @inheritParams twdtwTimeSeries-class
+#' @rdname twdtwTimeSeries-class
+#' @export
+setMethod("levels", "twdtwTimeSeries",
+          definition = function(x) levels(labels(x)))
+
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
 setMethod("labels", signature = signature(object="twdtwRaster"),
-          definition = function(object) labels(object@labels))
+          definition = function(object) as.character(object@labels))
           
 #' @inheritParams twdtwMatches-class
 #' @rdname twdtwMatches-class
@@ -315,7 +321,7 @@ show.twdtwTimeSeries = function(object){
   cat("An object of class \"twdtwTimeSeries\"\n")
   cat("Slot \"timeseries\" length:",length(object),"\n")
   cat("Slot \"labels\": ")
-  I = match(1:3, seq_along(object))
+  I = match(1:3, seq_along(labels(object)))
   print(labels(object)[na.omit(I)])
   invisible(NULL)
 }
@@ -388,7 +394,5 @@ setMethod("is.twdtwMatches", "ANY",
 #' @describeIn twdtwRaster Check if the object belongs to the class twdtwRaster.
 #' @export
 setMethod("is.twdtwRaster", "ANY", 
-          function(x) is(x, "twdtwRaster"))        
-          
-          
+          function(x) is(x, "twdtwRaster"))
           

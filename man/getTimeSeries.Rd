@@ -15,11 +15,10 @@ getTimeSeries(object, ...)
 
 \S4method{getTimeSeries}{twdtwTimeSeries}(object, labels = NULL)
 
-\S4method{getTimeSeries}{twdtwMatches}(object, labels = NULL)
+\S4method{getTimeSeries}{twdtwMatches}(object)
 
 \S4method{getTimeSeries}{twdtwRaster}(object, samples,
-  proj4string = CRS(as.character(NA)), id.labels = NULL, labels = NULL,
-  join.labels = TRUE)
+  proj4string = CRS(as.character(NA)), id.labels = NULL, labels = NULL)
 }
 \arguments{
 \item{object}{an object of class of class twdtw*.}
@@ -44,9 +43,6 @@ if \code{samples} is a \code{\link[base]{data.frame}}.}
 
 \item{id.labels}{a numeric or character with an attribute of \code{samples} to 
 be used as labels of the samples. Optional.}
-
-\item{join.labels}{a logical. It TRUE the function joins labels that are identical 
-to a factor. If FALSE a different label is kept for each samples.}
 }
 \value{
 An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
@@ -73,8 +69,7 @@ ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = twdtwRaster(evi, ndvi, timeline=timeline)
 
-# Read field samples 
-## Location and time range 
+# Location and time range 
 ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
                          from = "2007-09-01", to = "2013-09-01")
 prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"

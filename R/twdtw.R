@@ -80,8 +80,8 @@
     }
     alignments
   })
-  names(res) = as.character(labels(y))
-  new("twdtwMatches", timeseries = x, patterns = y, alignments = list(res))
+  names(res) = levels(y)
+  res
 }
 
 .findMin = function(x, timeline, span){

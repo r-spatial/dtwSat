@@ -13,9 +13,6 @@ resampleTimeSeries(object, length = NULL)
 }
 \arguments{
 \item{object}{an object of class twdtwTimeSeries.}
-
-\item{length}{a number. If not informed the function will use the 
-length of the longest pattern.}
 }
 \value{
 An object of class \code{\link[dtwSat]{twdtwTimeSeries}} whose 

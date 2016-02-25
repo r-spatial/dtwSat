@@ -12,35 +12,19 @@
 #                                                             #
 ###############################################################
 
-#' @include getTimeSeries.R
-#' @title Get patterns 
-#' @name getPatterns
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Generic method to get temporal patterns from objects of class twdtwMatches.
-#' 
-#' @param object an twdtwMatches object.
-#' @param labels a vector with the patterns labels. If not informed the 
-#' function retrieves all patterns. 
-#' 
-#' @return a list of class \code{\link[zoo]{zoo}} 
-#' 
-#' @seealso 
-#' \code{\link[dtwSat]{twdtwMatches-class}}, 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
-#' \code{\link[dtwSat]{getTimeSeries}}
-#' 
 #' @export
 setGeneric("getPatterns", function(object, labels=NULL) standardGeneric("getPatterns"))
 
-#' @rdname getPatterns
-#' @aliases getPatterns-twdtwMatches
-#' @examples
-#' # Get patterns from objects of class twdtwTimeSeries
-#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-#' ts = twdtwTimeSeries(timeseries=example_ts.list)
-#' matches = twdtwApply(x=ts, y=patterns)
-#' getPatterns(matches)
+#' @inheritParams twdtwMatches-class
+#' @describeIn twdtwMatches Get patterns from objects of class twdtwMatches.
+#'
+#' @examples 
+#' # Getting patterns from objects of class twdtwMatches
+#' patt = twdtwTimeSeries(patterns.list)
+#' ts = twdtwTimeSeries(example_ts.list)
+#' mat = twdtwApply(x=ts, y=patt)
+#' getPatterns(mat)
+#' getTimeSeries(mat)
 #' 
 #' @export
 setMethod("getPatterns", c("twdtwMatches","ANY"),

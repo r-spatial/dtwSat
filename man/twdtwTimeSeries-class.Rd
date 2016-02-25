@@ -11,14 +11,19 @@
 \alias{is.twdtwTimeSeries,ANY-method}
 \alias{labels,twdtwTimeSeries-method}
 \alias{length,twdtwTimeSeries-method}
+\alias{levels,twdtwTimeSeries-method}
 \alias{ncol,twdtwTimeSeries-method}
 \alias{nrow,twdtwTimeSeries-method}
 \alias{show,twdtwTimeSeries-method}
+\alias{twdtwTimeSeries}
 \alias{twdtwTimeSeries,ANY-method}
+\alias{twdtwTimeSeries,twdtwTimeSeries-method}
 \alias{twdtwTimeSeries-class}
 \title{class "twdtwTimeSeries"}
 \usage{
-\S4method{twdtwTimeSeries}{ANY}(..., timeseries = list(...), labels)
+\S4method{twdtwTimeSeries}{ANY}(..., labels)
+
+\S4method{twdtwTimeSeries}{twdtwTimeSeries}(...)
 
 \S4method{dim}{twdtwTimeSeries}(x)
 
@@ -38,14 +43,15 @@
 
 \S4method{labels}{twdtwTimeSeries}(object)
 
+\S4method{levels}{twdtwTimeSeries}(x)
+
 \S4method{show}{twdtwTimeSeries}(object)
 
 \S4method{is.twdtwTimeSeries}{ANY}(x)
 }
 \arguments{
-\item{...}{objects of class \code{\link[zoo]{zoo}}.}
-
-\item{timeseries}{a list of \code{\link[zoo]{zoo}} objects.}
+\item{...}{\code{\link[zoo]{twdtwTimeSeries}} objects, 
+\code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.}
 
 \item{labels}{a vector with labels of the time series.}
 
@@ -54,9 +60,6 @@
 \item{i}{indices of the time series.}
 
 \item{object}{an object of class twdtwTimeSeries.}
-
-\item{length}{a number. If not informed the function will use the 
-length of the longest pattern.}
 }
 \description{
 Class for set of irregular time series.
@@ -78,12 +81,22 @@ Class for set of irregular time series.
 # Creating new object of class twdtwTimeSeries  
 ptt = new("twdtwTimeSeries", timeseries = patterns.list, labels = names(patterns.list))
 class(ptt)
+labels(ptt)
+levels(ptt)
 length(ptt)
 nrow(ptt)
 ncol(ptt)
 dim(ptt)
-ptt[1]
-ptt[[1]]
+# Creating objects of class twdtwTimeSeries from zoo objects
+ts = twdtwTimeSeries(timeseries = example_ts)
+ts 
+
+# Joining objects of class twdtwTimeSeries 
+ts1 = twdtwTimeSeries(timeseries = example_ts.list[1], labels="A")
+ts2 = twdtwTimeSeries(timeseries = example_ts.list[2], labels="B")
+ts3 = twdtwTimeSeries(ts1, ts2)
+ts3
+ 
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

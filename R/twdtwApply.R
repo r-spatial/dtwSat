@@ -162,13 +162,12 @@ setMethod(f = "twdtwApply", "twdtwRaster",
 twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, 
 mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE, mc.cores = getOption("mc.cores", 1L), mc.cleanup = TRUE){
     if(mc.cores>1){
-      res = do.call("joinAlignments", mclapply(as.list(x), mc.preschedule=mc.preschedule, mc.set.seed=mc.set.seed, mc.silent=mc.silent, 
-                                       mc.cores=mc.cores, mc.cleanup=mc.cleanup,
-                                       FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep))
+      aligs = mclapply(as.list(x), mc.preschedule=mc.preschedule, mc.set.seed=mc.set.seed, mc.silent=mc.silent, 
+                                 mc.cores=mc.cores, mc.cleanup=mc.cleanup, FUN = .twdtw, y, weight.fun, dist.method, 
+                                 step.matrix, n, span, min.length, theta, keep)
     } else {
-      res = do.call("joinAlignments", lapply(as.list(x), 
-                                       FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep))
+      aligs = lapply(as.list(x),FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
     }
-    res
+    twdtwMatches(x, patterns=y, alignments=aligs)
 }
 

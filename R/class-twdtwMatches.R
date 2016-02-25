@@ -15,6 +15,7 @@
 
 #' @title class "twdtwMatches"
 #' @name twdtwMatches-class
+#' @name twdtwMatches
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for Time-Weighted Dynamic Time Warping results.
@@ -22,6 +23,10 @@
 #' @param labels a vector with labels of the time series. 
 #' @param x an object of class twdtwMatches.
 #' @param object an object of class twdtwMatches.
+#' @param timeseries a \code{\link[dtwSat]{twdtwTimeSeries}} object.
+#' @param patterns a \code{\link[dtwSat]{twdtwTimeSeries}} object.
+#' @param alignments an object of class list with the TWDTW results. It 
+#' has the same length as \code{timeseries}.
 #' 
 #' @section Slots :
 #' \describe{
@@ -62,12 +67,10 @@
 #' @examples 
 #' ts = twdtwTimeSeries(timeseries=example_ts.list)
 #' patterns = twdtwTimeSeries(timeseries=patterns.list)
-#' matches = twdtwApply(x = ts, y = patterns, mc.cores=2)
+#' matches = twdtwApply(x = ts, y = patterns)
 #' class(matches)
 #' length(matches)
-#' matches[1]
-#' matches[[1]]
-#' matches[]
+#' matches 
 NULL
 setOldClass("twdtwTimeSeries")
 twdtwMatches = setClass(
@@ -92,7 +95,7 @@ twdtwMatches = setClass(
 setMethod("initialize",
           signature = "twdtwMatches",
           definition = 
-            function(.Object, call, timeseries, patterns, alignments){
+            function(.Object, timeseries, patterns, alignments){
               .Object@timeseries = new("twdtwTimeSeries")
               .Object@patterns = new("twdtwTimeSeries")
               .Object@alignments = list()
@@ -107,36 +110,28 @@ setMethod("initialize",
             }
 )
 
+setGeneric(name = "twdtwMatches", 
+          def = function(...) standardGeneric("twdtwMatches")
+)
 
-#' @title Create twdtwMatches object 
-#' @name twdtwMatches
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Create object of class twdtwMatches.
-#' 
-#' @param timeseries an object of class twdtwTimeSeries.
-#' @param patterns an object of class twdtwTimeSeries.
-#' @param alignments an object of class list with the TWDTW results. 
-#' For more details see slot alignments of twdtwMatches-class.
-#'  
-#' @seealso  
-#' \code{\link[dtwSat]{twdtwMatches-class}} and 
-#' \code{\link[dtwSat]{twdtwApply}}
+#' @inheritParams twdtwMatches-class
+#' @describeIn twdtwMatches Create object of class twdtwMatches.
 #'
 #' @examples 
 #' # Creating objects of class twdtwMatches 
-#' twdtwMatches(timeseries = twdtwTimeSeries(), 
-#'              patterns = twdtwTimeSeries(), alignments = list())
-#'
+#' ts  = twdtwTimeSeries(example_ts.list)
+#' patt = twdtwTimeSeries(patterns.list)
+#' mat = twdtwMatches(ts, patterns=patt)
+#' mat
+#' 
 #' @export
-setGeneric(name = "twdtwMatches",  
-          def = function(timeseries, patterns, alignments) standardGeneric("twdtwMatches")
-)
+setMethod(f = "twdtwMatches", 
+          definition = function(..., patterns, alignments){
+              timeseries = list(...)
+              if(length(timeseries)<1) timeseries = new("twdtwTimeSeries")
+              new("twdtwMatches", timeseries = twdtwTimeSeries(timeseries), patterns=patterns, alignments = alignments)
+          })
 
-#' @inheritParams twdtwMatches
-#' @describeIn twdtwMatches Create object of class twdtwMatches.
-setMethod(f = "twdtwMatches",  c("twdtwTimeSeries", "twdtwTimeSeries", "list"),
-          definition = function(timeseries, patterns, alignments)
-             new("twdtwMatches", timeseries=timeseries, patterns=patterns, alignments=alignments)
-          )
-
+          
+          
+          

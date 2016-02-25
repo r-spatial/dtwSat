@@ -15,17 +15,16 @@
 
 #' @title class "twdtwTimeSeries"
 #' @name twdtwTimeSeries-class
+#' @aliases twdtwTimeSeries
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for set of irregular time series.
 #' 
-#' @param ... objects of class \code{\link[zoo]{zoo}}.
-#' @param timeseries a list of \code{\link[zoo]{zoo}} objects.
+#' @param ... \code{\link[zoo]{twdtwTimeSeries}} objects, 
+#' \code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.
 #' @param labels a vector with labels of the time series. 
 #' @param object an object of class twdtwTimeSeries.
 #' @param x an object of class twdtwTimeSeries.
-#' @param length a number. If not informed the function will use the 
-#' length of the longest pattern. 
 #'
 #' @section Slots :
 #' \describe{
@@ -43,12 +42,12 @@
 #' # Creating new object of class twdtwTimeSeries  
 #' ptt = new("twdtwTimeSeries", timeseries = patterns.list, labels = names(patterns.list))
 #' class(ptt)
+#' labels(ptt)
+#' levels(ptt)
 #' length(ptt)
 #' nrow(ptt)
 #' ncol(ptt)
 #' dim(ptt)
-#' ptt[1]
-#' ptt[[1]]
 NULL
 twdtwTimeSeries = setClass(
   Class = "twdtwTimeSeries",
@@ -57,14 +56,14 @@ twdtwTimeSeries = setClass(
     if(!is(object@timeseries, "list")){
       stop("[twdtwTimeSeries: validation] Invalid timeseries object, class different from list.")
     }else{}
-    if(any(!sapply(object@timeseries, is.zoo))){
+    if(any(length(object@timeseries)>1 & !sapply(object@timeseries, is.zoo))){
       stop("[twdtwTimeSeries: validation] Invalid timeseries object, class different from list of zoo objects.")
     }else{}
     if(!is(object@labels, "factor")){
       stop("[twdtwTimeSeries: validation] Invalid labels object, class different from character.")
     }else{}
     if( length(object@labels)!=0 & length(object@labels)!=length(object@timeseries) ){
-      stop("[twdtwTimeSeries: validation] Invalid length, labels and timeseries do not have the same length.")
+      stop("[twdtwTimeSeries: validation] Invalid labels, labels and timeseries do not have the same length.")
     }else{}
     return(TRUE)
   }
@@ -74,12 +73,13 @@ setMethod("initialize",
   signature = "twdtwTimeSeries",
   definition = 
     function(.Object, timeseries, labels){
-      .Object@timeseries = list(zoo(NULL))
+      .Object@timeseries = list()
       .Object@labels = factor(NULL)
       if(!missing(timeseries)){
         if(is(timeseries, "zoo")) timeseries = list(timeseries)
         .Object@timeseries = timeseries
-        .Object@labels = factor(paste0("ts",seq_along(.Object@timeseries)))
+        .Object@labels = factor( paste0("ts",seq_along(timeseries)) ) 
+        if(!is.null(names(timeseries))) .Object@labels = factor(names(timeseries))
       }
       if(!missing(labels))
         .Object@labels = factor(labels)
@@ -88,33 +88,56 @@ setMethod("initialize",
   }
 )
 
-#' @title Create twdtwTimeSeries object 
-#' @name twdtwTimeSeries
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Create object of class twdtwTimeSeries.
-#' 
-#' @inheritParams twdtwTimeSeries-class
-#' 
-#' @seealso   
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}},
-#' \code{\link[dtwSat]{getTimeSeries}}, and 
-#' \code{\link[dtwSat]{twdtwApply}}
-#'
-#' @examples 
-#' # Creating objects of class twdtwTimeSeries 
-#' ptt = twdtwTimeSeries(timeseries = patterns.list)
-#' ptt 
-#' 
-#' @export
-setGeneric(name = "twdtwTimeSeries",  
-          def = function(..., timeseries, labels) standardGeneric("twdtwTimeSeries")
+setGeneric(name = "twdtwTimeSeries", 
+          def = function(...) standardGeneric("twdtwTimeSeries")
 )
 
-#' @inheritParams twdtwTimeSeries
+#' @inheritParams twdtwTimeSeries-class
 #' @describeIn twdtwTimeSeries Create object of class twdtwTimeSeries.
-setMethod(f = "twdtwTimeSeries",  
-          definition = function(..., timeseries = list(...), labels)
-             new("twdtwTimeSeries", timeseries = timeseries, labels = labels)
-          )
+#'
+#' @examples 
+#' # Creating objects of class twdtwTimeSeries from zoo objects
+#' ts = twdtwTimeSeries(timeseries = example_ts)
+#' ts 
+#' 
+#' @export
+setMethod(f = "twdtwTimeSeries", 
+          definition = function(..., labels){
+              new("twdtwTimeSeries", timeseries = list(...), labels = labels)
+          })
 
+#' twdtwTimeSeries-class
+#'
+#' @examples 
+#' # Creating objects of class twdtwTimeSeries from list of zoo objects 
+#' patt = twdtwTimeSeries(patterns.list)
+#' patt
+#' 
+#' @export       
+setMethod(f = "twdtwTimeSeries", "list",  
+          definition = function(...){
+              new("twdtwTimeSeries", timeseries = do.call("c", list(...)))
+          })
+          
+#' @rdname twdtwTimeSeries-class 
+#'
+#' @examples 
+#' # Joining objects of class twdtwTimeSeries 
+#' ts1 = twdtwTimeSeries(timeseries = example_ts.list[1], labels="A")
+#' ts2 = twdtwTimeSeries(timeseries = example_ts.list[2], labels="B")
+#' ts3 = twdtwTimeSeries(ts1, ts2)
+#' ts3
+#'  
+#' @export
+setMethod(f = "twdtwTimeSeries", "twdtwTimeSeries",  
+          definition = function(...){
+              labels = unlist(sapply(list(...), function(x) as.character(labels(x)) ))
+              timeseries = do.call("c", lapply(list(...), getTimeSeries))
+              new("twdtwTimeSeries", timeseries = timeseries, labels=labels)
+          })
+
+
+          
+          
+          
+          

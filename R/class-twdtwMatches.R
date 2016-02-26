@@ -111,7 +111,7 @@ setMethod("initialize",
 )
 
 setGeneric(name = "twdtwMatches", 
-          def = function(...) standardGeneric("twdtwMatches")
+          def = function(timeseries, patterns, alignments) standardGeneric("twdtwMatches")
 )
 
 #' @inheritParams twdtwMatches-class
@@ -126,10 +126,8 @@ setGeneric(name = "twdtwMatches",
 #' 
 #' @export
 setMethod(f = "twdtwMatches", 
-          definition = function(..., patterns, alignments){
-              timeseries = list(...)
-              if(length(timeseries)<1) timeseries = new("twdtwTimeSeries")
-              new("twdtwMatches", timeseries = twdtwTimeSeries(timeseries), patterns=patterns, alignments = alignments)
+          definition = function(timeseries, patterns, alignments){
+              new("twdtwMatches", timeseries=timeseries, patterns=patterns, alignments=alignments)
           })
 
           

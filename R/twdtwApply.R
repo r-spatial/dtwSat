@@ -136,10 +136,10 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
 #' @aliases twdtwApply-twdtwRaster
 #' @examples
 #' # Applying TWDTW analysis to objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(timeseries=example_ts.list)
-#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-#' matches = twdtwApply(x=ts, y=patterns)
-#' matches 
+#' ts = twdtwTimeSeries(example_ts.list)
+#' patt = twdtwTimeSeries(patterns.list)
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,50))
+#' mat 
 #' 
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",

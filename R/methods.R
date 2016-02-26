@@ -23,6 +23,7 @@ as.list.twdtwRaster = function(x) {
 as.list.twdtwMatches = function(x) lapply(seq_along(x@alignments), 
             function(i) new("twdtwMatches", timeseries=x@timeseries[i], patterns=x@patterns, alignments=x[i, drop=FALSE]) )
 
+
 dim.twdtwTimeSeries = function(x){
   timeseries = getTimeSeries(x)
   res = data.frame(as.character(labels(x)), t(sapply(timeseries, dim)))

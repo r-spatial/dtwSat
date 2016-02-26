@@ -22,7 +22,7 @@ setGeneric("getPatterns", function(object, labels=NULL) standardGeneric("getPatt
 #' # Getting patterns from objects of class twdtwMatches
 #' patt = twdtwTimeSeries(patterns.list)
 #' ts = twdtwTimeSeries(example_ts.list)
-#' mat = twdtwApply(x=ts, y=patt)
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,50))
 #' getPatterns(mat)
 #' getTimeSeries(mat)
 #' 

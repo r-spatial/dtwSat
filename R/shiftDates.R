@@ -43,7 +43,7 @@ setGeneric("shiftDates", function(object, year=NULL) standardGeneric("shiftDates
 #' @export
 setMethod("shiftDates", "twdtwTimeSeries",
           function(object, year) 
-            do.call("joinTimeSeries", lapply(as.list(object), shiftDates.twdtwTimeSeries, year=year)) )
+            do.call("twdtwTimeSeries", lapply(as.list(object), FUN=shiftDates.twdtwTimeSeries, year=year)))
 
 shiftDates.twdtwTimeSeries = function(x, year){
   labels = as.character(labels(x))

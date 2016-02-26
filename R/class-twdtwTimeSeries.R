@@ -20,7 +20,7 @@
 #'
 #' @description Class for set of irregular time series.
 #' 
-#' @param ... \code{\link[zoo]{twdtwTimeSeries}} objects, 
+#' @param ... \code{\link[dtwSat]{twdtwTimeSeries}} objects, 
 #' \code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.
 #' @param labels a vector with labels of the time series. 
 #' @param object an object of class twdtwTimeSeries.
@@ -33,10 +33,10 @@
 #' }
 #'
 #' @seealso   
-#' \code{\link[dtwSat]{twdtwApply}}, 
-#' \code{\link[dtwSat]{getTimeSeries}},
-#' \code{\link[dtwSat]{twdtwMatches-class}}, and 
-#' \code{\link[dtwSat]{twdtwRaster-class}}
+#' \code{\link[dtwSat]{twdtwMatches-class}}, 
+#' \code{\link[dtwSat]{twdtwRaster-class}}, 
+#' \code{\link[dtwSat]{subset}}, and
+#' \code{\link[dtwSat]{twdtwApply}}
 #'
 #' @examples 
 #' # Creating new object of class twdtwTimeSeries  
@@ -97,46 +97,49 @@ setGeneric(name = "twdtwTimeSeries",
 #'
 #' @examples 
 #' # Creating objects of class twdtwTimeSeries from zoo objects
-#' ts = twdtwTimeSeries(timeseries = example_ts)
+#' ts = twdtwTimeSeries(example_ts)
 #' ts 
 #' 
-#' @export
-setMethod(f = "twdtwTimeSeries", 
-          definition = function(..., labels){
-              new("twdtwTimeSeries", timeseries = list(...), labels = labels)
-          })
-
-#' twdtwTimeSeries-class
-#'
-#' @examples 
 #' # Creating objects of class twdtwTimeSeries from list of zoo objects 
 #' patt = twdtwTimeSeries(patterns.list)
 #' patt
 #' 
-#' @export       
-setMethod(f = "twdtwTimeSeries", "list",  
-          definition = function(...){
-              new("twdtwTimeSeries", timeseries = do.call("c", list(...)))
-          })
-          
-#' @rdname twdtwTimeSeries-class 
-#'
-#' @examples 
 #' # Joining objects of class twdtwTimeSeries 
-#' ts1 = twdtwTimeSeries(timeseries = example_ts.list[1], labels="A")
-#' ts2 = twdtwTimeSeries(timeseries = example_ts.list[2], labels="B")
-#' ts3 = twdtwTimeSeries(ts1, ts2)
-#' ts3
+#' tsA = twdtwTimeSeries(example_ts.list[[1]], labels = "A")
+#' tsB = twdtwTimeSeries(B = example_ts.list[[2]])
+#' ts = twdtwTimeSeries(tsA, tsB, C=example_ts)
+#' ts
 #'  
 #' @export
-setMethod(f = "twdtwTimeSeries", "twdtwTimeSeries",  
-          definition = function(...){
-              labels = unlist(sapply(list(...), function(x) as.character(labels(x)) ))
-              timeseries = do.call("c", lapply(list(...), getTimeSeries))
-              new("twdtwTimeSeries", timeseries = timeseries, labels=labels)
+setMethod(f = "twdtwTimeSeries", 
+          definition = function(..., labels=NULL){
+              timeseries = list(...)
+              joint_timeseries = list()
+              timeseries_class = sapply(timeseries, class)
+              zoo_obj = NULL 
+              list_obj = NULL 
+              twdtw_obj = NULL 
+              check_class = c("zoo", "list", "twdtwTimeSeries") %in% timeseries_class
+              if(check_class[1]){
+                  zoo_obj = timeseries[which(timeseries_class=="zoo")]
+                  names(zoo_obj) = names(timeseries)[which(timeseries_class=="zoo")]
+                  if(is.null(names(zoo_obj))) names(zoo_obj) = paste0("ts",seq_along(zoo_obj))
+                  joint_timeseries = c(joint_timeseries, zoo_obj)
+              } else {}
+              if(check_class[2]){
+                  list_obj = c(do.call("c", timeseries[which(timeseries_class=="list")]))
+                  if(is.null(names(list_obj))) names(list_obj) = paste0("ts",seq_along(list_obj))
+                  joint_timeseries = c(joint_timeseries, list_obj)
+              } else {}
+              if(check_class[3]){
+                  twdtw_obj = do.call("c", lapply(timeseries[which(timeseries_class=="twdtwTimeSeries")], subset))
+                  names(twdtw_obj) = as.character(unlist(lapply(timeseries[which(timeseries_class=="twdtwTimeSeries")], labels)))
+                  joint_timeseries = c(joint_timeseries, twdtw_obj)
+              } else {}
+              if(is.null(labels)) labels = names(joint_timeseries)
+              new("twdtwTimeSeries", timeseries = joint_timeseries, labels = labels)
           })
-
-
+          
           
           
           

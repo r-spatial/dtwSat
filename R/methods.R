@@ -25,9 +25,9 @@ as.list.twdtwMatches = function(x) lapply(seq_along(x@alignments),
 
 
 dim.twdtwTimeSeries = function(x){
-  timeseries = getTimeSeries(x)
-  res = data.frame(as.character(labels(x)), t(sapply(timeseries, dim)))
+  res = data.frame(as.character(labels(x)), t(sapply(x@timeseries, dim)))
   names(res) = c("label", "nrow", "ncol")
+  row.names(res) = NULL
   res
 }
 
@@ -91,19 +91,16 @@ length.twdtwMatches = function(x){
 }
 
 nrow.twdtwTimeSeries = function(x){
-  timeseries = getTimeSeries(x)
-  res = sapply(timeseries, nrow)
+  res = sapply(x@timeseries, nrow)
   names(res) = as.character(labels(x))
   res
 }
 
 ncol.twdtwTimeSeries = function(x){
-  timeseries = getTimeSeries(x)
-  res = sapply(timeseries, ncol)
+  res = sapply(x@timeseries, ncol)
   names(res) = as.character(labels(x))
   res
 }
-
 
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
@@ -229,7 +226,7 @@ setMethod("as.list", "twdtwRaster", as.list.twdtwRaster)
 setMethod("[", "twdtwTimeSeries", function(x, i) {
   if(missing(i)) i = 1:length(x)
   if(any(is.na(i))) stop("NA index not permitted")
-  new("twdtwTimeSeries", timeseries=x@timeseries[i], labels=as.character(labels(x))[i])
+  x@timeseries[i]
 })
 
 #' @inheritParams twdtwTimeSeries-class

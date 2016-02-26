@@ -50,7 +50,7 @@
 #' @param x an object of class twdtwRaster.
 #'
 #' @details The performance the functions \code{\link[dtwSat]{twdtwApply}} and 
-#' \code{\link[dtwSat]{getTimeSeries}} is improved if the Raster* objects are connected 
+#' \code{\link[dtwSat]{subset}} is improved if the Raster* objects are connected 
 #' to files with the whole time series for each attribute. 
 #'
 #' @section Slots :
@@ -68,7 +68,7 @@
 #'
 #' @seealso   
 #' \code{\link[dtwSat]{twdtwApply}}, 
-#' \code{\link[dtwSat]{getTimeSeries}},
+#' \code{\link[dtwSat]{subset}},
 #' \code{\link[dtwSat]{twdtwMatches-class}}, and 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}
 #'

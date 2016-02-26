@@ -15,8 +15,9 @@
 .twdtw = function(x, y, weight.fun, dist.method, step.matrix, 
                   n, span, min.length, theta, keep){
   timeseries=x[[1]]
-  res = lapply(as.list(y), function(pattern){
-    pattern=pattern[[1]]
+  res = lapply(as.list(y), function(patt){
+    pattern=patt[[1]]
+    label = as.character(labels(patt))
     # Adjust columns by name if possible  
     if(!is.null(names(pattern)) & !is.null(names(timeseries)))
       timeseries = timeseries[,names(pattern), drop=FALSE]
@@ -67,16 +68,18 @@
     I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
     
     alignments = list()
+    alignments$label      = label
     alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
     alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]     # This is a numeric vector 
     alignments$K          = length(I)           # This is an interger 
+    alignments$matching   = list()              # This is a list of data.frames with the matching points 
+    alignments$internals  = list()              # These is a list variables used in the TWDTW computation
     
     if(keep){
       # Trace low cost paths (k-th paths)
-      matching = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidates$b[I])
-      alignments$matching = matching    # This is a list of data.frames with the matching points 
-      alignments$internals = internals  # These is a list variables used in the TWDTW computation
+      alignments$matching  = .tracepath(dm=internals$directionMatrix, step.matrix=step.matrix, jmin=candidates$b[I])
+      alignments$internals = internals  
     }
     alignments
   })

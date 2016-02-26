@@ -115,6 +115,7 @@ setGeneric(name = "twdtwMatches",
 )
 
 #' @inheritParams twdtwMatches-class
+#' @aliases twdtwMatches
 #' @describeIn twdtwMatches Create object of class twdtwMatches.
 #'
 #' @examples 

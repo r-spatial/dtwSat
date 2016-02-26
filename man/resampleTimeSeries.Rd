@@ -13,6 +13,9 @@ resampleTimeSeries(object, length = NULL)
 }
 \arguments{
 \item{object}{an object of class twdtwTimeSeries.}
+
+\item{length}{An integer. The number of samples to resample the time series. 
+If not declared the length is set to the length of the longest time series.}
 }
 \value{
 An object of class \code{\link[dtwSat]{twdtwTimeSeries}} whose 
@@ -23,11 +26,11 @@ resample time series in the same object to have the same
 the length.
 }
 \examples{
-# Getting time series from objects of class twdtwTimeSeries
-patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-npatterns = resampleTimeSeries(patterns, length=46)
-nrow(patterns)
-nrow(npatterns)
+# Resampling time series from objects of class twdtwTimeSeries
+patt = twdtwTimeSeries(patterns.list)
+npatt = resampleTimeSeries(patt, length=46)
+nrow(patt)
+nrow(npatt)
 
 }
 \author{

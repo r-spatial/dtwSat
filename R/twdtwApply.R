@@ -58,7 +58,7 @@
 #' the time has the same weight as the curve shape in the TWDTW analysis.
 #' 
 #' @param keep preserves the cost matrix, inputs, and other internal structures. 
-#' Default is FALSE. For \code{\link[dtwSat]{plot-method}} methods use \code{keep=TRUE}.
+#' Default is FALSE. For plot methods use \code{keep=TRUE}.
 #' 
 #' @param span A number. Span between two matches, \emph{i.e.} the minimum  
 #' interval between two matches, for details see [3]. If not declared it removes
@@ -95,7 +95,7 @@
 #' \code{\link[dtwSat]{twdtwMatches-class}}, 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
 #' \code{\link[dtwSat]{twdtwRaster-class}}, 
-#' \code{\link[dtwSat]{getTimeSeries}}, and 
+#' \code{\link[dtwSat]{subset}}, and 
 #' \code{\link[dtwSat]{createPatterns}}
 #' 
 #' @export  
@@ -109,10 +109,10 @@ setGeneric(name = "twdtwApply",
 #' @aliases twdtwApply-twdtwTimeSeries 
 #' @examples
 #' # Applying TWDTW analysis to objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(timeseries=example_ts.list)
-#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-#' matches = twdtwApply(x=ts, y=patterns)
-#' matches
+#' ts = twdtwTimeSeries(example_ts.list)
+#' patt = twdtwTimeSeries(patterns.list)
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
+#' mat 
 #'
 #' @export
 setMethod(f = "twdtwApply", "twdtwTimeSeries",
@@ -138,7 +138,7 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
 #' # Applying TWDTW analysis to objects of class twdtwTimeSeries
 #' ts = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
-#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,50))
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
 #' mat 
 #' 
 #' @export

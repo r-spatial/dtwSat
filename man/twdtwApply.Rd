@@ -67,7 +67,7 @@ for the TWDTW computation. Use \code{theta=0} to cancel the time-weight,
 the time has the same weight as the curve shape in the TWDTW analysis.}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
-Default is FALSE. For \code{\link[dtwSat]{plot-method}} methods use \code{keep=TRUE}.}
+Default is FALSE. For plot methods use \code{keep=TRUE}.}
 
 \item{...}{arguments to pass to specifique methods for each twdtw* signature 
 and other arguments for parallel processing to pass to \code{\link[parallel]{mclapply}}.}
@@ -91,16 +91,16 @@ See [1] for details about the method.
 }
 \examples{
 # Applying TWDTW analysis to objects of class twdtwTimeSeries
-ts = twdtwTimeSeries(timeseries=example_ts.list)
-patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-matches = twdtwApply(x=ts, y=patterns)
-matches
+ts = twdtwTimeSeries(example_ts.list)
+patt = twdtwTimeSeries(patterns.list)
+mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
+mat 
 
 # Applying TWDTW analysis to objects of class twdtwTimeSeries
-ts = twdtwTimeSeries(timeseries=example_ts.list)
-patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-matches = twdtwApply(x=ts, y=patterns)
-matches 
+ts = twdtwTimeSeries(example_ts.list)
+patt = twdtwTimeSeries(patterns.list)
+mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
+mat 
 
 }
 \author{
@@ -122,7 +122,7 @@ and Motion (pp. 79-84). London: Springer London, Limited.
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
 \code{\link[dtwSat]{twdtwRaster-class}}, 
-\code{\link[dtwSat]{getTimeSeries}}, and 
+\code{\link[dtwSat]{subset}}, and 
 \code{\link[dtwSat]{createPatterns}}
 }
 

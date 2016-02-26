@@ -13,7 +13,7 @@
 ###############################################################
 
 #' @title Get time series
-#' @name getTimeSeries
+#' @name subset
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Generic method to get time series subsets from objects of class twdtw*.
@@ -48,34 +48,34 @@
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}
 #' 
 #' @export
-setGeneric("getTimeSeries", function(object, ...) standardGeneric("getTimeSeries"))
+setGeneric("subset", function(object, ...) standardGeneric("subset"))
 
-#' @rdname getTimeSeries
-#' @aliases getTimeSeries-twdtwTimeSeries
+#' @rdname subset
+#' @aliases subset-twdtwTimeSeries
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(timeseries=example_ts.list)
-#' getTimeSeries(ts, 2)
+#' ts = twdtwTimeSeries(example_ts.list)
+#' subset(ts, 2)
 #' 
 #' @export
-setMethod("getTimeSeries", "twdtwTimeSeries",
-          function(object, labels=NULL) getTimeSeries.twdtwTimeSeries(object=object, labels=labels) )
+setMethod("subset", "twdtwTimeSeries",
+          function(object, labels=NULL) subset.twdtwTimeSeries(object=object, labels=labels) )
 
-#' @rdname getTimeSeries
-#' @aliases getTimeSeries-twdtwMatches
+#' @rdname subset
+#' @aliases subset-twdtwMatches
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(timeseries=example_ts.list)
-#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-#' matches = twdtwApply(x=ts, y=patterns)
-#' getTimeSeries(matches, 2)
+#' ts = twdtwTimeSeries(example_ts.list)
+#' patt = twdtwTimeSeries(patterns.list)
+#' mat = twdtwApply(x=ts, y=patt)
+#' subset(mat, 2)
 #'
 #' @export
-setMethod("getTimeSeries", "twdtwMatches",
-          function(object) getTimeSeries.twdtwMatches(object=object) )
+setMethod("subset", "twdtwMatches",
+          function(object, labels=NULL) subset(object=object@timeseries,labels=labels) )
 
-#' @rdname getTimeSeries
-#' @aliases getTimeSeries-twdtwRaster
+#' @rdname subset
+#' @aliases subset-twdtwRaster
 #' @examples 
 #' ## This example creates a twdtwRaster object and extract a subset of time series from it. 
 #'
@@ -91,13 +91,14 @@ setMethod("getTimeSeries", "twdtwMatches",
 #' prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #' 
 #' ## Extract time series 
-#' ts = getTimeSeries(rts, samples = ts_location, proj4string = prj_string)
+#' ts = subset(rts, samples = ts_location, proj4string = prj_string)
 #'  
 #' autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 #' 
 #' @export 
-setMethod("getTimeSeries", "twdtwRaster",
+setMethod("subset", "twdtwRaster",
           function(object, samples, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL){
+          
               if(!"label"%in%names(samples)) samples$label = paste0("ts",row.names(samples))
               if(!is.null(id.labels)) samples$label = as.character(samples[[id.labels]])
               if(!is.null(id.labels) & !is.null(labels)){
@@ -132,30 +133,24 @@ extractTimeSeries.twdtwRaster = function(x, y){
   ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
   
   # Crop period
-  do.call("twdtwTimeSeries", lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x)))
+  res = lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x))
+  labels = as.character(y[pto,]$label)
+  twdtwTimeSeries(res, labels=labels)
 }
 
 # Get time series from object of class twdtwTimeSeries by labels 
-getTimeSeries.twdtwTimeSeries = function(object, labels){
+subset.twdtwTimeSeries = function(object, labels){
   if(is.null(labels)) labels = labels(object)
   if(is.numeric(labels)) labels = labels(object)[labels]
   I = match(object@labels, labels)
   object@timeseries[na.omit(I)]
 }
 
-# Get time series from object of class twdtwMatches by labels 
-getTimeSeries.twdtwMatches = function(object) {
-  getTimeSeries(object@timeseries)
-}
-
-
 .extractTimeSeries = function(pto, p, x, y, timeline){
   s = y[pto[p],]
   # Check if the sample time interval overlaps the raster time series 
   from  = try(as.Date(s$from))
   to    = try(as.Date(s$to))
-  label = try(as.character(s$label))
-  if(is(label, "try-error")) label = NULL
   doy   = c(x$doy[p,])
   year  = format(timeline, "%Y")
   dates = getDatesFromDOY(year = year, doy = doy)
@@ -172,7 +167,7 @@ getTimeSeries.twdtwMatches = function(object) {
   ts = data.frame(sapply(x[-I], function(x) x[p,layer:(layer+nl-1)]))
   dates = dates[layer:(layer+nl-1)]
   k = !duplicated(dates)
-  twdtwTimeSeries(timeseries=zoo(ts[k,], dates[k]), labels=label)
+  zoo(data.frame(ts[k,]), dates[k])
 }
 
 .getPointsOverRaster = function(x, y){

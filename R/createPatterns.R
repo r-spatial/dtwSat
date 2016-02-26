@@ -19,20 +19,45 @@
 #' 
 #' @description Create temporal patterns from objects of class twdtwTimeSeries.
 #' 
-#' @param object an twdtwTimeSeries object.
-#' @param labels a vector with the patterns labels. If not informed the 
-#' function retrieves a pattern for each label in the object twdtwTimeSeries. 
+#' @param x an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
+#' 
+#' @param from A character or \code{\link[base]{Dates}} object in the format 
+#' "yyyy-mm-dd". If not informed it is equal to the smallest date of the 
+#' first element in x. See details. 
+#'  
+#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
+#' object in the format "yyyy-mm-dd". If not informed it is equal to the 
+#' greatest date of the first element in x. See details. 
+#' 
+#' @param attr A vector character or numeric. The attributes in \code{x} to be used. 
+#' If not declared the function uses all attributes.  
+#' 
+#' @param freq An integer. The sampling frequency of the output patterns.
+#'
+#' @param split A logical. If TRUE the samples are split by label. If FALSE 
+#' all samples are set to the same label. 
+#' 
+#' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}. 
+#' 
+#' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
+#' packege \pkg{mgcv}.
 #' 
 #' @return an object of class \code{\link[dtwSat]{twdtwTimeSeries}} 
+#' 
+#'
+#' @details The hidden assumption is that the temporal pattern is a cycle the repeats itself 
+#' within a given time interval. Therefore, all time series samples in \code{x} are aligned 
+#' to each other keeping their respective sequence of days of the year. The function fits a 
+#' Generalized Additive Model (GAM) to the aligned set of samples.  
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwMatches-class}}, 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
-#' \code{\link[dtwSat]{getTimeSeries}}, and 
+#' \code{\link[dtwSat]{subset}}, and 
 #' \code{\link[dtwSat]{twdtwApply}}
 #' 
 #' @export
-setGeneric("createPatterns", function(object, ...) standardGeneric("createPatterns"))
+setGeneric("createPatterns", function(x, ...) standardGeneric("createPatterns"))
 
 #' @rdname createPatterns
 #' @aliases createPatterns-twdtwMatches
@@ -49,57 +74,62 @@ setGeneric("createPatterns", function(object, ...) standardGeneric("createPatter
 #'                   what = "character")
 #' 
 #' # Extract time series 
-#' ts = getTimeSeries(rts, samples = field_samples, proj4string = prj_string)
+#' ts = subset(rts, samples = field_samples, proj4string = prj_string)
 #' 
 #' # Create temporal patterns 
-#' createPatterns.twdtwTimeSeries(x=ts, from="2005-09-01", to="2006-09-01", freq=8, formula = y~s(x))
+#' patt = createPatterns(x=ts, from="2005-09-01", to="2006-09-01", freq=8, formula = y~s(x))
 #' 
 #' # Plot patterns 
-#' autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
+#' autoplot(patt[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 #' 
 #' 
 #' @export
-setMethod("createPatterns", 
-            function(object, labels, ...) print("hello") )
+setMethod("createPatterns", "twdtwTimeSeries",
+          function(x, from=NULL, to=NULL, freq=1, attr=NULL, split=TRUE, formula, ...) {
+          
+                # Get formula variables
+                if(!is(formula, "formula"))
+                  stop("missing formula")
+                vars = all.vars(formula)
+                
+                # Split samples according their labels 
+                if(split) {
+                    levels = as.character(levels(x))
+                    labels = as.character(labels(x))
+                    names(levels) = levels 
+                    x = lapply(levels, function(l) x[labels==l] )
+                } else {
+                    levels = as.character(levels(x)[1])
+                    labels = rep(levels, length(x))
+                    names(levels) = levels 
+                    x@labels = factor(labels)
+                    x = list(x)
+                    names(x) = levels
+                }
+                
+                # Create patterns 
+                res = lapply(x, FUN = .createPattern, from=from, to=to, freq=freq, attr=attr, formula=formula, ...)
+                twdtwTimeSeries(res)
+})
 
-createPatterns.twdtwTimeSeries = function(x, from=NULL, to=NULL, freq=1, split=TRUE, attr=NULL, formula, ...){
-
-  # Get formula variables
-  if(!is(formula, "formula"))
-    stop("missing object formula")
-  vars = all.vars(formula)
-  
-  # Split samples according their labels 
-  if(split) {
-      labels = as.character(labels(x))
-      levels = as.character(levels(x))
-      names(levels) = levels 
-      x = lapply(levels, function(l) x[labels==l] )
-  } 
-  # Create patterns 
-  res = lapply(x, FUN = .createPattern, from=from, to=to, freq=freq, attr=attr, formula=formula, ...)
-  res
-}
 
 .createPattern = function(x, from, to, freq, attr, formula, ...){
   
   # Pattern period 
   if( missing(from) | missing(to) ){
-    from = as.Date(min(index(x[[1]])))
-    to = as.Date(max(index(x[[1]])))
+    from = as.Date(min(index(x)))
+    to = as.Date(max(index(x)))
   }
   from = as.Date(from)
   to = as.Date(to)
   
   # Get formula variables
-  if(!is(formula, "formula"))
-    stop("missing object formula")
   vars = all.vars(formula)
   
   # Shift dates to match the same period  
   df = do.call("rbind", lapply(as.list(x), function(x){
     res = shiftDates(x, year=as.numeric(format(to, "%Y")))
-    res = res[[1]]
+    res = res
     res = window(res, start = from, end = to)
     res = data.frame(time=index(res), res)
     res
@@ -118,14 +148,19 @@ createPatterns.twdtwTimeSeries = function(x, from=NULL, to=NULL, freq=1, split=T
     predict.gam(fit, newdata = time)
   }
   
-  if(missing(attr)) attr = names(df)[-which(names(df) %in% "time")]
+  if(is.null(attr)) attr = names(df)[-which(names(df) %in% vars[2])]
   
   res = sapply(as.list(df[attr]), FUN=fun, ...)
-  labels = unique(labels(x))
-  if(length(labels)>1) {
-    labels = NULL
-    warning("x labels are not unique.")
-  }  
-  res = twdtwTimeSeries(zoo(data.frame(res), as.Date(pred_time)), labels=labels)
-  res
+  zoo(data.frame(res), as.Date(pred_time))
 }
+
+
+
+
+
+
+
+
+
+
+

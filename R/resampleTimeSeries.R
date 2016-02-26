@@ -21,6 +21,8 @@
 #' the length. 
 #' 
 #' @inheritParams twdtwTimeSeries-class
+#' @param length An integer. The number of samples to resample the time series. 
+#' If not declared the length is set to the length of the longest time series.
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
@@ -35,27 +37,25 @@ setGeneric("resampleTimeSeries", function(object, length=NULL) standardGeneric("
 #' @rdname resampleTimeSeries
 #' @aliases resampleTimeSeries-twdtwMatches
 #' @examples
-#' # Getting time series from objects of class twdtwTimeSeries
-#' patterns = twdtwTimeSeries(timeseries=patterns.list, labels=names(patterns.list))
-#' npatterns = resampleTimeSeries(patterns, length=46)
-#' nrow(patterns)
-#' nrow(npatterns)
+#' # Resampling time series from objects of class twdtwTimeSeries
+#' patt = twdtwTimeSeries(patterns.list)
+#' npatt = resampleTimeSeries(patt, length=46)
+#' nrow(patt)
+#' nrow(npatt)
 #' 
 #' @export
 setMethod("resampleTimeSeries", "twdtwTimeSeries",
           function(object, length) {
               if(is.null(length)) length = max(nrow(object), na.rm=TRUE)
-              do.call("joinTimeSeries", lapply(as.list(object), resampleTimeSeries.twdtwTimeSeries, length=length)) 
+              twdtwTimeSeries(lapply(object[], resampleTimeSeries.twdtwTimeSeries, length=length), labels=labels(object)) 
           })
             
 resampleTimeSeries.twdtwTimeSeries = function(x, length){
   labels = as.character(labels(x))
-  x = x[[1]]
   dates = index(x)
   freq = as.numeric(diff(range(dates)))/(length-1)
   timeline = seq(min(dates, na.rm = TRUE), max(dates, na.rm = TRUE), by=freq)
-  res = zoo(data.frame(na.spline(x, xout = timeline)), timeline)
-  new("twdtwTimeSeries", timeseries=res, labels=labels)
+  zoo(data.frame(na.spline(x, xout = timeline)), timeline)
 }
 
 

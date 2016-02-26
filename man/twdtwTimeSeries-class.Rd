@@ -17,13 +17,10 @@
 \alias{show,twdtwTimeSeries-method}
 \alias{twdtwTimeSeries}
 \alias{twdtwTimeSeries,ANY-method}
-\alias{twdtwTimeSeries,twdtwTimeSeries-method}
 \alias{twdtwTimeSeries-class}
 \title{class "twdtwTimeSeries"}
 \usage{
-\S4method{twdtwTimeSeries}{ANY}(..., labels)
-
-\S4method{twdtwTimeSeries}{twdtwTimeSeries}(...)
+\S4method{twdtwTimeSeries}{ANY}(..., labels = NULL)
 
 \S4method{dim}{twdtwTimeSeries}(x)
 
@@ -50,7 +47,7 @@
 \S4method{is.twdtwTimeSeries}{ANY}(x)
 }
 \arguments{
-\item{...}{\code{\link[zoo]{twdtwTimeSeries}} objects, 
+\item{...}{\code{\link[dtwSat]{twdtwTimeSeries}} objects, 
 \code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.}
 
 \item{labels}{a vector with labels of the time series.}
@@ -88,23 +85,27 @@ nrow(ptt)
 ncol(ptt)
 dim(ptt)
 # Creating objects of class twdtwTimeSeries from zoo objects
-ts = twdtwTimeSeries(timeseries = example_ts)
+ts = twdtwTimeSeries(example_ts)
 ts 
 
+# Creating objects of class twdtwTimeSeries from list of zoo objects 
+patt = twdtwTimeSeries(patterns.list)
+patt
+
 # Joining objects of class twdtwTimeSeries 
-ts1 = twdtwTimeSeries(timeseries = example_ts.list[1], labels="A")
-ts2 = twdtwTimeSeries(timeseries = example_ts.list[2], labels="B")
-ts3 = twdtwTimeSeries(ts1, ts2)
-ts3
+tsA = twdtwTimeSeries(example_ts.list[[1]], labels = "A")
+tsB = twdtwTimeSeries(B = example_ts.list[[2]])
+ts = twdtwTimeSeries(tsA, tsB, C=example_ts)
+ts
  
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{twdtwApply}}, 
-\code{\link[dtwSat]{getTimeSeries}},
-\code{\link[dtwSat]{twdtwMatches-class}}, and 
-\code{\link[dtwSat]{twdtwRaster-class}}
+\code{\link[dtwSat]{twdtwMatches-class}}, 
+\code{\link[dtwSat]{twdtwRaster-class}}, 
+\code{\link[dtwSat]{subset}}, and
+\code{\link[dtwSat]{twdtwApply}}
 }
 

@@ -12,17 +12,16 @@
 #                                                             #
 ###############################################################
 
-#' @title Get time series
+
+#' @title Get elements from twdtwMatches objects
 #' @name subset
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#'
-#' @description Generic method to get time series subsets from objects of class twdtw*.
 #' 
-#' @param object an object of class of class twdtw*.
+#' @description Get subsets of time series from objects of class twdtw*.
+#' 
+#' @param x an object of class of class twdtw*.
 #'
-#' @param ... other arguments to pass to specific methods. 
-#'
-#' @param samples a \code{\link[base]{data.frame}} whose attributes are: longitude, 
+#' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
 #' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
 #' whose attributes are the start ''from'' and the end ''to'' of the time interval.
@@ -44,39 +43,21 @@
 #' @return An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
 #'
 #' @seealso 
-#' \code{\link[dtwSat]{twdtwRaster-class}}, and 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}
-#' 
-#' @export
-setGeneric("subset", function(object, ...) standardGeneric("subset"))
-
-#' @rdname subset
-#' @aliases subset-twdtwTimeSeries
+#' \code{\link[dtwSat]{twdtwRaster-class}}, 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
+#' \code{\link[dtwSat]{twdtwMatches-class}}
+#'
+#' @return a list with TWDTW results or an object \code{\link[dtwSat]{twdtwTimeSeries-class}}. 
+#'
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
 #' ts = twdtwTimeSeries(example_ts.list)
 #' subset(ts, 2)
-#' 
-#' @export
-setMethod("subset", "twdtwTimeSeries",
-          function(object, labels=NULL) subset.twdtwTimeSeries(object=object, labels=labels) )
-
-#' @rdname subset
-#' @aliases subset-twdtwMatches
-#' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
 #' ts = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
 #' mat = twdtwApply(x=ts, y=patt)
 #' subset(mat, 2)
-#'
-#' @export
-setMethod("subset", "twdtwMatches",
-          function(object, labels=NULL) subset(object=object@timeseries,labels=labels) )
-
-#' @rdname subset
-#' @aliases subset-twdtwRaster
-#' @examples 
 #' ## This example creates a twdtwRaster object and extract a subset of time series from it. 
 #'
 #' # Creating objects of class twdtwRaster with evi and ndvi time series 
@@ -91,30 +72,49 @@ setMethod("subset", "twdtwMatches",
 #' prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #' 
 #' ## Extract time series 
-#' ts = subset(rts, samples = ts_location, proj4string = prj_string)
+#' ts = subset(rts, y = ts_location, proj4string = prj_string)
 #'  
 #' autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 #' 
-#' @export 
+NULL
+
+#' @aliases subset-twdtwTimeSeries
+#' @inheritParams subset
+#' @rdname subset 
+#' @export
+setMethod("subset", "twdtwTimeSeries",
+          function(x, labels=NULL) subset.twdtwTimeSeries(x=x, labels=labels) )
+
+#' @aliases subset-twdtwMatches
+#' @inheritParams subset
+#' @rdname subset 
+#' @export
+setMethod("subset", "twdtwMatches",
+          function(x, labels=NULL) subset(x=x@timeseries,labels=labels) )
+
+#' @aliases subset-twdtwRaster
+#' @inheritParams subset
+#' @rdname subset 
+#' @export
 setMethod("subset", "twdtwRaster",
-          function(object, samples, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL){
+          function(x, y, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL){
           
-              if(!"label"%in%names(samples)) samples$label = paste0("ts",row.names(samples))
-              if(!is.null(id.labels)) samples$label = as.character(samples[[id.labels]])
+              if(!"label"%in%names(y)) y$label = paste0("ts",row.names(y))
+              if(!is.null(id.labels)) y$label = as.character(y[[id.labels]])
               if(!is.null(id.labels) & !is.null(labels)){
-                I = which(!is.na(match(as.character(samples$label), as.character(labels))))
+                I = which(!is.na(match(as.character(y$label), as.character(labels))))
                 if(length(I)<1) 
                    stop("there is no matches between id.labels and labels")
               } else if(!is.null(labels)) { 
-                        samples$label = as.character(labels)
+                        y$label = as.character(labels)
               }
-              if(is(samples, "data.frame")){
+              if(is(y, "data.frame")){
                 if(!is(proj4string, "CRS")) proj4string = try(CRS(proj4string))
-                  samples = SpatialPointsDataFrame(samples[,c("longitude","latitude")], samples, proj4string = proj4string)
+                  y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
               }
-              if(!(is(samples, "SpatialPoints") | is(samples, "SpatialPointsDataFrame")))
-                  stop("samples is not SpatialPoints or SpatialPointsDataFrame")
-              extractTimeSeries.twdtwRaster(x=object, y=samples)
+              if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
+                  stop("y is not SpatialPoints or SpatialPointsDataFrame")
+              extractTimeSeries.twdtwRaster(x, y)
           })
           
 extractTimeSeries.twdtwRaster = function(x, y){
@@ -139,11 +139,11 @@ extractTimeSeries.twdtwRaster = function(x, y){
 }
 
 # Get time series from object of class twdtwTimeSeries by labels 
-subset.twdtwTimeSeries = function(object, labels){
-  if(is.null(labels)) labels = labels(object)
-  if(is.numeric(labels)) labels = labels(object)[labels]
-  I = match(object@labels, labels)
-  object@timeseries[na.omit(I)]
+subset.twdtwTimeSeries = function(x, labels){
+  if(is.null(labels)) labels = labels(x)
+  if(is.numeric(labels)) labels = labels(x)[labels]
+  I = match(x@labels, labels)
+  x@timeseries[na.omit(I)]
 }
 
 .extractTimeSeries = function(pto, p, x, y, timeline){

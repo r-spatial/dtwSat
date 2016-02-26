@@ -61,7 +61,7 @@ prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat
                   what = "character")
 
 # Extract time series 
-ts = subset(rts, samples = field_samples, proj4string = prj_string)
+ts = subset(x = rts, y = field_samples, proj4string = prj_string)
 
 # Create temporal patterns 
 patt = createPatterns(x=ts, from="2005-09-01", to="2006-09-01", freq=8, formula = y~s(x))

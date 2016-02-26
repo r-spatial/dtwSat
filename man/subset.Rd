@@ -9,28 +9,24 @@
 \alias{subset-twdtwMatches}
 \alias{subset-twdtwRaster}
 \alias{subset-twdtwTimeSeries}
-\title{Get time series}
+\title{Get elements from twdtwMatches objects}
 \usage{
-subset(object, ...)
+\S4method{subset}{twdtwTimeSeries}(x, labels = NULL)
 
-\S4method{subset}{twdtwTimeSeries}(object, labels = NULL)
+\S4method{subset}{twdtwMatches}(x, labels = NULL)
 
-\S4method{subset}{twdtwMatches}(object, labels = NULL)
-
-\S4method{subset}{twdtwRaster}(object, samples,
-  proj4string = CRS(as.character(NA)), id.labels = NULL, labels = NULL)
+\S4method{subset}{twdtwRaster}(x, y, proj4string = CRS(as.character(NA)),
+  id.labels = NULL, labels = NULL)
 }
 \arguments{
-\item{object}{an object of class of class twdtw*.}
-
-\item{...}{other arguments to pass to specific methods.}
+\item{x}{an object of class of class twdtw*.}
 
 \item{labels}{character vector with time series labels. For signature 
 \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
 labels for each \code{sample}, or it can be combined with \code{id.labels} 
 to select samples with a specific label.}
 
-\item{samples}{a \code{\link[base]{data.frame}} whose attributes are: longitude, 
+\item{y}{a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 latitude, the start ''from'' and the end ''to'' of the time interval 
 for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
 whose attributes are the start ''from'' and the end ''to'' of the time interval.
@@ -46,21 +42,21 @@ be used as labels of the samples. Optional.}
 }
 \value{
 An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
+
+a list with TWDTW results or an object \code{\link[dtwSat]{twdtwTimeSeries-class}}.
 }
 \description{
-Generic method to get time series subsets from objects of class twdtw*.
+Get subsets of time series from objects of class twdtw*.
 }
 \examples{
 # Getting time series from objects of class twdtwTimeSeries
 ts = twdtwTimeSeries(example_ts.list)
 subset(ts, 2)
-
 # Getting time series from objects of class twdtwTimeSeries
 ts = twdtwTimeSeries(example_ts.list)
 patt = twdtwTimeSeries(patterns.list)
 mat = twdtwApply(x=ts, y=patt)
 subset(mat, 2)
-
 ## This example creates a twdtwRaster object and extract a subset of time series from it. 
 
 # Creating objects of class twdtwRaster with evi and ndvi time series 
@@ -75,7 +71,7 @@ ts_location = data.frame(longitude = -55.96957, latitude = -12.03864,
 prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 ## Extract time series 
-ts = subset(rts, samples = ts_location, proj4string = prj_string)
+ts = subset(rts, y = ts_location, proj4string = prj_string)
  
 autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
@@ -84,7 +80,8 @@ autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 Victor Maus, \email{vwmaus1@gmail.com}
 }
 \seealso{
-\code{\link[dtwSat]{twdtwRaster-class}}, and 
-\code{\link[dtwSat]{twdtwTimeSeries-class}}
+\code{\link[dtwSat]{twdtwRaster-class}}, 
+\code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
+\code{\link[dtwSat]{twdtwMatches-class}}
 }
 

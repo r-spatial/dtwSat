@@ -95,7 +95,7 @@
 #' \code{\link[dtwSat]{twdtwMatches-class}}, 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
 #' \code{\link[dtwSat]{twdtwRaster-class}}, 
-#' \code{\link[dtwSat]{subset}}, and 
+#' \code{\link[dtwSat]{getTimeSeries}}, and 
 #' \code{\link[dtwSat]{createPatterns}}
 #' 
 #' @export  

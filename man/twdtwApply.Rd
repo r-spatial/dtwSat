@@ -122,7 +122,7 @@ and Motion (pp. 79-84). London: Springer London, Limited.
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
 \code{\link[dtwSat]{twdtwRaster-class}}, 
-\code{\link[dtwSat]{subset}}, and 
+\code{\link[dtwSat]{getTimeSeries}}, and 
 \code{\link[dtwSat]{createPatterns}}
 }
 

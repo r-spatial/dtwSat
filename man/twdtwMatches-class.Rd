@@ -24,9 +24,9 @@
 
 \S4method{as.list}{twdtwRaster}(x)
 
-\S4method{[}{twdtwMatches,ANY,ANY,ANY}(x, i, drop = TRUE)
+\S4method{[}{twdtwMatches,ANY,ANY,ANY}(x, i, j, drop = TRUE)
 
-\S4method{[[}{twdtwMatches,numeric,ANY}(x, i)
+\S4method{[[}{twdtwMatches,numeric,ANY}(x, i, j, drop = TRUE)
 
 \S4method{labels}{twdtwMatches}(object)
 
@@ -44,7 +44,9 @@ has the same length as \code{timeseries}.}
 
 \item{x}{an object of class twdtwMatches.}
 
-\item{i}{indices of the alignments.}
+\item{i}{indices of the time series.}
+
+\item{j}{indices of the pattern.}
 
 \item{drop}{if TRUE returns a data.frame, if FALSE returns a list. 
 Default is TRUE.}

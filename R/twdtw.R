@@ -14,10 +14,11 @@
 
 .twdtw = function(x, y, weight.fun, dist.method, step.matrix, 
                   n, span, min.length, theta, keep){
-  timeseries=x[[1]]
-  res = lapply(as.list(y), function(patt){
-    pattern=patt[[1]]
-    label = as.character(labels(patt))
+  label = as.character(labels(y))
+  names(label) = label
+  timeseries = x[[1]]
+  res = lapply(label, function(l){
+    pattern = y[[l]]
     # Adjust columns by name if possible  
     if(!is.null(names(pattern)) & !is.null(names(timeseries)))
       timeseries = timeseries[,names(pattern), drop=FALSE]
@@ -68,7 +69,7 @@
     I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
     
     alignments = list()
-    alignments$label      = label
+    alignments$label      = l
     alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
     alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]     # This is a numeric vector 
@@ -83,7 +84,6 @@
     }
     alignments
   })
-  names(res) = levels(y)
   res
 }
 

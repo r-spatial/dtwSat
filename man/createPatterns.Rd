@@ -61,7 +61,7 @@ prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat
                   what = "character")
 
 # Extract time series 
-ts = subset(x = rts, y = field_samples, proj4string = prj_string)
+ts = getTimeSeries(rts, y = field_samples, proj4string = prj_string)
 
 # Create temporal patterns 
 patt = createPatterns(x=ts, from="2005-09-01", to="2006-09-01", freq=8, formula = y~s(x))
@@ -77,7 +77,7 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
-\code{\link[dtwSat]{subset}}, and 
+\code{\link[dtwSat]{getTimeSeries}}, and 
 \code{\link[dtwSat]{twdtwApply}}
 }
 

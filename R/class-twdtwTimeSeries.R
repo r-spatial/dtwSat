@@ -35,7 +35,7 @@
 #' @seealso   
 #' \code{\link[dtwSat]{twdtwMatches-class}}, 
 #' \code{\link[dtwSat]{twdtwRaster-class}}, 
-#' \code{\link[dtwSat]{subset}}, and
+#' \code{\link[dtwSat]{getTimeSeries}}, and
 #' \code{\link[dtwSat]{twdtwApply}}
 #'
 #' @examples 
@@ -132,7 +132,7 @@ setMethod(f = "twdtwTimeSeries",
                   joint_timeseries = c(joint_timeseries, list_obj)
               } else {}
               if(check_class[3]){
-                  twdtw_obj = do.call("c", lapply(timeseries[which(timeseries_class=="twdtwTimeSeries")], subset))
+                  twdtw_obj = do.call("c", lapply(timeseries[which(timeseries_class=="twdtwTimeSeries")], getTimeSeries))
                   names(twdtw_obj) = as.character(unlist(lapply(timeseries[which(timeseries_class=="twdtwTimeSeries")], labels)))
                   joint_timeseries = c(joint_timeseries, twdtw_obj)
               } else {}

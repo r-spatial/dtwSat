@@ -105,7 +105,7 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwRaster-class}}, 
-\code{\link[dtwSat]{subset}}, and
+\code{\link[dtwSat]{getTimeSeries}}, and
 \code{\link[dtwSat]{twdtwApply}}
 }
 

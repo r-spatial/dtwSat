@@ -9,55 +9,50 @@
 \alias{subset-twdtwMatches}
 \alias{subset-twdtwRaster}
 \alias{subset-twdtwTimeSeries}
-\title{Get elements from twdtwMatches objects}
+\title{Subset time series}
 \usage{
 \S4method{subset}{twdtwTimeSeries}(x, labels = NULL)
 
-\S4method{subset}{twdtwMatches}(x, labels = NULL)
+\S4method{subset}{twdtwMatches}(x, timeseries.labels = NULL,
+  patterns.labels = NULL, k = 1)
 
-\S4method{subset}{twdtwRaster}(x, y, proj4string = CRS(as.character(NA)),
-  id.labels = NULL, labels = NULL)
+\S4method{subset}{twdtwRaster}(x, e = NULL, layers = NULL)
 }
 \arguments{
-\item{x}{an object of class of class twdtw*.}
+\item{x}{An objects of class twdtw*.}
 
-\item{labels}{character vector with time series labels. For signature 
-\code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
-labels for each \code{sample}, or it can be combined with \code{id.labels} 
-to select samples with a specific label.}
+\item{labels}{character vector with time series labels.}
 
-\item{y}{a \code{\link[base]{data.frame}} whose attributes are: longitude, 
-latitude, the start ''from'' and the end ''to'' of the time interval 
-for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
-whose attributes are the start ''from'' and the end ''to'' of the time interval.
-If missing ''from'' and/or ''to'', their are set to the time range of the object
-\code{object}. As additional attribute of \code{samples} can be used as labels 
-for each sample. See \code{id.labels}.}
+\item{timeseries.labels}{a vector with labels of the time series.}
 
-\item{proj4string}{projection string, see \code{\link[sp]{CRS-class}}. Used 
-if \code{samples} is a \code{\link[base]{data.frame}}.}
+\item{patterns.labels}{a vector with labels of the patterns.}
 
-\item{id.labels}{a numeric or character with an attribute of \code{samples} to 
-be used as labels of the samples. Optional.}
+\item{k}{A positive integer. The index of the last alignment to include in 
+the subset.}
+
+\item{e}{An extent object, or any object from which an Extent object can
+be extracted. See \link[raster]{crop} for details.}
+
+\item{layers}{a vector with the names of the \code{twdtwRaster} object to include in 
+the subset.}
 }
 \value{
-An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
-
-a list with TWDTW results or an object \code{\link[dtwSat]{twdtwTimeSeries-class}}.
+an object of class twdtw*.
 }
 \description{
-Get subsets of time series from objects of class twdtw*.
+Get subsets from objects of class twdtw*.
 }
 \examples{
 # Getting time series from objects of class twdtwTimeSeries
 ts = twdtwTimeSeries(example_ts.list)
-subset(ts, 2)
+ts = subset(ts, 2)
+ts
 # Getting time series from objects of class twdtwTimeSeries
-ts = twdtwTimeSeries(example_ts.list)
 patt = twdtwTimeSeries(patterns.list)
-mat = twdtwApply(x=ts, y=patt)
-subset(mat, 2)
-## This example creates a twdtwRaster object and extract a subset of time series from it. 
+mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100))
+mat = subset(mat, k=4)
+
+## This example creates a twdtwRaster object and extract time series from it. 
 
 # Creating objects of class twdtwRaster with evi and ndvi time series 
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
@@ -65,15 +60,17 @@ ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = twdtwRaster(evi, ndvi, timeline=timeline)
 
-# Location and time range 
-ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
-                         from = "2007-09-01", to = "2013-09-01")
-prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+rts_evi = subset(rts, layers="evi")
 
-## Extract time series 
-ts = subset(rts, y = ts_location, proj4string = prj_string)
- 
-autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), 
+                  what = "character")
+
+# Extract time series 
+ts_evi = getTimeSeries(rts_evi, y = field_samples, proj4string = prj_string)
+
+# subset all labels = "Forest"
+ts_forest = subset(ts_evi, labels="Forest")
 
 }
 \author{

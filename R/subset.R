@@ -12,53 +12,44 @@
 #                                                             #
 ###############################################################
 
-
-#' @title Get elements from twdtwMatches objects
+#' @title Subset time series 
 #' @name subset
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Get subsets of time series from objects of class twdtw*.
+#' @description Get subsets from objects of class twdtw*.
 #' 
-#' @param x an object of class of class twdtw*.
-#'
-#' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
-#' latitude, the start ''from'' and the end ''to'' of the time interval 
-#' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
-#' whose attributes are the start ''from'' and the end ''to'' of the time interval.
-#' If missing ''from'' and/or ''to'', their are set to the time range of the object
-#' \code{object}. As additional attribute of \code{samples} can be used as labels 
-#' for each sample. See \code{id.labels}. 
+#' @inheritParams get 
+#' @param x An objects of class twdtw*.
 #' 
-#' @param id.labels a numeric or character with an attribute of \code{samples} to 
-#' be used as labels of the samples. Optional.
+#' @param k A positive integer. The index of the last alignment to include in 
+#' the subset.
 #' 
-#' @param labels character vector with time series labels. For signature 
-#' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
-#' labels for each \code{sample}, or it can be combined with \code{id.labels} 
-#' to select samples with a specific label.
+#' @param e An extent object, or any object from which an Extent object can
+#' be extracted. See \link[raster]{crop} for details.
 #' 
-#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
-#' if \code{samples} is a \code{\link[base]{data.frame}}.
+#' @param layers a vector with the names of the \code{twdtwRaster} object to include in 
+#' the subset.
 #' 
-#' @return An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
-#'
+#' @param labels character vector with time series labels.
+#' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwRaster-class}}, 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
 #' \code{\link[dtwSat]{twdtwMatches-class}}
 #'
-#' @return a list with TWDTW results or an object \code{\link[dtwSat]{twdtwTimeSeries-class}}. 
+#' @return an object of class twdtw*. 
 #'
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
 #' ts = twdtwTimeSeries(example_ts.list)
-#' subset(ts, 2)
+#' ts = subset(ts, 2)
+#' ts
 #' # Getting time series from objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
-#' mat = twdtwApply(x=ts, y=patt)
-#' subset(mat, 2)
-#' ## This example creates a twdtwRaster object and extract a subset of time series from it. 
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100))
+#' mat = subset(mat, k=4)
+#' 
+#' ## This example creates a twdtwRaster object and extract time series from it. 
 #'
 #' # Creating objects of class twdtwRaster with evi and ndvi time series 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
@@ -66,118 +57,102 @@
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 #' rts = twdtwRaster(evi, ndvi, timeline=timeline)
 #' 
-#' # Location and time range 
-#' ts_location = data.frame(longitude = -55.96957, latitude = -12.03864, 
-#'                          from = "2007-09-01", to = "2013-09-01")
-#' prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+#' rts_evi = subset(rts, layers="evi")
+#'
+#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+#' prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), 
+#'                   what = "character")
 #' 
-#' ## Extract time series 
-#' ts = subset(rts, y = ts_location, proj4string = prj_string)
-#'  
-#' autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
+#' # Extract time series 
+#' ts_evi = getTimeSeries(rts_evi, y = field_samples, proj4string = prj_string)
+#' 
+#' # subset all labels = "Forest"
+#' ts_forest = subset(ts_evi, labels="Forest")
 #' 
 NULL
 
 #' @aliases subset-twdtwTimeSeries
 #' @inheritParams subset
-#' @rdname subset 
+#' @rdname subset
 #' @export
-setMethod("subset", "twdtwTimeSeries",
-          function(x, labels=NULL) subset.twdtwTimeSeries(x=x, labels=labels) )
+setMethod("subset", "twdtwTimeSeries", function(x, labels=NULL) 
+          subset.twdtwTimeSeries(x=x, labels=labels))
+
+
+subset.twdtwTimeSeries = function(x, labels){
+  if(is.null(labels)) labels = labels(x)
+  if(is.numeric(labels)) return(twdtwTimeSeries(x@timeseries[labels], labels=x@labels[labels]))
+  I = which(!is.na(match(x@labels, labels)))
+  if(length(I)<1) return(new("twdtwTimeSeries"))
+  twdtwTimeSeries(x@timeseries[I], labels=x@labels[I])
+}
+
 
 #' @aliases subset-twdtwMatches
 #' @inheritParams subset
-#' @rdname subset 
+#' @rdname subset
 #' @export
-setMethod("subset", "twdtwMatches",
-          function(x, labels=NULL) subset(x=x@timeseries,labels=labels) )
+setMethod("subset", "twdtwMatches", function(x, timeseries.labels=NULL, patterns.labels=NULL, k=1) 
+          subset.twdtwMatches(x=x, timeseries.labels=timeseries.labels, patterns.labels=patterns.labels, k=k) )
+
+
+subset.twdtwMatches = function(x, timeseries.labels, patterns.labels, k){
+  if(is.null(timeseries.labels)) timeseries.labels = as.character(labels(x@timeseries))
+  if(is.null(patterns.labels)) patterns.labels = as.character(labels(x@patterns))
+  I = timeseries.labels
+  J = patterns.labels
+  if(is.character(I)) I = which(!is.na(match(x@timeseries@labels, timeseries.labels)))
+  if(is.character(J)) J = which(!is.na(match(x@patterns@labels, patterns.labels)))
+  timeseries = subset(x@timeseries, labels=I)
+  patterns = subset(x@patterns, labels=J)
+  names(J) = labels(patterns)
+  alignments = lapply(I, function(i){
+    lapply(J, function(j){
+      res = x@alignments[[i]][[j]]
+      if(res$K>k) res$K = k
+      res$from = res$from[1:res$K]
+      res$to = res$to[1:res$K]
+      res$distance = res$distance[1:res$K]
+      if(length(res$matching)>k) res$matching = res$matching[1:res$K]
+      res
+    }) 
+  })
+  twdtwMatches(timeseries, patterns, alignments)
+}
 
 #' @aliases subset-twdtwRaster
 #' @inheritParams subset
-#' @rdname subset 
+#' @rdname subset
 #' @export
-setMethod("subset", "twdtwRaster",
-          function(x, y, proj4string = CRS(as.character(NA)), id.labels=NULL, labels=NULL){
+setMethod("subset", "twdtwRaster", function(x, e=NULL, layers=NULL) 
+          subset.twdtwRaster(x=x, e=e, layers=layers) )
+
+subset.twdtwRaster = function(x, e, layers){
+    if(is.null(layers)) layers = names(x)
+    layers = c("doy", layers[layers!="doy"])
+    if(is.null(e)) e = extent(x@timeseries$doy)
+    res = x
+    res@layers = layers
+    res@timeseries = res@timeseries[layers]
+    res@timeseries = lapply(res@timeseries, crop, y=e)
+    res
+}
+
+
+
+
+
+
           
-              if(!"label"%in%names(y)) y$label = paste0("ts",row.names(y))
-              if(!is.null(id.labels)) y$label = as.character(y[[id.labels]])
-              if(!is.null(id.labels) & !is.null(labels)){
-                I = which(!is.na(match(as.character(y$label), as.character(labels))))
-                if(length(I)<1) 
-                   stop("there is no matches between id.labels and labels")
-              } else if(!is.null(labels)) { 
-                        y$label = as.character(labels)
-              }
-              if(is(y, "data.frame")){
-                if(!is(proj4string, "CRS")) proj4string = try(CRS(proj4string))
-                  y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
-              }
-              if(!(is(y, "SpatialPoints") | is(y, "SpatialPointsDataFrame")))
-                  stop("y is not SpatialPoints or SpatialPointsDataFrame")
-              extractTimeSeries.twdtwRaster(x, y)
-          })
           
-extractTimeSeries.twdtwRaster = function(x, y){
-    
-  # Reproject points to raster projection 
-  y = spTransform(y, CRS(projection(x)))
-  
-  # Check if the coordinates are over the raster extent
-  pto = .getPointsOverRaster(x, y)
-  if(length(pto)<1)
-    stop("extents do not overlap")
-  if(length(pto)<length(y))
-    warning(paste("raster extent does not overlap samples:",paste(pto, collapse = ",")), call. = FALSE)
-  
-  # Extract time series 
-  ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
-  
-  # Crop period
-  res = lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x))
-  labels = as.character(y[pto,]$label)
-  twdtwTimeSeries(res, labels=labels)
-}
-
-# Get time series from object of class twdtwTimeSeries by labels 
-subset.twdtwTimeSeries = function(x, labels){
-  if(is.null(labels)) labels = labels(x)
-  if(is.numeric(labels)) labels = labels(x)[labels]
-  I = match(x@labels, labels)
-  x@timeseries[na.omit(I)]
-}
-
-.extractTimeSeries = function(pto, p, x, y, timeline){
-  s = y[pto[p],]
-  # Check if the sample time interval overlaps the raster time series 
-  from  = try(as.Date(s$from))
-  to    = try(as.Date(s$to))
-  doy   = c(x$doy[p,])
-  year  = format(timeline, "%Y")
-  dates = getDatesFromDOY(year = year, doy = doy)
-  if(is.null(from) | is(from, "try-error")) from = dates[1]
-  if(is.null(to) | is(to, "try-error")) to = tail(dates,1)
-  layer =  which( from - dates <= 0 )[1]
-  nl    =  which(   to - dates <= 0 )[1] - layer
-  if(nl<=0){
-    warning(paste("time period of sample ",pto[p]," does not overlap rester time series"), call. = FALSE)
-    return(NULL)
-  }
-  # Extract raster values 
-  I = which(names(x) %in% c("doy"))
-  ts = data.frame(sapply(x[-I], function(x) x[p,layer:(layer+nl-1)]))
-  dates = dates[layer:(layer+nl-1)]
-  k = !duplicated(dates)
-  zoo(data.frame(ts[k,]), dates[k])
-}
-
-.getPointsOverRaster = function(x, y){
-  r_extent = extent(x)
-  point.x = c(r_extent[2], r_extent[1], r_extent[1], r_extent[2], r_extent[2])
-  point.y = c(r_extent[3], r_extent[3], r_extent[4], r_extent[4], r_extent[3])
-  r_sp_extent = list(Polygons(list(Polygon(data.frame(x=point.x, y=point.y))), ID="1"))
-  r_sp_extent = SpatialPolygons(r_sp_extent, proj4string = CRS(projection(y)))
-  res = over(y, r_sp_extent)
-  res = row.names(y)[which(!is.na(res))]
-  res
-}
-
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          

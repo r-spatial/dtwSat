@@ -12,7 +12,8 @@
 #                                                             #
 ###############################################################
 
-as.list.twdtwTimeSeries = function(x) lapply(seq_along(x), function(i) x[i] )
+as.list.twdtwTimeSeries = function(x) lapply(seq_along(x), function(i) 
+      new("twdtwTimeSeries", x[[i]], labels(x)[i]) )
 
 as.list.twdtwRaster = function(x) {
     I = names(x)
@@ -20,9 +21,8 @@ as.list.twdtwRaster = function(x) {
     lapply(I, function(i) x[[i]])
   }
 
-as.list.twdtwMatches = function(x) lapply(seq_along(x@alignments), 
-            function(i) new("twdtwMatches", timeseries=x@timeseries[i], patterns=x@patterns, alignments=x[i, drop=FALSE]) )
-
+as.list.twdtwMatches = function(x) lapply(seq_along(x@timeseries), function(i) 
+      new("twdtwMatches", new("twdtwTimeSeries", x@timeseries[[i]], labels(x@timeseries)[i]), x@patterns, list(x@alignments[[i]])) )
 
 dim.twdtwTimeSeries = function(x){
   res = data.frame(as.character(labels(x)), t(sapply(x@timeseries, dim)))
@@ -259,30 +259,35 @@ setMethod("[[", "twdtwRaster", function(x, i) {
 })
 
 #' @inheritParams twdtwMatches-class
-#' @param i indices of the alignments.
+#' @param i indices of the time series.
+#' @param j indices of the pattern.
 #' @param drop if TRUE returns a data.frame, if FALSE returns a list. 
 #' Default is TRUE.
 #' @rdname twdtwMatches-class 
 #' @export
-setMethod("[", "twdtwMatches", function(x, i, drop=TRUE) {
+setMethod("[", "twdtwMatches", function(x, i, j, drop=TRUE) {
   if(length(x@alignments)<1) return(x@alignments)
   if(missing(i)) i = 1:length(x@alignments)
   if(any(is.na(i))) stop("NA index not permitted")
-  if(!drop) return(x@alignments[i])
-  lapply(i, function(ii){
-    xx = x@alignments[[ii]]
-    res = do.call("rbind", lapply(seq_along(xx), function(j)
-      data.frame(from=xx[[j]]$from, to=xx[[j]]$to, distance=xx[[j]]$distance, label=names(xx[j]))
-    ))
-  })
+  res = x@alignments[i]
+  if(missing(j)) j = 1:length(res[[1]])
+  if(any(is.na(j))) stop("NA index not permitted")
+  res = lapply(res, function(x) x[j])
+  res = res[sapply(res, length)>0]
+  if(!drop) return(res)
+  lapply(res, function(x)
+    res = do.call("rbind", lapply(seq_along(x), function(jj)
+       data.frame(from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=names(x[jj]))
+  )))
 })
 
 #' @inheritParams twdtwMatches-class
 #' @rdname twdtwMatches-class 
 #' @export
-setMethod("[[", c("twdtwMatches", "numeric"), function(x, i) {
+setMethod("[[", c("twdtwMatches", "numeric"), function(x, i, j,drop=TRUE) {
   if(any(is.na(i))) stop("NA index not permitted")
-  x@alignments[[i]]
+  if(missing(j)) j = 1:length(x@alignments[[1]])
+  x[i,j,drop=drop][[1]]
 })
 
 #' @inheritParams twdtwTimeSeries-class

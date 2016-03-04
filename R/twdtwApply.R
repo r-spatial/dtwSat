@@ -21,14 +21,16 @@
 #' analysis and retrieves the matches between the temporal patterns and 
 #' a set of time series [1].
 #' 
+#' @inheritParams classifyTimeSeries
+#' 
 #' @param x an object of class twdtw*. This is the target time series. 
 #' Usually, it is a set of unclassified time series. 
 #'
 #' @param y an object of class \link[dtwSat]{twdtwTimeSeries}. 
 #' The temporal patterns. 
 #' 
-#' @param ... arguments to pass to specifique methods for each twdtw* signature 
-#' and other arguments for parallel processing to pass to \code{\link[parallel]{mclapply}}.
+#' @param ... arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
+#' processing to pass to \code{\link[parallel]{mclapply}}.
 #'
 #' @param resample resample the patterns to have the same length. Default is FALSE.
 #' See \link[dtwSat]{resampleTimeSeries} for details.
@@ -68,6 +70,12 @@
 #' @param min.length A number between 0 an 1. This argument removes the over fittings.
 #' Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
 #' meaning that the matching cannot be shorter than half of the pattern length.
+#' 
+#' @param filepath A character. The path to save the raster with results. If informed the 
+#' function saves in the current work directory. 
+#' 
+#' @param chunk.size An integer. Set the number of cells for each block, 
+#' see \code{\link[raster]{blockSize}} for details.  
 #'
 #' @references 
 #' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
@@ -101,19 +109,27 @@
 #' @export  
 setGeneric(name = "twdtwApply", 
           def = function(x, y, resample=FALSE, length=NULL, weight.fun=NULL, 
-                  dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
-                  span=NULL, min.length=0.5, theta = 0.5, keep=FALSE, ...) standardGeneric("twdtwApply"))
+                dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
+                span=NULL, min.length=0.5, theta = 0.5, keep=FALSE, 
+                breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, threshold=Inf, chunk.size=1000, filepath=NULL, ...) standardGeneric("twdtwApply"))
 
 
 #' @rdname twdtwApply 
 #' @aliases twdtwApply-twdtwTimeSeries 
 #' @examples
 #' # Applying TWDTW analysis to objects of class twdtwTimeSeries
+#' log_fun = logisticWeight(-0.1, 50)
 #' ts = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
-#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
-#' mat 
-#'
+#' mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
+#' mat1
+#' 
+#' \dontrun{
+#' # Parallel processin
+#' require(paralle)
+#' mat_list = mclapply(as.list(ts), mc.cores=2, FUN=twdtwApply, y=patt, weight.fun=log_fun)
+#' mat2 = twdtwMatches(mat_list)
+#' }
 #' @export
 setMethod(f = "twdtwApply", "twdtwTimeSeries",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...){
@@ -127,47 +143,196 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
                     stop("weight.fun is not a function")
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
-                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...)
+                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
            })
 
-           
+twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep){
+    res = lapply(as.list(x), FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
+    new("twdtwMatches", timeseries=x, patterns=y, alignments=res)
+}      
+
+
            
 #' @rdname twdtwApply 
 #' @aliases twdtwApply-twdtwRaster
 #' @examples
-#' # Applying TWDTW analysis to objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(example_ts.list)
-#' patt = twdtwTimeSeries(patterns.list)
-#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
-#' mat 
-#' 
+#' ##
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",
-          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...){
-                  if(!is(y, "twdtwTimeSeries"))
-                    stop("y is not of class twdtwTimeSeries")
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+                        breaks, from, to, by, overlap, threshold, chunk.size, filepath, ...){
                   if(!is(step.matrix, "stepPattern"))
                     stop("step.matrix is not of class stepPattern")
                   if(is.null(weight.fun))
                     weight.fun = function(psi) 0 
                   if(!is(weight.fun, "function"))
                     stop("weight.fun is not a function")
+                  if( overlap < 0 & 1 < overlap )
+                    stop("overlap out of range, it must be a number between 0 and 1")
+                  if(is.null(breaks))
+                    breaks = seq(as.Date(from), as.Date(to), by=by)
+                  breaks = as.Date(breaks)
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
-                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, ...)
+                  twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+                                          breaks, overlap, threshold, chunk.size, filepath, ...)
            })
            
            
            
-twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep, 
-mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE, mc.cores = getOption("mc.cores", 1L), mc.cleanup = TRUE){
-    if(mc.cores>1){
-      aligs = mclapply(as.list(x), mc.preschedule=mc.preschedule, mc.set.seed=mc.set.seed, mc.silent=mc.silent, 
-                                 mc.cores=mc.cores, mc.cleanup=mc.cleanup, FUN = .twdtw, y, weight.fun, dist.method, 
-                                 step.matrix, n, span, min.length, theta, keep)
-    } else {
-      aligs = lapply(as.list(x),FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
+
+
+
+
+twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+                                  breaks, overlap, threshold, chunk.size, filepath, 
+                                  mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE, 
+                                  mc.cores = getOption("mc.cores", 1L), mc.cleanup = TRUE, ...){
+     
+    # Set blocks Multi-thread parameters
+    minblocks = round(nrow(x)*ncol(x) / chunk.size)
+    blocks = blockSize(x@timeseries$doy, minblocks = minblocks)
+    threads = seq(1, blocks$n)
+    
+    # Match raster bands to pattern bands
+    raster_bands = names(x)
+    pattern_names = names(y@timeseries[[1]])
+    matching_bands = pattern_names[pattern_names %in% raster_bands]
+    if(length(matching_bands)<1)
+      stop(paste0("Attributes (bands) of the raster and patterns do not match"))
+    x = subset(x, layers=matching_bands)
+    raster_bands = names(x)
+    
+    # Set raster levels and labels 
+    levels = levels(y)
+    names(levels) = levels
+    
+    # Open raster fiels for results 
+    if(is.null(filepath)) filepath = getwd()
+    r_template = brick(x@timeseries$doy, nl=length(breaks)-1)
+    dir.create(filepath, showWarnings = FALSE, recursive = TRUE)
+    filename = paste0(filepath,"/twdtw_distance_",levels)
+    names(filename) = levels
+    b_files = lapply(filename, function(i) writeStart(r_template, filename=i, ...))
+    
+    # Get time line 
+    timeline = as.Date(index(x))
+    
+    fun = function(i){
+      # Get time series from raster 
+      print("Get TS")
+      array.list = lapply(lapply(x, getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i]), alply, 1, as.numeric)
+      nts = seq(1, ncell(array.list$doy))
+      
+      # Build twdtwTimeSeries 
+      ts = twdtwTimeSeries(lapply(nts, .bulidZoo, x=array.list, timeline=timeline))
+      
+      # Apply TWDTW for each pixel time series
+#       twdtw_results = lapply(as.list(ts), FUN=twdtwApply, y=y, weight.fun=weight.fun, keep=FALSE)
+      print("Apply TWDTW")
+      twdtw_results = mclapply(as.list(ts), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
+                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=twdtwApply, y=y, weight.fun=weight.fun, 
+                      dist.method=dist.method, step.matrix=step.matrix, n=n, span=span, min.length=min.length, 
+                      theta=theta, keep=FALSE)
+      twdtw_results = twdtwMatches(alignments=twdtw_results)
+      
+      # Get the lowest distances for each pixel and each time interval 
+      print("Get best match")
+      res = mclapply(levels, mc.preschedule = FALSE, mc.set.seed = mc.set.seed, 
+                      mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup, 
+                      function(l) {
+                      subset_twdtw = subset(twdtw_results, patterns.labels=l)
+                      res_array = lapply(as.list(subset_twdtw), function(x)
+                            sapply(seq_along(breaks)[-1], function(i) 
+                                    .lowestDistances(x=x[[1]], start=breaks[i-1], end=breaks[i], overlap=overlap)
+                            )
+                      )
+          apply(data.frame(res_array), 1, function(x) as.numeric(x))
+      })
+      
+      # Create raster list 
+      print("Writing Raster")
+      lapply(levels, function(l) writeValues(b_files[[l]], res[[l]], blocks$row[i]))
     }
-    twdtwMatches(x, patterns=y, alignments=aligs)
+    
+    # Apply TWDTW analysis 
+    out.list = lapply(threads, FUN = fun)
+    
+    # Close raster files 
+    b_files = lapply(b_files, writeStop)
+    
+    # Create brick list for output 
+    out = lapply(sapply(b_files, filename), brick)
+    
+    new("twdtwRaster", timeseries = out, timeline=breaks[-1], layers = names(out))
 }
+
+
+# Crop raster time series. Returns a 3D array 
+.cropTimeSeries = function(x, r1, r2){
+  if(is(x, "RasterBrick") | is(x, "RasterStack")){
+    y = extent(x, r1, r2)
+    x = crop(x, y)
+  } else {
+    x = x[r1:r2,,]
+  }
+  alply(x, c(1,2), as.numeric)
+}
+
+# Build zoo time series  
+.bulidZoo = function(p, x, timeline){
+  # Get time series for each band 
+  datasets = lapply(x, function(x) x[[p]])
+  datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(timeline, "%Y"))
+  idoy = which(names(datasets) %in% c("doy"))
+  
+  # Remove invalid values 
+  k = unlist(lapply(datasets[-idoy], function(x){
+    which(x<0|is.na(x))
+  }))
+  k = c(k, which(duplicated(datasets$doy)))
+  if(length(k)>0) datasets = lapply(datasets, function(x) x[-k] )
+  
+  # Build multi-band zoo object 
+  zoo(data.frame(datasets[-idoy]), order.by = datasets$doy)
+}
+
+# Match and set a list of arguments to a function 
+.setFunArgs = function(fun, ..., args = list(...)){ 
+  base_formals = formals(fun)
+  base_formals_names = names(base_formals)
+  given_formals = args[names(args) %in% base_formals_names]
+  missing_formals_names = setdiff(base_formals_names, names(args))
+  new_formals = c(base_formals[missing_formals_names], given_formals)
+  new_formals = new_formals[base_formals_names]
+  formals(fun) = new_formals
+  fun
+}
+
+.lowestDistances = function(x, start, end, overlap){
+  J = (x$from <= end & x$to >= start)
+  x = x[J,]
+  x$from[x$from < start] = start
+  x$to[end < x$to] = end
+  # Check for minimum overlap 
+  r1 = as.numeric(x$to - x$from) / as.numeric(end-start)
+  I = overlap < r1 & r1 < 2-overlap
+  J[which(J)] = I
+  if(!any(I)) return(9999)
+  # Sellect the lowest TWDTW distance 
+  min(x$distance[I])
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

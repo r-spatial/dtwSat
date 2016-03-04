@@ -116,7 +116,8 @@ classifyIntervals = function(x, patterns.labels, breaks, overlap, threshold, fil
     
   if(simplify) {
     res = as.character(dist_table$label[K])
-    res[dist_table$distance[best_match$K]>threshold] = fill
+    res[dist_table$distance[best_match$K]>threshold] = fill 
+    res[is.na(res)] = fill 
     names(res) = paste0("Period",seq_along(res))
   } else {
     best_match = best_match[ dist_table$distance[best_match$K]<=threshold , ]

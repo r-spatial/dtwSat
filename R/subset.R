@@ -92,13 +92,14 @@ subset.twdtwTimeSeries = function(x, labels){
 #' @inheritParams subset
 #' @rdname subset
 #' @export
-setMethod("subset", "twdtwMatches", function(x, timeseries.labels=NULL, patterns.labels=NULL, k=1) 
+setMethod("subset", "twdtwMatches", function(x, timeseries.labels=NULL, patterns.labels=NULL, k=NULL) 
           subset.twdtwMatches(x=x, timeseries.labels=timeseries.labels, patterns.labels=patterns.labels, k=k) )
 
 
 subset.twdtwMatches = function(x, timeseries.labels, patterns.labels, k){
   if(is.null(timeseries.labels)) timeseries.labels = as.character(labels(x@timeseries))
   if(is.null(patterns.labels)) patterns.labels = as.character(labels(x@patterns))
+  if(is.null(k)) k = length(x)
   I = timeseries.labels
   J = patterns.labels
   if(is.character(I)) I = which(!is.na(match(x@timeseries@labels, timeseries.labels)))

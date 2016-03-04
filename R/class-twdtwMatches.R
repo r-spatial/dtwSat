@@ -15,7 +15,7 @@
 
 #' @title class "twdtwMatches"
 #' @name twdtwMatches-class
-#' @name twdtwMatches
+#' @aliases twdtwMatches
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for Time-Weighted Dynamic Time Warping results.
@@ -25,8 +25,9 @@
 #' @param object an object of class twdtwMatches.
 #' @param timeseries a \code{\link[dtwSat]{twdtwTimeSeries}} object.
 #' @param patterns a \code{\link[dtwSat]{twdtwTimeSeries}} object.
-#' @param alignments an object of class list with the TWDTW results. It 
-#' has the same length as \code{timeseries}.
+#' @param alignments an object of class list with the TWDTW results with 
+#' the same length as \code{timeseries} or a list of twdtwMatches.
+#' @param ... objects of class twdtwMatches.
 #' 
 #' @section Slots :
 #' \describe{
@@ -111,11 +112,11 @@ setMethod("initialize",
 )
 
 setGeneric(name = "twdtwMatches", 
-          def = function(timeseries, patterns, alignments) standardGeneric("twdtwMatches")
+          def = function(...) standardGeneric("twdtwMatches")
 )
 
 #' @inheritParams twdtwMatches-class
-#' @aliases twdtwMatches
+#' @aliases twdtwMatches-crate
 #' @describeIn twdtwMatches Create object of class twdtwMatches.
 #'
 #' @examples 
@@ -126,11 +127,21 @@ setGeneric(name = "twdtwMatches",
 #' mat
 #' 
 #' @export
-setMethod(f = "twdtwMatches", 
+setMethod(f = "twdtwMatches", "twdtwTimeSeries",
           definition = function(timeseries, patterns, alignments){
               new("twdtwMatches", timeseries=timeseries, patterns=patterns, alignments=alignments)
           })
 
-          
+#' @inheritParams twdtwMatches-class
+#' @aliases twdtwMatches-join
+#' @describeIn twdtwMatches Join list twdtwMatches objects.
+#' @export
+setMethod(f = "twdtwMatches", "list",
+          definition = function(..., alignments){
+              if(length(list(...))>0) alignments = c(alignments, list(...))
+              aligs = do.call("c", lapply(alignments, function(x) x@alignments))
+              timeseries = do.call("twdtwTimeSeries", lapply(alignments, function(x) subset(x@timeseries)))
+              new("twdtwMatches", timeseries=timeseries, patterns=alignments[[1]]@patterns, alignments=aligs)
+          })
           
           

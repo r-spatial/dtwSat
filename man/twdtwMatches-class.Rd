@@ -12,11 +12,16 @@
 \alias{length,twdtwMatches-method}
 \alias{show,twdtwMatches-method}
 \alias{twdtwMatches}
-\alias{twdtwMatches,ANY-method}
+\alias{twdtwMatches,list-method}
+\alias{twdtwMatches,twdtwTimeSeries-method}
 \alias{twdtwMatches-class}
+\alias{twdtwMatches-crate}
+\alias{twdtwMatches-join}
 \title{class "twdtwMatches"}
 \usage{
-\S4method{twdtwMatches}{ANY}(timeseries, patterns, alignments)
+\S4method{twdtwMatches}{twdtwTimeSeries}(timeseries, patterns, alignments)
+
+\S4method{twdtwMatches}{list}(..., alignments)
 
 \S4method{length}{twdtwMatches}(x)
 
@@ -39,8 +44,10 @@
 
 \item{patterns}{a \code{\link[dtwSat]{twdtwTimeSeries}} object.}
 
-\item{alignments}{an object of class list with the TWDTW results. It 
-has the same length as \code{timeseries}.}
+\item{alignments}{an object of class list with the TWDTW results with 
+the same length as \code{timeseries} or a list of twdtwMatches.}
+
+\item{...}{objects of class twdtwMatches.}
 
 \item{x}{an object of class twdtwMatches.}
 
@@ -61,6 +68,8 @@ Class for Time-Weighted Dynamic Time Warping results.
 \section{Methods (by generic)}{
 \itemize{
 \item \code{twdtwMatches}: Create object of class twdtwMatches.
+
+\item \code{twdtwMatches}: Join list twdtwMatches objects.
 
 \item \code{is.twdtwMatches}: Check if the object belongs to the class twdtwMatches.
 }}

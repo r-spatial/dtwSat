@@ -14,7 +14,7 @@
 \S4method{subset}{twdtwTimeSeries}(x, labels = NULL)
 
 \S4method{subset}{twdtwMatches}(x, timeseries.labels = NULL,
-  patterns.labels = NULL, k = 1)
+  patterns.labels = NULL, k = NULL)
 
 \S4method{subset}{twdtwRaster}(x, e = NULL, layers = NULL)
 }

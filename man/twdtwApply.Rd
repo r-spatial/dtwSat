@@ -11,17 +11,22 @@
 \usage{
 twdtwApply(x, y, resample = FALSE, length = NULL, weight.fun = NULL,
   dist.method = "Euclidean", step.matrix = symmetric1, n = NULL,
-  span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE, ...)
+  span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE,
+  breaks = NULL, from = NULL, to = NULL, by = NULL, overlap = 0.5,
+  threshold = Inf, chunk.size = 1000, filepath = NULL, ...)
 
 \S4method{twdtwApply}{twdtwTimeSeries}(x, y, resample = FALSE,
   length = NULL, weight.fun = NULL, dist.method = "Euclidean",
   step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0.5,
-  theta = 0.5, keep = FALSE, ...)
+  theta = 0.5, keep = FALSE, breaks = NULL, from = NULL, to = NULL,
+  by = NULL, overlap = 0.5, threshold = Inf, chunk.size = 1000,
+  filepath = NULL, ...)
 
 \S4method{twdtwApply}{twdtwRaster}(x, y, resample = FALSE, length = NULL,
   weight.fun = NULL, dist.method = "Euclidean", step.matrix = symmetric1,
   n = NULL, span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE,
-  ...)
+  breaks = NULL, from = NULL, to = NULL, by = NULL, overlap = 0.5,
+  threshold = Inf, chunk.size = 1000, filepath = NULL, ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -69,8 +74,30 @@ the time has the same weight as the curve shape in the TWDTW analysis.}
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE. For plot methods use \code{keep=TRUE}.}
 
-\item{...}{arguments to pass to specifique methods for each twdtw* signature 
-and other arguments for parallel processing to pass to \code{\link[parallel]{mclapply}}.}
+\item{breaks}{A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
+\code{to}, and \code{by}.}
+
+\item{from}{A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
+
+\item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
+
+\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month".}
+
+\item{overlap}{A number between 0 and 1. The minimum overlapping 
+between one match and the interval of classification. Default is 0.5, 
+\emph{i.e.} an overlap minimum of 50\%.}
+
+\item{threshold}{A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
+cost for consideration in the classification. Default is \code{Inf}.}
+
+\item{chunk.size}{An integer. Set the number of cells for each block, 
+see \code{\link[raster]{blockSize}} for details.}
+
+\item{filepath}{A character. The path to save the raster with results. If informed the 
+function saves in the current work directory.}
+
+\item{...}{arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
+processing to pass to \code{\link[parallel]{mclapply}}.}
 }
 \value{
 An object of class twdtw*.
@@ -91,17 +118,19 @@ See [1] for details about the method.
 }
 \examples{
 # Applying TWDTW analysis to objects of class twdtwTimeSeries
+log_fun = logisticWeight(-0.1, 50)
 ts = twdtwTimeSeries(example_ts.list)
 patt = twdtwTimeSeries(patterns.list)
-mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
-mat 
+mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
+mat1
 
-# Applying TWDTW analysis to objects of class twdtwTimeSeries
-ts = twdtwTimeSeries(example_ts.list)
-patt = twdtwTimeSeries(patterns.list)
-mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1, 50))
-mat 
-
+\dontrun{
+# Parallel processin
+require(paralle)
+mat_list = mclapply(as.list(ts), mc.cores=2, FUN=twdtwApply, y=patt, weight.fun=log_fun)
+mat2 = twdtwMatches(mat_list)
+}
+##
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

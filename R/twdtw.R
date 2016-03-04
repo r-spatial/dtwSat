@@ -20,11 +20,8 @@
   res = lapply(label, function(l){
     pattern = y[[l]]
     # Adjust columns by name if possible  
-    if(!is.null(names(pattern)) & !is.null(names(timeseries)))
-      timeseries = timeseries[,names(pattern), drop=FALSE]
-    if(ncol(pattern)!=ncol(timeseries))
-      stop("Number of columns (attributes) in y and in x don't match.")
-    
+    pattern = pattern[,!is.na(match(names(pattern), names(timeseries)))]
+    timeseries = timeseries[,!is.na(match(names(timeseries), names(pattern)))]
     # Get day of the year
     ty = index(pattern)
     tx = index(timeseries)

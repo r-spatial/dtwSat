@@ -143,6 +143,7 @@ setGeneric(name = "twdtwRaster",
 #' @describeIn twdtwRaster Create object of class twdtwRaster.
 #'
 #' @examples 
+#' \dontrun{
 #' # Creating objects of class twdtwRaster 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
@@ -155,7 +156,7 @@ setGeneric(name = "twdtwRaster",
 #' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 #' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 #' rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
-#' 
+#' }
 #' @export
 setMethod(f = "twdtwRaster",  
           definition = function(..., timeline, doy, layers, labels, filepath){

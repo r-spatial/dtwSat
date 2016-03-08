@@ -11,22 +11,15 @@
 \usage{
 twdtwApply(x, y, resample = FALSE, length = NULL, weight.fun = NULL,
   dist.method = "Euclidean", step.matrix = symmetric1, n = NULL,
-  span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE,
-  breaks = NULL, from = NULL, to = NULL, by = NULL, overlap = 0.5,
-  threshold = Inf, chunk.size = 1000, filepath = NULL, ...)
+  span = NULL, min.length = 0.5, theta = 0.5, ...)
 
-\S4method{twdtwApply}{twdtwTimeSeries}(x, y, resample = FALSE,
-  length = NULL, weight.fun = NULL, dist.method = "Euclidean",
-  step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0.5,
-  theta = 0.5, keep = FALSE, breaks = NULL, from = NULL, to = NULL,
-  by = NULL, overlap = 0.5, threshold = Inf, chunk.size = 1000,
+\S4method{twdtwApply}{twdtwTimeSeries}(x, y, resample, length, weight.fun,
+  dist.method, step.matrix, n, span, min.length, theta, keep = FALSE, ...)
+
+\S4method{twdtwApply}{twdtwRaster}(x, y, resample, length, weight.fun,
+  dist.method, step.matrix, n, span, min.length, theta, breaks = NULL,
+  from = NULL, to = NULL, by = NULL, overlap = 0.5, chunk.size = 1000,
   filepath = NULL, ...)
-
-\S4method{twdtwApply}{twdtwRaster}(x, y, resample = FALSE, length = NULL,
-  weight.fun = NULL, dist.method = "Euclidean", step.matrix = symmetric1,
-  n = NULL, span = NULL, min.length = 0.5, theta = 0.5, keep = FALSE,
-  breaks = NULL, from = NULL, to = NULL, by = NULL, overlap = 0.5,
-  threshold = Inf, chunk.size = 1000, filepath = NULL, ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -71,6 +64,9 @@ for the TWDTW computation. Use \code{theta=0} to cancel the time-weight,
 \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
 the time has the same weight as the curve shape in the TWDTW analysis.}
 
+\item{...}{arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
+processing to pass to \code{\link[parallel]{mclapply}}.}
+
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE. For plot methods use \code{keep=TRUE}.}
 
@@ -87,17 +83,11 @@ Default is FALSE. For plot methods use \code{keep=TRUE}.}
 between one match and the interval of classification. Default is 0.5, 
 \emph{i.e.} an overlap minimum of 50\%.}
 
-\item{threshold}{A number. The TWDTW dissimilarity threshold, i.e. the maximum TWDTW 
-cost for consideration in the classification. Default is \code{Inf}.}
-
 \item{chunk.size}{An integer. Set the number of cells for each block, 
 see \code{\link[raster]{blockSize}} for details.}
 
 \item{filepath}{A character. The path to save the raster with results. If informed the 
 function saves in the current work directory.}
-
-\item{...}{arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
-processing to pass to \code{\link[parallel]{mclapply}}.}
 }
 \value{
 An object of class twdtw*.
@@ -128,9 +118,28 @@ mat1
 # Parallel processin
 require(paralle)
 mat_list = mclapply(as.list(ts), mc.cores=2, FUN=twdtwApply, y=patt, weight.fun=log_fun)
-mat2 = twdtwMatches(mat_list)
+mat2 = twdtwMatches(alignments=mat_list)
 }
-##
+\dontrun{
+# Run TWDTW analysis for raster time series 
+
+evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+
+time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
+                    by="6 month")
+log_fun = weight.fun=logisticWeight(-0.1,100)
+
+mat2 = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval,
+       filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

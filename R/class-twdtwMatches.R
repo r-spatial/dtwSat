@@ -112,7 +112,7 @@ setMethod("initialize",
 )
 
 setGeneric(name = "twdtwMatches", 
-          def = function(...) standardGeneric("twdtwMatches")
+          def = function(timeseries=NULL, patterns=NULL, alignments=NULL) standardGeneric("twdtwMatches")
 )
 
 #' @inheritParams twdtwMatches-class
@@ -123,25 +123,20 @@ setGeneric(name = "twdtwMatches",
 #' # Creating objects of class twdtwMatches 
 #' ts  = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
-#' mat = twdtwMatches(ts, patterns=patt)
+#' mat = twdtwApply(ts, patt, weight.fun = logisticWeight(-0.1, 100))
+#' mat = twdtwMatches(ts, patterns=patt, alignments=mat)
 #' mat
 #' 
 #' @export
-setMethod(f = "twdtwMatches", "twdtwTimeSeries",
+setMethod(f = "twdtwMatches", 
           definition = function(timeseries, patterns, alignments){
-              new("twdtwMatches", timeseries=timeseries, patterns=patterns, alignments=alignments)
+              aligs = alignments
+              if(is(alignments, "twdtwMatches")) alignments = list(alignments)
+              if(all(sapply(alignments, is.twdtwMatches))) {
+                aligs = alignments
+                if(is(alignments, "list")) aligs = do.call("c", lapply(alignments, function(x) x@alignments))
+                if(is.null(timeseries)) timeseries = do.call("twdtwTimeSeries", lapply(alignments, function(x) subset(x@timeseries)))
+                if(is.null(patterns)) patterns=alignments[[1]]@patterns
+              }
+              new("twdtwMatches", timeseries=timeseries, patterns=patterns, alignments=aligs)
           })
-
-#' @inheritParams twdtwMatches-class
-#' @aliases twdtwMatches-join
-#' @describeIn twdtwMatches Join list twdtwMatches objects.
-#' @export
-setMethod(f = "twdtwMatches", "list",
-          definition = function(..., alignments){
-              if(length(list(...))>0) alignments = c(alignments, list(...))
-              aligs = do.call("c", lapply(alignments, function(x) x@alignments))
-              timeseries = do.call("twdtwTimeSeries", lapply(alignments, function(x) subset(x@timeseries)))
-              new("twdtwMatches", timeseries=timeseries, patterns=alignments[[1]]@patterns, alignments=aligs)
-          })
-          
-          

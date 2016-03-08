@@ -6,22 +6,22 @@
 \alias{[[,twdtwMatches,numeric,ANY-method}
 \alias{as.list,twdtwMatches-method}
 \alias{as.list,twdtwRaster-method}
+\alias{index,twdtwMatches-method}
 \alias{is.twdtwMatches}
 \alias{is.twdtwMatches,ANY-method}
 \alias{labels,twdtwMatches-method}
 \alias{length,twdtwMatches-method}
 \alias{show,twdtwMatches-method}
 \alias{twdtwMatches}
-\alias{twdtwMatches,list-method}
-\alias{twdtwMatches,twdtwTimeSeries-method}
+\alias{twdtwMatches,ANY-method}
 \alias{twdtwMatches-class}
 \alias{twdtwMatches-crate}
-\alias{twdtwMatches-join}
 \title{class "twdtwMatches"}
 \usage{
-\S4method{twdtwMatches}{twdtwTimeSeries}(timeseries, patterns, alignments)
+\S4method{twdtwMatches}{ANY}(timeseries = NULL, patterns = NULL,
+  alignments = NULL)
 
-\S4method{twdtwMatches}{list}(..., alignments)
+\S4method{index}{twdtwMatches}(x)
 
 \S4method{length}{twdtwMatches}(x)
 
@@ -47,8 +47,6 @@
 \item{alignments}{an object of class list with the TWDTW results with 
 the same length as \code{timeseries} or a list of twdtwMatches.}
 
-\item{...}{objects of class twdtwMatches.}
-
 \item{x}{an object of class twdtwMatches.}
 
 \item{i}{indices of the time series.}
@@ -61,6 +59,8 @@ Default is TRUE.}
 \item{object}{an object of class twdtwMatches.}
 
 \item{labels}{a vector with labels of the time series.}
+
+\item{...}{objects of class twdtwMatches.}
 }
 \description{
 Class for Time-Weighted Dynamic Time Warping results.
@@ -68,8 +68,6 @@ Class for Time-Weighted Dynamic Time Warping results.
 \section{Methods (by generic)}{
 \itemize{
 \item \code{twdtwMatches}: Create object of class twdtwMatches.
-
-\item \code{twdtwMatches}: Join list twdtwMatches objects.
 
 \item \code{is.twdtwMatches}: Check if the object belongs to the class twdtwMatches.
 }}
@@ -114,7 +112,8 @@ matches
 # Creating objects of class twdtwMatches 
 ts  = twdtwTimeSeries(example_ts.list)
 patt = twdtwTimeSeries(patterns.list)
-mat = twdtwMatches(ts, patterns=patt)
+mat = twdtwApply(ts, patt, weight.fun = logisticWeight(-0.1, 100))
+mat = twdtwMatches(ts, patterns=patt, alignments=mat)
 mat
 
 }

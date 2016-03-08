@@ -81,6 +81,10 @@ index.twdtwTimeSeries = function(x){
   lapply(x@timeseries, index)
 }
 
+index.twdtwMatches = function(x){
+  lapply(getTimeSeries(x), index)
+}
+
 length.twdtwTimeSeries = function(x){
   length(x@timeseries)
 }
@@ -173,7 +177,13 @@ setMethod(f = "index", "twdtwRaster",
 #' @export
 setMethod(f = "index", "twdtwTimeSeries",
           definition = index.twdtwTimeSeries)
-           
+
+#' @inheritParams twdtwMatches-class
+#' @rdname twdtwMatches-class
+#' @export
+setMethod(f = "index", "twdtwMatches",
+          definition = index.twdtwMatches)
+          
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
@@ -247,7 +257,7 @@ setMethod("[", "twdtwRaster", function(x, i) {
   if(any(i > nlayers(x)))
     stop("subscript out of bounds")
   if(any(is.na(i))) stop("NA index not permitted")
-  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[i]])
+  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[1]])
 })
 
 #' @inheritParams twdtwRaster-class
@@ -275,10 +285,12 @@ setMethod("[", "twdtwMatches", function(x, i, j, drop=TRUE) {
   res = lapply(res, function(x) x[j])
   res = res[sapply(res, length)>0]
   if(!drop) return(res)
-  lapply(res, function(x)
+  lapply(res, function(x){
     res = do.call("rbind", lapply(seq_along(x), function(jj)
-       data.frame(from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=names(x[jj]))
-  )))
+            data.frame(from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=names(x[jj]))
+          ))
+    res[order(res$from),]      
+  })
 })
 
 #' @inheritParams twdtwMatches-class

@@ -125,6 +125,7 @@ evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = new("twdtwRaster", timeseries = evi, timeline = timeline)
 
+\dontrun{
 # Creating objects of class twdtwRaster 
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
@@ -137,7 +138,7 @@ nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
 mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
-
+}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

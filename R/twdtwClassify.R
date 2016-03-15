@@ -97,7 +97,8 @@ setMethod("twdtwClassify", "twdtwMatches",
 #' @examples
 #' \dontrun{
 #' # Run TWDTW analysis for raster time series 
-#' 
+#' load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
+#' patt = twdtwTimeSeries(temporal_patterns)
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -112,12 +113,15 @@ setMethod("twdtwClassify", "twdtwMatches",
 #'                     by="6 month")
 #' log_fun = weight.fun=logisticWeight(-0.1,100)
 #' 
-#' mat2 = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval,
-#'        filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
+#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#' 
+#' lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' 
 #' }
 setMethod("twdtwClassify", "twdtwRaster",
           function(x, patterns.labels=NULL, thresholds=Inf, fill=255, ...){
-                    if(is.null(patterns.labels)) patterns.labels = names(x)[-1]
+                  if(is.null(patterns.labels)) patterns.labels = names(x)[-1]
                   twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, ...)
            })
            
@@ -139,8 +143,7 @@ twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, ...){
     names(class_b) = paste0("date.",index(x)) 
     names(distance_b) = paste0("date.",index(x)) 
     
-    labels = factor( levels = c(seq_along(patterns.labels), fill), 
-                     labels = c(patterns.labels, "unclassified") )
+    labels = factor( values, levels = values, labels = c(patterns.labels, "unclassified") )
     
     if(is.null(filepath)) filepath = filename(x[[2]])
     twdtwRaster(Class=class_b, Distance=distance_b, ..., timeline=index(x), 

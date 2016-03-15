@@ -157,7 +157,8 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' @examples
 #' \dontrun{
 #' # Run TWDTW analysis for raster time series 
-#' 
+#' load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
+#' patt = twdtwTimeSeries(temporal_patterns)
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -172,8 +173,11 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #'                     by="6 month")
 #' log_fun = weight.fun=logisticWeight(-0.1,100)
 #' 
-#' mat2 = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval,
-#'        filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
+#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#' 
+#' lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' 
 #' }
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",

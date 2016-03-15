@@ -118,7 +118,7 @@ subset.twdtwMatches = function(x, timeseries.labels, patterns.labels, k){
       res
     }) 
   })
-  twdtwMatches(timeseries, patterns, alignments)
+  twdtwMatches(timeseries=timeseries, patterns=patterns, alignments=alignments)
 }
 
 #' @aliases subset-twdtwRaster

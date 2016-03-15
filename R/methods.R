@@ -410,4 +410,25 @@ setMethod("is.twdtwMatches", "ANY",
 #' @export
 setMethod("is.twdtwRaster", "ANY", 
           function(x) is(x, "twdtwRaster"))
-          
+         
+# #' @aliases summary
+# #' @inheritParams twdtwMatches-class
+# #' @describeIn twdtwMatches Summary of objects of class twdtwMatches.
+# #' @export         
+# setMethod("summary", 
+#           signature(object = "twdtwMatches"),
+#           function(object, labels=NULL, ...){
+#             summary.twdtw(object, labels=labels, ...)
+#           }
+# )
+# 
+# summary.twdtw = function(object, ...){
+#   lapply(as.list(object), function(obj){
+#     res = lapply(labels(obj)$patterns, function(l){
+#       m = subset(obj, patterns.labels=l)[[1]]
+#       c(labels=l, N.Matches=nrow(m), summary(m$distance))
+#     })
+#     data.frame(res)
+#   })
+# }
+

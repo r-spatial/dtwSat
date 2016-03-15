@@ -191,7 +191,7 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, filepath
   res = timeseries
   # Save a single file (complete time series) for each raster attribute 
   if (!is.null(filepath)) {
-    print("Saving raster objects. It might take some minutes depending on the objects size and format.")
+#     print("Saving raster objects. It might take some minutes depending on the objects size and format.")
     dir.create(filepath, showWarnings = FALSE)
     write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
     aux = c(doy=doy, res)

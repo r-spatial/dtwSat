@@ -116,10 +116,11 @@ setMethod("createPatterns", "twdtwTimeSeries",
 .createPattern = function(x, from, to, freq, attr, formula, ...){
   
   # Pattern period 
-  if( missing(from) | missing(to) ){
-    from = as.Date(min(index(x)))
-    to = as.Date(max(index(x)))
+  if( is.null(from) | is.null(to) ){
+    from = as.Date(min(index(x[[1]])))
+    to = as.Date(max(index(x[[1]])))
   }
+
   from = as.Date(from)
   to = as.Date(to)
   

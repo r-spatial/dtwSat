@@ -61,7 +61,7 @@
 #' @export
 plotMatches = function(x, timeseries.labels=1, patterns.labels=NULL, k=1, attr=1, shift=0.5, show.dist=FALSE){
  
-  x = subset(x, timeseries.labels[1], patterns.labels, k=max(k)) 
+  x = subset(x, timeseries.labels[1], patterns.labels) 
   ## Get data
   internals = getInternals(x)[[1]]
   if(any(sapply(internals, function(x) length(x$internals))<1))

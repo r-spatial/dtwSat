@@ -61,7 +61,7 @@ ts = twdtwTimeSeries(example_ts.list)
 patt = twdtwTimeSeries(patterns.list)
 log_fun = logisticWeight(-0.1, 100)
 time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
-mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
+mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
 best_mat = twdtwClassify(mat, breaks=time_intervals, overlap=0.5)
 
 \dontrun{

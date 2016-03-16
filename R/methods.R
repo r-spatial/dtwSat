@@ -287,7 +287,7 @@ setMethod("[", "twdtwMatches", function(x, i, j, drop=TRUE) {
   if(!drop) return(res)
   lapply(res, function(x){
     res = do.call("rbind", lapply(seq_along(x), function(jj)
-            data.frame(from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=x[[jj]]$label)
+            data.frame(Alig.N=seq_along(x[[jj]]$distance),from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=x[[jj]]$label)
           ))
     res[order(res$from),]      
   })

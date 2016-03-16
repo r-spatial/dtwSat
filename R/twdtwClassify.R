@@ -70,7 +70,7 @@ setGeneric(name = "twdtwClassify",
 #' patt = twdtwTimeSeries(patterns.list)
 #' log_fun = logisticWeight(-0.1, 100)
 #' time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
-#' mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
 #' best_mat = twdtwClassify(mat, breaks=time_intervals, overlap=0.5)
 #' 
 #' \dontrun{
@@ -152,66 +152,27 @@ twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, ...){
 }
 
 twdtwClassify.twdtwMatches = function(x, patterns.labels, breaks, overlap, thresholds, fill){
-    aligs = lapply(as.list(x), FUN = classifyIntervals, patterns.labels, breaks, overlap, thresholds, fill)
-    twdtwMatches(x@timeseries, patterns=x@patterns, alignments=aligs)
+    res = lapply(as.list(x), FUN = classifyIntervals, patterns.labels, breaks, overlap, thresholds, fill)
+    twdtwMatches(x@timeseries, patterns=x@patterns, alignments=res)
 }
 
 classifyIntervals = function(x, patterns.labels, breaks, overlap, thresholds, fill)
 {
   
   dist_table = x[[1, patterns.labels]]
+  #dist_table = dist_table[order(dist_table$distance),]
   labels = as.character(patterns.labels)
   names(labels) = labels
-  
   best_match = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
     from = breaks[i-1]
     to = breaks[i]
-    data.frame(from, to, K= .bestMatches(x=dist_table, start=from, end=to, overlap))
+    L = .bestMatches(x=dist_table, start=from, end=to, overlap)
+    if(is.na(L)) return(NULL)
+    data.frame(from, to, K=dist_table$Alig.N[L], label=dist_table$label[L])
   }))
-  best_match = best_match[!is.na(best_match$K),]
-  
-  if(nrow(best_match)<1) {
-      res = lapply(names(labels), function(p){
-            alignments = list()
-            alignments$label = numeric(0)
-            alignments$from = numeric(0)
-            alignments$to = numeric(0)
-            alignments$distance = numeric(0)
-            alignments$K = 0
-            alignments$matching = list()
-            alignments$internals = getInternals(x, 1, p)[[1]][[p]]$internals
-            alignments
-      })
-  } else {
-  
-      K = best_match$K
-      
-      best_match = best_match[ dist_table$distance[best_match$K]<=thresholds , ]
-      K = best_match$K
-      P = lapply(labels, function(p) K[dist_table$label[K]==p])
-      from = lapply(labels, function(p) best_match$from[dist_table$label[K]==p])
-      to = lapply(labels, function(p) best_match$to[dist_table$label[K]==p])
-      J = unlist(lapply(x@alignments[[1]], seq_along))
-      res = lapply(names(P), function(p){
-          alignments = list()
-          alignments$label = p
-          alignments$from = from[[p]]
-          alignments$to = to[[p]]
-          alignments$distance = dist_table$distance[P[[p]]]
-          alignments$K = length(P[[p]])
-          alignments$matching = lapply(P[[p]], function(k) { 
-              matching = getMatches(x, 1, p)[[1]][[p]]$matching
-              if(length(matching)<J[k]) return(NULL)
-                matching[[J[k]]]
-          })
-          alignments$matching = alignments$matching[!sapply(alignments$matching, is.null)]
-          alignments$internals = getInternals(x, 1, p)[[1]][[p]]$internals
-          alignments
-      })
-      res = res[sapply(res, function(r) r$K>0)]
-  }
-  names(res) = names(labels)
-  res
+  best_match = lapply(labels, function(p) best_match[best_match$label==p,])
+  res = list(lapply(labels, function(p) subset(x, patterns.labels=p, k=best_match[[p]]$K)@alignments[[1]][[1]] ))
+  new("twdtwMatches", timeseries=x@timeseries, patterns=x@patterns, alignments=res)
 }
 
 .bestMatches = function(x, start, end, overlap){

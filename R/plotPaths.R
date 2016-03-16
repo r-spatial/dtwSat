@@ -78,10 +78,9 @@ plotPaths = function(x, timeseries.labels=NULL, patterns.labels=NULL, k=NULL){
   
   # Get minimun cost paths
   df.path = do.call("rbind", lapply(y, function(p){
-    
-    res = do.call("rbind", lapply(seq_along(matching[[p]]$matching), function(i){
+    res = do.call("rbind", lapply(seq_along(matching[[p]]$matching), function(i)
       data.frame(matching[[p]]$matching[[i]], alignment=i)
-    }))
+    ))
     res$Pattern = p 
     res 
   }))
@@ -112,7 +111,7 @@ plotPaths = function(x, timeseries.labels=NULL, patterns.labels=NULL, k=NULL){
   gp = ggplot(data=df.m, aes_string(y='Var3', x='Var2')) +
     facet_wrap(~Pattern, scales = "free", ncol=1) + 
     geom_raster(aes_string(fill='value')) + 
-    scale_fill_gradientn(name = 'Warp cost', colours = terrain.colors(100)) + 
+    scale_fill_gradientn(name = 'Warping cost', colours = terrain.colors(100)) + 
     geom_path(data=df.path, aes_string(y='Var3', x='index2', group='alignment')) + 
     scale_x_continuous(expand = c(0, 0), breaks=x.axis$x.breaks, labels=x.axis$x.labels) +
     scale_y_continuous(expand = c(0, 0), breaks=y.axis$y.breaks, labels=y.axis$y.labels) +

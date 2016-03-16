@@ -58,7 +58,7 @@ plotCostMatrix = function(x, timeseries.labels=NULL, patterns.labels=NULL, matri
   if(is.na(pt))
     stop("matrix.name is not costMatrix, localMatrix, or timeWeight")
   
-  legend_name = c("Warp cost", "Local cost", "Time weight")[pt]
+  legend_name = c("Accumulated cost", "Local cost", "Time weight")[pt]
   
   x = subset(x, timeseries.labels[1], patterns.labels) 
   y = as.character(labels(x)$patterns)

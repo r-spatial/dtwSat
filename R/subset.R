@@ -99,7 +99,8 @@ setMethod("subset", "twdtwMatches", function(x, timeseries.labels=NULL, patterns
 subset.twdtwMatches = function(x, timeseries.labels, patterns.labels, k){
   if(is.null(timeseries.labels)) timeseries.labels = as.character(labels(x@timeseries))
   if(is.null(patterns.labels)) patterns.labels = as.character(labels(x@patterns))
-  if(is.null(k)) k = length(x)
+  if(is.null(k)) k = 1:length(x)
+  k = unique(k)
   I = timeseries.labels
   J = patterns.labels
   if(is.character(I)) I = which(!is.na(match(x@timeseries@labels, timeseries.labels)))
@@ -110,11 +111,13 @@ subset.twdtwMatches = function(x, timeseries.labels, patterns.labels, k){
   alignments = lapply(I, function(i){
     lapply(J, function(j){
       res = x@alignments[[i]][[j]]
-      if(res$K>k) res$K = k
-      res$from = res$from[1:res$K]
-      res$to = res$to[1:res$K]
-      res$distance = res$distance[1:res$K]
-      if(length(res$matching)>k) res$matching = res$matching[1:res$K]
+      k = k[ k<=res$K ]
+      res$K = length(k)
+      res$from = res$from[k]
+      res$to = res$to[k]
+      res$distance = res$distance[k]
+      if(length(k)<1) res$label = numeric(0)
+      if(length(res$matching)>length(k)) res$matching = res$matching[k]
       res
     }) 
   })

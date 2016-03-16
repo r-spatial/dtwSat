@@ -4,7 +4,7 @@
 \alias{plotPatterns}
 \title{Plotting temporal patterns}
 \usage{
-plotPatterns(x, labels = NULL, year = 2005)
+plotPatterns(x, labels = NULL, attr, year = 2005)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwTimeSeries}}, 
@@ -12,6 +12,10 @@ plotPatterns(x, labels = NULL, year = 2005)
 
 \item{labels}{a vector with labels of the time series. If not declared 
 the function will plot all time series.}
+
+\item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 
+indicating the attribute for plotting. If not declared the function will plot 
+all attributes.}
 
 \item{year}{An integer. The base year to shift the dates of the time series to. 
 If NULL then it does not shif the time series. Default is 2005.}
@@ -25,6 +29,7 @@ Method for plotting the temporal patterns.
 \examples{
 patt = twdtwTimeSeries(patterns.list)
 plotPatterns(patt)
+plotPatterns(patt, attr="evi")
 
 }
 \author{

@@ -30,18 +30,14 @@ Method for plotting the alignments and TWDTW
 dissimilarity measures.
 }
 \examples{
-log_fun = logisticWeight(-0.1, 50)
+log_fun = logisticWeight(-0.1, 100)
 ts = twdtwTimeSeries(example_ts.list)
 patt = twdtwTimeSeries(patterns.list)
 mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
 
-plotMatches(mat1)
+plotAlignments(mat1)
 
-plotMatches(mat1, patterns.labels="Soybean", k=4)
-
-plotMatches(mat1, patterns.labels=c("Soybean","Maize"), k=4)
-
-plotMatches(mat1, patterns.labels=c("Soybean","Cotton"), k=c(3,1))
+plotAlignments(mat1, attr=c("evi","ndvi"))
 
 }
 \author{

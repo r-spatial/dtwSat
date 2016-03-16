@@ -22,6 +22,9 @@
 #' \code{\link[zoo]{zoo}}, or list of \code{\link[zoo]{zoo}}.
 #' @param labels a vector with labels of the time series. If missing, all 
 #' elements in the list will be plotted (up to a maximum of 6).
+#' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
+#' indicating the attribute for plotting. If not declared the function will plot 
+#' all attributes.
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
 #' 
@@ -30,12 +33,14 @@
 #' \code{\link[dtwSat]{plotPatterns}}
 #'  
 #' @examples
-#' ts = twdtwTimeSeries(example_ts)
+#' ts = twdtwTimeSeries(example_ts.list)
 #' plotTimeSeries(ts)
+#' plotTimeSeries(ts, attr="evi")
 #' 
 #' @export
-plotTimeSeries = function(x, labels=NULL){
+plotTimeSeries = function(x, labels=NULL, attr){
   
+  if(is(x, "twdtwMatches")) x = x@timeseries
   if(is(x, "twdtwTimeSeries")) x = subset(x, labels) 
   x = twdtwTimeSeries(x, labels)
   labels = labels(x)
@@ -43,15 +48,18 @@ plotTimeSeries = function(x, labels=NULL){
   if(length(labels)>6) labels = labels[1:6]
       
   # Build data.frame
-  df.p = do.call("rbind", lapply(labels, function(p)
-    data.frame(Time=index(x[[p]]), x[[p]], Series=p)
-  ))
+  if(missing(attr)) attr = names(x[[1]])
+  df.p = do.call("rbind", lapply(labels, function(p){
+    ts = x[[p]][,attr,drop=FALSE]
+    data.frame(Time=index(ts), ts, Series=p)
+  }))
   df.p = melt(df.p, id.vars=c("Time","Series"))
   
   # Plot time series 
   gp = ggplot(df.p, aes_string(x="Time", y="value", colour="variable") ) + 
     geom_line() + 
-    facet_wrap(~Series, scales = "free_x") 
+    theme(legend.position = "bottom") + 
+    facet_wrap(~Series, scales = "free_x", ncol=1) 
   
   gp
   

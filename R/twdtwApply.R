@@ -117,7 +117,7 @@ setGeneric(name = "twdtwApply",
 #' @aliases twdtwApply-twdtwTimeSeries 
 #' @examples
 #' # Applying TWDTW analysis to objects of class twdtwTimeSeries
-#' log_fun = logisticWeight(-0.1, 50)
+#' log_fun = logisticWeight(-0.1, 100)
 #' ts = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
 #' mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)

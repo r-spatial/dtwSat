@@ -45,10 +45,10 @@
 #' \code{\link[dtwSat]{plotClassification}}.
 #'   
 #' @examples
-#' log_fun = logisticWeight(-0.1, 50)
+#' log_fun = logisticWeight(-0.1, 100)
 #' ts = twdtwTimeSeries(example_ts.list)
 #' patt = twdtwTimeSeries(patterns.list)
-#' mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
+#' mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
 #' 
 #' plotMatches(mat1)
 #' 

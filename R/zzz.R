@@ -25,7 +25,6 @@
 #' @import methods
 #' @importFrom proxy dist
 #' @importFrom reshape2 melt
-#' @importFrom waveslim mra
 #' @importFrom scales pretty_breaks date_format percent
 #' @importFrom grDevices terrain.colors gray.colors
 #' @importFrom plyr alply
@@ -33,7 +32,6 @@
 #' @importFrom sp Polygon Polygons SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates 
 #' @importFrom mgcv gam predict.gam 
 #' @importFrom RColorBrewer brewer.pal 
-#' @importFrom caret createDataPartition 
 #' @importFrom stats xtabs ave window
 #' 
 NULL

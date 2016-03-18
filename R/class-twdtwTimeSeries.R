@@ -81,8 +81,10 @@ setMethod("initialize",
         .Object@labels = factor( paste0("ts",seq_along(timeseries)) ) 
         if(!is.null(names(timeseries))) .Object@labels = factor(names(timeseries))
       }
-      if(!missing(labels))
+      if(!missing(labels)){
         .Object@labels = factor(labels)
+        names(.Object@timeseries) = as.character(labels)
+      }
       validObject(.Object)
       return(.Object)
   }

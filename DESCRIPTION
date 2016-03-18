@@ -24,7 +24,6 @@ Depends:
 Imports:
     dtw,
     proxy,
-    waveslim,
     scales,
     reshape2,
     grDevices,
@@ -33,8 +32,7 @@ Imports:
     stats,
     parallel,
     sp,
-    mgcv,
-    caret
+    mgcv
 Suggests:
     testthat,
     knitr,

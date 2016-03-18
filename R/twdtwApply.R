@@ -237,8 +237,8 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     
     fun = function(i){
       # Get time series from raster 
-      print("Get TS")
-      array.list = lapply(lapply(x, getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i]), alply, 1, as.numeric)
+      #print("Get TS")
+      array.list = lapply(lapply(as.list(x), getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i]), alply, 1, as.numeric)
       nts = seq(1, ncell(array.list$doy))
       
       # Build twdtwTimeSeries 
@@ -246,7 +246,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       
       # Apply TWDTW for each pixel time series
 #       twdtw_results = lapply(as.list(ts), FUN=twdtwApply, y=y, weight.fun=weight.fun, keep=FALSE)
-      print("Apply TWDTW")
+      #print("Apply TWDTW")
       twdtw_results = mclapply(as.list(ts), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
                       mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=twdtwApply, y=y, weight.fun=weight.fun, 
                       dist.method=dist.method, step.matrix=step.matrix, n=n, span=span, min.length=min.length, 
@@ -255,10 +255,11 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       twdtw_results = twdtwMatches(alignments=twdtw_results)
       
       # Get the lowest distances for each pixel and each time interval 
-      print("Subset TWDTW by class")
-      subset_twdtw = lapply(levels, function(l) subset(twdtw_results, patterns.labels=l))
+      #print("Subset TWDTW by class")
+      subset_twdtw = mclapply(levels, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
+                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(l) subset(twdtw_results, patterns.labels=l))
 
-      print("Get best match")
+      #print("Get best match")
       res = mclapply(subset_twdtw, mc.preschedule = FALSE, mc.set.seed = mc.set.seed, 
                       mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup, 
                       function(s) {
@@ -271,7 +272,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       })
 
       # Create raster list 
-      print("Writing Raster")
+      #print("Writing Raster")
       lapply(levels, function(l) writeValues(b_files[[l]], res[[l]], blocks$row[i]))
     }
     

@@ -88,7 +88,7 @@ rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy
 
 time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
                     by="12 month")
-log_fun = weight.fun=logisticWeight(-0.1,100)
+log_fun = weight.fun=logisticWeight(-0.1,50)
 
 r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)

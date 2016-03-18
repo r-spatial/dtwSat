@@ -17,7 +17,7 @@
   label = as.character(labels(y))
   names(label) = label
   timeseries = x[[1]]
-  res = lapply(label, function(l){
+  res = lapply(seq_along(label), function(l){
     pattern = y[[l]]
     # Adjust columns by name if possible  
     pattern = pattern[,!is.na(match(names(pattern), names(timeseries)))]
@@ -66,7 +66,7 @@
     I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
     
     alignments = list()
-    alignments$label      = l
+    alignments$label      = label[l]
     alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
     alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]     # This is a numeric vector 

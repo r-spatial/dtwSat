@@ -46,6 +46,9 @@
 #' @param fill a character or value to fill the classification gaps. 
 #' For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, and 
 #' for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.
+#' 
+#' @param filepath A character. The path to save the raster with results. If not informed the 
+#' function saves in the same directory as the input time series raster. 
 #'  
 #' @param ... arguments to pass to specifique methods for each twdtw* signature 
 #' and other arguments to pass to \code{\link[raster]{writeRaster}}. 
@@ -110,25 +113,26 @@ setMethod("twdtwClassify", "twdtwMatches",
 #' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 #' 
 #' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-#'                     by="6 month")
+#'                     by="12 month")
 #' log_fun = weight.fun=logisticWeight(-0.1,100)
 #' 
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
 #'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
 #' 
-#' lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 #' 
 #' }
 setMethod("twdtwClassify", "twdtwRaster",
-          function(x, patterns.labels=NULL, thresholds=Inf, fill=255, ...){
-                  if(is.null(patterns.labels)) patterns.labels = names(x)[-1]
-                  twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, ...)
+          function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath, ...){
+                  if(is.null(patterns.labels)) patterns.labels = coverages(x)[-1]
+                  if(missing(filepath)) filepath = if(fromDisk(x[[2]])){dirname(filename(x[[2]]))}else{NULL}
+                  twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, filepath=filepath, ...)
            })
            
-twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, ...){
+twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, filepath, ...){
     
     if(thresholds==Inf) thresholds = 9999
-        
+   
     out = lapply(seq_along(index(x)), function(i) {
       r = lapply(as.list(x)[patterns.labels], raster, layer=i)
       b = brick(r)
@@ -143,11 +147,10 @@ twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, ...){
     names(class_b) = paste0("date.",index(x)) 
     names(distance_b) = paste0("date.",index(x)) 
     
-    labels = factor( values, levels = values, labels = c(patterns.labels, "unclassified") )
-    
-    if(is.null(filepath)) filepath = filename(x[[2]])
+    levels = c(seq_along(patterns.labels), fill)
+    labels = c(patterns.labels, "unclassified")
     twdtwRaster(Class=class_b, Distance=distance_b, ..., timeline=index(x), 
-                labels=labels, filepath=dirname(filepath))
+                labels=labels, levels=levels, filepath=filepath)
                 
 }
 

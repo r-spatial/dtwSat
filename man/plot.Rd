@@ -4,20 +4,25 @@
 \name{plot}
 \alias{plot}
 \alias{plot,twdtwMatches,ANY-method}
+\alias{plot,twdtwRaster,ANY-method}
 \alias{plot,twdtwTimeSeries,ANY-method}
 \alias{plot-twdtwMatches}
+\alias{plot-twdtwRaster}
 \alias{plot-twdtwTimeSeries}
 \title{Plotting twdtw* objects}
 \usage{
 \S4method{plot}{twdtwTimeSeries,ANY}(x, type = "timeseries", ...)
 
 \S4method{plot}{twdtwMatches,ANY}(x, type = "alignments", ...)
+
+\S4method{plot}{twdtwRaster,ANY}(x, type = "maps", ...)
 }
 \arguments{
 \item{x}{An object of class twdtw*.}
 
 \item{type}{A character for the plot type: ''paths'', ''matches'', 
-''alignments'', ''classification'', ''cost'', ''patterns'', or ''timeseries''.}
+''alignments'', ''classification'', ''cost'', ''patterns'', ''timeseries'',
+''maps'', ''area'', or ''changes''.}
 
 \item{...}{additional arguments to pass to plotting functions.
 \code{\link[dtwSat]{plotPaths}}, 
@@ -25,8 +30,11 @@
 \code{\link[dtwSat]{plotAlignments}}, 
 \code{\link[dtwSat]{plotMatches}}, 
 \code{\link[dtwSat]{plotClassification}},
-\code{\link[dtwSat]{plotPatterns}}, or 
-\code{\link[dtwSat]{plotTimeSeries}}.}
+\code{\link[dtwSat]{plotPatterns}}, 
+\code{\link[dtwSat]{plotTimeSeries}},
+\code{\link[dtwSat]{plotMaps}},
+\code{\link[dtwSat]{plotArea}}, or
+\code{\link[dtwSat]{plotChanges}}.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.

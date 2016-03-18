@@ -30,8 +30,12 @@
 #' passed to "\code{...}". If not informed the layers are set to the 
 #' names of objects in "\code{...}". 
 #' 
-#' @param labels a vector of class \code{\link[base]{factor}} with 
-#' levels and labels of the values in the Raster* objects. This is 
+#' @param labels a vector of class \code{\link[base]{character}} with 
+#' labels of the values in the Raster* objects. This is 
+#' useful for categorical Raster* values of land use classes. 
+#' 
+#' @param levels a vector of class \code{\link[base]{numeric}} with 
+#' levels of the values in the Raster* objects. This is 
 #' useful for categorical Raster* values of land use classes. 
 #' 
 #' @param doy A \code{\link[raster]{RasterBrick-class}} or 
@@ -81,7 +85,7 @@
 NULL
 twdtwRaster = setClass(
   Class = "twdtwRaster",
-  slots = c(timeseries = "list", timeline="Date", layers = "character", labels = "factor"),
+  slots = c(timeseries = "list", timeline="Date", layers = "character", labels = "character", levels="numeric"),
   validity = function(object){
     if(!is(object@timeline, "Date")){
       stop("[twdtwTimeSeries: validation] Invalid timeline object, class different from Date.")
@@ -95,8 +99,14 @@ twdtwRaster = setClass(
     if( length(object@layers)>0 & length(object@layers)!=length(object@timeseries) ){
       stop("[twdtwTimeSeries: validation] Invalid length, layers and timeseries do not have the same length.")
     }else{}
-    if(!is(object@labels, "factor")){
-      stop("[twdtwTimeSeries: validation] Invalid labels object, class different from factor.")
+    if(!is(object@labels, "character")){
+      stop("[twdtwTimeSeries: validation] Invalid labels object, class different from character.")
+    }else{}
+    if(!is(object@levels, "numeric")){
+      stop("[twdtwTimeSeries: validation] Invalid levels object, class different from numeric.")
+    }else{}
+    if( length(object@labels) != length(object@levels) ){
+      stop("[twdtwTimeSeries: validation] Invalid length, labels and levels do not have the same length.")
     }else{}
     lapply(object@timeseries, FUN=compareRaster, object@timeseries[[1]], extent=TRUE, rowcol=TRUE, 
                   crs=TRUE, res=TRUE, orig=TRUE, rotation=TRUE, stopiffalse=TRUE)              
@@ -107,10 +117,11 @@ twdtwRaster = setClass(
 setMethod("initialize",
   signature = "twdtwRaster",
   definition = 
-    function(.Object, timeseries, timeline, doy, layers, labels){
+    function(.Object, timeseries, timeline, doy, layers, labels, levels){
       .Object@timeseries = list(doy=brick(), Layer0=brick())
       .Object@timeline = as.Date(0)
-      .Object@labels = factor(NULL)
+      .Object@labels = as.character()
+      .Object@levels = numeric()
       if(!missing(timeseries)){
         if(is(timeseries, "RasterBrick") | is(timeseries, "RasterStack")) 
            timeseries = list(timeseries)
@@ -123,18 +134,22 @@ setMethod("initialize",
         names(.Object@timeseries) = c("doy", layers)
       .Object@layers = names(.Object@timeseries)
       if(!missing(labels))
-        .Object@labels = factor(labels)
+        .Object@labels = as.character(labels)
+      if(missing(levels))
+        levels = seq_along(.Object@labels)
+      .Object@levels = as.numeric(levels)
       if(!missing(timeline))
         .Object@timeline = as.Date(timeline)
       validObject(.Object)
-      .Object@timeseries = lapply(.Object@timeseries, function(x) { names(x)=paste0("date.",timeline); x})
+      names(.Object@timeline) = paste0("date.",format(.Object@timeline,"%Y.%m.%d"))
+      .Object@timeseries = lapply(.Object@timeseries, function(x) { names(x)=names(.Object@timeline); x})
       return(.Object)
   }
 )
 
 
 setGeneric(name = "twdtwRaster",  
-          def = function(..., timeline, doy=NULL, layers=NULL, labels=NULL, filepath=NULL) 
+          def = function(..., timeline, doy=NULL, layers=NULL, labels=NULL, levels=NULL, filepath=NULL) 
             standardGeneric("twdtwRaster")
 )
 
@@ -159,7 +174,7 @@ setGeneric(name = "twdtwRaster",
 #' }
 #' @export
 setMethod(f = "twdtwRaster",  
-          definition = function(..., timeline, doy, layers, labels, filepath){
+          definition = function(..., timeline, doy, layers, labels, levels, filepath){
               arg_names = names(list(...))
               not_named = setdiff(as.character(match.call(expand.dots=TRUE)), as.character(match.call(expand.dots=FALSE)))
               if(is.null(arg_names)){ 
@@ -176,10 +191,10 @@ setMethod(f = "twdtwRaster",
               timeseries = x[I]
               dotargs = x[-I]
               creat.twdtwRaster(timeseries=timeseries, timeline=as.Date(timeline), doy=doy,
-                                layers=layers, labels=labels, filepath=filepath, dotargs=dotargs)
+                                layers=layers, labels=labels, levels=levels, filepath=filepath, dotargs=dotargs)
           })
 
-creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, filepath, dotargs){
+creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, filepath, dotargs){
   
   if(is.null(doy)) doy = creat.doy(timeseries[[1]], timeline)
   
@@ -199,7 +214,6 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, filepath
       filename = paste(filepath, i, sep="/")
       dotargs = c(x = aux[[i]], filename = filename, dotargs)
       r = do.call(writeRaster, dotargs)
-      names(r) = paste0("date.",timeline)
       r
     })
     names(res_brick) = names(aux)
@@ -207,7 +221,7 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, filepath
     doy = res_brick[[1]]
   }
   if(is.null(layers)) layers = names(res)
-  new("twdtwRaster", timeseries = res, timeline = timeline, doy=doy, layers = layers, labels = labels)
+  new("twdtwRaster", timeseries = res, timeline = timeline, doy=doy, layers = layers, labels = labels, levels=levels)
 }
 
 creat.doy = function(x, timeline){

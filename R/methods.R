@@ -12,11 +12,30 @@
 #                                                             #
 ###############################################################
 
+
+setGeneric("layers", 
+           function(x) standardGeneric("layers"))
+
+setGeneric("coverages", 
+           function(x) standardGeneric("coverages"))
+
+setGeneric("bands", 
+           function(x) standardGeneric("bands"))
+           
+setGeneric("is.twdtwTimeSeries", 
+           function(x) standardGeneric("is.twdtwTimeSeries"))
+
+setGeneric("is.twdtwMatches", 
+           function(x) standardGeneric("is.twdtwMatches"))
+
+setGeneric("is.twdtwRaster", 
+           function(x) standardGeneric("is.twdtwRaster"))
+           
 as.list.twdtwTimeSeries = function(x) lapply(seq_along(x), function(i) 
       new("twdtwTimeSeries", x[[i]], labels(x)[i]) )
 
 as.list.twdtwRaster = function(x) {
-    I = names(x)
+    I = coverages(x)
     names(I) = I
     lapply(I, function(i) x[[i]])
   }
@@ -58,15 +77,27 @@ nrow.twdtwRaster = function(x){
 }
 
 nlayers.twdtwRaster = function(x){
-  length(names(x))
+  length(coverages(x))
 }
 
 levels.twdtwRaster = function(x){
-  levels(x@labels)
+  x@levels
+}
+
+layers.twdtwRaster = function(x){
+  x@layers
+}
+
+coverages.twdtwRaster = function(x){
+  x@layers
+}
+
+bands.twdtwRaster = function(x){
+  x@layers
 }
 
 names.twdtwRaster = function(x){
-  x@layers
+  names(x@timeline)
 }
 
 length.twdtwRaster = function(x){
@@ -160,6 +191,27 @@ setMethod(f = "nlayers", "twdtwRaster",
 setMethod(f = "levels", "twdtwRaster",
           definition = levels.twdtwRaster)
 
+#' @aliases layers
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod(f = "layers", "twdtwRaster",
+          definition = layers.twdtwRaster)
+
+#' @aliases coverages
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod(f = "coverages", "twdtwRaster",
+          definition = coverages.twdtwRaster)
+          
+#' @aliases bands
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod(f = "bands", "twdtwRaster",
+          definition = bands.twdtwRaster)
+         
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
@@ -353,7 +405,7 @@ show.twdtwMatches = function(object){
 # Show objects of class twdtwRaster 
 show.twdtwRaster = function(object){
   cat("An object of class \"twdtwRaster\"\n")
-  cat("Time series layers:",names(object),"\n")
+  cat("Time series layers:",coverages(object),"\n")
   cat("Time range:",paste(min(object@timeline)),"...",paste(max(object@timeline)),"\n")
   cat("dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
   cat("resolution:",res(object)," (x, y)\n")
@@ -379,16 +431,6 @@ setMethod(f = "show", "twdtwMatches",
 #' @export
 setMethod(f = "show", "twdtwRaster",
           definition = show.twdtwRaster)
-
-          
-setGeneric("is.twdtwTimeSeries", 
-           function(x) standardGeneric("is.twdtwTimeSeries"))
-
-setGeneric("is.twdtwMatches", 
-           function(x) standardGeneric("is.twdtwMatches"))
-
-setGeneric("is.twdtwRaster", 
-           function(x) standardGeneric("is.twdtwRaster"))
            
 #' @aliases is.twdtwTimeSeries
 #' @inheritParams twdtwTimeSeries-class

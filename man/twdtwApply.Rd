@@ -86,7 +86,7 @@ between one match and the interval of classification. Default is 0.5,
 \item{chunk.size}{An integer. Set the number of cells for each block, 
 see \code{\link[raster]{blockSize}} for details.}
 
-\item{filepath}{A character. The path to save the raster with results. If informed the 
+\item{filepath}{A character. The path to save the raster with results. If not informed the 
 function saves in the current work directory.}
 }
 \value{
@@ -135,13 +135,13 @@ timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="da
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 
 time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-                    by="6 month")
-log_fun = weight.fun=logisticWeight(-0.1,100)
+                    by="12 month")
+log_fun = weight.fun=logisticWeight(-0.1,50)
 
 r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
 
-lucc = twdtwClassify(r_twdtw, format="GTiff")
+r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 
 }
 }

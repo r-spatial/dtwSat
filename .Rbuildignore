@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.vignettes$
+^\vignettes$
+^twdtw_results/
 
 # Other files
 README.md

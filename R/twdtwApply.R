@@ -71,7 +71,7 @@
 #' Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
 #' meaning that the matching cannot be shorter than half of the pattern length.
 #' 
-#' @param filepath A character. The path to save the raster with results. If informed the 
+#' @param filepath A character. The path to save the raster with results. If not informed the 
 #' function saves in the current work directory. 
 #' 
 #' @param chunk.size An integer. Set the number of cells for each block, 
@@ -170,13 +170,13 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 #' 
 #' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-#'                     by="6 month")
-#' log_fun = weight.fun=logisticWeight(-0.1,100)
+#'                     by="12 month")
+#' log_fun = weight.fun=logisticWeight(-0.1,50)
 #' 
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
 #'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
 #' 
-#' lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 #' 
 #' }
 #' @export
@@ -212,26 +212,26 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     threads = seq(1, blocks$n)
     
     # Match raster bands to pattern bands
-    raster_bands = names(x)
+    raster_bands = coverages(x)
     pattern_names = names(y@timeseries[[1]])
     matching_bands = pattern_names[pattern_names %in% raster_bands]
     if(length(matching_bands)<1)
       stop(paste0("Attributes (bands) of the raster and patterns do not match"))
     x = subset(x, layers=matching_bands)
-    raster_bands = names(x)
+    raster_bands = coverages(x)
     
     # Set raster levels and labels 
     levels = levels(y)
     names(levels) = levels
     
     # Open raster fiels for results 
-    if(is.null(filepath)) filepath = getwd()
+    if(is.null(filepath)) filepath = paste0(getwd(), "/twdtw_results")
     r_template = brick(x@timeseries$doy, nl=length(breaks)-1)
     dir.create(filepath, showWarnings = FALSE, recursive = TRUE)
-    filename = paste0(filepath,"/twdtw_distance_",levels)
+    filename = paste0(filepath,"/twdtw_distance_from_",levels)
     names(filename) = levels
     b_files = lapply(filename, function(i) writeStart(r_template, filename=i, ...))
-    
+
     # Get time line 
     timeline = as.Date(index(x))
     

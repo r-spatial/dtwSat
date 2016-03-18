@@ -4,12 +4,18 @@
 \name{twdtwRaster-class}
 \alias{[,twdtwRaster,ANY,ANY,ANY-method}
 \alias{[[,twdtwRaster,ANY,ANY-method}
+\alias{bands}
+\alias{bands,twdtwRaster-method}
+\alias{coverages}
+\alias{coverages,twdtwRaster-method}
 \alias{dim,twdtwRaster-method}
 \alias{extent,twdtwRaster-method}
 \alias{index,twdtwRaster-method}
 \alias{is.twdtwRaster}
 \alias{is.twdtwRaster,ANY-method}
 \alias{labels,twdtwRaster-method}
+\alias{layers}
+\alias{layers,twdtwRaster-method}
 \alias{length,twdtwRaster-method}
 \alias{levels,twdtwRaster-method}
 \alias{names,twdtwRaster-method}
@@ -25,7 +31,7 @@
 \title{class "twdtwRaster"}
 \usage{
 \S4method{twdtwRaster}{ANY}(..., timeline, doy = NULL, layers = NULL,
-  labels = NULL, filepath = NULL)
+  labels = NULL, levels = NULL, filepath = NULL)
 
 \S4method{dim}{twdtwRaster}(x)
 
@@ -42,6 +48,12 @@
 \S4method{nlayers}{twdtwRaster}(x)
 
 \S4method{levels}{twdtwRaster}(x)
+
+\S4method{layers}{twdtwRaster}(x)
+
+\S4method{coverages}{twdtwRaster}(x)
+
+\S4method{bands}{twdtwRaster}(x)
 
 \S4method{names}{twdtwRaster}(x)
 
@@ -75,8 +87,12 @@ If \code{doy} is not informed then at least one Raster* object must be passed th
 passed to "\code{...}". If not informed the layers are set to the 
 names of objects in "\code{...}".}
 
-\item{labels}{a vector of class \code{\link[base]{factor}} with 
-levels and labels of the values in the Raster* objects. This is 
+\item{labels}{a vector of class \code{\link[base]{character}} with 
+labels of the values in the Raster* objects. This is 
+useful for categorical Raster* values of land use classes.}
+
+\item{levels}{a vector of class \code{\link[base]{numeric}} with 
+levels of the values in the Raster* objects. This is 
 useful for categorical Raster* values of land use classes.}
 
 \item{filepath}{A character. The path to save the raster time series. If informed the 

@@ -21,7 +21,8 @@
 #' 
 #' @param x An object of class twdtw*.
 #' @param type A character for the plot type: ''paths'', ''matches'', 
-#' ''alignments'', ''classification'', ''cost'', ''patterns'', or ''timeseries''.
+#' ''alignments'', ''classification'', ''cost'', ''patterns'', ''timeseries'',
+#' ''maps'', ''area'', or ''changes''.
 #' 
 #' @param ... additional arguments to pass to plotting functions.
 #' \code{\link[dtwSat]{plotPaths}}, 
@@ -29,8 +30,11 @@
 #' \code{\link[dtwSat]{plotAlignments}}, 
 #' \code{\link[dtwSat]{plotMatches}}, 
 #' \code{\link[dtwSat]{plotClassification}},
-#' \code{\link[dtwSat]{plotPatterns}}, or 
-#' \code{\link[dtwSat]{plotTimeSeries}}.
+#' \code{\link[dtwSat]{plotPatterns}}, 
+#' \code{\link[dtwSat]{plotTimeSeries}},
+#' \code{\link[dtwSat]{plotMaps}},
+#' \code{\link[dtwSat]{plotArea}}, or
+#' \code{\link[dtwSat]{plotChanges}}.
 #'  
 #' @return A \link[ggplot2]{ggplot} object.
 #' 
@@ -95,5 +99,112 @@ setMethod("plot",
             )
           }
 )
+
+
+
+#' @aliases plot-twdtwRaster
+#' @inheritParams plot
+#' @rdname plot
+#' @export
+setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .PlotRaster(x, type=type, ...))
+
+.PlotRaster = function(x, type, time.levels=NULL, time.labels=NULL, class.levels=NULL, class.labels=NULL, class.colors=NULL, layers=NULL, ...){
+  
+  if(type=="distance") {
+      
+      if( is.null(time.levels))
+         time.levels = names(x)
+          
+      if(is(time.levels, "numeric"))
+         time.levels = names(x)[time.levels]
+
+      if( is.null(time.labels))
+         time.labels = format(as.Date(time.levels, "date.%Y.%m.%d"), "%Y")
+            
+      if(length(time.levels)!=length(time.labels))
+        stop("time.levels and time.labels have different length")
+        
+      if(is.null(layers)) {
+        if(any(coverages(x)=="Distance")){
+          layers = "Distance" 
+          time.levels = time.levels 
+          labels = time.labels 
+          time.labels=NULL
+        } 
+        else {
+          layers = coverages(x)[-1]
+          time.levels = time.levels[1]
+          time.labels = time.labels[1]
+          labels = layers
+        }
+      } else {
+          if(is(layers, "numeric")) layers = coverages(x)[layers]
+          time.levels = time.levels[1]
+          time.labels = time.labels[1]
+          labels = layers
+      }
+      
+      x = lapply(as.list(x)[layers], FUN=subset, subset=time.levels)
+      gp = .plotDistance(brick(x), layers, labels, time.labels)
+      
+  } else {
+    
+      if( is.null(time.levels))
+        time.levels = names(x)
+      
+      if(is(time.levels, "numeric"))
+        time.levels = names(x)[time.levels]
+      
+      if( is.null(time.labels))
+        time.labels = format(index(x), "%Y")
+      
+      if(length(time.levels)!=length(time.labels))
+        stop("time.levels and time.labels have different length")
+      
+      if(length(time.levels)>9){
+        time.levels = time.levels[1:9]
+        time.labels = time.labels[1:9]
+      }
+      
+      if( is.null(class.levels))
+        class.levels = levels(x)
+        
+      if(length(class.levels)<1)
+        class.levels = sort(unique(as.numeric(x[[2]][])))
+      
+      if( is.null(class.labels))  
+        class.labels = labels(x)
+          
+      if(length(class.labels)<1)
+        class.labels = as.character(class.levels)
+      
+      if( is.null(class.colors) )
+        class.colors = brewer.pal(length(class.levels), "Set3")
+      
+      if( length(class.colors)<length(class.levels) )
+        class.colors = brewer.pal(length(class.levels), "Set3")
+      
+      if(length(class.levels)!=length(class.labels))
+        stop("class.levels and class.labels have different length")  
+
+      names(time.labels)  = time.levels
+      names(time.levels)  = time.labels
+      names(class.colors) = class.labels
+      names(class.levels) = class.labels
+      names(class.labels) = class.labels
+      
+      # HOW TO GENERALIZE TO ALLOW PLOT DISTANCES 
+      x = subset(x=x[[2]], subset=time.levels)
+
+      pt = pmatch(type, c("maps","area","changes"))
+
+      gp = switch(pt,
+            .plotMaps(x, time.levels, time.labels, class.levels, class.labels, class.colors),
+            .plotArea(x, time.levels, time.labels, class.levels, class.labels, class.colors),
+            .plotChanges(x, time.levels, time.labels, class.levels, class.labels, class.colors)
+      )
+  }
+  gp
+}
 
 

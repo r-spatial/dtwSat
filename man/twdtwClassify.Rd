@@ -16,7 +16,7 @@ twdtwClassify(x, ...)
   thresholds = Inf, fill = "unclassified")
 
 \S4method{twdtwClassify}{twdtwRaster}(x, patterns.labels = NULL,
-  thresholds = Inf, fill = 255, ...)
+  thresholds = Inf, fill = 255, filepath, ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -47,6 +47,9 @@ in the classification. Default is \code{Inf} for all \code{patterns.labels}.}
 \item{fill}{a character or value to fill the classification gaps. 
 For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, and 
 for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.}
+
+\item{filepath}{A character. The path to save the raster with results. If not informed the 
+function saves in the same directory as the input time series raster.}
 }
 \value{
 An object of class twdtw*.
@@ -84,13 +87,13 @@ timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="da
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 
 time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-                    by="6 month")
+                    by="12 month")
 log_fun = weight.fun=logisticWeight(-0.1,100)
 
 r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
 
-lucc = twdtwClassify(r_twdtw, format="GTiff")
+r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 
 }
 }

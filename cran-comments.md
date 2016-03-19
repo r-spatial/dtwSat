@@ -17,16 +17,15 @@ There was 1 NOTE:
   The 'tif' files were included in order to give examples of spatiotemporal analysis using dtwSat. This example is the smallest that is still meaningful for a spatiotemporal land use changes. This files are crutial for a comlete documentation of the package. 
 
 * Fortran optimization 
-  
+ 
   Two DTW functions written in Fortran were included in this version, one to perform the accumulated cost computation and the second to trace back the time series matches.
-
 
 # v0.1.0
 
 * authors / copyright holder
 
   - C code removed from the package 
-  
+ 
 * checking R code for possible problems ... NOTE
 plotCostMatrix: no visible global function definition for 'gray.colors'
 

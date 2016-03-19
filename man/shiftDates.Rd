@@ -7,7 +7,7 @@
 \alias{shiftDates,twdtwTimeSeries-method}
 \alias{shiftDates,zoo-method}
 \alias{shiftDates-list}
-\alias{shiftDates-twdtwMatches}
+\alias{shiftDates-twdtwTimeSeries}
 \alias{shiftDates-zoo}
 \title{Shift dates}
 \usage{

@@ -9,7 +9,7 @@
 \alias{twdtwApply-twdtwTimeSeries}
 \title{Apply TWDTW analysis}
 \usage{
-twdtwApply(x, y, resample = FALSE, length = NULL, weight.fun = NULL,
+twdtwApply(x, y, resample = TRUE, length = NULL, weight.fun = NULL,
   dist.method = "Euclidean", step.matrix = symmetric1, n = NULL,
   span = NULL, min.length = 0.5, theta = 0.5, ...)
 
@@ -28,7 +28,7 @@ Usually, it is a set of unclassified time series.}
 \item{y}{an object of class \link[dtwSat]{twdtwTimeSeries}. 
 The temporal patterns.}
 
-\item{resample}{resample the patterns to have the same length. Default is FALSE.
+\item{resample}{resample the patterns to have the same length. Default is TRUE.
 See \link[dtwSat]{resampleTimeSeries} for details.}
 
 \item{length}{An integer. Patterns length used with \code{patterns.length}. 

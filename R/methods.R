@@ -338,9 +338,9 @@ setMethod("[", "twdtwMatches", function(x, i, j, drop=TRUE) {
   res = res[sapply(res, length)>0]
   if(!drop) return(res)
   lapply(res, function(x){
-    res = do.call("rbind", lapply(seq_along(x), function(jj)
+    res = do.call("rbind", lapply(seq_along(x), function(jj){
             data.frame(Alig.N=seq_along(x[[jj]]$distance),from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=x[[jj]]$label, row.names=NULL)
-          ))
+          }))
     res[order(res$from),]      
   })
 })

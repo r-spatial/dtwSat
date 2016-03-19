@@ -96,6 +96,20 @@ setMethod("getTimeSeries", "twdtwTimeSeries",
 setMethod("getTimeSeries", "twdtwMatches",
           function(object, labels=NULL) getTimeSeries(object=object@timeseries, labels=labels) )
 
+          
+#' @aliases getPatterns-twdtwMatches
+#' @inheritParams getTimeSeries
+#' @rdname getTimeSeries 
+#' @export
+setMethod("getPatterns", "twdtwMatches",
+          function(object, labels=NULL) getTimeSeries(object=object@patterns, labels=labels) )
+          
+# Get time series from object of class twdtwTimeSeries by labels 
+getTimeSeries.twdtwTimeSeries = function(object, labels){
+  res = subset(object, labels)
+  res@timeseries
+}
+
 #' @aliases getTimeSeries-twdtwRaster
 #' @inheritParams getTimeSeries
 #' @rdname getTimeSeries 
@@ -121,19 +135,6 @@ setMethod("getTimeSeries", "twdtwRaster",
               extractTimeSeries.twdtwRaster(object, y)
           })
 
-#' @aliases getPatterns-twdtwMatches
-#' @inheritParams getTimeSeries
-#' @rdname getTimeSeries 
-#' @export
-setMethod("getPatterns", "twdtwMatches",
-          function(object, labels=NULL) getTimeSeries(object=object@patterns, labels=labels) )
-          
-# Get time series from object of class twdtwTimeSeries by labels 
-getTimeSeries.twdtwTimeSeries = function(object, labels){
-  res = subset(object, labels)
-  res@timeseries
-}
-
 extractTimeSeries.twdtwRaster = function(x, y){
     
   # Reproject points to raster projection 
@@ -155,7 +156,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
   twdtwTimeSeries(res, labels=labels)
 }
 
-.extractTimeSeries = function(pto, p, x, y, timeline){
+.extractTimeSeries = function(p, pto, x, y, timeline){
   s = y[pto[p],]
   # Check if the sample time interval overlaps the raster time series 
   from  = try(as.Date(s$from))

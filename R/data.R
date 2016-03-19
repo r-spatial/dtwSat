@@ -76,7 +76,20 @@
 #' 
 "example_ts"
 
-
+#' @title Data: Labels of the satellite time series in example_ts 
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This labels are based on field work.
+#' 
+#' @docType data
+#' @format An object of class \link[base]{data.frame}, whose attributas are: 
+#' the label of the crop class ''label'', the start of the crop period ''from'',
+#' and the end of the crop period ''to''. The dates are in the format ''yyyy-mm-dd''.
+#' 
+#' @seealso 
+#' \link[dtwSat]{example_ts}. 
+#' 
+"example_ts_labels"
 
 #' @title Data: A list of satellite time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}

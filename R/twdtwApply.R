@@ -32,7 +32,7 @@
 #' @param ... arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
 #' processing to pass to \code{\link[parallel]{mclapply}}.
 #'
-#' @param resample resample the patterns to have the same length. Default is FALSE.
+#' @param resample resample the patterns to have the same length. Default is TRUE.
 #' See \link[dtwSat]{resampleTimeSeries} for details.
 #' 
 #' @param length An integer. Patterns length used with \code{patterns.length}. 
@@ -108,7 +108,7 @@
 #' 
 #' @export  
 setGeneric(name = "twdtwApply", 
-          def = function(x, y, resample=FALSE, length=NULL, weight.fun=NULL, 
+          def = function(x, y, resample=TRUE, length=NULL, weight.fun=NULL, 
                 dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
                 span=NULL, min.length=0.5, theta = 0.5, ...) standardGeneric("twdtwApply"))
 
@@ -192,7 +192,20 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                   if( overlap < 0 & 1 < overlap )
                     stop("overlap out of range, it must be a number between 0 and 1")
                   if(is.null(breaks))
-                    breaks = seq(as.Date(from), as.Date(to), by=by)
+                    if( !is.null(from) &  !is.null(to) ){
+                      breaks = seq(as.Date(from), as.Date(to), by=by)    
+                    } else {
+                      patt_range = lapply(index(y), range)
+                      patt_diff = trunc(sapply(patt_range, diff)/30)+1
+                      min_range = which.min(patt_diff)
+                      by = patt_diff[[min_range]]
+                      from = patt_range[[min_range]][1]
+                      to = from 
+                      month(to) = month(to) + by
+                      year(from) = year(range(index(x))[1])
+                      year(to) = year(range(index(x))[2])
+                      breaks = seq(from, to, paste(by,"month"))
+                    }
                   breaks = as.Date(breaks)
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)

@@ -88,8 +88,23 @@ setMethod("twdtwClassify", "twdtwMatches",
                     if(is.null(patterns.labels)) patterns.labels = labels(x@patterns)
                     if( overlap < 0 & 1 < overlap )
                       stop("overlap out of range, it must be a number between 0 and 1")
-                    if(is.null(breaks))
-                      breaks = seq(as.Date(from), as.Date(to), by=by)
+                  if(is.null(breaks))
+                    if( !is.null(from) &  !is.null(to) ){
+                      breaks = seq(as.Date(from), as.Date(to), by=by)    
+                    } else {
+                      y = x@patterns
+                      patt_range = lapply(index(y), range)
+                      patt_diff = trunc(sapply(patt_range, diff)/30)+1
+                      min_range = which.min(patt_diff)
+                      by = patt_diff[[min_range]]
+                      from = patt_range[[min_range]][1]
+                      to = from 
+                      month(to) = month(to) + by
+                      dates = as.Date(unlist(index(x@timeseries)))
+                      year(from) = year(min(dates))
+                      year(to) = year(max(dates))
+                      breaks = seq(from, to, paste(by,"month"))
+                    }
                     breaks = as.Date(breaks)
                   twdtwClassify.twdtwMatches(x, patterns.labels=patterns.labels, breaks=breaks, 
                             overlap=overlap, thresholds=thresholds, fill=fill)

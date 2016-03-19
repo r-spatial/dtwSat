@@ -33,6 +33,8 @@
 #' @importFrom mgcv gam predict.gam 
 #' @importFrom RColorBrewer brewer.pal 
 #' @importFrom stats xtabs ave window
+#' @importFrom lubridate month month<- day day<- year year<-
+#' @importFrom caret createDataPartition 
 #' 
 NULL
 

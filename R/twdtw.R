@@ -73,6 +73,7 @@
     alignments$K          = length(I)           # This is an interger 
     alignments$matching   = list()              # This is a list of data.frames with the matching points 
     alignments$internals  = list()              # These is a list variables used in the TWDTW computation
+    if(alignments$K<1) alignments$label = numeric(0)
     
     if(keep){
       # Trace low cost paths (k-th paths)

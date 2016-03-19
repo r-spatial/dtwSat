@@ -32,6 +32,8 @@ Imports:
     stats,
     parallel,
     sp,
+    lubridate,
+    caret,
     mgcv
 Suggests:
     testthat,

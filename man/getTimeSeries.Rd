@@ -18,10 +18,10 @@
 
 \S4method{getTimeSeries}{twdtwMatches}(object, labels = NULL)
 
+\S4method{getPatterns}{twdtwMatches}(object, labels = NULL)
+
 \S4method{getTimeSeries}{twdtwRaster}(object, y, labels = NULL,
   proj4string = CRS(as.character(NA)), id.labels = NULL)
-
-\S4method{getPatterns}{twdtwMatches}(object, labels = NULL)
 }
 \arguments{
 \item{object}{an object of class of class twdtw*.}

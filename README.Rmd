@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output:
   md_document:
     variant: markdown_github
-bibliography: ./vignettes/references.bib
+bibliography: ./inst/references.bib
 ---
 
 ```{r, echo=FALSE}
@@ -17,6 +17,13 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- Set global env -->
+```{r , echo=FALSE, eval = TRUE, cache = FALSE}
+new_theme = theme_get()
+new_theme$text$family = "Helvetica"
+new_theme$text$size = 8
+old_theme = theme_set(new_theme)
+```
 
 <!--
 # Otput to render md file for github webpage 

@@ -78,3 +78,4 @@ Collate:
     'twdtwApply.R'
     'twdtwClassify.R'
     'zzz.R'
+VignetteBuilder: knitr

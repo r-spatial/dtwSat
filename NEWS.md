@@ -2,41 +2,27 @@
 
 * Include Fortran optimization 
  
-  Two functions written in Fortran were included in this version, one to perform the accumulated cost and the second to trace back the alignment paths
+   This version includes three function written in Fortran. 
 
-* Extend dtwSat class for multiple alignments 
+* Obsolete features 
 
-  The dtwSat class and its methods were extended to afford multiple alignments 
-
-* Remove dependency 
-
-  Dependency from dtw package replaced by the import of DTW step patterns from that package 
+  The S4 class 'twdtw' no longer exists.
 
 * New features
  
-  plotLUCC method for raster object. Land use and land cover change analysis 
-
-  plotPatterns method to plot temporal patterns 
+  New S4 classes: twdtwTimeSeries, twdtwMatches, and twdtwRaster.
  
-  createPattern function to create temporal patterns from several samples time series 
+  plot methods for twdtwRaster object: 'maps', 'area', 'changes', and 'distance'.
  
-  extractSampleTimeSeries extract time series from raster objects 
+  plot methods for twdtwTimeSeries objects: ''patterns'' and ''timeseries''.
  
-  twdtwApply for raster and 3D arrays
-
-  twdtw extended to afford multiple temporal patterns in the same call
+  plot methods for twdtwMatches objects: ''paths'', ''matches'', ''alignments'', ''classification'', ''cost'', ''patterns'', and ''timeseries''.
  
-  twdtw method extended to receive a weight function defined by the user
+  createPattern function to create temporal patterns based on set of time series.
  
-  plotAlignments visualization of alignments and distances for several patterns in the plot 
+  getTimeSeries extract time series from raster objects.
  
-  plotMatch visualization of the matching points for several alignments in the same plot 
- 
-  plotGroup visualization of best classe for each time interval  
-
-* Update documentation
- 
-  General review in the documentation
+  twdtwApply apply the TWDTW analysis for raster and time series objects.
 
 
 # dtwSat v0.1.1 Release Notes

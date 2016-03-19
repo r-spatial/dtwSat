@@ -14,11 +14,11 @@ There was 1 NOTE:
   sub-directories of 1Mb or more:
     lucc_MT  6.2Mb
 
-  The 'tif' files were included in order to give examples of spatiotemporal analysis using dtwSat. This example is the smallest that is still meaningful for a spatiotemporal land use changes. This files are crutial for a comlete documentation of the package. 
+  The version includes 'tif' files for an example of spatiotemporal analysis using dtwSat. The example is small but meaningful for a spatiotemporal analysis of land use changes. The 'tif' used in the documentation of the package and in the vignette included in this version. 
 
-* Fortran optimization 
+* Optimization 
  
-  Two DTW functions written in Fortran were included in this version, one to perform the accumulated cost computation and the second to trace back the time series matches.
+  This version includes three function written in Fortran. 
 
 # v0.1.0
 

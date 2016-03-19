@@ -178,6 +178,8 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' 
 #' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 #' 
+#' plot(r_lucc)
+#' 
 #' }
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",

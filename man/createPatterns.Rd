@@ -56,6 +56,7 @@ timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="da
 rts = twdtwRaster(evi, ndvi, timeline=timeline)
 
 # Read field samples 
+\dontrun{
 field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
 prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), 
                   what = "character")
@@ -69,7 +70,7 @@ patt = createPatterns(x=ts, from="2005-09-01", to="2006-09-01", freq=8, formula 
 # Plot patterns 
 autoplot(patt[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
-
+}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

@@ -29,7 +29,7 @@ FALSE retrieves User's Accuracy (UA) and Producer's Accuracy (PA).
 Dafault is FALSE.}
 }
 \description{
-
+This functions create data partitions and compute assessment metrics.
 }
 \details{
 \describe{
@@ -46,7 +46,19 @@ Dafault is FALSE.}
 }
 }
 \examples{
-
+\dontrun{
+load(system.file("lucc_MT/field_samples_ts.RData", package="dtwSat"))
+set.seed(1)
+partitions = splitDataset(field_samples_ts, p=0.1, times=5, 
+                          freq = 8, formula = y ~ s(x, bs="cc"))
+log_fun = logisticWeight(alpha=-0.1, beta=50) 
+twdtw_res = lapply(partitions, function(x){
+   res = twdtwApply(x = x$ts, y = x$patterns, weight.fun = log_fun, n=1)
+   twdtwClassify(x = res)
+})
+assessment = twdtwAssess(twdtw_res)
+head(assessment, 5)
+}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

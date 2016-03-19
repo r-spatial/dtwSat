@@ -45,6 +45,29 @@
 #'  
 #' @examples
 #' \dontrun{
+#' # Run TWDTW analysis for raster time series 
+#' load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
+#' patt = twdtwTimeSeries(temporal_patterns)
+#' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+#' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+#' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+#' 
+#' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
+#'                     by="12 month")
+#' log_fun = weight.fun=logisticWeight(-0.1,50)
+#' 
+#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
+#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#' 
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' 
+#' plotMaps(r_lucc)
 #' 
 #' }
 #' @export

@@ -22,7 +22,7 @@
 #' @param x An object of class twdtw*.
 #' @param type A character for the plot type: ''paths'', ''matches'', 
 #' ''alignments'', ''classification'', ''cost'', ''patterns'', ''timeseries'',
-#' ''maps'', ''area'', or ''changes''.
+#' ''maps'', ''area'', ''changes'', and ''distance''.
 #' 
 #' @param ... additional arguments to pass to plotting functions.
 #' \code{\link[dtwSat]{plotPaths}}, 
@@ -50,17 +50,6 @@
 #'       \cr\code{timeseries}: Method for plotting the temporal patterns.
 #'       }
 #' }
-#' 
-#' @examples 
-#' 
-#' # Plot patterns 
-#' patt = twdtwTimeSeries(patterns.list)
-#' gp1 = plot(patt, type="patterns")
-#' gp1
-#' 
-#' ts = twdtwTimeSeries(example_ts)
-#' gp2 = plot(ts, type="timeseries")
-#' gp2
 #' 
 #' @export
 NULL

@@ -69,6 +69,7 @@ setGeneric("createPatterns", function(x, ...) standardGeneric("createPatterns"))
 #' rts = twdtwRaster(evi, ndvi, timeline=timeline)
 #' 
 #' # Read field samples 
+#' \dontrun{
 #' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
 #' prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), 
 #'                   what = "character")
@@ -82,7 +83,7 @@ setGeneric("createPatterns", function(x, ...) standardGeneric("createPatterns"))
 #' # Plot patterns 
 #' autoplot(patt[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 #' 
-#' 
+#' }
 #' @export
 setMethod("createPatterns", "twdtwTimeSeries",
           function(x, from=NULL, to=NULL, freq=1, attr=NULL, split=TRUE, formula, ...) {

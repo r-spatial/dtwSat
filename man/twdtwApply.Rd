@@ -143,6 +143,8 @@ r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval,
 
 r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 
+plot(r_lucc)
+
 }
 }
 \author{

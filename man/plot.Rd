@@ -22,7 +22,7 @@
 
 \item{type}{A character for the plot type: ''paths'', ''matches'', 
 ''alignments'', ''classification'', ''cost'', ''patterns'', ''timeseries'',
-''maps'', ''area'', or ''changes''.}
+''maps'', ''area'', ''changes'', and ''distance''.}
 
 \item{...}{additional arguments to pass to plotting functions.
 \code{\link[dtwSat]{plotPaths}}, 
@@ -54,18 +54,6 @@ Methods for plotting objects of class twdtw*.
       \cr\code{timeseries}: Method for plotting the temporal patterns.
       }
 }
-}
-\examples{
-
-# Plot patterns 
-patt = twdtwTimeSeries(patterns.list)
-gp1 = plot(patt, type="patterns")
-gp1
-
-ts = twdtwTimeSeries(example_ts)
-gp2 = plot(ts, type="timeseries")
-gp2
-
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

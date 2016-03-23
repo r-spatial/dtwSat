@@ -11,7 +11,7 @@ plotTimeSeries(x, labels = NULL, attr)
 \code{\link[zoo]{zoo}}, or list of \code{\link[zoo]{zoo}}.}
 
 \item{labels}{a vector with labels of the time series. If missing, all 
-elements in the list will be plotted (up to a maximum of 6).}
+elements in the list will be plotted (up to a maximum of 16).}
 
 \item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 
 indicating the attribute for plotting. If not declared the function will plot 

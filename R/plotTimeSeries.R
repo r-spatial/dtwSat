@@ -21,7 +21,7 @@
 #' @param x An object of class \code{\link[dtwSat]{twdtwTimeSeries}}, 
 #' \code{\link[zoo]{zoo}}, or list of \code{\link[zoo]{zoo}}.
 #' @param labels a vector with labels of the time series. If missing, all 
-#' elements in the list will be plotted (up to a maximum of 6).
+#' elements in the list will be plotted (up to a maximum of 16).
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
 #' indicating the attribute for plotting. If not declared the function will plot 
 #' all attributes.
@@ -42,16 +42,24 @@ plotTimeSeries = function(x, labels=NULL, attr){
   
   if(is(x, "twdtwMatches")) x = x@timeseries
   if(is(x, "twdtwTimeSeries")) x = subset(x, labels) 
-  x = twdtwTimeSeries(x, labels)
-  labels = labels(x)
+  if(is.null(labels)) labels = labels(x) 
+  new_labels = as.character(labels(x))
+  labels_tabel = table(new_labels)
+  if(any(labels_tabel>1))
+    for(p in names(labels_tabel)){
+      i = p==labels(x)
+      new_labels[i] = paste(new_labels[i], 1:labels_tabel[p])
+    }
+  x = twdtwTimeSeries(x, labels=new_labels)
+  labels = new_labels
   
-  if(length(labels)>6) labels = labels[1:6]
+  if(length(labels)>16) labels = labels[1:16]
       
   # Build data.frame
   if(missing(attr)) attr = names(x[[1]])
-  df.p = do.call("rbind", lapply(labels, function(p){
-    ts = x[[p]][,attr,drop=FALSE]
-    data.frame(Time=index(ts), ts, Series=p)
+  df.p = do.call("rbind", lapply(as.list(x), function(xx){
+    ts = xx[[1]][,attr,drop=FALSE]
+    data.frame(Time=index(ts), ts, Series=labels(xx)[1])
   }))
   df.p = melt(df.p, id.vars=c("Time","Series"))
   

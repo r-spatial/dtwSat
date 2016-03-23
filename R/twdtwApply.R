@@ -175,10 +175,14 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' 
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
 #'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#'
+#' plot(r_twdtw, type="distance")
 #' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
 #' 
 #' plot(r_lucc)
+#' 
+#' plot(r_lucc, type="distance")
 #' 
 #' }
 #' @export
@@ -253,11 +257,14 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     fun = function(i){
       # Get time series from raster 
       #print("Get TS")
-      array.list = lapply(lapply(as.list(x), getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i]), alply, 1, as.numeric)
+      array.list = lapply(mclapply(as.list(x), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
+                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i]), 
+                      alply, 1, as.numeric)
       nts = seq(1, ncell(array.list$doy))
       
       # Build twdtwTimeSeries 
-      ts = twdtwTimeSeries(lapply(nts, .bulidZoo, x=array.list, timeline=timeline))
+      ts = twdtwTimeSeries(mclapply(nts, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
+                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=.bulidZoo, x=array.list, timeline=timeline))
       
       # Apply TWDTW for each pixel time series
 #       twdtw_results = lapply(as.list(ts), FUN=twdtwApply, y=y, weight.fun=weight.fun, keep=FALSE)

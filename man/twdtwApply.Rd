@@ -141,9 +141,13 @@ log_fun = weight.fun=logisticWeight(-0.1,50)
 r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
 
-r_lucc = twdtwClassify(r_twdtw, format="GTiff")
+plot(r_twdtw, type="distance")
+
+r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
 
 plot(r_lucc)
+
+plot(r_lucc, type="distance")
 
 }
 }

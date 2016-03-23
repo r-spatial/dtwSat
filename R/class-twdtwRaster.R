@@ -90,7 +90,7 @@ twdtwRaster = setClass(
     if(!is(object@timeline, "Date")){
       stop("[twdtwTimeSeries: validation] Invalid timeline object, class different from Date.")
     }else{}
-    if(any(!(sapply(object@timeseries, is, "RasterBrick") | sapply(object@timeseries, is, "RasterStack")))){
+    if(any(!(sapply(object@timeseries, is, "RasterBrick") | sapply(object@timeseries, is, "RasterStack") | sapply(object@timeseries, is, "RasterLayer")))){
       stop("[twdtwRaster: validation] Invalid timeseries object, class different from Raster*.")
     }else{}
     if(!is(object@layers, "character")){
@@ -118,16 +118,17 @@ setMethod("initialize",
   signature = "twdtwRaster",
   definition = 
     function(.Object, timeseries, timeline, doy, layers, labels, levels){
+      
       .Object@timeseries = list(doy=brick(), Layer0=brick())
       .Object@timeline = as.Date(0)
       .Object@labels = as.character()
       .Object@levels = numeric()
       if(!missing(timeseries)){
-        if(is(timeseries, "RasterBrick") | is(timeseries, "RasterStack")) 
+        if(is(timeseries, "RasterBrick") | is(timeseries, "RasterStack") | is(timeseries, "RasterLayer") ) 
            timeseries = list(timeseries)
         if(is.null(names(timeseries))) names(timeseries) = paste0("Layer",seq_along(timeseries))
         .Object@timeseries = c(.Object@timeseries[1], timeseries)
-      } 
+      }
       if(missing(doy)) doy = creat.doy(.Object@timeseries[[2]], timeline)
       .Object@timeseries$doy = doy 
       if(!missing(layers))
@@ -184,7 +185,7 @@ setMethod(f = "twdtwRaster",
               }
               x = list(...)
               names(x) = c(arg_names)
-              I = which(sapply(x, is, "RasterBrick") | sapply(x, is, "RasterStack"))
+              I = which(sapply(x, is, "RasterBrick") | sapply(x, is, "RasterStack") | sapply(x, is, "RasterLayer"))
               if(length(I) < 1)
                 stop("there is no Raster* objects in the list of arguments")
               # Split arguments 

@@ -20,8 +20,9 @@
   res = lapply(seq_along(label), function(l){
     pattern = y[[l]]
     # Adjust columns by name if possible  
-    pattern = pattern[,!is.na(match(names(pattern), names(timeseries)))]
-    timeseries = timeseries[,!is.na(match(names(timeseries), names(pattern)))]
+    #pattern = pattern[,!is.na(match(names(pattern), names(timeseries)))]
+    #timeseries = timeseries[,!is.na(match(names(timeseries), names(pattern)))]
+    
     # Get day of the year
     ty = index(pattern)
     tx = index(timeseries)

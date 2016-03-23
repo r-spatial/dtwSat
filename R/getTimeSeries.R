@@ -177,7 +177,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
   ts = data.frame(sapply(x[-I], function(x) x[p,layer:(layer+nl-1)]))
   dates = dates[layer:(layer+nl-1)]
   k = !duplicated(dates)
-  zoo(data.frame(ts[k,]), dates[k])
+  zoo(data.frame(ts[k,, drop=FALSE]), dates[k])
 }
 
 .getPointsOverRaster = function(x, y){

@@ -296,7 +296,7 @@ setMethod("[", "twdtwTimeSeries", function(x, i) {
 #' @export
 setMethod("[[", "twdtwTimeSeries", function(x, i) {
   if(any(is.na(i))) stop("NA index not permitted")
-  x@timeseries[[i]]
+  x@timeseries[[i, drop=FALSE]]
 })
 
 #' @inheritParams twdtwRaster-class

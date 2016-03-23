@@ -254,6 +254,11 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     # Get time line 
     timeline = as.Date(index(x))
     
+    get_aligs = function(x){
+      twdtwApply(x, y=y, weight.fun=weight.fun, dist.method=dist.method, step.matrix=step.matrix, 
+                 n=n, span=span, min.length=min.length, theta=theta, keep=FALSE)@alignments[[1]]
+    }
+    
     fun = function(i){
       # Get time series from raster 
       #print("Get TS")
@@ -269,13 +274,12 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       # Apply TWDTW for each pixel time series
 #       twdtw_results = lapply(as.list(ts), FUN=twdtwApply, y=y, weight.fun=weight.fun, keep=FALSE)
       #print("Apply TWDTW")
-      twdtw_results = mclapply(as.list(ts), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
-                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=twdtwApply, y=y, weight.fun=weight.fun, 
-                      dist.method=dist.method, step.matrix=step.matrix, n=n, span=span, min.length=min.length, 
-                      theta=theta, keep=FALSE)
-                      
-      twdtw_results = twdtwMatches(alignments=twdtw_results)
+      twdtw_aligs = mclapply(as.list(ts), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
+                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=get_aligs)
       
+      
+      twdtw_results = twdtwMatches(timeseries=ts, patterns=y, alignments=twdtw_aligs)
+
       # Get the lowest distances for each pixel and each time interval 
       #print("Subset TWDTW by class")
       subset_twdtw = mclapply(levels, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
@@ -300,7 +304,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     
     # Apply TWDTW analysis 
     out.list = lapply(threads, FUN = fun)
-    
+
     # Close raster files 
     b_files = lapply(b_files, writeStop)
     

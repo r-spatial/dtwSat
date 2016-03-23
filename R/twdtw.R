@@ -83,6 +83,7 @@
     }
     alignments
   })
+  names(res) = label
   res
 }
 

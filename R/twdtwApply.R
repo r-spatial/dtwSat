@@ -288,9 +288,9 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
                       mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(l) subset(twdtw_results, patterns.labels=l))
 
       #print("Get best match")
-      res = lapply(subset_twdtw, function(s) {
-                      res_array = mclapply(as.list(s), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, 
-                                            mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(x)
+      res = mclapply(subset_twdtw, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, 
+                      mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(s) {
+                      res_array = lapply(as.list(s), function(x)
                             sapply(seq_along(breaks)[-1], function(i) 
                                     .lowestDistances(x=x[[1]], start=breaks[i-1], end=breaks[i], overlap=overlap)
                             )

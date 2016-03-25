@@ -174,7 +174,7 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' log_fun = weight.fun=logisticWeight(-0.1,50)
 #' 
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3, chunk.size=500)
 #'
 #' plot(r_twdtw, type="distance")
 #' 
@@ -267,6 +267,8 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
                       alply, 1, as.numeric)
       nts = seq(1, ncell(array.list$doy))
       
+      if(!mc.silent) print(paste0("Procesing threads ",i,"/",threads[length(threads)]))
+            
       # Build twdtwTimeSeries 
       ts = twdtwTimeSeries(mclapply(nts, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
                       mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=.bulidZoo, x=array.list, timeline=timeline))

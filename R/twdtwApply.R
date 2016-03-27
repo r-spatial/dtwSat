@@ -174,7 +174,8 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' log_fun = weight.fun=logisticWeight(-0.1,50)
 #' 
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3, chunk.size=500)
+#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3, 
+#'           chunk.size=1000)
 #'
 #' plot(r_twdtw, type="distance")
 #' 
@@ -262,7 +263,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     
     fun = function(i){
 
-      if(!mc.silent) print(paste0("Procesing threads ",i,"/",threads[length(threads)]))
+      if(!mc.silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
       
       # Get time series from raster 
       #ts_list = lapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i])

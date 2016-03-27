@@ -14,10 +14,11 @@
 
 .twdtw = function(x, y, weight.fun, dist.method, step.matrix, 
                   n, span, min.length, theta, keep){
-  label = as.character(labels(y))
-  names(label) = label
+  labels = as.character(labels(y))
+  names(labels) = labels
   timeseries = x[[1]]
-  res = lapply(seq_along(label), function(l){
+  
+  fun = function(l){
     pattern = y[[l]]
     # Adjust columns by name if possible  
     #pattern = pattern[,!is.na(match(names(pattern), names(timeseries)))]
@@ -67,7 +68,7 @@
     I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
     
     alignments = list()
-    alignments$label      = label[l]
+    alignments$label      = labels[l]
     alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
     alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]     # This is a numeric vector 
@@ -82,8 +83,14 @@
       alignments$internals = internals  
     }
     alignments
-  })
-  names(res) = label
+  }
+  
+  res = try(lapply(seq_along(labels), FUN=fun), silent = TRUE)
+  
+  if(is(res, "try-error")) 
+    res = lapply(labels, function(l) list(label = numeric(0), from = numeric(0), to = numeric(0), distance = numeric(0), K = numeric(0), matching = list(), internals  = list()))
+  
+  names(res) = labels
   res
 }
 

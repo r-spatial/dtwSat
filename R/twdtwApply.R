@@ -125,7 +125,7 @@ setGeneric(name = "twdtwApply",
 #' 
 #' \dontrun{
 #' # Parallel processin
-#' require(paralle)
+#' require(parallel)
 #' mat_list = mclapply(as.list(ts), mc.cores=2, FUN=twdtwApply, y=patt, weight.fun=log_fun)
 #' mat2 = twdtwMatches(alignments=mat_list)
 #' }
@@ -249,58 +249,55 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     dir.create(filepath, showWarnings = FALSE, recursive = TRUE)
     filename = paste0(filepath,"/twdtw_distance_from_",levels)
     names(filename) = levels
+    # b_files = lapply(filename, function(i) writeStart(r_template, filename=i, format="GTiff", overwrite=TRUE))
     b_files = lapply(filename, function(i) writeStart(r_template, filename=i, ...))
 
     # Get time line 
     timeline = as.Date(index(x))
     
     get_aligs = function(x){
-      twdtwApply(x, y=y, weight.fun=weight.fun, dist.method=dist.method, step.matrix=step.matrix, 
-                 n=n, span=span, min.length=min.length, theta=theta, keep=FALSE)@alignments[[1]]
+      # twdtwApply(x, y=y, weight.fun=weight.fun)
+      twdtwApply(x, y=y, weight.fun=weight.fun, dist.method=dist.method, step.matrix=step.matrix, n=n, span=span, min.length=min.length, theta=theta, keep=FALSE)
     }
     
     fun = function(i){
-      # Get time series from raster 
-      #print("Get TS")
-      array.list = lapply(mclapply(as.list(x), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
-                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i]), 
-                      alply, 1, as.numeric)
-      nts = seq(1, ncell(array.list$doy))
-      
+
       if(!mc.silent) print(paste0("Procesing threads ",i,"/",threads[length(threads)]))
-            
-      # Build twdtwTimeSeries 
-      ts = twdtwTimeSeries(mclapply(nts, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
-                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=.bulidZoo, x=array.list, timeline=timeline))
       
-      # Apply TWDTW for each pixel time series
-#       twdtw_results = lapply(as.list(ts), FUN=twdtwApply, y=y, weight.fun=weight.fun, keep=FALSE)
-      #print("Apply TWDTW")
-      twdtw_aligs = mclapply(as.list(ts), mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
-                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, FUN=get_aligs)
+      # Get time series from raster 
+      #ts_list = lapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i])
+      ts_list = mclapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i], mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
       
+      # Create a dummy array 
+      nts = seq(1, nrow(ts_list$doy))
+      m = length(levels)
+      n = length(breaks)-1
+
+      # Create zoo time series  
+      #ts_zoo = lapply(nts, FUN=.bulidZoo, x=ts_list, timeline=timeline)
+      ts_zoo = mclapply(nts, FUN=.bulidZoo, x=ts_list, timeline=timeline, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
+
+      # Create twdtwTimeSeries object  
+      ts = try(twdtwTimeSeries(ts_zoo), silent = TRUE)
+      if(is(ts, "try-error"))
+         return(lapply(levels, function(l) writeValues(b_files[[l]], matrix(9999, nrow=length(nts), ncol=n), blocks$row[i])))
+         
+      # Apply TWDTW analysis  
+      #twdtw_results = lapply(as.list(ts), FUN=get_aligs)
+      twdtw_results = mclapply(as.list(ts), FUN=get_aligs, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
+
+      # Get best mathces for each point, period, and pattern 
+      #A = lapply(twdtw_results, FUN=.betmatches, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)  
+      A = mclapply(twdtw_results, FUN=.betmatches, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)  
       
-      twdtw_results = twdtwMatches(timeseries=ts, patterns=y, alignments=twdtw_aligs)
-
-      # Get the lowest distances for each pixel and each time interval 
-      #print("Subset TWDTW by class")
-      subset_twdtw = mclapply(levels, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, 
-                      mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(l) subset(twdtw_results, patterns.labels=l))
-
-      #print("Get best match")
-      res = mclapply(subset_twdtw, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, 
-                      mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(s) {
-                      res_array = lapply(as.list(s), function(x)
-                            sapply(seq_along(breaks)[-1], function(i) 
-                                    .lowestDistances(x=x[[1]], start=breaks[i-1], end=breaks[i], overlap=overlap)
-                            )
-                      )
-          apply(data.frame(res_array), 1, function(x) as.numeric(x))
-      })
-
-      # Create raster list 
-      #print("Writing Raster")
-      lapply(levels, function(l) writeValues(b_files[[l]], res[[l]], blocks$row[i]))
+      # Reshape list to array 
+      A = sapply(A, matrix, nrow=n, ncol=m, simplify = 'array')
+      
+      # Write raster files 
+      # THE DIMENSION OF THE ARRAY A IS WRONG 5 INSTEAD OF 6 
+      # 
+      lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], t(A[,l,]), blocks$row[i]))
+      # lapply(levels, function(l) writeValues(b_files[[l]], res[[l]], blocks$row[i]))
     }
     
     # Apply TWDTW analysis 
@@ -319,6 +316,53 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     new("twdtwRaster", timeseries = out, timeline=timeline, layers = names(out))
 }
 
+# .lowestDistancesFortran = function(x, breaks, overlap){
+#   
+#   array(9999, dim=c(length(levels),length(breaks)-1))
+#   
+#         res = mclapply(subset_twdtw, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, 
+#                         mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup, function(s) {
+#                         res_array = lapply(as.list(s), function(x)
+#                               sapply(seq_along(breaks)[-1], function(i){
+#                                 J = (x$from <= end & x$to >= start)
+#                                 x = x[J,]
+#                                 x$from[x$from < start] = start
+#                                 x$to[end < x$to] = end
+#                                 # Check for minimum overlap 
+#                                 r1 = as.numeric(x$to - x$from) / as.numeric(end-start)
+#                                 I = overlap < r1 & r1 < 2-overlap
+#                                 J[which(J)] = I
+#                                 if(!any(I)) return(9999)
+#                                 # Sellect the lowest TWDTW distance 
+#                                 min(x$distance[I])   
+#                               })
+#                         )
+#             apply(data.frame(res_array), 1, function(x) as.numeric(x))
+#         })
+#         
+#   res
+# }
+
+#' @useDynLib dtwSat betmatches
+.betmatches = function(x, m, n, levels, breaks, overlap, fill=9999){
+  if(is.loaded("betmatches", PACKAGE = "dtwSat", type = "Fortran")){
+    res = try(.Fortran("betmatches", 
+                   XM = matrix(as.integer(c(as.numeric(x[[1]]$from), as.numeric(x[[1]]$to))), ncol = 2),
+                   AM = matrix(as.double(fill), nrow = n, ncol = m), 
+                   DM = as.double(x[[1]]$distance),
+                   DP  = as.integer(as.numeric(breaks)),
+                   X  = as.integer(match(x[[1]]$label, levels)),
+                   K  = as.integer(length(x)),
+                   P  = as.integer(length(breaks)),
+                   L  = as.integer(length(levels)),
+                   OV = as.double(overlap),
+                   PACKAGE="dtwSat"))
+  } else {
+    stop("Fortran betmatches lib is not loaded")
+  }
+  if(is(res, "try-error")) return(array(9999, dim=c(n, m)))
+  res$AM
+}
 
 # Crop raster time series. Returns a 3D array 
 .cropTimeSeries = function(x, r1, r2){
@@ -334,7 +378,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
 # Build zoo time series  
 .bulidZoo = function(p, x, timeline){
   # Get time series for each band 
-  datasets = lapply(x, function(x) x[[p]])
+  datasets = lapply(x, function(x) x[p,])
   datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(timeline, "%Y"))
   idoy = which(names(datasets) %in% c("doy"))
   

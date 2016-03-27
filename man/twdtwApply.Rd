@@ -116,7 +116,7 @@ mat1
 
 \dontrun{
 # Parallel processin
-require(paralle)
+require(parallel)
 mat_list = mclapply(as.list(ts), mc.cores=2, FUN=twdtwApply, y=patt, weight.fun=log_fun)
 mat2 = twdtwMatches(alignments=mat_list)
 }

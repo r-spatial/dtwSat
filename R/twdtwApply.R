@@ -297,7 +297,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       # Write raster files 
       # THE DIMENSION OF THE ARRAY A IS WRONG 5 INSTEAD OF 6 
       # 
-      lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], t(A[,l,]), blocks$row[i]))
+      lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], matrix(t(A[,l,]),ncol=n), blocks$row[i]))
       # lapply(levels, function(l) writeValues(b_files[[l]], res[[l]], blocks$row[i]))
     }
     

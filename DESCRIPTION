@@ -41,7 +41,8 @@ Suggests:
     rmarkdown,
     gridExtra,
     grid,
-    png
+    png,
+    rgdal
 License: GPL (>= 2) | file LICENSE
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>

@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 
 <!-- Set global env -->
 ```{r , echo=FALSE, eval = TRUE, cache = FALSE}
+require(ggplot2)
 new_theme = theme_get()
 new_theme$text$family = "Helvetica"
 new_theme$text$size = 8

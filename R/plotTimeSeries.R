@@ -50,7 +50,7 @@ plotTimeSeries = function(x, labels=NULL, attr){
       i = p==labels(x)
       new_labels[i] = paste(new_labels[i], 1:labels_tabel[p])
     }
-  x = twdtwTimeSeries(x, labels=new_labels)
+  x = twdtwTimeSeries(getTimeSeries(x, new_labels), labels=new_labels)
   labels = new_labels
   
   if(length(labels)>16) labels = labels[1:16]

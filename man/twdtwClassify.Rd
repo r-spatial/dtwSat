@@ -65,11 +65,12 @@ patt = twdtwTimeSeries(patterns.list)
 log_fun = logisticWeight(-0.1, 100)
 time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
 mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
-best_mat = twdtwClassify(mat, breaks=time_intervals, overlap=0.5)
+best_mat = twdtwClassify(x=mat, breaks=time_intervals, overlap=0.6)
+plot(x=best_mat, type="classification")
 
 \dontrun{
 require(parallel)
-best_mat = mclapply(mat, mc.cores=4, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5) 
+best_mat = mclapply(mat, mc.cores=4, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
 best_mat = twdtwMatches(alignments=best_mat)
 }
 \dontrun{

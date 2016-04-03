@@ -120,7 +120,7 @@ subset.twdtwMatches = function(x, timeseries.labels, patterns.labels, k){
       if(length(res$matching)>length(k)) res$matching = res$matching[k]
       res
     })
-    names(out) = patterns.labels
+    # names(out) = patterns.labels
     out
   })
   twdtwMatches(timeseries=timeseries, patterns=patterns, alignments=alignments)

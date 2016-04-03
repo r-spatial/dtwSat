@@ -7,6 +7,7 @@ output:
     variant: markdown_github
 bibliography: ./inst/references.bib
 ---
+<!-- rmarkdown::render("README.Rmd") -->
 
 ```{r, echo=FALSE}
 knitr::opts_chunk$set(
@@ -55,9 +56,9 @@ In this quick dome we will perform a TWDTW analysis for a single time series. Th
 ```{r plot-example_ts-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. example_ts time series.')}
 library(dtwSat)
 # Create and plot object time series 
-ts = twdtwTimeSeries(example_ts) 
+ts = twdtwTimeSeries(example_ts)
 class(ts)
-plot(ts, type="timeseries") 
+plot(ts, type="timeseries")
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k=k+1

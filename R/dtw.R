@@ -80,7 +80,41 @@
     res
 }
 
-
-
+#' @useDynLib dtwSat betmatches
+.bestmatches = function(x, m, n, levels, breaks, overlap, fill=9999){
+  if(is.loaded("betmatches", PACKAGE = "dtwSat", type = "Fortran")){
+    res = try(.Fortran("betmatches", 
+                       XM = matrix(as.integer(c(as.numeric(x[[1]]$from), as.numeric(x[[1]]$to))), ncol = 2),
+                       AM = matrix(as.double(fill), nrow = n, ncol = m), 
+                       DM = as.double(x[[1]]$distance),
+                       DP  = as.integer(as.numeric(breaks)),
+                       X  = as.integer(match(x[[1]]$label, levels)),
+                       IM = matrix(as.integer(0), nrow = n, ncol = 3),
+                       A  = as.integer(x[[1]]$Alig.N),
+                       K  = as.integer(length(x)),
+                       P  = as.integer(length(breaks)),
+                       L  = as.integer(length(levels)),
+                       OV = as.double(overlap),
+                       PACKAGE="dtwSat"))
+  } else {
+    stop("Fortran betmatches lib is not loaded")
+  }
+  if(is(res, "try-error")){
+    res = list(
+      XM = matrix(as.integer(c(as.numeric(x[[1]]$from), as.numeric(x[[1]]$to))), ncol = 2),
+      AM = array(9999, dim=c(n, m)), 
+      DM = as.double(x[[1]]$distance),
+      DP  = as.integer(as.numeric(breaks)),
+      X  = as.integer(match(x[[1]]$label, levels)),
+      IM = matrix(as.integer(0), nrow = n, ncol = 3),
+      A  = as.integer(x[[1]]$Alig.N),
+      K  = as.integer(length(x)),
+      P  = as.integer(length(breaks)),
+      L  = as.integer(length(levels)),
+      OV = as.double(overlap)
+    )
+  } 
+  res
+}
 
 

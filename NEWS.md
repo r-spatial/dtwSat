@@ -2,7 +2,7 @@
 
 * Include Fortran optimization 
  
-   This version includes three function written in Fortran. 
+   This version includes functions written in Fortran. 
 
 * Obsolete features 
 

@@ -289,7 +289,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
 
       # Get best mathces for each point, period, and pattern 
       #A = lapply(twdtw_results, FUN=.betmatches, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)  
-      A = mclapply(twdtw_results, FUN=.betmatches, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)  
+      A = mclapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
       
       # Reshape list to array 
       A = sapply(A, matrix, nrow=n, ncol=m, simplify = 'array')
@@ -344,25 +344,8 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
 #   res
 # }
 
-#' @useDynLib dtwSat betmatches
-.betmatches = function(x, m, n, levels, breaks, overlap, fill=9999){
-  if(is.loaded("betmatches", PACKAGE = "dtwSat", type = "Fortran")){
-    res = try(.Fortran("betmatches", 
-                   XM = matrix(as.integer(c(as.numeric(x[[1]]$from), as.numeric(x[[1]]$to))), ncol = 2),
-                   AM = matrix(as.double(fill), nrow = n, ncol = m), 
-                   DM = as.double(x[[1]]$distance),
-                   DP  = as.integer(as.numeric(breaks)),
-                   X  = as.integer(match(x[[1]]$label, levels)),
-                   K  = as.integer(length(x)),
-                   P  = as.integer(length(breaks)),
-                   L  = as.integer(length(levels)),
-                   OV = as.double(overlap),
-                   PACKAGE="dtwSat"))
-  } else {
-    stop("Fortran betmatches lib is not loaded")
-  }
-  if(is(res, "try-error")) return(array(9999, dim=c(n, m)))
-  res$AM
+.lowestDistances = function(x, m, n, levels, breaks, overlap, fill){
+  .bestmatches(x, m, n, levels, breaks, overlap, fill)$AM
 }
 
 # Crop raster time series. Returns a 3D array 

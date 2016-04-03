@@ -19,12 +19,12 @@ C     SM - Matrix of step patterns
 C     N  - Number of rows in CM, DM, and VM 
 C     M  - Number of columns CM, DM, and VM 
 C     NS - Number of rows in SM 
-      SUBROUTINE betmatches(XM, AM, DM, DP, X, K, P, L, OV)
-C  800 FORMAT('i: ',I5,'i: ',I5,'i: ',I5,'i: ',I5)
-C  801 FORMAT(F8.4,' - ',F8.4,' - ',F8.4)
+      SUBROUTINE betmatches(XM, AM, DM, DP, X, IM, A, K, P, L, OV)
+C  800 FORMAT('i: ',I5,'   i: ',I5,'   VALUE: ',F8.4,'   VALUE: ',F10.4)
+C  801 FORMAT('Here: ',I5)
 C     I/O Variables       
-      INTEGER K, P, L, XM(K,2), X(K), DP(P) 
-      DOUBLE PRECISION AM(P-1,L), DM(K), OV
+      INTEGER K, P, L, XM(K,2), X(K), DP(P), IM(P-1,3), A(K)
+      DOUBLE PRECISION AM(P-1,L), DD, DM(K), OV
 C     Internals
       DOUBLE PRECISION R 
       INTEGER I, J, IL, B1, B2, D1, D2
@@ -32,6 +32,7 @@ C     For all time intervals
       DO 30 J = 1, P-1
          B1 = DP(J)
          B2 = DP(J+1)
+         DD = AM(J,1)
 C     For all TWDTW matches 
          DO 20 I = 1, K
             D1 = XM(I,1)
@@ -54,6 +55,12 @@ C     For all TWDTW matches
                 GOTO 20 
             ENDIF
             AM(J,IL) = DM(I)
+            IF( DM(I).LT.DD ) THEN
+                IM(J,1) = IL
+                IM(J,2) = I
+                IM(J,3) = A(I)
+                DD = DM(I)
+            ENDIF
    20    CONTINUE
    30 CONTINUE
       END

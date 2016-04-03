@@ -190,49 +190,4 @@ twdtwClassify.twdtwMatches = function(x, patterns.labels, breaks, overlap, thres
   names(I) = levels[I]
   aligs = lapply(I, function(i) subset(x, timeseries.labels = 1, patterns.labels = i, k = best_matches[IL==i,3])@alignments[[1]][[1]] )
   aligs
-  # 
-  # dist_table = x[[1, patterns.labels]]
-  # #dist_table = dist_table[order(dist_table$distance),]
-  # labels = as.character(patterns.labels)
-  # names(labels) = labels
-  # best_match = do.call("rbind", lapply(seq_along(breaks)[-1], function(i){
-  #   from = breaks[i-1]
-  #   to = breaks[i]
-  #   L = .bestMatches(x=dist_table, start=from, end=to, overlap)
-  #   if(is.na(L)) return(NULL)
-  #   data.frame(from, to, K=dist_table$Alig.N[L], label=dist_table$label[L])
-  # }))
-  # best_match = lapply(labels, function(p) best_match[best_match$label==p,])
-  # res = list(lapply(labels, function(p) subset(x, patterns.labels=p, k=best_match[[p]]$K)@alignments[[1]][[1]] ))
-  # new("twdtwMatches", timeseries=x@timeseries, patterns=x@patterns, alignments=res)
 }
-
-# .bestMatches = function(x, start, end, overlap){
-#   J = (x$from <= end & x$to >= start)
-#   x = x[J,]
-#   x$from[x$from < start] = start
-#   x$to[end < x$to] = end
-#   # Check for minimum overlap 
-#   r1 = as.numeric(x$to - x$from) / as.numeric(end-start)
-#   I = overlap < r1 & r1 < 2-overlap
-#   J[which(J)] = I
-#   if(!any(I)) return(NA)
-#   # Sellect the lowest TWDTW distance 
-#   res = which(J)[which.min(x$distance[I])]
-#   res
-# }
-
-# 
-# .lowestDistances = function(x, start, end, overlap){
-#   J = (x$from <= end & x$to >= start)
-#   x = x[J,]
-#   x$from[x$from < start] = start
-#   x$to[end < x$to] = end
-#   # Check for minimum overlap 
-#   r1 = as.numeric(x$to - x$from) / as.numeric(end-start)
-#   I = overlap < r1 & r1 < 2-overlap
-#   J[which(J)] = I
-#   if(!any(I)) return(9999)
-#   # Sellect the lowest TWDTW distance 
-#   min(x$distance[I])
-# }

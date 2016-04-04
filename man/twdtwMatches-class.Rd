@@ -15,7 +15,7 @@
 \alias{twdtwMatches}
 \alias{twdtwMatches,ANY-method}
 \alias{twdtwMatches-class}
-\alias{twdtwMatches-crate}
+\alias{twdtwMatches-create}
 \title{class "twdtwMatches"}
 \usage{
 \S4method{twdtwMatches}{ANY}(timeseries = NULL, patterns = NULL,

@@ -67,7 +67,9 @@
     # Remove overfit 
     I = I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
     
-    alignments = list()
+    alignments = initAlignments()
+    if(length(I)<1) return(alignments)
+    
     alignments$label      = labels[l]
     alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
     alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
@@ -85,13 +87,25 @@
     alignments
   }
   
-  res = try(lapply(seq_along(labels), FUN=fun), silent = TRUE)
+  res = try(lapply(seq_along(labels), FUN=fun))
   
   if(is(res, "try-error")) 
     res = lapply(labels, function(l) list(label = numeric(0), from = numeric(0), to = numeric(0), distance = numeric(0), K = numeric(0), matching = list(), internals  = list()))
   
   names(res) = labels
   res
+}
+
+initAlignments = function(...){
+  list(
+        label      = numeric(0),
+        from       = numeric(0),
+        to         = numeric(0),
+        distance   = numeric(0),
+        K          = 0,
+        matching   = list(),
+        internals  = list()
+  )
 }
 
 .findMin = function(x, timeline, span){

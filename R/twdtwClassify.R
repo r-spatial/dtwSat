@@ -74,12 +74,12 @@ setGeneric(name = "twdtwClassify",
 #' log_fun = logisticWeight(-0.1, 100)
 #' time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
 #' mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
-#' best_mat = twdtwClassify(x=mat, breaks=time_intervals, overlap=0.6)
+#' best_mat = twdtwClassify(x=mat, breaks=time_intervals, overlap=0.5)
 #' plot(x=best_mat, type="classification")
 #' 
 #' \dontrun{
 #' require(parallel)
-#' best_mat = mclapply(mat, mc.cores=4, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
+#' best_mat = mclapply(as.list(mat), mc.cores=4, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
 #' best_mat = twdtwMatches(alignments=best_mat)
 #' }
 #' @export
@@ -93,11 +93,14 @@ setMethod("twdtwClassify", "twdtwMatches",
                     if( !is.null(from) &  !is.null(to) ){
                       breaks = seq(as.Date(from), as.Date(to), by=by)    
                     } else {
+                      # This automatic breaks needs to be improved 
                       y = x@patterns
                       patt_range = lapply(index(y), range)
                       patt_diff = trunc(sapply(patt_range, diff)/30)+1
                       min_range = which.min(patt_diff)
                       by = patt_diff[[min_range]]
+                      cycles = c(18,12,6,4,3,2)
+                      by = cycles[which.min(abs(by-cycles))]
                       from = patt_range[[min_range]][1]
                       to = from 
                       month(to) = month(to) + by
@@ -188,6 +191,7 @@ twdtwClassify.twdtwMatches = function(x, patterns.labels, breaks, overlap, thres
   I = unique(best_matches[,1])
   I = I[I>0]
   names(I) = levels[I]
-  aligs = lapply(I, function(i) subset(x, timeseries.labels = 1, patterns.labels = i, k = best_matches[IL==i,3])@alignments[[1]][[1]] )
-  aligs
+  aligs = lapply(levels, initAlignments)
+  aligs[names(I)] = lapply(I, function(i) subset(x, timeseries.labels = 1, patterns.labels = i, k = best_matches[IL==i,3])@alignments[[1]][[1]] )
+  new("twdtwMatches", x@timeseries, x@patterns, alignments=list(aligs))
 }

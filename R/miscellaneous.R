@@ -431,3 +431,175 @@ modisColRowToLongLat = function(col, row, h=NULL, v=NULL, pixelsize, proj4string
 }
 
 
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds an aql query to create 
+#' the output array for the TWDTW analysis. 
+#' 
+#' @param array A character for the array name. 
+#' @param min.col minimum column index.   
+#' @param max.col maximum column index.
+#' @param chunk.col column chunk size.
+#' @param overlap.col column overlap. 
+#' @param min.row minimum row index.
+#' @param max.row maximun row index.
+#' @param chunk.row row chunk size. 
+#' @param overlap.row row overlap. 
+#' @param min.time minimum time index.
+#' @param max.time maximum time index.
+#' @param chunk.time time chunk size. 
+#' @param overlap.time time overlap. 
+#' @param min.class minimum class index.
+#' @param max.class maximum class index. 
+#' @param chunk.class class chunk size.
+#' @param overlap.class class overlap. 
+#' 
+#' @seealso \link[dtwSat]{modisColRowFromLongLat} 
+#' 
+#' @examples 
+#' 
+#' str_iquery = iqueryCreateArray(array = "TEST_ARRAY",
+#'                                min.col = 59354, max.col = 60132, 
+#'                                min.row = 48591, max.row = 49096)
+#' 
+#' str_iquery
+#' 
+#' @export
+iqueryCreateArray = function(array, 
+                             min.col,   max.col,   chunk.col=256, overlap.col=1, 
+                             min.row,   max.row,   chunk.row=256, overlap.row=1, 
+                             min.time=0, max.time=99, chunk.time=max.time+1, overlap.time=0, 
+                             min.class=0, max.class=255, chunk.class=max.class+1, overlap.class=0){
+  
+  col_ids = paste(min.col, max.col,sep=":")
+  row_ids = paste(min.row, max.row,sep=":")
+  time_ids = paste(min.time, max.time,sep=":")
+  class_ids = paste(min.class, max.class,sep=":")
+  
+  if(is.null(chunk.time)) chunk.time = max.time+1
+  if(is.null(chunk.class)) chunk.class = max.class+1
+  
+  schema = paste("<ts_id:double,year:double,cdoy:double,distance:double>",
+                      " [col_id=",col_ids,",",chunk.col,",",overlap.col,
+                      ",row_id=",row_ids,",",chunk.row,",",overlap.row,
+                      ",time_id=",time_ids,",",chunk.time,",",overlap.time,
+                      ",class_id=",class_ids,",",chunk.class,",",overlap.class,"]", sep="")
+  
+  res = paste("CREATE ARRAY ",array, schema, sep="")
+  res
+}
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds an afl query to subset 
+#' an SciDB array. 
+#' 
+#' @param array A character for the array name. 
+#' @param attributes A character vector for the array attributes. 
+#' @param min.col minimum column index.   
+#' @param max.col maximum column index.
+#' @param min.row minimum row index.
+#' @param max.row maximun row index.
+#' @param min.time minimum time index.
+#' @param max.time maximum time index.
+#' 
+#' @seealso \link[dtwSat]{modisColRowFromLongLat} 
+#' 
+#' @examples 
+#' 
+#' str_iquery = iquerySubsetArray(array = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                                min.col = 60124, max.col = 60125, 
+#'                                min.row = 48978, max.row = 48979,
+#'                                min.time = 0, max.time = 500)
+#' 
+#' str_iquery
+#' 
+#' str_iquery = iquerySubsetArray(array = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                                min.col = 55324, max.col = 55325, 
+#'                                min.row = 48978, max.row = 48979,
+#'                                min.time = 0, max.time = 500)
+#' 
+#' str_iquery
+#' 
+#' @export
+iquerySubsetArray = function(array, attributes, min.col, max.col, min.row, max.row, min.time, max.time){
+  res = paste("between(",array,",",min.col,",",min.row,",",min.time,",",max.col,",",max.row,",",max.time,")", sep="")
+  attributes = c("col_id", "row_id", "time_id", attributes)
+  datasets2double = paste(paste0("d", attributes), ", double(",attributes,")", sep="", collapse = ",")
+  res = paste("apply(",res,",",datasets2double,")", sep="")
+  res = paste("project(",res,",",paste0("d", c(attributes), collapse = ","),")", sep="")
+  res
+}
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds the r_exec call. 
+#' 
+#' @param array A character for the array name. 
+#' @param expr An R expression for processing. 
+#' The expression must retrieve a list of 8 elements of type double. 
+#' 
+#' @seealso \link[dtwSat]{modisColRowFromLongLat} 
+#' 
+#' @examples 
+#' 
+#' in_iquery = iquerySubsetArray(array = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                                min.col = 60124, max.col = 60125, 
+#'                                min.row = 48978, max.row = 48979,
+#'                                min.time = 0, max.time = 500)
+#' 
+#' proc_iquery = iqueryApply(array=in_iquery, expr="as.list(as.double(1:8))")
+#' 
+#' proc_iquery
+#' 
+#' @export
+iqueryApply = function(array, expr){
+  res = paste("r_exec(",array,",'output_attrs=",8,"',","'expr=",expr,"')",sep="")
+  res
+}
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds the r_exec call. 
+#' 
+#' @param array A character for the array name. 
+#' @param schema A character with the output array schema. Usually the schema of  
+#' the array created by \link[dtwSat]{iqueryCreateArray}
+#' 
+#' @seealso \link[dtwSat]{iqueryCreateArray} 
+#' 
+#' @examples 
+#' 
+#' in_iquery = iquerySubsetArray(array = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                                min.col = 60124, max.col = 60125, 
+#'                                min.row = 48978, max.row = 48979,
+#'                                min.time = 0, max.time = 500)
+#' 
+#' proc_iquery = iqueryApply(array = in_iquery, expr="as.list(as.double(c(60124,48978,1,1,1:4)))")
+#' 
+#' out_schema = "<ts_id:double,year:double,cdoy:double,distance:double> [col_id=59354:60132,254,1,row_id=48591:49096,254,1,time_id=0:100,100,0,class_id=0:255,255,0]"
+#' out_array = iqueryRedimensionOutput(array = proc_iquery, schema = out_schema)
+#' 
+#' @export
+iqueryRedimensionOutput = function(array, schema){
+  r_exec_output = c("expr_value_0", "expr_value_1", "expr_value_2", "expr_value_3", "expr_value_4", "expr_value_5", "expr_value_6", "expr_value_7")
+  names(r_exec_output) = c("col_id", "row_id", "time_id", "class_id", "ts_id", "year", "cdoy", "distance")
+  dimensions = c("col_id", "row_id", "time_id", "class_id")
+  attributes = c("ts_id", "year", "cdoy", "distance")
+  dim2int64 = paste(dimensions, ", int64(",r_exec_output[dimensions],")", sep="", collapse = ",")
+  attr2double = paste(attributes, ", double(",r_exec_output[attributes],")", sep="", collapse = ",")
+  res = paste("apply(",array,",",paste(dim2int64,attr2double,sep=","),")", sep="")
+  proj_attr = paste(c(dimensions, attributes), sep="", collapse = ",")
+  res = paste("project(",res,",",proj_attr,")", sep="")
+  res = paste("redimension(",res,",",schema,")", sep="")
+  res 
+}
+

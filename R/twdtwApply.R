@@ -443,7 +443,7 @@ twdtwApplySciDB = function(x, y, resample=TRUE, length=NULL, weight.fun=NULL,
   names(res) = c("time_id", "class_id", "distance", "ts_id", "row_id", "col_id")
   res$cdoy = as.numeric(format(breaks[-1], "%j"))[res$time_id]
   res$year = as.numeric(format(breaks[-1], "%Y"))[res$time_id]
-  c(res)  
+  lapply(c(res[c("col_id", "row_id", "time_id", "class_id", "ts_id", "year", "cdoy", "distance")]), as.double)
 }
 
 

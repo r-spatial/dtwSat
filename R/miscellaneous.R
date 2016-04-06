@@ -478,9 +478,6 @@ iqueryCreateArray = function(array,
   time_ids = paste(min.time, max.time,sep=":")
   class_ids = paste(min.class, max.class,sep=":")
   
-  if(is.null(chunk.time)) chunk.time = max.time+1
-  if(is.null(chunk.class)) chunk.class = max.class+1
-  
   schema = paste("<ts_id:double,year:double,cdoy:double,distance:double>",
                       " [col_id=",col_ids,",",chunk.col,",",overlap.col,
                       ",row_id=",row_ids,",",chunk.row,",",overlap.row,
@@ -570,7 +567,9 @@ iqueryApply = function(array, expr){
 #' 
 #' @description This function builds the r_exec call. 
 #' 
-#' @param array A character for the array name. 
+#' @param array.in A character for the input array name.
+#' @param array.out A character for the output array name. If not declared the 
+#' iquery will not same the final results.
 #' @param schema A character with the output array schema. Usually the schema of  
 #' the array created by \link[dtwSat]{iqueryCreateArray}
 #' 
@@ -585,21 +584,233 @@ iqueryApply = function(array, expr){
 #' 
 #' proc_iquery = iqueryApply(array = in_iquery, expr="as.list(as.double(c(60124,48978,1,1,1:4)))")
 #' 
-#' out_schema = "<ts_id:double,year:double,cdoy:double,distance:double> [col_id=59354:60132,254,1,row_id=48591:49096,254,1,time_id=0:100,100,0,class_id=0:255,255,0]"
-#' out_array = iqueryRedimensionOutput(array = proc_iquery, schema = out_schema)
+#' out_schema = "<ts_id:double,year:double,cdoy:double,distance:double> 
+#' [col_id=59354:60132,254,1,row_id=48591:49096,254,1,time_id=0:100,100,0,class_id=0:255,255,0]"
+#' out_array = iqueryRedimensionOutput(array.in = proc_iquery, schema = out_schema)
 #' 
 #' @export
-iqueryRedimensionOutput = function(array, schema){
+iqueryRedimensionOutput = function(array.in, array.out=NULL, schema){
   r_exec_output = c("expr_value_0", "expr_value_1", "expr_value_2", "expr_value_3", "expr_value_4", "expr_value_5", "expr_value_6", "expr_value_7")
   names(r_exec_output) = c("col_id", "row_id", "time_id", "class_id", "ts_id", "year", "cdoy", "distance")
   dimensions = c("col_id", "row_id", "time_id", "class_id")
   attributes = c("ts_id", "year", "cdoy", "distance")
   dim2int64 = paste(dimensions, ", int64(",r_exec_output[dimensions],")", sep="", collapse = ",")
   attr2double = paste(attributes, ", double(",r_exec_output[attributes],")", sep="", collapse = ",")
-  res = paste("apply(",array,",",paste(dim2int64,attr2double,sep=","),")", sep="")
+  res = paste("apply(",array.in,",",paste(dim2int64,attr2double,sep=","),")", sep="")
   proj_attr = paste(c(dimensions, attributes), sep="", collapse = ",")
   res = paste("project(",res,",",proj_attr,")", sep="")
   res = paste("redimension(",res,",",schema,")", sep="")
+  if(!is.null(array.out)) res = paste("insert(",res,",",array.out,")", sep="")
   res 
+}
+
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function splits the SciDB array in block for procesing. 
+#' 
+#' @param min.col minimum column index.   
+#' @param max.col maximum column index.
+#' @param min.row minimum row index.
+#' @param max.row maximun row index.
+#' @param block.col col block size.
+#' @param block.row row block size.
+#' 
+#' @seealso \link[dtwSat]{iqueryCreateArray} 
+#' 
+#' @examples 
+#' 
+#' bolcks = iqueryBlockSize(min.col = 59354, max.col = 60132, block.col = 256,
+#'                          min.row = 48591, max.row = 49096, block.row = 256)
+#'                                
+#' @export
+iqueryBlockSize = function(min.col,   max.col, block.col, min.row, max.row, block.row){
+  rows = seq(min.row, max.row, block.row)
+  cols = seq(min.col, max.col, block.col)
+  k = 1
+  res = list()
+  for(i in rows)
+    for(j in cols){
+      res[[k]] = data.frame(min.col=j,max.col=j+block.col-1,min.row=i,max.row=i+block.row-1)
+      if(res[[k]]$max.col >= max.col)
+        res[[k]]$max.col = max.col
+      if(res[[k]]$max.row >= max.row)
+        res[[k]]$max.row = max.row
+      k = k + 1
+    }
+  res
+}
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds an afl query to redimension 
+#' a subset of the input array for the TWDTW analysis. 
+#' 
+#' @param array A character for the array name. 
+#' @param attributes A character vector for the array attributes. 
+#' @param min.col minimum column index for subset.   
+#' @param max.col maximum column index for subset.
+#' @param min.row minimum row index for subset.
+#' @param max.row maximun row index for subset.
+#' @param min.time minimum time index for subset.
+#' @param max.time maximum time index for subset.
+#' @param index.start the starting indices for each dimensions c(<col>, <row>, <time>).
+#' @param index.end the ending indices for each dimensions c(<col>, <row>, <time>). 
+#' @param chunk the chunk size for each dimensions c(<col>, <row>, <time>).
+#' @param overlap the overlap for each dimensions c(<col>, <row>, <time>). 
+#' 
+#' @seealso \link[dtwSat]{twdtwApplyiquery} 
+#' 
+#' @examples 
+#' 
+#' str_iquery = iquerySubsetRedimensionInput(array = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                                min.col = 60124, max.col = 60125, min.row = 48978, max.row = 48979,
+#'                                min.time = 0, max.time = 99, index.start=c(48000,38400,0), 
+#'                                index.end = c(72000, 62400, 14999), chunk=c(32,32,99))
+#' 
+#' str_iquery
+#' 
+#' str_iquery = iquerySubsetRedimensionInput(array = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                                min.col = 55324, max.col = 55325, min.row = 48978, max.row = 48979,
+#'                                min.time = 0, max.time = 99, index.start=c(48000,38400,0), 
+#'                                index.end = c(72000, 62400, 14999), chunk=c(32,32,99))
+#' 
+#' str_iquery
+#' 
+#' @export
+iquerySubsetRedimensionInput = function(array, attributes, min.col, max.col, min.row, max.row, min.time=0, max.time=99, 
+                                  index.start, index.end, chunk, overlap=c(0,0,0)){
+  
+  col_ids = paste(index.start[1], index.end[1],sep=":")
+  row_ids = paste(index.start[2], index.end[2],sep=":")
+  time_ids = paste(index.start[3], index.end[3],sep=":")
+  
+  res = iquerySubsetArray(array, attributes, min.col, max.col, min.row, max.row, min.time, max.time)
+  
+  attributes = c("col_id", "row_id", "time_id", attributes)
+  datasets2double = paste(paste0("d", attributes), ":double", sep="", collapse = ",")
+  
+  
+  res = paste("redimension(",res,", <",datasets2double,"> [col_id=",col_ids,",",chunk[1],",",
+              overlap[1],",row_id=",row_ids,",",chunk[2],",",overlap[2],",time_id=",time_ids,",",
+              chunk[3],",",overlap[3],"])",sep="")
+  res
+}
+
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds an afl query to redimension 
+#' a subset of the input array for the TWDTW analysis. 
+#' 
+#' @param array.in A character for the input array name.
+#' @param array.out A character for the output array name. If not declared the 
+#' iquery will not same the final results.
+#' @param attributes A character vector for the array attributes. 
+#' @param expr An R expression for processing. The expression must retrieve a 
+#' list of 8 elements of type double. 
+#' @param outputschema the SciDB schema of the output array. 
+#' @param min.col minimum column index.   
+#' @param max.col maximum column index.
+#' @param min.row minimum row index.
+#' @param max.row maximun row index.
+#' @param block.col col block size.
+#' @param block.row row block size.
+#' @param min.time minimum time index for subset.
+#' @param max.time maximum time index for subset.
+#' @param index.start the starting indices for each dimensions c(<col>, <row>, <time>).
+#' @param index.end the ending indices for each dimensions c(<col>, <row>, <time>). 
+#' @param chunk the chunk size for each dimensions c(<col>, <row>, <time>).
+#' @param overlap the overlap for each dimensions c(<col>, <row>, <time>). 
+#' 
+#' @seealso \link[dtwSat]{twdtwApplyiquery} 
+#' 
+#' @examples 
+#' 
+#' out_schema = "<ts_id:double,year:double,cdoy:double,distance:double> 
+#' [col_id=59354:60132,256,1,row_id=48591:49096,256,1,time_id=0:99,100,0,class_id=0:255,256,0]"
+#' 
+#' str_iquery = iqueryBlock(array.in = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                         outputschema = out_schema, 
+#'                         expr="as.list(as.double(c(60124, 48978,1,1,1:4)))", 
+#'                         min.col = 60124, max.col = 60125, block.col = 256, 
+#'                         min.row = 48978, max.row = 48979, block.row = 256,
+#'                         min.time = 0, max.time = 99, index.start=c(48000,38400,0), 
+#'                         index.end = c(72000, 62400, 14999), chunk=c(32,32,99))
+#' 
+#' str_iquery
+#' 
+#' @export
+iqueryBlock = function(array.in, array.out=NULL, attributes, expr, outputschema, min.col, max.col, block.col, min.row, max.row, block.row, 
+                       min.time=0, max.time=99, index.start, index.end, chunk, overlap=c(0,0,0)){
+  
+  bolcks = iqueryBlockSize(min.col, max.col, block.col, min.row, max.row, block.row)
+  
+  res = lapply(bolcks, function(b){
+    in_iquery = iquerySubsetRedimensionInput(array.in, attributes, 
+                                             min.col = b$min.col, max.col = b$max.col, 
+                                             min.row = b$min.row, max.row = b$max.row,
+                                             min.time = min.time, max.time = max.time, 
+                                             index.start = index.start, index.end = index.end,
+                                             chunk = chunk)
+    proc_iquery = iqueryApply(array = in_iquery, expr = expr)
+    iqueryRedimensionOutput(array.in = proc_iquery, array.out = array.out, schema = outputschema)
+  })
+  res
+}
+
+
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function runs the iquery string on SciDB. 
+#' 
+#' @param str_iquery A list of iquery strings to be executed in SciBD. 
+#' @param logfile The path for the log file. 
+#' 
+#' @seealso \link[dtwSat]{iqueryBlock} 
+#' 
+#' @examples 
+#' 
+#' out_schema = "<ts_id:double,year:double,cdoy:double,distance:double> 
+#' [col_id=59354:60132,256,1,row_id=48591:49096,256,1,time_id=0:99,100,0,class_id=0:255,256,0]"
+#' 
+#' str_iquery = iqueryBlock(array.in = "MOD13Q1", attributes=c("evi", "ndvi", "cdoy"), 
+#'                         outputschema = out_schema, 
+#'                         expr="as.list(as.double(c(60124, 48978,1,1,1:4)))", 
+#'                         min.col = 60124, max.col = 60125, block.col = 256, 
+#'                         min.row = 48978, max.row = 48979, block.row = 256,
+#'                         min.time = 0, max.time = 99, index.start=c(48000,38400,0), 
+#'                         index.end = c(72000, 62400, 14999), chunk=c(32,32,99))
+#' 
+#' str_iquery
+#' 
+#' @export
+twdtwApplyiquery = function(str_iquery, logfile=NULL){
+  
+  if(is.null(logfile)) logfile = paste0("./log_",format(Sys.time(), "%Y%b%d_%H-%M-%S"))
+  log_con = file(logfile, open="a")
+  
+  query_time = system.time(
+    lapply(seq_along(str_iquery), function(i){
+      cat("Processing block: ", i,"/",length(str_iquery),"\n", file = log_con)
+      cat(str_iquery[[i]], "\n\n", file = log_con)
+      iquery(str_iquery[[i]], return = FALSE)
+    })
+  )
+  cat("Processing finished at: ", file = log_con)
+  capture.output(Sys.time(), file = log_con)
+  cat("Processing time in (h): \n", file = log_con)
+  capture.output(query_time/60/60, file = log_con)
+  close(log_con)
+  query_time
 }
 

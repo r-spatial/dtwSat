@@ -120,3 +120,26 @@
 #' 
 "example_ts.list"
 
+
+#' @title Data: patterns time series
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This dataset has a list of patterns with the phenological cycle of: Water,
+#' Cotton-Fallow, Forest, Low vegetation, Pasture, Soybean-Cotton, Soybean-Maize, Soybean-Millet, 
+#' Soybean-Sunflower, and Wetland. These time series are based on the MODIS product 
+#' MOD13Q1 250 m 16 days [1]. The patterns were build from ground truth samples of each 
+#' crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPatterns}.
+#' 
+#' @docType data
+#' @format A \link[dtwSat]{twdtwTimeSeries} object.
+#' 
+#' @seealso MOD13Q1 documentation: See 
+#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
+#' 
+#' @references 
+#' [1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
+#' MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
+#' datasets. Remote Sensing of Environment, 114(1), 168 182.
+#' 
+"yearly_patterns_mt"
+

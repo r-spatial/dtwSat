@@ -609,44 +609,6 @@ iqueryRedimensionOutput = function(array.in, array.out=NULL, schema){
 #' @title iquery builder    
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This function splits the SciDB array in block for procesing. 
-#' 
-#' @param min.col minimum column index.   
-#' @param max.col maximum column index.
-#' @param min.row minimum row index.
-#' @param max.row maximun row index.
-#' @param block.col col block size.
-#' @param block.row row block size.
-#' 
-#' @seealso \link[dtwSat]{iqueryCreateArray} 
-#' 
-#' @examples 
-#' 
-#' bolcks = iqueryBlockSize(min.col = 59354, max.col = 60132, block.col = 256,
-#'                          min.row = 48591, max.row = 49096, block.row = 256)
-#'                                
-#' @export
-iqueryBlockSize = function(min.col,   max.col, block.col, min.row, max.row, block.row){
-  rows = seq(min.row, max.row, block.row)
-  cols = seq(min.col, max.col, block.col)
-  k = 1
-  res = list()
-  for(i in rows)
-    for(j in cols){
-      res[[k]] = data.frame(min.col=j,max.col=j+block.col-1,min.row=i,max.row=i+block.row-1)
-      if(res[[k]]$max.col >= max.col)
-        res[[k]]$max.col = max.col
-      if(res[[k]]$max.row >= max.row)
-        res[[k]]$max.row = max.row
-      k = k + 1
-    }
-  res
-}
-
-
-#' @title iquery builder    
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
 #' @description This function builds an afl query to redimension 
 #' a subset of the input array for the TWDTW analysis. 
 #' 
@@ -716,6 +678,8 @@ iquerySubsetRedimensionInput = function(array, attributes, min.col, max.col, min
 #' @param expr An R expression for processing. The expression must retrieve a 
 #' list of 8 elements of type double. 
 #' @param outputschema the SciDB schema of the output array. 
+#' @param grid An object of class \link[sp]{SpatialPolygons}.  
+#' @param pixelsize A number. The MODIS product resolution.
 #' @param min.col minimum column index.   
 #' @param max.col maximum column index.
 #' @param min.row minimum row index.
@@ -747,10 +711,15 @@ iquerySubsetRedimensionInput = function(array, attributes, min.col, max.col, min
 #' str_iquery
 #' 
 #' @export
-iqueryBlock = function(array.in, array.out=NULL, attributes, expr, outputschema, min.col, max.col, block.col, min.row, max.row, block.row, 
+iqueryBlock = function(array.in, array.out=NULL, attributes, expr, outputschema, 
+                       grid=NULL, pixelsize=NULL, min.col, max.col, block.col, min.row, max.row, block.row, 
                        min.time=0, max.time=99, index.start, index.end, chunk, overlap=c(0,0,0)){
   
-  bolcks = iqueryBlockSize(min.col, max.col, block.col, min.row, max.row, block.row)
+  if(is.null(grid)){
+    bolcks = .blockSizeFromColRow(min.col, max.col, block.col, min.row, max.row, block.row)
+  } else {
+    bolcks = .blockSizeFromPoly(grid, pixelsize)
+  }
   
   res = lapply(bolcks, function(b){
     in_iquery = iquerySubsetRedimensionInput(array.in, attributes, 
@@ -765,7 +734,31 @@ iqueryBlock = function(array.in, array.out=NULL, attributes, expr, outputschema,
   res
 }
 
+.blockSizeFromPoly = function(x, pixelsize){
+  res = lapply(x@polygons, function(pol){
+    coordinates = data.frame(t(bbox(pol)))
+    modis_grid = modisColRowFromLongLat(coordinates, pixelsize = pixelsize, proj4string = projection(x))
+    data.frame(min.col = modis_grid$col[1], max.col = modis_grid$col[2], min.row = modis_grid$row[2], max.row = modis_grid$row[1])
+  })
+  res
+}
 
+.blockSizeFromColRow = function(min.col, max.col, block.col, min.row, max.row, block.row){
+  rows = seq(min.row, max.row, block.row)
+  cols = seq(min.col, max.col, block.col)
+  k = 1
+  res = list()
+  for(i in rows)
+    for(j in cols){
+      res[[k]] = data.frame(min.col=j,max.col=j+block.col-1,min.row=i,max.row=i+block.row-1)
+      if(res[[k]]$max.col >= max.col)
+        res[[k]]$max.col = max.col
+      if(res[[k]]$max.row >= max.row)
+        res[[k]]$max.row = max.row
+      k = k + 1
+    }
+  res
+}
 
 
 #' @title iquery builder    

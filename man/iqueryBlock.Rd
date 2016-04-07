@@ -5,8 +5,9 @@
 \title{iquery builder}
 \usage{
 iqueryBlock(array.in, array.out = NULL, attributes, expr, outputschema,
-  min.col, max.col, block.col, min.row, max.row, block.row, min.time = 0,
-  max.time = 99, index.start, index.end, chunk, overlap = c(0, 0, 0))
+  grid = NULL, pixelsize = NULL, min.col, max.col, block.col, min.row,
+  max.row, block.row, min.time = 0, max.time = 99, index.start, index.end,
+  chunk, overlap = c(0, 0, 0))
 }
 \arguments{
 \item{array.in}{A character for the input array name.}
@@ -20,6 +21,10 @@ iquery will not same the final results.}
 list of 8 elements of type double.}
 
 \item{outputschema}{the SciDB schema of the output array.}
+
+\item{grid}{An object of class \link[sp]{SpatialPolygons}.}
+
+\item{pixelsize}{A number. The MODIS product resolution.}
 
 \item{min.col}{minimum column index.}
 

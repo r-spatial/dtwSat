@@ -807,3 +807,73 @@ twdtwApplyiquery = function(str_iquery, logfile=NULL){
   query_time
 }
 
+
+
+
+
+#' @title iquery builder    
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' 
+#' @description This function builds an afl query that creates 
+#' an output array with the rank of TWDTW distances. 
+#' 
+#' @param array A character for the array name. 
+#' @param min.col minimum column index.   
+#' @param max.col maximum column index.
+#' @param min.row minimum row index.
+#' @param max.row maximun row index.
+#' @param min.time minimum time index.
+#' @param max.time maximum time index.
+#' @param min.class minimum class index.
+#' @param max.class maximum class index. 
+#' @param index.start the starting indices for each dimensions c(<col>, <row>, <time>, <class>).
+#' @param index.end the ending indices for each dimensions c(<col>, <row>, <time>, <class>). 
+#' @param chunk the chunk size for each dimensions c(<col>, <row>, <time>, <class>).
+#' @param overlap the overlap for each dimensions c(<col>, <row>, <time>, <class>). 
+#' 
+#' @seealso \link[dtwSat]{modisColRowFromLongLat} 
+#' 
+#' @examples 
+#' 
+#' str_iquery = iqueryCreateArray(array = "TEST_ARRAY",
+#'                                min.col = 59354, max.col = 60132, 
+#'                                min.row = 48591, max.row = 49096)
+#' 
+#' str_iquery
+#' 
+#' @export
+iqueryRankTWDTWDistance = function(array, 
+                             min.col, max.col, min.row, max.row, min.time, max.time,
+                             min.class, max.class, index.start, index.end, chunk, overlap){
+  
+  col_ids = paste(index.start[1], index.end[1],sep=":")
+  row_ids = paste(index.start[2], index.end[2],sep=":")
+  time_ids = paste(index.start[3], index.end[3],sep=":")
+  class_ids = paste(index.start[4], index.end[4],sep=":")
+  rank_ids = paste(index.start[4], index.end[4],sep=":")
+  
+  schema_in =  paste("<distance:double>",
+                     " [col_id=",col_ids,",",chunk[1],",",0,
+                     ",row_id=",row_ids,",",chunk[2],",",0,
+                     ",time_id=",time_ids,",",chunk[3],",",overlap[3],
+                     ",class_id=",class_ids,",",chunk[4],",",overlap[4],"]", sep="")
+  
+  schema_out = paste("<distance:double>",
+                 " [col_id=",col_ids,",",chunk[1],",",overlap[1],
+                 ",row_id=",row_ids,",",chunk[2],",",overlap[2],
+                 ",time_id=",time_ids,",",chunk[3],",",overlap[3],
+                 ",class_id=",class_ids,",",chunk[4],",",overlap[4],
+                 ",rank_id=",rank_ids,",",chunk[4],",",overlap[4],"]", sep="")
+  
+  res = paste0("redimension(",array,",",schema_in,")")
+  
+  res = paste("between(",res,",",min.col,",",min.row,",",min.time,",",min.class,
+                               ",",max.col,",",max.row,",",max.time,",",max.class,")", sep="")
+  
+  res = paste0("rank(",res, ",distance,time_id,col_id,row_id)")
+  res = paste0("apply(",res,",rank_id,int64(distance_rank))")
+  res = paste0("redimension(",res,",",schema_out,")")
+  res
+}
+
+

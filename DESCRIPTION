@@ -34,7 +34,8 @@ Imports:
     sp,
     lubridate,
     caret,
-    mgcv
+    mgcv,
+    scidb
 Suggests:
     testthat,
     knitr,

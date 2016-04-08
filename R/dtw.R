@@ -80,10 +80,10 @@
     res
 }
 
-#' @useDynLib dtwSat betmatches
+#' @useDynLib dtwSat bestmatches
 .bestmatches = function(x, m, n, levels, breaks, overlap, fill=9999){
-  if(is.loaded("betmatches", PACKAGE = "dtwSat", type = "Fortran")){
-    res = try(.Fortran("betmatches", 
+  if(is.loaded("bestmatches", PACKAGE = "dtwSat", type = "Fortran")){
+    res = try(.Fortran("bestmatches", 
                        XM = matrix(as.integer(c(as.numeric(x[[1]]$from), as.numeric(x[[1]]$to))), ncol = 2),
                        AM = matrix(as.double(fill), nrow = n, ncol = m), 
                        DM = as.double(x[[1]]$distance),
@@ -97,7 +97,7 @@
                        OV = as.double(overlap),
                        PACKAGE="dtwSat"))
   } else {
-    stop("Fortran betmatches lib is not loaded")
+    stop("Fortran bestmatches lib is not loaded")
   }
   if(is(res, "try-error")){
     res = list(

@@ -19,7 +19,7 @@ C     SM - Matrix of step patterns
 C     N  - Number of rows in CM, DM, and VM 
 C     M  - Number of columns CM, DM, and VM 
 C     NS - Number of rows in SM 
-      SUBROUTINE betmatches(XM, AM, DM, DP, X, IM, A, K, P, L, OV)
+      SUBROUTINE bestmatches(XM, AM, DM, DP, X, IM, A, K, P, L, OV)
 C  800 FORMAT('i: ',I5,'   i: ',I5,'   VALUE: ',F8.4,'   VALUE: ',F10.4)
 C  801 FORMAT('Here: ',I5)
 C     I/O Variables       

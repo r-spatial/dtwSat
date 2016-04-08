@@ -288,7 +288,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       twdtw_results = mclapply(as.list(ts), FUN=get_aligs, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
 
       # Get best mathces for each point, period, and pattern 
-      #A = lapply(twdtw_results, FUN=.betmatches, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)  
+      #A = lapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)  
       A = mclapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
       
       # Reshape list to array 
@@ -358,105 +358,4 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
   formals(fun) = new_formals
   fun
 }
-
-
-
-
-#' @title TWDTW analysis on SciDB 
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description This function calls the method twdtwApply and retrieves the results 
-#' as a list.
-#' 
-#' @inheritParams twdtwApply 
-#' 
-#' @details The output of this function is a list with the attributes used by r_exec to save 
-#' a SciDB array. The labels of the input time series must have the format "<row>_<col>", where 
-#' "row" and "col" are the indices of the SciDB array where the time sereis come from. 
-#' 
-#' @return An object of class \code{\link[base]{list}} whose attributes are:
-#' "time_id", "class_id", "distance", "ts_id", "row_id", "col_id", "cdoy", and "year". 
-#' 
-#' @seealso \link[dtwSat]{twdtwApply} 
-#' 
-#' @examples
-#' log_fun = logisticWeight(-0.1, 100)
-#' ts = twdtwTimeSeries(example_ts.list, labels = paste(c(1,2), c(1,1), sep="_") )
-#' patt = twdtwTimeSeries(patterns.list)
-#' time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
-#' mat1 = twdtwApplySciDB(x=ts, y=patt, weight.fun=log_fun, breaks=time_intervals)
-#' mat1
-#' 
-#' @export
-twdtwApplySciDB = function(x, y, resample=TRUE, length=NULL, weight.fun=NULL, 
-                           dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
-                           span=NULL, min.length=0.5, theta = 0.5, 
-                           breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, ...){
-                  if(is.null(breaks))
-                    if( !is.null(from) &  !is.null(to) ){
-                      breaks = seq(as.Date(from), as.Date(to), by=by)
-                    } else {
-                      patt_range = lapply(index(y), range)
-                      patt_diff = trunc(sapply(patt_range, diff)/30)+1
-                      min_range = which.min(patt_diff)
-                      by = patt_diff[[min_range]]
-                      cycles = c(18,12,6,4,3,2)
-                      by = cycles[which.min(abs(by-cycles))]
-                      from = patt_range[[min_range]][1]
-                      to = from 
-                      month(to) = month(to) + by
-                      dates = as.Date(unlist(index(x)))
-                      year(from) = year(min(dates))
-                      year(to) = year(max(dates))
-                      breaks = seq(from, to, paste(by,"month"))
-                    }
-                  breaks = as.Date(breaks)
-                  .twdtwApply.SciDB(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, breaks, overlap, ...)
-}
-
-.twdtwApply.SciDB = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                  breaks, overlap, 
-                                  mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE, 
-                                  mc.cores = getOption("mc.cores", 1L), mc.cleanup = TRUE, ...){
-  get_aligs = function(x){
-    # twdtwApply(x, y=y, weight.fun=weight.fun)
-    twdtwApply(x, y=y, weight.fun=weight.fun, dist.method=dist.method, step.matrix=step.matrix, n=n, span=span, min.length=min.length, theta=theta, keep=FALSE)
-  }
-
-  # Set raster levels and labels 
-  levels = levels(y)
-  names(levels) = levels
-  m = length(levels)
-  n = length(breaks)-1
-  
-  # Apply TWDTW analysis  
-  #twdtw_results = lapply(as.list(ts), FUN=get_aligs)
-  twdtw_results = mclapply(as.list(ts), FUN=get_aligs, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
-  
-  # Get best mathces for each point, period, and pattern 
-  #res = lapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)  
-  res = mclapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
-  # Reshape list to array 
-  res = melt(res)
-  colRow = lapply(as.character(labels(x)), function(a) as.numeric(unlist(strsplit(a, split = "_"))))
-  res = cbind(res, do.call("rbind", colRow[res$L1]))
-  names(res) = c("time_id", "class_id", "distance", "ts_id", "row_id", "col_id")
-  res$cdoy = as.numeric(format(breaks[-1], "%j"))[res$time_id]
-  res$year = as.numeric(format(breaks[-1], "%Y"))[res$time_id]
-  lapply(c(res[c("col_id", "row_id", "time_id", "class_id", "ts_id", "year", "cdoy", "distance")]), as.double)
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

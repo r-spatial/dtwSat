@@ -383,6 +383,30 @@ setMethod("labels",
           }
 )
 
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @param y Extent object, or any object from which an Extent object can be extracted.
+#' @param ... Additional arguments. See \code{\link[raster]{crop}} for details.
+#' @export
+setMethod("crop", 
+          signature = signature("twdtwRaster"),
+          definition = function(x, y, ...){
+            x@timeseries = lapply(x@timeseries, crop, y=extent(y))
+            x
+          }
+)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @param ... Additional arguments. See \code{\link[raster]{extent}} for details.
+#' @export
+setMethod("extent", 
+          signature = signature("twdtwRaster"),
+          definition = function(x, y, ...){
+            extent(x@timeseries$doy)
+          }
+)
+
 # Show objects of class twdtwTimeSeries 
 show.twdtwTimeSeries = function(object){
   cat("An object of class \"twdtwTimeSeries\"\n")

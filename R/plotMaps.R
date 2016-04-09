@@ -86,12 +86,14 @@ plotMaps = function(x, time.levels=NULL, time.labels=NULL, class.levels=NULL, cl
     geom_raster(aes_string(fill="value")) + 
     scale_fill_manual(name="Legend", values = class.colors) + 
     facet_wrap(~variable) + 
-    scale_y_continuous(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0)) + 
+    scale_y_continuous(expand = c(0, 0), breaks = NULL) +
+    scale_x_continuous(expand = c(0, 0), breaks = NULL) + 
     theme(legend.position = "bottom") + 
     coord_fixed(ratio = 1) + 
-    xlab("Longitude") + 
-    ylab("Latitude")
+    xlab("") +
+    ylab("")
+    # xlab("Longitude") + 
+    # ylab("Latitude")
   gp 
   
 }

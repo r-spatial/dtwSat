@@ -8,6 +8,7 @@
 \alias{bands,twdtwRaster-method}
 \alias{coverages}
 \alias{coverages,twdtwRaster-method}
+\alias{crop,twdtwRaster-method}
 \alias{dim,twdtwRaster-method}
 \alias{extent,twdtwRaster-method}
 \alias{index,twdtwRaster-method}
@@ -37,7 +38,7 @@
 
 \S4method{res}{twdtwRaster}(x)
 
-\S4method{extent}{twdtwRaster}(x)
+\S4method{extent}{twdtwRaster}(x, y, ...)
 
 \S4method{projection}{twdtwRaster}(x)
 
@@ -66,6 +67,10 @@
 \S4method{[[}{twdtwRaster,ANY,ANY}(x, i)
 
 \S4method{labels}{twdtwRaster}(object)
+
+\S4method{crop}{twdtwRaster}(x, y, ...)
+
+\S4method{extent}{twdtwRaster}(x, y, ...)
 
 \S4method{show}{twdtwRaster}(object)
 
@@ -103,9 +108,15 @@ originally stores in separated files. See details.}
 
 \item{x}{an object of class twdtwRaster.}
 
+\item{y}{Extent object, or any object from which an Extent object can be extracted.}
+
 \item{i}{indices of the time series.}
 
 \item{object}{an object of class twdtwRaster.}
+
+\item{...}{Additional arguments. See \code{\link[raster]{crop}} for details.}
+
+\item{...}{Additional arguments. See \code{\link[raster]{extent}} for details.}
 }
 \description{
 Class for set of satellite time series.

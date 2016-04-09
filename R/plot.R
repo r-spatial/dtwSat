@@ -119,7 +119,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
           time.levels = time.levels 
           labels = time.labels 
           time.labels=NULL
-        } 
+        }
         else {
           layers = coverages(x)[-1]
           time.levels = time.levels[1]
@@ -139,21 +139,24 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
   } else {
     
       if( is.null(time.levels))
-        time.levels = names(x)
+        time.levels = seq_along(index(x))
       
-      if(is(time.levels, "numeric"))
-        time.levels = names(x)[time.levels]
-      
-      if( is.null(time.labels))
+      if(is.null(time.labels))
         time.labels = format(index(x), "%Y")
+      
+      if(is(time.levels, "numeric")){
+        time.levels = names(x)[time.levels]
+        time.labels = time.labels[time.levels]
+      }
+        
       
       if(length(time.levels)!=length(time.labels))
         stop("time.levels and time.labels have different length")
       
-      if(length(time.levels)>9){
-        time.levels = time.levels[1:9]
-        time.labels = time.labels[1:9]
-      }
+      # if(length(time.levels)>16){
+      #   time.levels = time.levels[1:16]
+      #   time.labels = time.labels[1:16]
+      # }
       
       if( is.null(class.levels))
         class.levels = levels(x)

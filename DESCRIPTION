@@ -58,6 +58,7 @@ Collate:
     'dtw.R'
     'getInternals.R'
     'getTimeSeries.R'
+    'iquery.R'
     'linearWeight.R'
     'logisticWeight.R'
     'methods.R'

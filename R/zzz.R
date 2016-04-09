@@ -35,7 +35,7 @@
 #' @importFrom stats xtabs ave window
 #' @importFrom lubridate month month<- day day<- year year<-
 #' @importFrom caret createDataPartition 
-#' @importFrom scidb iquery 
+#' @importFrom scidb scidb scidb_coordinate_start scidb_coordinate_end schema iquery 
 #' 
 NULL
 

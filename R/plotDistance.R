@@ -83,8 +83,10 @@ plotDistance = function(x, time.levels=1, time.labels=1, layers=NULL){
     scale_x_continuous(expand = c(0, 0)) + 
     theme(legend.position = "bottom") + 
     coord_fixed(ratio = 1) + 
-    xlab("Longitude") + 
-    ylab("Latitude") + 
+    xlab("") +
+    ylab("") + 
+    #xlab("Longitude") + 
+    #ylab("Latitude") + 
     ggtitle(time.label)
   gp 
   

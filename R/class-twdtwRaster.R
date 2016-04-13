@@ -21,7 +21,7 @@
 #' @description Class for set of satellite time series.
 #' 
 #' @param ... objects of class \code{\link[raster]{RasterBrick-class}} or 
-#' \code{\link[raster]{RasterStack-class}}.
+#' \code{\link[raster]{RasterStack-class}}. 
 #'
 #' @param timeline a vector with the dates of the satellite images 
 #' in the format of "YYYY-MM-DD".

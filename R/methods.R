@@ -386,7 +386,6 @@ setMethod("labels",
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @param y Extent object, or any object from which an Extent object can be extracted.
-#' @param ... Additional arguments. See \code{\link[raster]{crop}} for details.
 #' @export
 setMethod("crop", 
           signature = signature("twdtwRaster"),
@@ -398,7 +397,6 @@ setMethod("crop",
 
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
-#' @param ... Additional arguments. See \code{\link[raster]{extent}} for details.
 #' @export
 setMethod("extent", 
           signature = signature("twdtwRaster"),

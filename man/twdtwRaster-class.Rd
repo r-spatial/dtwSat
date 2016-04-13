@@ -113,10 +113,6 @@ originally stores in separated files. See details.}
 \item{i}{indices of the time series.}
 
 \item{object}{an object of class twdtwRaster.}
-
-\item{...}{Additional arguments. See \code{\link[raster]{crop}} for details.}
-
-\item{...}{Additional arguments. See \code{\link[raster]{extent}} for details.}
 }
 \description{
 Class for set of satellite time series.

@@ -41,7 +41,7 @@
 #' 	     \cr\code{distance}: a vector with TWDTW dissimilarity measure, and
 #' 	     \cr\code{K}: the number of matches of the pattern.
 #'  }
-#' 	\item{This list might have additional elements:}{ if \code{keep=TRUE} in the \code{twdtw} call 
+#' 	\item{This list might have additional elements:}{ if \code{keep=TRUE} in the \code{twdtwApply} call 
 #' 	the list is extended to include internal structures used during the TWDTW computation: 
 #'       \cr\code{costMatrix}: cumulative cost matrix,
 #'       \cr\code{directionMatrix}: directions of steps that would be taken from each element of matrix,

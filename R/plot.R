@@ -185,11 +185,10 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
       names(class.levels) = class.labels
       names(class.labels) = class.labels
       
-      # HOW TO GENERALIZE TO ALLOW PLOT DISTANCES 
       x = subset(x=x[[2]], subset=time.levels)
 
       pt = pmatch(type, c("maps","area","changes"))
-
+      
       gp = switch(pt,
             .plotMaps(x, time.levels, time.labels, class.levels, class.labels, class.colors),
             .plotArea(x, time.levels, time.labels, class.levels, class.labels, class.colors),

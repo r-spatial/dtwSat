@@ -90,7 +90,7 @@
 #' and Motion (pp. 79-84). London: Springer London, Limited.
 #' 
 #' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
-#' can be passed to \code{twdtw} through the argument \code{weight.fun}. This will 
+#' can be passed to \code{twdtwApply} through the argument \code{weight.fun}. This will 
 #' add a time-weight to the dynamic time warping analysis. The time weight 
 #' creates a global constraint useful to analyse time series with phenological cycles
 #' of vegetation that are usually bound to seasons. In previous studies by [1] the 

@@ -47,6 +47,6 @@
 #' 
 #' @export
 logisticWeight = function(alpha, beta){
-  function(psi) 1 / (1 + exp(1) ^ (alpha * (psi - beta )))
+  function(psi) 1 / (1 + exp(alpha * (psi - beta )))
 }
 

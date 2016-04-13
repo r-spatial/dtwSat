@@ -26,9 +26,9 @@ In this quick dome we will perform a TWDTW analysis for a single time series. Th
 ``` r
 library(dtwSat)
 # Create and plot object time series 
-ts = twdtwTimeSeries(example_ts) 
+ts = twdtwTimeSeries(example_ts)
 class(ts)
-plot(ts, type="timeseries") 
+plot(ts, type="timeseries")
 ```
 
 <img src="figure/plot-example_ts-ts-1.png" alt="Fig. 1. example_ts time series."  />

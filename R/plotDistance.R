@@ -79,8 +79,8 @@ plotDistance = function(x, time.levels=1, time.labels=1, layers=NULL){
     geom_raster(aes_string(fill="value")) +
     scale_fill_gradient(name="TWDTW distance", low="blue", high="red") + 
     facet_wrap(~variable) + 
-    scale_y_continuous(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0)) + 
+    scale_y_continuous(expand = c(0, 0), breaks = NULL) +
+    scale_x_continuous(expand = c(0, 0), breaks = NULL) + 
     theme(legend.position = "bottom") + 
     coord_fixed(ratio = 1) + 
     xlab("") +

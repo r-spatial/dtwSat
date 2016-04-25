@@ -197,7 +197,8 @@ twdtwAssess.twdtwTimeSeries = function(object, matrix){
         ref = labels(x)$timeseries
         levels = sort(as.character(unique(ref)))
         labels = levels 
-        pred = factor(do.call("rbind", x[])$label, levels, labels)
+        # pred = factor(do.call("rbind", x[])$label, levels, labels)
+        pred = do.call("rbind", lapply(x[], function(xx) as.character(xx$label[which.min(xx$distance)])) )
         ref = factor(ref, levels, labels)
         table(Reference=ref, Predicted=pred)
  })

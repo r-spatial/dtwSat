@@ -131,9 +131,9 @@ setMethod("createPatterns", "twdtwTimeSeries",
   # Shift dates to match the same period  
   df = do.call("rbind", lapply(as.list(x), function(x){
     res = shiftDates(x, year=as.numeric(format(to, "%Y")))
-    res = res
     res = window(res, start = from, end = to)
     res = data.frame(time=index(res), res)
+    names(res) = c("time", names(x))
     res
   }))
   names(df)[1] = vars[2]
@@ -151,7 +151,7 @@ setMethod("createPatterns", "twdtwTimeSeries",
   }
   
   if(is.null(attr)) attr = names(df)[-which(names(df) %in% vars[2])]
-  
+
   res = sapply(as.list(df[attr]), FUN=fun, ...)
   zoo(data.frame(res), as.Date(pred_time))
 }

@@ -185,7 +185,6 @@ twdtwClassify.twdtwMatches = function(x, patterns.labels, breaks, overlap, thres
 
 .bestIntervals = function(x, m, n, levels, breaks, overlap)
 {
-  # THE FORTRAN CODE IS DOING SOMETHING WRONG TAKING THE HIGHEST DISTANCE 
   best_matches = .bestmatches(x, m, n, levels, breaks, overlap)$IM
   IL = best_matches[,1]
   I = unique(best_matches[,1])

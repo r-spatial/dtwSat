@@ -40,7 +40,7 @@
 #' @export
 plotTimeSeries = function(x, labels=NULL, attr){
   
-  if(is(x, "twdtwMatches")) x = x@timeseries
+  if(is(x, "twdtwMatches")) x = subset(x@timeseries, labels)
   if(is(x, "twdtwTimeSeries")) x = subset(x, labels) 
   if(is.null(labels)) labels = labels(x) 
   new_labels = as.character(labels(x))
@@ -50,9 +50,8 @@ plotTimeSeries = function(x, labels=NULL, attr){
       i = p==labels(x)
       new_labels[i] = paste(new_labels[i], 1:labels_tabel[p])
     }
-  x = twdtwTimeSeries(getTimeSeries(x, new_labels), labels=new_labels)
+  x = twdtwTimeSeries(x@timeseries, labels=new_labels)
   labels = new_labels
-  
   if(length(labels)>16) labels = labels[1:16]
       
   # Build data.frame

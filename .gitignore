@@ -21,4 +21,4 @@ corinho.R
 tardis.f
 *.o
 *.so
-inst/doc
+#inst/doc

@@ -1,0 +1,533 @@
+---
+author:
+  - name: Victor Maus
+    affiliation: INPE 
+    affiliation2: University of Münster 
+    address: >
+      Image Processing Division\newline
+      National Institute for Space Research\newline
+      Av. dos Astronautas, 1758\newline
+      12227-010 São José dos Campos, Brazil
+    email: vwmaus1@gmail.com
+    url: \url{www.dpi.inpe.br/maus}
+    Telephone: +55/12/3208-7330
+  - name: Gilberto Câmara
+    affiliation: INPE
+    affiliation2: University of Münster 
+  - name: Marius Appel
+    affiliation: University of Münster 
+  - name: Edzer Pebesma
+    affiliation: University of Münster 
+title:
+  formatted: "\\pkg{dtwSat}: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in \\proglang{R}"
+  # If you use tex in the formatted title, also supply version without
+  plain:     "dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R"
+  # For running headers, if needed
+  short:     "\\pkg{dtwSat}: Time-Weighted Dynamic Time Warping"
+abstract: >
+  The opening of large archives of satellite data such as LANDSAT, MODIS and the SENTINELs has given researchers unprecedented access to data, allowing them to better quantify and understand local and global land change. The need to analyse such large data sets has lead to the development of automated and semi-automated methods for satellite image time series analysis. However, few of the proposed methods for remote sensing time series analysis are available as open source software. In this paper we present the \proglang{R} package \pkg{dtwSat}. This package provides an implementation of the Time-Weighted Dynamic Time Warping method for land use and land cover mapping using sequence of multi-band satellite images. Methods based on dynamic time warping are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series analysis. \pkg{dtwSat} is available from the Comprehensive R Archive Network and contributes to making methods for satellite time series analysis available to a larger audience. The package supports the full cycle of land cover classification using image time series, ranging from selecting temporal patterns to visualising and evaluating the results.
+keywords:
+  # at least one keyword must be supplied
+  formatted: [dynamic programming, MODIS time series, land use changes, crop monitoring]
+  plain:     [dynamic programming, MODIS time series, land use changes, crop monitoring]
+preamble: >
+  \usepackage{amsmath}
+  \usepackage{array}
+  \usepackage{caption}
+  \usepackage{subcaption}
+  \usepackage{float}
+documentclass: article
+classoption: shortnames
+output: 
+  rticles::jss_article:
+    pandoc_args: --natbib
+vignette: >
+  %\VignetteIndexEntry{dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- Chunk settings -->
+```{r , echo=FALSE, cache = FALSE}
+library(knitr)
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  results = "hide",
+  cache.path = "./cache/",
+  cache = FALSE,
+  comment = ""
+)
+#knit_hooks$set(purl = hook_purl) # Save chunks to Rscript file  
+```
+
+```{r , echo=FALSE, eval = TRUE, cache = FALSE}
+# Install dtwSat package  
+#install.packages("dtwSat_0.2.0.9000.tar.gz")
+```
+
+<!-- Set global env -->
+```{r , echo=FALSE, eval = TRUE, cache = FALSE}
+library(dtwSat)
+library(ggplot2)
+library(scales)
+library(Hmisc)
+library(reshape2)
+library(xtable)
+
+new_theme = theme_get()
+new_theme$text$family = "Helvetica"
+new_theme$text$size = 8
+old_theme = theme_set(new_theme)
+
+tab_format = "latex"
+page_width = 5.590551#in 14.2#cm
+page_height = 9.173228#in 23.3#cm
+```
+
+
+\sloppy
+
+# Introduction 
+
+Remote sensing images are the most widely used data source for measuring land use and land cover change (LUCC). In many areas, remote sensing images are the only data available for this purpose [@Lambin:2006; @Fritz:2013]. Recently, the opening of large archives of satellite data such as LANDSAT, MODIS and the SENTINELs has given researchers unprecedented access to data, allowing them to better quantify and understand local and global land change. The need to analyse such large data sets has lead to the development of automated and semi-automated methods for satellite image time series analysis. These methods include multi-image compositing [@Griffiths:2013], detecting forest disturbance and recovery [@Kennedy:2010; @Zhu:2012; @DeVries:2015], crop classification [@Xiao:2005; @Wardlow:2007; @Petitjean:2012; @Maus:2016], planted forest mapping [@Maire:2014], crop expansion and intensification [@Galford:2008; @Sakamoto:2009], detecting trend and seasonal changes [@Lunetta:2006; @Verbesselt:2010; @Verbesselt:2010a; @Verbesselt:2012], and extracting seasonality metrics from satellite time series [@Jonsson:2002; @Jonsson:2004]. Given the open availability of large image data sets, the research community on Earth Observation would get much benefit from methods that are openly available, reproducible and comparable. However, few of the proposed methods for remote sensing time series analysis are available as open source software, the main exception being the BFAST and BFAST-monitor algorithms for change detection [@Verbesselt:2010; @Verbesselt:2010a]. This paper is a contribution to making methods for satellite time series analysis available to a larger audience.
+
+In this paper we describe the \pkg{dtwSat} package, written in \proglang{R} [@R:2015] and \proglang{Fortran} programming languages, and available from the Comprehensive R Archive Network at [http://CRAN.R-project.org/package=dtwSat](http://CRAN.R-project.org/package=dtwSat). The package provides an implementation of Time-Weighted Dynamic Time Warping (TWDTW) [@Maus:2016] for satellite image time series analysis. 
+
+The TWDTW method is an adaptation of the well-known dynamic time warping (DTW) method for time series analysis [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007] for land use and land cover classification. The standard DTW compares a temporal signature of a known event (*e.g.*, a person's speech) with an unknown time series. It finds all possible alignments between two time series and provides a dissimilarity measure [@Rabiner:1993]. In contrast to standard DTW, the TWDTW method is sensitive to seasonal changes of natural and cultivated vegetation types. It also considers inter-annual climatic and seasonal variability. In a tropical forest area, the method has achieved a high accuracy for mapping classes of single cropping, double cropping, forest, and pasture [@Maus:2016]. 
+
+We chose \proglang{R} because it is an open source software that offers a large number of reliable packages.  The \pkg{dtwSat} package builds upon on a number of graphical and statistical tools in \proglang{R}: \pkg{dtw} [@Giorgino:2009], \pkg{proxy} [@Meyer:2015], \pkg{zoo} [@Zeileis:2005], \pkg{mgcv} [@Wood:2000; @Wood:2003; @Wood:2004; @Wood:2006; @Wood:2011], \pkg{sp} [@Pebesma:2005; @Bivand:2013], \pkg{raster} [@Hijmans:2015], \pkg{caret} [@Kuhn:2016], and \pkg{ggplot2} [@Wickham:2009]. Other \proglang{R} packages that are related and useful for remote sensing and land use analysis include \pkg{landsat} [@Goslee:2011], \pkg{rgdal} [@Bivand:2015], \pkg{spacetime} [@Pebesma:2012; @Bivand:2013], \pkg{bfast} [@Verbesselt:2010; @Verbesselt:2010a], \pkg{bfastmonitor} [@Verbesselt:2011], \pkg{bfastSpatial} [@Dutrieux:2014], \pkg{MODISTools} [@Tuck:2014], \pkg{maptools} [@Bivand:2015], and \pkg{lucc} [@Moulds:2015]. Using existing packages as building blocks, software developers in \proglang{R} save a lot of time and can concentrate on their intended goals. 
+
+There is already an \proglang{R} package that implements the standard DTW method for time series analysis: the \pkg{dtw} package [@Giorgino:2009]. In the \pkg{dtwSat} package, we focus on the specific case of satellite image time series analysis. The analysis method implemented in \pkg{dtwSat} package extends that of the \pkg{dtw} package; it adjusts the standard DTW method to account for the seasonality of different types of land cover. Our aim is to support the full cycle of land use and land cover classification, from selecting sample patterns to visualising and evaluating the final result. 
+
+This paper focuses on the motivation and guidance for using the TWDTW method for remote sensing applications. The full description of the method is available in a paper published by the lead author [@Maus:2016]. In what follows, Section \ref{dtwsat-package-overview} gives an overview of the \pkg{dtwSat} package. The Section \ref{the-time-weighted-dynamic-time-warping-method} describes the application of TWDTW [@Maus:2016] for satellite time series analysis. Then, Section \ref{classifying-a-time-series} focuses on the analysis of a single time series and shows some visualisation methods. We then present an example of a complete land use and land cover change analysis for a study area in the Mato Grosso, Brazil in Section \ref{producing-a-land-cover-map}. 
+
+
+# The Time-Weighted Dynamic Time Warping method
+
+In this section, we describe the Time-Weighted Dynamic Time Warping (TWDTW) algorithm in general terms. For a detailed technical explanation, refer to @Maus:2016. TWDTW is time-constrained version of the Dynamic Time Warping (DTW) algorithm.  Although the standard DTW method is good for shape matching [@Keogh:2005], it is not suited *per se* for satellite image time series analysis, since it disregards the temporal range when finding the best matches between two time series [@Maus:2016]. When using image time series for land cover classification, one needs to balance between shape matching and temporal alignment, since each land cover class has a distinct phenological cycle associated with the vegetation [@Reed:1994,@Zhang:2003].  For example,  soybeans and maize cycles range from 90 to 120 days, whereas sugar-cane has a 360 to 720 days cycle. A time series with cycle larger than 180 days is unlikely to come from soybeans or maize. For this reason, @Maus:2016 include a time constraint in DTW to account for seasonality. The resulting method is capable of distinguishing different land use and land cover classes. 
+
+The inputs to TWDTW are: (a) a set of time series of known temporal patterns (*e.g.*, phenological cycles of land cover classes); (b) an unclassified long-term satellite image time series. For each temporal pattern, the algorithm finds all matching subintervals in the long-term time series, providing a dissimilarity measure (cf. Figure \ref{fig:twdtw-example}). The result of the algorithm is a set of subintervals, each associated with a pattern and with a dissimilarity measure. We then break the unclassified time series in periods according to our needs (*e.g.*, yearly, seasonality, monthly). For each period, we consider all matching subintervals that intersect with it, and classify them based on the land cover class of the best matching subinterval. In this way, the long-term satellite time series is divided in periods, and each period is assigned a land cover class.
+
+```{r twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Matches of the known temporal pattern to subintervals of the long-term time series. The solid black line is the long-term time series, the colored lines are the different matches of the same pattern ordered by TWDTW dissimilarity measure, and the gray dashed lines are the matching points.', fig.pos='h'}
+n=4
+log_fun = logisticWeight(alpha = -0.1, beta = 100)
+ts = twdtwTimeSeries(example_ts, labels="Time series")
+patt = twdtwTimeSeries(patterns.list$Cotton, labels="Matches")
+mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE, n=n)
+df_dist = mat[[1]]
+df_dist$label = paste("Distance:",round(df_dist$distance,2))
+df_dist$y = 1.8 
+plotMatches(mat, attr="evi", k=n) + 
+  ylab("Time series                  Pattern") + 
+  geom_text(data=df_dist, mapping = aes_string(x='to', y='y', label='label'),
+            size = 2, family="Helvetica") + 
+  theme(legend.position="none")
+```
+
+
+To use TWDTW for land use and land cover classification, we need the following data sets: 
+
+- A set of remote sensing time series for the study area. For example, a tile of a MODIS MOD13Q1 image consists of 4800 x 4800 pixels, covering an area of 10 degrees x 10 degrees at the Equator [@Friedl:2010]. A 15-year (2000-2015) MODIS MOD13Q1 set time series has 23 images per year, with a total of 23 million time series, each with 346 samples.
+
+- A set of time series with land cover information, called *temporal patterns*. Typically, each time series is short and covers one phenological cycle of one land cover type. Examples would be a time series of a soybean crop, or one that describes a mature tropical forest. These temporal patterns can be extracted from the remote sensing image data, if the user knows their spatial and temporal location.
+
+- A set of ground truth points, with spatial and temporal information and land cover classification. These *ground truth* points are used for validation and accuracy assessment. 
+
+Based on the information provided by the user about the images to be analysed, our method maps them to a three-dimensional (3-D) array in space-time (Figure \ref{fig:3-D-array}). This array can have multiple attributes, such as the satellite bands (*e.g.*, "red", "nir", and "blue"), and derived indices (*e.g.*, "NDVI", "EVI", and "EVI2"). This way, each pixel location is associated to a sequence of measurements, building a satellite image time series. Figure \ref{fig:3-D-array} shows an example of "evi" time series for a location in the Brazilian Amazon from 2000 to 2008. In the first two years, the area was covered by forest that was cut in 2002. The area was then used for cattle raising (pasture) for three years, and then for crop production from 2006 to 2008. Satellite image time series are thus useful to describe the dynamics of the landscape and the land use trajectories. 
+
+\begin{figure}[!h]
+\begin{center} 
+  \includegraphics[width=.45\textwidth]{./sits-en.eps}
+  \includegraphics[width=.45\textwidth]{./ts-en_86mm_gaps_land_use.eps}
+\end{center}
+\caption{A 3-dimensional array of satellite images (left), an enhanced vegetation index (EVI) time series at the pixel location $(x,y)$ (right). The arrows indicate gaps in the time series. Adapted from \citet{Maus:2016}.}
+\label{fig:3-D-array}
+\end{figure}
+
+
+# dtwSat package overview
+
+\pkg{dtwSat} provides a set of functions for land cover change analysis using satellite image time series. This includes functions to build temporal patterns for land cover types, apply the TWDTW analysis using different weighting functions, visualise the results in a graphical interface, produce land cover maps, and create spatiotemporal plots for land changes. Therefore, \pkg{dtwSat} gives an end-to-end solution for satellite time series analysis, which users can make a complete land change analysis. 
+
+For the \pkg{dtwSat} package, the user should provide the following inputs: 
+
+- A set of time ordered satellite images, all with the same spatial extent. The user should also inform the date of each image. In \proglang{R} the images should use the \code{RasterBrick} or \code{RasterStack} class of the \pkg{raster} package. 
+- A list of temporal patterns, each associated to a time series in \pkg{zoo} format. 
+
+- A list of known ground truth points, each with spatial and temporal information, in a format readable in \proglang{R}, such as CSV or shapefile. 
+
+The \pkg{dtwSat} package organizes the data in three \code{S4} classes of objects: \code{twdtwTimeSeries}, \code{twdtwMatches}, and \code{twdtwRaster}. To store time series we use the class \code{twdtwTimeSeries}. The objects of class \code{twdtwTimeSeries} have two slots; the slot called \code{timeseries} has a list of \code{zoo} objects; and the slot called \code{labels} stores the labels of the time series. The class \code{twdtwMatches} has 3 slots to store inputs and results of the TWDTW analysis. The slots called \code{timeseries} and \code{patterns} are objects of the class \code{twdtwTimeSeries} with the unclassified long-term time series and the temporal patterns, respectively. A third slot called \code{alignments} has a \code{list} with detailed information about the matches between the patterns and the unclassified long-term time series. The classes \code{twdtwTimeSeries} and \code{twdtwMatches} are used to analyse lists of time series. 
+
+The class \code{twdtwRaster} is used for satellite image time series. This class can store either unclassified raster time series with the satellite raw data, the results of the TWDTW analyis, or a classified raster time series. In both cases, the objects of class \code{twdtwRaster} have five slots. The slot called \code{timeseries} is a list of \code{RasterBrick} or \code{RasterStack} objects with time ordered satellite images (all with the same temporal and spatial extents); the slot called \code{timeline} is a vector of class \code{Date} with dates of the satellite images; the slot called \code{layers} has the names of satellite bands; the slot called \code{levels} has levels for the raster values; and the slot called \code{labels} has labels for the raster values. This class builds upon the \proglang{R} package \pkg{raster} to build a multi-attribute 3-D raster in space-time, allowing for multi-band satellite image time series analysis. 
+
+
+
+# Classifying a time series
+
+This section describes how to classify one time series, using examples that come with the \pkg{dtwSat} package. We will show how to match three temporal patterns ("soybean", "cotton", and  "maize") to subintervals of a long-term satellite image time series. These time series have been extracted from a set of MODIS MOD13Q1 [@Friedl:2010] images and include the vegetation indices "ndvi", "evi", and the original bands "nir", "red", "blue", and "mir". In this example, the classification of crop types for the long-term time series is known. 
+
+## Input data
+
+The inputs for the next examples are time series in \pkg{zoo} format. The first is an object of class \code{zoo} with a long-term time series, referred to as \code{example_ts}, and the second is a \code{list} of time series of class \code{zoo} with the temporal patterns of "soybean", "cotton", and "maize", referred to as \code{patterns.list}. 
+
+From \code{zoo} objects we construct time series of class \code{twdtwTimeSeries}, for which we have a set of visualization and analysis methods implemented in the \pkg{dtwSat} package. The code below builds two objects of class \code{twdtwTimeSeries}. The first has the long-term time series and second has the temporal patterns. We use the plot method types \code{timeseries} and \code{patterns} to shown the objects \code{ts} in Figure \ref{fig:example-timeseries} and \code{patterns_ts} in Figure \ref{fig:temporal-patterns-soy-cot-mai}, respectively. This plot method uses \code{ggplot} syntax. 
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+ts = twdtwTimeSeries(example_ts, labels="Time series")
+patterns_ts = twdtwTimeSeries(patterns.list)
+example_ts_labels
+```
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+library(dtwSat)
+names(patterns.list)
+head(example_ts, n = 2)
+```
+
+
+
+```{r example-timeseries, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3, fig.align='center', fig.cap='Example of time series based on MODIS product MOD13Q1 \\citep{Friedl:2010}. The labels of the phenological cycle are shown in the plot.', fig.pos='!h'}
+plot(ts, type = "timeseries") + 
+  annotate(geom = "text", x = example_ts_labels$from+90, y = 0.98, 
+  label = example_ts_labels$label, size = 2)
+```
+```{r temporal-patterns-soy-cot-mai, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize based on MODIS product MOD13Q1 \\citep{Friedl:2010}.', fig.pos='!h'}
+plot(patterns_ts, type = "patterns")
+```
+
+TWDTW uses both amplitude and phase information to classify the phenological cycles in the long-term time series. The EVI peak of the "soybean" time series has a similar amplitude as that of "cotton". However, the "soybean" series peaks in late December while the "cotton" series peaks in early April. The EVI peak of the "maize" time series is at the same period as the peak of "cotton". However, the "maize" time series has smaller amplitude than the "cotton" one. Therefore, we can improve the time series classification by combining shape and time information. 
+
+
+## Detection of time series patterns with TWDTW
+
+Each subinterval of the long-term time series in \code{ts} has a known phenological cycle. We will now compare the known information with the result of the TWDTW algorithm. We use the function \code{twdtwApply} that returns an \proglang{R} object of class \code{twdtwMatches} with all matches of each temporal pattern in the time series. 
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+log_weight = logisticWeight(alpha = -0.1, beta = 100)
+matches = 
+  twdtwApply(x = ts, y = patterns_ts, weight.fun = log_weight, keep=TRUE)
+slotNames(matches)
+show(matches)
+```
+To retrieve the complete information of the matches we set \code{keep=TRUE}. We need this information for the plot methods of the class \code{twdtwMatches}. The argument \code{weight.fun} defines the time-weight to the dynamic time warping analysis [@Maus:2016]. By default the time-weight is zero, meaning that the function will run a standard dynamic time warping analysis. The arguments \code{x} and \code{y} are objects of class \code{twdtwTimeSeries} with the unclassified long-term time series and the temporal patterns, respectively. For details and other arguments see \code{?twdtwApply}.
+
+In our example we use a logistic weight function for the temporal constraint of the TWDTW algorithm. This function is defined by \code{logisticWeight}. The \pkg{dtwSat} package provides two in-built functions: \code{linearWeight} and \code{logisticWeight}. The \code{linearWeight} function with slope \code{a} and intercept \code{b} is given by 
+$$
+    \omega = a \cdot g(t_1,t_2) + b,
+    \label{eq:lineartw}
+$$
+and the \code{logisticWeight} with midpoint \code{beta}, and steepness \code{alpha}, given by
+$$
+    \omega = \frac{1}{1 + e^{-\alpha(g(t_1,t_2)-\beta)} }.
+    \label{eq:nonlineartw}
+$$
+The function $g$ is the absolute difference in days between two dates, $t_1$ and $t_2$. The linear function creates a strong time constraint even for small time differences. The logistic function has a low weight for small time warps and significant costs for bigger time warps, cf. Figure \ref{fig:logist-time-weight}. In our previous studies [@Maus:2016] the logistic-weight had better results than the linear-weight for land cover classification. Users can define different weight functions as temporal constraints in the argument \code{weight.fun} of the \code{twdtwApply} method. 
+```{r logist-time-weight, echo = FALSE, eval = TRUE, fig.path='figure/', out.width=paste0(page_width/2,'in'), fig.align='center', fig.cap='Logistic time-weight function \\code{logisticWeight} with steepness \\code{alpha=-0.1} and midpoint \\code{beta=100}. The $x$ axis shows the absolute difference between two dates in days and the $y$ axis shows the time-weight \\citep{Maus:2016}.', fig.pos='!h'}
+# Maximum time difference in days 
+max_diff = 366/2
+# Set parameters 
+alpha = -0.1
+beta = 100
+a = 1/max_diff
+# Define the logistic weight 
+log_fun = logisticWeight(alpha, beta)
+# Define the linear weight 
+lin_fun = linearWeight(a)
+# Build data.frame with linear and logistic time-weight 
+Difference = 0:max_diff
+df_weight = data.frame(Difference, Logistic=log_fun(Difference), Linear=lin_fun(Difference))
+names(df_weight) = c("Difference", paste0("Logistic weight, alpha: ",alpha," and beta: ",beta), paste0("Linear weight, slop: ",round(a,3)))
+# Reshape and plot weight curves 
+df_weight = melt(df_weight, id.vars = "Difference")
+names(df_weight)[-1] = c("Functions","Weight")
+ggplot(df_weight, aes_string(x="Difference", y="Weight", group="Functions", linetype="Functions")) + 
+  geom_line() + xlab("Time difference (days)")  + 
+  theme(text = element_text(size = 10, family="Helvetica"), 
+        plot.title = element_text(size = 10, family="Helvetica", face="bold"),
+        axis.title = element_text(size = 10, family="Helvetica"),
+        legend.position = c(.3,.85), legend.background = element_rect(fill="transparent")) +
+  scale_linetype(guide_legend(title = ""))
+```
+
+## Visualising the result of the TWDTW algorithm
+
+\pkg{dtwSat} provides five ways to visualise objects of class \code{twdtwMatches} through the plot types: \code{matches}, \code{alignments}, \code{classification}, \code{path}, and \code{cost}. The plot type \code{matches} shows the matching points of the patterns in the long-term time series; the plot type \code{alignments} shows the alignments and dissimilarity measures; the plot type \code{path} shows the low cost paths in the TWDTW cost matrix; and the plot type \code{cost} allows the visualisation of the cost matrices (local cost, accumulated cost, and time cost); and the plot type \code{classification} shows the classification of the long-term time series based on the TWDTW analysis. The plot methods for class \code{twdtwMatches} return a \code{ggplot} object, so that users can further manipulate the result using the \pkg{ggplot2} package. For more details on visualisation functions, please refer to the \pkg{dtwSat} documentation in the CRAN [@Maus:2015a]. 
+
+We now describe the plot types \code{matches} and \code{alignments}. The code bellow shows how to visualise the matching points of the four best matches of "soybean" pattern in the long-term time series, cf. Figure \ref{fig:twdtw-matches}. 
+```{r twdtw-matches, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap=c('The four best matches of the "soybean" pattern in the time series using a logistic time-weight. The solid black line is the long-term time series; the coloured lines are the temporal patterns; and the grey dashed lines are the respective matching points.'), fig.pos='!h'}
+plot(matches, type="matches", patterns.labels="Soybean", k=4)
+```
+
+The next example (Figure \ref{fig:alignments-all-patterns}) uses the plot type \code{alignments} to show the alignments of the temporal patterns. We set the threshold for the dissimilarity measure to be lower than $3.0$. This is useful to display the different subintervals of the long-term time series that have at least one alignment whose dissimilarity is less than the specified threshold.
+```{r alignments-all-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Alignments and dissimilarity measures of the patterns "soybean", "cotton", and "maize" to the subintervals of the long-term time series using a logistic time-weight. The solid black line is the EVI time series, and the coloured lines are the alignments of the patterns that have dissimilarity measure lower than three.'), fig.pos='!h'}
+plot(matches, type="alignments", attr = "evi", threshold = 3.0)
+```
+
+## Classifying the long-term time series 
+
+Using the matches and their associated dissimilarity measures, we can classify the subintervals of the long-term time series using \code{twdtwClassify}. To do this, we need to define a period for classification and the minimum overlap between the period and the alignments that intersect with it. We use the plot type \code{classification} to show the classification of the subintervals of the long-term time series based on the TWDTW analysis. For this example, we set classification periods of 6 months from September 2009 to September 2013, and a minimum overlap of 50% between the alignment and the classification period. This means that at least 50% of the alignment has to be contained inside of the classification period. 
+```{r time-series-classification, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Classification of each 6 months periods of the time series using results of the TWDTW analysis with logistic time-weight. The solid lines are the attributes of the time series, the background colours indicate the classification of the periods.'), fig.pos='!h'}
+ts_classification = twdtwClassify(x = matches, 
+  from = as.Date("2009-09-01"), to = as.Date("2013-09-01"), 
+  by = "6 month", overlap = 0.5)
+plot(ts_classification, type="classification")
+```
+
+Comparing the results of the classified time series in Figure \ref{fig:time-series-classification} with the crop cycles in Figure \ref{fig:example-timeseries} we see that the algorithm has classified correctly all the eight subintervals from 2009 to 2013, which are, respectively: "Soybean", "Cotton", "Soybean", "Cotton", "Soybean", "Maize", "Soybean", "Maize". 
+
+
+
+# Producing a land cover map
+
+In this section we present an application of TWDTW for land use and land cover change analysis using satellite image time series. Our input is a set of images, each covering the same geographical area at different times. Each pixel location is then associated to an unclassified satellite image time series. We assume to have done field work in the area; for some pixel locations and time periods, we know what is the land cover. We then will show how to obtain a set of template patterns, based on the field samples and how to apply these patterns to land cover classification of the set of images. In the end of this section we show how to perform land cover change analysis and how to do accuracy assessment. The satellite images and the field samples used in the examples come with \pkg{dtwSat} package. 
+
+Our method is not restricted to cases where the temporal patterns are obtained from the set of images. The patterns for the TWDTW analysis can be any time series with same bands or indices as the unclassified images, such as in the examples of Section \ref{classifying-a-time-series} above.
+
+## Input data 
+
+The inputs are: *a)* the satellite images for a given geographical area, organised as a set of georeferenced raster files in GeoTIFF format, each containing all time steps of a spectral band or index; and *b)* a set of ground truth samples. The satellite images are extracted from the MODIS product MOD13Q1 collection 5 [@Friedl:2010] and include vegetation indexes "ndvi", "evi", and original bands "nir", "red", "blue", and "mir". This product has 250 x 250 m spatial and 16 day temporal resolution. 
+
+The region is a tropical forest area in Mato Grosso, Brazil of approximately 5300 km$^2$ with images from 2007 to 2013  (Figure \ref{fig:study-area}). This is a sequence of 160 images with 999 pixels each for 6 years. We also have a set of 603 ground truth samples of the following classes: "forest", "cotton-fallow", "soybean-cotton", "soybean-maize", and "soybean-millet".
+
+\begin{figure}[!h]
+\begin{center} 
+  \includegraphics[width=\textwidth]{./study_area}
+\end{center}
+\caption{Study area in Mato Grosso, Brazil, shown in a \copyright\ Google Earth image. The area was originally covered by tropical forest that has been removed for agricultural use.}
+\label{fig:study-area}
+\end{figure}
+
+The data files for the examples that follow are in the \pkg{dtwSat} installation folder *lucc_MT/data/*. The *tif* files include the time series of "blue", "red", "nir", "mir", "evi", "ndvi", and "doy" (day of the year); the text file *timeline* has the dates of the satellite images; the CSV file *samples.csv* has the \code{longitude}, \code{latitude}, \code{from},  \code{to}, and \code{label} for each field sample; and the text file *samples_projection* contains information about the cartographic projection of the samples, in the format of coordinate reference system used by \code{sp::CRS}. 
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+data_folder = system.file("lucc_MT/data", package = "dtwSat")
+dir(data_folder)
+```
+
+In this example, we have stored all the time series for each band in one single file. In this way, we can use the function \code{raster::brick} to read the satellite images. The algorithm also works when the time steps for each band are split in many files. In this case, the user should call the function \code{raster::stack} with the appropriate parameters. Because of processing performance, we suggest that interested users group their images in bricks and follow the procedures given below.
+```{r, echo = TRUE, eval = TRUE}
+blue = brick(paste(data_folder,"blue.tif", sep = "/"))
+red  = brick(paste(data_folder,"red.tif", sep = "/"))
+nir  = brick(paste(data_folder,"nir.tif", sep = "/"))
+mir  = brick(paste(data_folder,"mir.tif", sep = "/"))
+evi  = brick(paste(data_folder,"evi.tif", sep = "/"))
+ndvi = brick(paste(data_folder,"ndvi.tif", sep = "/"))
+day_of_year  = brick(paste(data_folder,"doy.tif", sep = "/"))
+dates = scan(paste(data_folder,"timeline", sep = "/"), what = "dates")
+```
+
+The set of ground truth samples in the CSV file *samples.csv* has a total of 603 samples divided in five classes: 68 "cotton-fallow", 138 "forest", 79 "soybean-cotton", 134 "soybean-maize", and 184 "soybean-millet". Reading this CSV file, we get a \code{data.frame} object, with the spatial location (\code{latitude} and \code{longitude}), starting and ending dates (\code{from} and \code{to}), and the \code{label} for each sample. 
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+field_samples = read.csv(paste(data_folder,"samples.csv", sep = "/"))
+head(field_samples, 2)
+table(field_samples[["label"]])
+proj_str = scan(paste(data_folder,"samples_projection", sep = "/"), 
+  what = "character")
+proj_str
+```
+
+
+## Creating the time series and the temporal patterns 
+
+After reading our data, we need to create the time series for analysis. For this purpose, \pkg{dtwSat} provides the constructor \code{twdtwRaster} that builds a multi-band satellite image time series. The inputs of this function are \code{RasterBrick} objects with the same temporal and spatial extents, and a vector (\code{timeline}) with the acquisition dates of the images in the format \code{"YYYY-MM-DD"}. The argument \code{doy} is optional. If \code{doy} is not declared, the function builds a \code{RasterBrick} object using the dates given by \code{timeline}. This function produces an object of class \code{twdtwRaster} with the time series of multiple satellite bands.
+```{r, echo = TRUE, eval = TRUE}
+raster_timeseries = twdtwRaster(blue, red, nir, mir, evi, ndvi, 
+  timeline = dates, doy = day_of_year)
+```
+
+We now need to identify the temporal patterns. Usually, this can be done using the collected field samples. In the next example we use the function \code{getTimeSeries} to get the time series of each field sample from our raster time series. The arguments of the function are a set of raster time series, a \code{data.frame} with spatial and temporal information about the fields samples (as in the object \code{field_samples} given above), and a \code{proj4string} with the projection information. The projection should follow the \code{sp::CRS} format. The result is an object of class \code{twdtwTimeSeries} with one time series for each field sample. 
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+field_samples_ts = getTimeSeries(raster_timeseries, 
+  y = field_samples, proj4string = proj_str)
+field_samples_ts
+```
+
+After obtaining the time series associated to the field samples, we need to create the template patterns for each class. For this purpose, \pkg{dtwSat} provides the function \code{createPatterns}. This function fits a Generalized Additive Model (GAM) [Hastie:1986,Wood:2011] to the field samples and retrieves a smoothed temporal pattern for each band (*e.g.*, "blue", "red", "nir", "mir", "evi", and "ndvi"). We use the GAM because of its flexibility for non-parametric fits, with less rigorous assumptions on the relationship between response and predictor. This potentially provides better fit to satellite data than purely parametric models, due to the data's inter- and intra-annual variability. 
+
+To produce the set of template patterns using the function \code{createPatterns}, we need to set the temporal frequency of the resulting patterns and the smoothing function for the GAM model. In the example below, we set \code{freq=8} to get temporal patterns with a frequency of 8 days. We also set the GAM smoothing formula to be  \code{formula = y ~ s(x)}, where function \code{s} sets up a spline model, with \code{x} the time and \code{y} a satellite band (for details see \code{?mgcv::gam} and \code{?mgcv::s}). 
+```{r, echo = TRUE, eval = TRUE}
+temporal_patterns = 
+  createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
+```
+We use the plot method \code{type="patterns"} to show the results of the \code{createPatterns} in \autoref{fig:temporal-patterns}. 
+```{r temporal-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/1.5, fig.align='center', fig.pos='!h', fig.cap='Temporal patterns of forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet based on the ground truth samples.'}
+plot(temporal_patterns, type = "patterns") + 
+  theme(legend.position = c(.8,.25))
+```
+
+After obtaining the template patterns for each land cover class, it is useful to perform a pre-classification analysis to assess their quality and their informational content. Ideally, one would need template patterns that, when applied to the set of unknown time series, produce consistent results. For this reason, it is advisable that the user performs a pre-classification step, along the lines of the individual analysis described in Section \ref{classifying-a-time-series}. In this way, the users would assess how good their patterns are before classifying a large data set.
+
+
+## Classifying the image time series
+
+After obtaining a consistent set of temporal patterns, we use the function \code{twdtwApply} to run the TWDTW analysis for each pixel location in the raster time series. The input raster time series in the object \code{twdtwRaster} should be longer or have approximatly the same length as the temporal patterns. This function retrieves an object of class \code{twdtwRaster} with the TWDTW dissimilarity measure of the temporal patterns for each time period. The arguments \code{overwrite} and \code{format} are passed to \code{raster::writeRaster}. The arguments \code{weight.fun} and \code{overlap} are described in Section \ref{classifying-a-time-series}. Here we set the parameters of the time weight (logistic function) base on our the experience about the phenological cycle of the vegetation in the study area. In the next example, we classify the raster time series using the temporal patterns in \code{temporal_patterns} obtained as described above. The result is a \code{twdtwRaster} with five layers; each layer contains the TWDTW dissimilarity measure for one temporal pattern over time. We use the plot type \code{distance} to illustrate the TWDTW dissimilarity for each temporal pattern in 2013, cf. Figure \ref{fig:plot-dissmilarity2013}. 
+
+```{r, echo = TRUE, eval = TRUE, results = 'markup'}
+log_fun = logisticWeight(alpha=-0.1, beta=50) 
+twdtw_dist = twdtwApply(x = raster_timeseries, y = temporal_patterns, 
+  overlap = 0.5, weight.fun = log_fun, overwrite=TRUE, format="GTiff")
+```
+<!--
+# Processing time 
+log_fun = logisticWeight(alpha=-0.1, beta=50) 
+t1 = system.time(
+twdtw_dist <- twdtwApply(x = raster_timeseries, y = temporal_patterns, 
+             from = as.Date("2007-09-01"), to = as.Date("2013-09-01"),
+             by = "12 month", overlap = 0.5, weight.fun = log_fun, 
+             overwrite=TRUE, format="GTiff")
+)
+t2 = system.time(
+twdtw_dist <- twdtwApply(x = raster_timeseries, y = temporal_patterns, 
+             from = as.Date("2007-09-01"), to = as.Date("2013-09-01"),
+             by = "12 month", overlap = 0.5, weight.fun = log_fun, 
+             overwrite=TRUE, format="GTiff",mc.cores=4)
+)
+t1/60
+#      user     system    elapsed 
+#2.21983333 0.01438333 2.47126667 
+
+t2/60
+#      user     system    elapsed 
+#3.97525000 0.06543333 1.38298333 
+-->
+
+```{r plot-dissmilarity2013, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of the TWDTW dissimilarity from each temporal pattern in 2013. The blue areas are more similar to the pattern and the red areas are less similar to the pattern.', fig.pos='!h'}
+plot(x = twdtw_dist, type="distance", time.levels = 6)
+```
+
+The results of the example above can be used to create categorical land cover maps. The function \code{twdtwClassify} selects the most similar pattern for each time period and retrieves a \code{twdtwRaster} object with the time series of land use maps. The resulting object includes two layers, the first has the classified categorical maps and the second has the TWDTW dissimilarity measure. 
+```{r, echo = TRUE, eval = TRUE}
+land_use_maps = twdtwClassify(twdtw_dist, format="GTiff", overwrite=TRUE)
+```
+
+
+## Looking at the classification results
+
+The classification results can be visualised using the \code{plot} methods of the class \code{twdtwRaster}, which supports four plot types: "maps", "area", "changes", and "distance". The \code{type="maps"} shows the land cover classification maps for each period, cf. Figure \ref{fig:plot-map}.
+```{r plot-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Land use maps for each year from 2008 to 2013.', fig.pos='!h'}
+plot(x = land_use_maps, type = "maps")
+```
+
+The next example shows the accumulated area for each class over time, using \code{type="area"}, cf. Figure \ref{fig:plot-area}. 
+```{r plot-area, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Percentage of area for each land use class from 2008 to 2013.', fig.pos='!h'}
+plot(x = land_use_maps, type = "area")
+```
+Users can also view the land cover transition for each time period, by setting \code{type="changes"}. For each land cover class and each period, the plot shows gains and losses in area from the other classes. This is the visual equivalent of a land transition matrix, cf. Figure \ref{fig:plot-change}. 
+```{r plot-change, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Gains and losses in area from the other classes. The $y$ axis shows the actual class; the positive direction of $x$ axis shows the gains and the negative direction of $x$ axis shows the losses of the classes indicated in $y$. The colors indicate from/to which classes the gains/losses belong.', fig.pos='!h'}
+plot(x = land_use_maps, type = "changes")
+```
+
+We can also look at the dissimilarity of each classified pixel setting \code{type="distance"}. This plot can give a measure of the uncertainty of the classification of each pixel for each time period, cf. Figure \ref{fig:plot-dissmilarity}. 
+```{r plot-dissmilarity, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='TWDTW dissimilarity measure for each pixel over each classified period. The blue areas have high confidence and the red areas have low confidence in the classification.', fig.pos='!h'}
+plot(x = land_use_maps, type="distance")
+```
+
+
+## Assessing the classification accuracy
+
+In this section we show how to assess the accuracy of the TWDTW method for land cover classification. To do this, we split the ground truth samples into training and validation sets, using the function \code{splitDataset} from the package \pkg{dtwSat}. This function splits set of time series in the object \code{twdtwTimeSeries} for training and validation. The argument \code{p} defines the percentage used for training and the argument \code{times} gives the number of different partitions to create. This is a a stratified sampling with a simple random sampling within each stratum, see \code{?createDataPartition} for details. In the next example we create 100 different partitions of the data. Each partition uses 10% of the data for training and 90% for validation. The output is a list with 100 different data partitions; each partition has the temporal patterns based on the training samples and a set of time series for validation. 
+```{r, echo = TRUE, eval = FALSE}
+set.seed(1)
+partitions = splitDataset(field_samples_ts, p=0.1, times=100, 
+  freq = 8, formula = y ~ s(x, bs="cc"))
+```
+
+For each data partition we run the TWDTW analysis to classify the set of validation time series using the trained temporal patterns. The result is a list of \code{twdtwMatches} objects with the classified set of time series for each data partition. To compute the *User's Accuracy* (UA) and *Producer's Accuracy* (PA) of the classified time series we use the function \code{dtwSat::twdtwAssess} that retrieves a \code{data.frame} with the accuracy assessment for all data partitions.  
+```{r, echo = TRUE, eval = FALSE, results = 'markup'}
+log_fun = logisticWeight(alpha=-0.1, beta=50) 
+twdtw_res = lapply(partitions, function(x){
+  res = twdtwApply(x = x$ts, y = x$patterns, weight.fun = log_fun, n=1)
+  twdtwClassify(x = res)
+})
+assessment = twdtwAssess(twdtw_res)
+head(assessment, 5)
+```
+```{r, echo = FALSE, eval = TRUE}
+load(system.file("lucc_MT/assessment.RData", package = "dtwSat"))
+```
+
+<!--
+t1 = system.time(
+  twdtw_res <- lapply(partitions, function(x){
+    res = twdtwApply(x = x$ts, y = x$patterns, weight.fun = log_fun, n=1)
+    twdtwClassify(x = res)
+  })
+)
+t1/60
+#       user      system     elapsed 
+# 51.86498333  0.01046667 51.85880000 
+
+t2 = system.time(
+  assessment <- twdtwAssess(twdtw_res)
+)
+t2/60
+#         user       system      elapsed 
+# 3.0679500000 0.0004333333 3.0651333333
+-->
+
+Figure \ref{fig:plot-accuracy} shows the average $\mu$ and standard deviation $\sigma$ of *user\'s* and *producer\'s accuracy* based on a bootstrap simulation of 100 different data partitions using resampling-with-replacement. The *user\'s accuracy* gives the confidence and the *producer\'s accuracy* gives the sensitivity of the method for each class. In our analysis all classes had high *user\'s* and *producer\'s accuracy*, meaning that TWDTW has high confidence and sensitivity for the classes included in the analysis. The average, standard deviation, and the 99\% confidence interval is also shown in Table \ref{tab:assessment}.
+```{r plot-accuracy, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='User\'s Accuracy (UA) and Producer\'s Accuracy (PA) of the TWDTW method for land cover classification. The plot shows the averages and their confidence interval for 99\\%.', fig.pos='!h'}
+df = melt(assessment[,-1], id="label")
+df$variable = factor(df$variable, levels = c("UA", "PA"), labels = c("User's Accuracy", "Producer's Accuracy"))
+ggplot(df, aes(x=label, y=value)) +
+  stat_summary(fun.data="mean_cl_boot", fun.args=list(conf.int = .99), 
+               width=0.5, geom="crossbar", size=0.1, fill = "gray") + 
+  geom_point(size=0.2) +  facet_grid(. ~ variable) + 
+  scale_y_continuous(limits = c(0,1), labels = percent, breaks = seq(0,1,.2)) + 
+  xlab("") + ylab("Accuracy") + coord_flip()
+```
+
+```{r, echo = FALSE, eval = TRUE, results = 'asis'}
+assess_mean = aggregate(assessment[, c("UA","PA")], list(assessment$label), mean)
+assess_sd = aggregate(assessment[, c("UA","PA")], list(assessment$label), sd)
+l_names = levels(assessment$label)
+names(l_names) = l_names
+ic_ua = t(sapply(l_names, function(i) 100*mean_cl_boot(x = assessment$UA[assessment$label==i], conf.int = .99)))[,-1]
+ic_pa = t(sapply(l_names, function(i) 100*mean_cl_boot(x = assessment$PA[assessment$label==i], conf.int = .99)))[,-1]
+
+assess_table = data.frame(
+  Class = assess_mean$Group.1,
+  
+  MUA = sprintf("%.2f", round(100*assess_mean$UA,2)), 
+  SDUA = sprintf("(%.2f)", round(100*assess_sd$UA,2)), 
+  CIUA = sprintf("[%.2f-%.2f]", round(as.numeric(ic_ua[,1]),2), round(as.numeric(ic_ua[,2]),2)), 
+
+  MPA = sprintf("%.2f", round(100*assess_mean$PA,2)),
+  SDPA = sprintf("(%.2f)", round(100*assess_sd$PA,2)),
+  CIPA = sprintf("[%.2f-%.2f]", round(as.numeric(ic_pa[,1]),2), round(as.numeric(ic_pa[,2]),2))
+  )
+
+x_assess = xtable(assess_table, 
+          format = tab_format, digits = 2, label = "tab:assessment", alig=c("l","c","c","c","c","c","c","c"),
+          caption="User\'s and Producer\'s Accuracy of the land use classification based on TWDTW analysis. $\\mu$ is the average accuracy, $\\sigma$ the standard deviation, and CI is the confidence interval of 99\\% using 100 resampling-with-replacement.")
+
+addtorow = list()
+addtorow$pos = list(0)
+addtorow$command = paste("Class & \\multicolumn{3}{c}{User's Accuracy (UA) \\%} & \\multicolumn{3}{c}{Producer's Accuracy (PA)\\%}\\\\", paste(c("","$\\mu$","$\\sigma$","CI","$\\mu$","$\\sigma$","CI"), collapse="&"), "\\\\", collapse = "")
+
+print.xtable(x_assess, add.to.row=addtorow, include.colnames = FALSE, include.rownames = FALSE, 
+             comment = FALSE, caption.placement = "bottom")
+```
+
+
+
+
+# Conclusions and Discussion 
+
+Nowadays, there are large open archives of Earth Observation data, but few open source  methods for analysing them. With this motivation, this paper provides guidance on how to use the Time-Weighed Dynamic Time Warping (TWDTW) method for remote sensing applications. As we have discussed in a companion paper [@Maus:2016], the TWDTW method is well suited for land cover change analysis of satellite image time series.
+
+The main goal of \pkg{dtwSat} package is to make TWDTW accessible for researchers. The package supports the full cycle of land cover classification using image time series, ranging from selecting temporal patterns to visualising and evaluating the results. The current version of the \pkg{dtwSat} package provides a pixel-based time series classification method. We envisage that future versions of the package could include local neighborhoods to reduce border effects and improve classification homogeneity. 
+
+The \pkg{dtwSat} package provides two in-built functions for linear and logistic time weight. In the current version of the package the parameters of the weight functions are set manually to the same value for all land use/cover classes. Future versions of the package could include methods to search for the best parameters to be set class-by-class using field data.
+
+To aim for maximum usage by the scientific community, the \pkg{dtwSat} package described in this paper works with well-known R data classes such as provided by packages \pkg{zoo} and \pkg{raster}. We are planning improvements, so that \pkg{dtwSat} can be combined with array databases, such as SciDB [@Stonebraker:2013]. We believe that combining array databases with image time series analysis software such as presented here is one way forward to scaling the process of information extracting to very large Earth Observation data.
+
+
+
+
+\section*{Acknowledgments}
+Victor Maus has been supported by the Institute for Geoinformatics, University of Münster (Germany), and by the Earth System Science Center, National Institute for Space Research (Brazil). Part of the research was developed in the Young Scientists Summer Program at the International Institute for Applied Systems Analysis, Laxenburg (Austria). Gilberto Camara's term as Brazil Chair at IFGI has been supported by CAPES (grant 23038.007569\/2012-16). Gilberto's work is also supported by FAPESP e-science program (grant 2014-08398-6) and CNPq (grant 312151\/2014-4).
+
+
+
+\bibliographystyle{jss}
+\bibliography{references}
+

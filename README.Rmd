@@ -196,7 +196,7 @@ To see more example please take a look at [vignettes][Vignettes] and if you want
 
 
 ###Vignettes
-<!--1. [Timw-Weighted Dynamic Time Warping method](./vignettes/twdtw.md)-->
+[dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R](./inst/doc/applying_twdtw.Rmd)
 
 
 ### References

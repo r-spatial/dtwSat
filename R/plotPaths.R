@@ -89,7 +89,7 @@ plotPaths = function(x, timeseries.labels=NULL, patterns.labels=NULL, k=NULL){
   x.labels = pretty_breaks()(range(df.m$tx, na.rm = TRUE))
   timeline = unique( c(df.m$tx, x.labels) )
   x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
-  x.breaks = na.approx(x.breaks)
+  x.breaks = na.approx(x.breaks, rule = 2)
   x.axis = data.frame(x.breaks=x.breaks[x.labels], x.labels = names(x.labels))
   
   fact = 0 
@@ -102,7 +102,7 @@ plotPaths = function(x, timeseries.labels=NULL, patterns.labels=NULL, k=NULL){
     y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
     timeline = unique( c(df$ty, y.labels) )
     y.breaks = zoo( c(unique(df$Var3), rep(NA, length(y.labels))), timeline )
-    y.breaks = na.approx(y.breaks)
+    y.breaks = na.approx(y.breaks, rule = 2)
     y.breaks = y.breaks[y.labels]
     data.frame(y.breaks, y.labels=names(y.labels))
   }))

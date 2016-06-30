@@ -1,5 +1,5 @@
 ## Test environments
-* local Fedora release 23, R 3.2.3
+* local Fedora 23 (64-bit), R 3.3.0
 * win-builder 
 
 ## REVIEWS
@@ -10,11 +10,11 @@ There were no ERRORs or WARNINGs.
 There was 1 NOTE:
 
 * checking installed package size ... NOTE
-  installed size is 6.7Mb
+  installed size is  7.2Mb
   sub-directories of 1Mb or more:
-    lucc_MT  6.2Mb
+    lucc_MT   6.1Mb
 
-  This version includes 'tif' files for an example of spatiotemporal analysis using dtwSat. The example is small but meaningful for a spatiotemporal analysis of land use changes. The 'tif' files are used in the documentation of the package and in the vignette of the package. 
+  This version includes 'tif' files used to reproduce the examples in the vignette and documentation. The data set is the smallest that is still meaningful for a spatiotemporal analysis of land cover changes. This examples and data sets are crutial for the user to learn how to use the package. 
 
 * Optimization 
  

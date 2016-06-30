@@ -14,6 +14,7 @@
 .Rd~
 README.md~
 # Other files
+src/symbols.rds
 twdtw_results/
 *.xml
 corinho.R

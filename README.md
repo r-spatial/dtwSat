@@ -202,7 +202,7 @@ To see more example please take a look at [vignettes](#vignettes) and if you wan
 
 ### Vignettes
 
-[dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R](./inst/doc/applying_twdtw.Rmd)
+[dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R](./inst/doc/applying_twdtw.pdf)
 
 ### References
 

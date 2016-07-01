@@ -45,6 +45,7 @@ vignette: >
   %\VignetteIndexEntry{dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{dtwSat, ggplot2, scales, Hmisc, reshape2, xtable}
 ---
 
 <!-- Chunk settings -->
@@ -139,8 +140,8 @@ Based on the information provided by the user about the images to be analysed, o
 
 \begin{figure}[!h]
 \begin{center} 
-  \includegraphics[width=.45\textwidth]{./sits-en.eps}
-  \includegraphics[width=.45\textwidth]{./ts-en_86mm_gaps_land_use.eps}
+  \includegraphics[width=.45\textwidth]{./sits-en.pdf}
+  \includegraphics[width=.45\textwidth]{./ts-en_86mm_gaps_land_use.pdf}
 \end{center}
 \caption{A 3-dimensional array of satellite images (left), an enhanced vegetation index (EVI) time series at the pixel location $(x,y)$ (right). The arrows indicate gaps in the time series. Adapted from \citet{Maus:2016}.}
 \label{fig:3-D-array}
@@ -290,7 +291,7 @@ The region is a tropical forest area in Mato Grosso, Brazil of approximately 530
 
 \begin{figure}[!h]
 \begin{center} 
-  \includegraphics[width=\textwidth]{./study_area}
+  \includegraphics[width=\textwidth]{./study_area.pdf}
 \end{center}
 \caption{Study area in Mato Grosso, Brazil, shown in a \copyright\ Google Earth image. The area was originally covered by tropical forest that has been removed for agricultural use.}
 \label{fig:study-area}

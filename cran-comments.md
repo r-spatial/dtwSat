@@ -10,7 +10,7 @@ There were no ERRORs or WARNINGs.
 There was 1 NOTE:
 
 * checking installed package size ... NOTE
-  installed size is  7.2Mb
+  installed size is  7.3Mb
   sub-directories of 1Mb or more:
     lucc_MT   6.1Mb
 

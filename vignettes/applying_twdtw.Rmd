@@ -2,24 +2,24 @@
 author:
   - name: Victor Maus
     affiliation: INPE 
-    affiliation2: University of Münster 
+    affiliation2: University of Munster
     address: >
       Image Processing Division\newline
       National Institute for Space Research\newline
       Av. dos Astronautas, 1758\newline
-      12227-010 São José dos Campos, Brazil
+      12227-010 Sao Jose dos Campos, Brazil
     email: vwmaus1@gmail.com
     url: \url{www.dpi.inpe.br/maus}
     Telephone: +55/12/3208-7330
-  - name: Gilberto Câmara
+  - name: "Gilberto Camara"
     affiliation: INPE
-    affiliation2: University of Münster 
+    affiliation2: University of Munster 
   - name: Marius Appel
-    affiliation: University of Münster 
+    affiliation: University of Munster 
   - name: Edzer Pebesma
-    affiliation: University of Münster 
+    affiliation: University of Munster 
 title:
-  formatted: "\\pkg{dtwSat}: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in \\proglang{R}"
+  formatted: "\\pkg{dtwSat}: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in \\proglang{R}$^1$"
   # If you use tex in the formatted title, also supply version without
   plain:     "dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R"
   # For running headers, if needed
@@ -36,16 +36,17 @@ preamble: >
   \usepackage{caption}
   \usepackage{subcaption}
   \usepackage{float}
-documentclass: article
+documentclass: nojss
 classoption: shortnames
 output: 
   rticles::jss_article:
     pandoc_args: --natbib
+    keep_tex: true
 vignette: >
   %\VignetteIndexEntry{dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{dtwSat, ggplot2, scales, Hmisc, reshape2, xtable}
+  %\VignetteDepends{rticles, dtwSat, ggplot2, scales, Hmisc, reshape2, xtable}
 ---
 
 <!-- Chunk settings -->
@@ -73,9 +74,7 @@ opts_chunk$set(
 library(dtwSat)
 library(ggplot2)
 library(scales)
-library(Hmisc)
 library(reshape2)
-library(xtable)
 
 new_theme = theme_get()
 new_theme$text$family = "Helvetica"
@@ -87,6 +86,7 @@ page_width = 5.590551#in 14.2#cm
 page_height = 9.173228#in 23.3#cm
 ```
 
+\footnotetext[1]{This vignette is based on the paper: MAUS, V.; CAMARA, G.; APPEL, M.; PEBESMA, E. dtwSat: Time-Weighted Dynamic Time Warping for satellite image time series analysis in R. Submitted to the Journal of Statistical Software.}
 
 \sloppy
 
@@ -496,7 +496,7 @@ assess_table = data.frame(
   CIPA = sprintf("[%.2f-%.2f]", round(as.numeric(ic_pa[,1]),2), round(as.numeric(ic_pa[,2]),2))
   )
 
-x_assess = xtable(assess_table, 
+x_assess = xtable::xtable(assess_table, 
           format = tab_format, digits = 2, label = "tab:assessment", alig=c("l","c","c","c","c","c","c","c"),
           caption="User\'s and Producer\'s Accuracy of the land use classification based on TWDTW analysis. $\\mu$ is the average accuracy, $\\sigma$ the standard deviation, and CI is the confidence interval of 99\\% using 100 resampling-with-replacement.")
 
@@ -504,7 +504,7 @@ addtorow = list()
 addtorow$pos = list(0)
 addtorow$command = paste("Class & \\multicolumn{3}{c}{User's Accuracy (UA) \\%} & \\multicolumn{3}{c}{Producer's Accuracy (PA)\\%}\\\\", paste(c("","$\\mu$","$\\sigma$","CI","$\\mu$","$\\sigma$","CI"), collapse="&"), "\\\\", collapse = "")
 
-print.xtable(x_assess, add.to.row=addtorow, include.colnames = FALSE, include.rownames = FALSE, 
+xtable::print.xtable(x_assess, add.to.row=addtorow, include.colnames = FALSE, include.rownames = FALSE, 
              comment = FALSE, caption.placement = "bottom")
 ```
 
@@ -528,7 +528,5 @@ To aim for maximum usage by the scientific community, the \pkg{dtwSat} package d
 Victor Maus has been supported by the Institute for Geoinformatics, University of Münster (Germany), and by the Earth System Science Center, National Institute for Space Research (Brazil). Part of the research was developed in the Young Scientists Summer Program at the International Institute for Applied Systems Analysis, Laxenburg (Austria). Gilberto Camara's term as Brazil Chair at IFGI has been supported by CAPES (grant 23038.007569\/2012-16). Gilberto's work is also supported by FAPESP e-science program (grant 2014-08398-6) and CNPq (grant 312151\/2014-4).
 
 
-
-\bibliographystyle{jss}
 \bibliography{references}
 

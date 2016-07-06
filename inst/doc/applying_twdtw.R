@@ -19,9 +19,7 @@ opts_chunk$set(
 library(dtwSat)
 library(ggplot2)
 library(scales)
-library(Hmisc)
 library(reshape2)
-library(xtable)
 
 new_theme = theme_get()
 new_theme$text$family = "Helvetica"
@@ -219,7 +217,7 @@ assess_table = data.frame(
   CIPA = sprintf("[%.2f-%.2f]", round(as.numeric(ic_pa[,1]),2), round(as.numeric(ic_pa[,2]),2))
   )
 
-x_assess = xtable(assess_table, 
+x_assess = xtable::xtable(assess_table, 
           format = tab_format, digits = 2, label = "tab:assessment", alig=c("l","c","c","c","c","c","c","c"),
           caption="User\'s and Producer\'s Accuracy of the land use classification based on TWDTW analysis. $\\mu$ is the average accuracy, $\\sigma$ the standard deviation, and CI is the confidence interval of 99\\% using 100 resampling-with-replacement.")
 
@@ -227,6 +225,6 @@ addtorow = list()
 addtorow$pos = list(0)
 addtorow$command = paste("Class & \\multicolumn{3}{c}{User's Accuracy (UA) \\%} & \\multicolumn{3}{c}{Producer's Accuracy (PA)\\%}\\\\", paste(c("","$\\mu$","$\\sigma$","CI","$\\mu$","$\\sigma$","CI"), collapse="&"), "\\\\", collapse = "")
 
-print.xtable(x_assess, add.to.row=addtorow, include.colnames = FALSE, include.rownames = FALSE, 
+xtable::print.xtable(x_assess, add.to.row=addtorow, include.colnames = FALSE, include.rownames = FALSE, 
              comment = FALSE, caption.placement = "bottom")
 

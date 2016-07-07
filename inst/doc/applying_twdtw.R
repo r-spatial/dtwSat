@@ -5,8 +5,7 @@ opts_chunk$set(
   message = FALSE,
   error = FALSE,
   results = "hide",
-  cache.path = "./cache/",
-  cache = FALSE,
+  cache = TRUE,
   comment = ""
 )
 #knit_hooks$set(purl = hook_purl) # Save chunks to Rscript file  
@@ -30,7 +29,7 @@ tab_format = "latex"
 page_width = 5.590551#in 14.2#cm
 page_height = 9.173228#in 23.3#cm
 
-## ----twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Matches of the known temporal pattern to subintervals of the long-term time series. The solid black line is the long-term time series, the colored lines are the different matches of the same pattern ordered by TWDTW dissimilarity measure, and the gray dashed lines are the matching points.', fig.pos='h'----
+## ----twdtw-example, echo = FALSE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Matches of the known temporal pattern to subintervals of the long-term time series. The solid black line is the long-term time series, the colored lines are the different matches of the same pattern ordered by TWDTW dissimilarity measure, and the gray dashed lines are the matching points.', fig.pos='h'----
 n=4
 log_fun = logisticWeight(alpha = -0.1, beta = 100)
 ts = twdtwTimeSeries(example_ts, labels="Time series")
@@ -55,12 +54,12 @@ library(dtwSat)
 names(patterns.list)
 head(example_ts, n = 2)
 
-## ----example-timeseries, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3, fig.align='center', fig.cap='Example of time series based on MODIS product MOD13Q1 \\citep{Friedl:2010}. The labels of the phenological cycle are shown in the plot.', fig.pos='!h'----
+## ----example-timeseries, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3, fig.align='center', fig.cap='Example of time series based on MODIS product MOD13Q1 \\citep{Friedl:2010}. The labels of the phenological cycle are shown in the plot.', fig.pos='!h'----
 plot(ts, type = "timeseries") + 
   annotate(geom = "text", x = example_ts_labels$from+90, y = 0.98, 
   label = example_ts_labels$label, size = 2)
 
-## ----temporal-patterns-soy-cot-mai, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize based on MODIS product MOD13Q1 \\citep{Friedl:2010}.', fig.pos='!h'----
+## ----temporal-patterns-soy-cot-mai, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize based on MODIS product MOD13Q1 \\citep{Friedl:2010}.', fig.pos='!h'----
 plot(patterns_ts, type = "patterns")
 
 ## ---- echo = TRUE, eval = TRUE, results = 'markup'-----------------------
@@ -70,7 +69,7 @@ matches =
 slotNames(matches)
 show(matches)
 
-## ----logist-time-weight, echo = FALSE, eval = TRUE, fig.path='figure/', out.width=paste0(page_width/2,'in'), fig.align='center', fig.cap='Logistic time-weight function \\code{logisticWeight} with steepness \\code{alpha=-0.1} and midpoint \\code{beta=100}. The $x$ axis shows the absolute difference between two dates in days and the $y$ axis shows the time-weight \\citep{Maus:2016}.', fig.pos='!h'----
+## ----logist-time-weight, echo = FALSE, eval = TRUE, out.width=paste0(page_width/2,'in'), fig.align='center', fig.cap='Logistic time-weight function \\code{logisticWeight} with steepness \\code{alpha=-0.1} and midpoint \\code{beta=100}. The $x$ axis shows the absolute difference between two dates in days and the $y$ axis shows the time-weight \\citep{Maus:2016}.', fig.pos='!h'----
 # Maximum time difference in days 
 max_diff = 366/2
 # Set parameters 
@@ -96,13 +95,13 @@ ggplot(df_weight, aes_string(x="Difference", y="Weight", group="Functions", line
         legend.position = c(.3,.85), legend.background = element_rect(fill="transparent")) +
   scale_linetype(guide_legend(title = ""))
 
-## ----twdtw-matches, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap=c('The four best matches of the "soybean" pattern in the time series using a logistic time-weight. The solid black line is the long-term time series; the coloured lines are the temporal patterns; and the grey dashed lines are the respective matching points.'), fig.pos='!h'----
+## ----twdtw-matches, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap=c('The four best matches of the "soybean" pattern in the time series using a logistic time-weight. The solid black line is the long-term time series; the coloured lines are the temporal patterns; and the grey dashed lines are the respective matching points.'), fig.pos='!h'----
 plot(matches, type="matches", patterns.labels="Soybean", k=4)
 
-## ----alignments-all-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Alignments and dissimilarity measures of the patterns "soybean", "cotton", and "maize" to the subintervals of the long-term time series using a logistic time-weight. The solid black line is the EVI time series, and the coloured lines are the alignments of the patterns that have dissimilarity measure lower than three.'), fig.pos='!h'----
+## ----alignments-all-patterns, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Alignments and dissimilarity measures of the patterns "soybean", "cotton", and "maize" to the subintervals of the long-term time series using a logistic time-weight. The solid black line is the EVI time series, and the coloured lines are the alignments of the patterns that have dissimilarity measure lower than three.'), fig.pos='!h'----
 plot(matches, type="alignments", attr = "evi", threshold = 3.0)
 
-## ----time-series-classification, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Classification of each 6 months periods of the time series using results of the TWDTW analysis with logistic time-weight. The solid lines are the attributes of the time series, the background colours indicate the classification of the periods.'), fig.pos='!h'----
+## ----time-series-classification, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Classification of each 6 months periods of the time series using results of the TWDTW analysis with logistic time-weight. The solid lines are the attributes of the time series, the background colours indicate the classification of the periods.'), fig.pos='!h'----
 ts_classification = twdtwClassify(x = matches, 
   from = as.Date("2009-09-01"), to = as.Date("2013-09-01"), 
   by = "6 month", overlap = 0.5)
@@ -143,7 +142,7 @@ field_samples_ts
 temporal_patterns = 
   createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
 
-## ----temporal-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/1.5, fig.align='center', fig.pos='!h', fig.cap='Temporal patterns of forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet based on the ground truth samples.'----
+## ----temporal-patterns, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_width/1.5, fig.align='center', fig.pos='!h', fig.cap='Temporal patterns of forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet based on the ground truth samples.'----
 plot(temporal_patterns, type = "patterns") + 
   theme(legend.position = c(.8,.25))
 
@@ -152,22 +151,22 @@ log_fun = logisticWeight(alpha=-0.1, beta=50)
 twdtw_dist = twdtwApply(x = raster_timeseries, y = temporal_patterns, 
   overlap = 0.5, weight.fun = log_fun, overwrite=TRUE, format="GTiff")
 
-## ----plot-dissmilarity2013, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of the TWDTW dissimilarity from each temporal pattern in 2013. The blue areas are more similar to the pattern and the red areas are less similar to the pattern.', fig.pos='!h'----
+## ----plot-dissmilarity2013, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Illustration of the TWDTW dissimilarity from each temporal pattern in 2013. The blue areas are more similar to the pattern and the red areas are less similar to the pattern.', fig.pos='!h'----
 plot(x = twdtw_dist, type="distance", time.levels = 6)
 
 ## ---- echo = TRUE, eval = TRUE-------------------------------------------
 land_use_maps = twdtwClassify(twdtw_dist, format="GTiff", overwrite=TRUE)
 
-## ----plot-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Land use maps for each year from 2008 to 2013.', fig.pos='!h'----
+## ----plot-map, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Land use maps for each year from 2008 to 2013.', fig.pos='!h'----
 plot(x = land_use_maps, type = "maps")
 
-## ----plot-area, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Percentage of area for each land use class from 2008 to 2013.', fig.pos='!h'----
+## ----plot-area, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Percentage of area for each land use class from 2008 to 2013.', fig.pos='!h'----
 plot(x = land_use_maps, type = "area")
 
-## ----plot-change, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Gains and losses in area from the other classes. The $y$ axis shows the actual class; the positive direction of $x$ axis shows the gains and the negative direction of $x$ axis shows the losses of the classes indicated in $y$. The colors indicate from/to which classes the gains/losses belong.', fig.pos='!h'----
+## ----plot-change, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Gains and losses in area from the other classes. The $y$ axis shows the actual class; the positive direction of $x$ axis shows the gains and the negative direction of $x$ axis shows the losses of the classes indicated in $y$. The colors indicate from/to which classes the gains/losses belong.', fig.pos='!h'----
 plot(x = land_use_maps, type = "changes")
 
-## ----plot-dissmilarity, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='TWDTW dissimilarity measure for each pixel over each classified period. The blue areas have high confidence and the red areas have low confidence in the classification.', fig.pos='!h'----
+## ----plot-dissmilarity, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='TWDTW dissimilarity measure for each pixel over each classified period. The blue areas have high confidence and the red areas have low confidence in the classification.', fig.pos='!h'----
 plot(x = land_use_maps, type="distance")
 
 ## ---- echo = TRUE, eval = FALSE------------------------------------------
@@ -187,7 +186,7 @@ plot(x = land_use_maps, type="distance")
 ## ---- echo = FALSE, eval = TRUE------------------------------------------
 load(system.file("lucc_MT/assessment.RData", package = "dtwSat"))
 
-## ----plot-accuracy, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='User\'s Accuracy (UA) and Producer\'s Accuracy (PA) of the TWDTW method for land cover classification. The plot shows the averages and their confidence interval for 99\\%.', fig.pos='!h'----
+## ----plot-accuracy, echo = FALSE, eval = TRUE, fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='User\'s Accuracy (UA) and Producer\'s Accuracy (PA) of the TWDTW method for land cover classification. The plot shows the averages and their confidence interval for 99\\%.', fig.pos='!h'----
 df = melt(assessment[,-1], id="label")
 df$variable = factor(df$variable, levels = c("UA", "PA"), labels = c("User's Accuracy", "Producer's Accuracy"))
 ggplot(df, aes(x=label, y=value)) +

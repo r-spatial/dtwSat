@@ -6,7 +6,7 @@
 
 * Obsolete features 
 
-  The S4 class 'twdtw' no longer exists.
+  The S4 class 'twdtw' no longer exists. 
 
 * New features
  

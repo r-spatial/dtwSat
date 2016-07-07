@@ -36,12 +36,13 @@ preamble: >
   \usepackage{caption}
   \usepackage{subcaption}
   \usepackage{float}
+  \usepackage{framed}
+  \usepackage{listings}
 documentclass: nojss
 classoption: shortnames
 output: 
   rticles::jss_article:
     pandoc_args: --natbib
-    keep_tex: true
 vignette: >
   %\VignetteIndexEntry{dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R}
   %\VignetteEngine{knitr::rmarkdown}
@@ -57,8 +58,7 @@ opts_chunk$set(
   message = FALSE,
   error = FALSE,
   results = "hide",
-  cache.path = "./cache/",
-  cache = FALSE,
+  cache = TRUE,
   comment = ""
 )
 #knit_hooks$set(purl = hook_purl) # Save chunks to Rscript file  
@@ -111,7 +111,7 @@ In this section, we describe the Time-Weighted Dynamic Time Warping (TWDTW) algo
 
 The inputs to TWDTW are: (a) a set of time series of known temporal patterns (*e.g.*, phenological cycles of land cover classes); (b) an unclassified long-term satellite image time series. For each temporal pattern, the algorithm finds all matching subintervals in the long-term time series, providing a dissimilarity measure (cf. Figure \ref{fig:twdtw-example}). The result of the algorithm is a set of subintervals, each associated with a pattern and with a dissimilarity measure. We then break the unclassified time series in periods according to our needs (*e.g.*, yearly, seasonality, monthly). For each period, we consider all matching subintervals that intersect with it, and classify them based on the land cover class of the best matching subinterval. In this way, the long-term satellite time series is divided in periods, and each period is assigned a land cover class.
 
-```{r twdtw-example, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Matches of the known temporal pattern to subintervals of the long-term time series. The solid black line is the long-term time series, the colored lines are the different matches of the same pattern ordered by TWDTW dissimilarity measure, and the gray dashed lines are the matching points.', fig.pos='h'}
+```{r twdtw-example, echo = FALSE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Matches of the known temporal pattern to subintervals of the long-term time series. The solid black line is the long-term time series, the colored lines are the different matches of the same pattern ordered by TWDTW dissimilarity measure, and the gray dashed lines are the matching points.', fig.pos='h'}
 n=4
 log_fun = logisticWeight(alpha = -0.1, beta = 100)
 ts = twdtwTimeSeries(example_ts, labels="Time series")
@@ -140,8 +140,8 @@ Based on the information provided by the user about the images to be analysed, o
 
 \begin{figure}[!h]
 \begin{center} 
-  \includegraphics[width=.45\textwidth]{./sits-en.pdf}
-  \includegraphics[width=.45\textwidth]{./ts-en_86mm_gaps_land_use.pdf}
+  \includegraphics[width=.45\textwidth]{./images_array.pdf}
+  \includegraphics[width=.45\textwidth]{./images_ts.pdf}
 \end{center}
 \caption{A 3-dimensional array of satellite images (left), an enhanced vegetation index (EVI) time series at the pixel location $(x,y)$ (right). The arrows indicate gaps in the time series. Adapted from \citet{Maus:2016}.}
 \label{fig:3-D-array}
@@ -187,12 +187,12 @@ head(example_ts, n = 2)
 
 
 
-```{r example-timeseries, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3, fig.align='center', fig.cap='Example of time series based on MODIS product MOD13Q1 \\citep{Friedl:2010}. The labels of the phenological cycle are shown in the plot.', fig.pos='!h'}
+```{r example-timeseries, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3, fig.align='center', fig.cap='Example of time series based on MODIS product MOD13Q1 \\citep{Friedl:2010}. The labels of the phenological cycle are shown in the plot.', fig.pos='!h'}
 plot(ts, type = "timeseries") + 
   annotate(geom = "text", x = example_ts_labels$from+90, y = 0.98, 
   label = example_ts_labels$label, size = 2)
 ```
-```{r temporal-patterns-soy-cot-mai, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize based on MODIS product MOD13Q1 \\citep{Friedl:2010}.', fig.pos='!h'}
+```{r temporal-patterns-soy-cot-mai, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize based on MODIS product MOD13Q1 \\citep{Friedl:2010}.', fig.pos='!h'}
 plot(patterns_ts, type = "patterns")
 ```
 
@@ -222,7 +222,7 @@ $$
     \label{eq:nonlineartw}
 $$
 The function $g$ is the absolute difference in days between two dates, $t_1$ and $t_2$. The linear function creates a strong time constraint even for small time differences. The logistic function has a low weight for small time warps and significant costs for bigger time warps, cf. Figure \ref{fig:logist-time-weight}. In our previous studies [@Maus:2016] the logistic-weight had better results than the linear-weight for land cover classification. Users can define different weight functions as temporal constraints in the argument \code{weight.fun} of the \code{twdtwApply} method. 
-```{r logist-time-weight, echo = FALSE, eval = TRUE, fig.path='figure/', out.width=paste0(page_width/2,'in'), fig.align='center', fig.cap='Logistic time-weight function \\code{logisticWeight} with steepness \\code{alpha=-0.1} and midpoint \\code{beta=100}. The $x$ axis shows the absolute difference between two dates in days and the $y$ axis shows the time-weight \\citep{Maus:2016}.', fig.pos='!h'}
+```{r logist-time-weight, echo = FALSE, eval = TRUE, out.width=paste0(page_width/2,'in'), fig.align='center', fig.cap='Logistic time-weight function \\code{logisticWeight} with steepness \\code{alpha=-0.1} and midpoint \\code{beta=100}. The $x$ axis shows the absolute difference between two dates in days and the $y$ axis shows the time-weight \\citep{Maus:2016}.', fig.pos='!h'}
 # Maximum time difference in days 
 max_diff = 366/2
 # Set parameters 
@@ -254,19 +254,19 @@ ggplot(df_weight, aes_string(x="Difference", y="Weight", group="Functions", line
 \pkg{dtwSat} provides five ways to visualise objects of class \code{twdtwMatches} through the plot types: \code{matches}, \code{alignments}, \code{classification}, \code{path}, and \code{cost}. The plot type \code{matches} shows the matching points of the patterns in the long-term time series; the plot type \code{alignments} shows the alignments and dissimilarity measures; the plot type \code{path} shows the low cost paths in the TWDTW cost matrix; and the plot type \code{cost} allows the visualisation of the cost matrices (local cost, accumulated cost, and time cost); and the plot type \code{classification} shows the classification of the long-term time series based on the TWDTW analysis. The plot methods for class \code{twdtwMatches} return a \code{ggplot} object, so that users can further manipulate the result using the \pkg{ggplot2} package. For more details on visualisation functions, please refer to the \pkg{dtwSat} documentation in the CRAN [@Maus:2015a]. 
 
 We now describe the plot types \code{matches} and \code{alignments}. The code bellow shows how to visualise the matching points of the four best matches of "soybean" pattern in the long-term time series, cf. Figure \ref{fig:twdtw-matches}. 
-```{r twdtw-matches, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap=c('The four best matches of the "soybean" pattern in the time series using a logistic time-weight. The solid black line is the long-term time series; the coloured lines are the temporal patterns; and the grey dashed lines are the respective matching points.'), fig.pos='!h'}
+```{r twdtw-matches, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap=c('The four best matches of the "soybean" pattern in the time series using a logistic time-weight. The solid black line is the long-term time series; the coloured lines are the temporal patterns; and the grey dashed lines are the respective matching points.'), fig.pos='!h'}
 plot(matches, type="matches", patterns.labels="Soybean", k=4)
 ```
 
 The next example (Figure \ref{fig:alignments-all-patterns}) uses the plot type \code{alignments} to show the alignments of the temporal patterns. We set the threshold for the dissimilarity measure to be lower than $3.0$. This is useful to display the different subintervals of the long-term time series that have at least one alignment whose dissimilarity is less than the specified threshold.
-```{r alignments-all-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Alignments and dissimilarity measures of the patterns "soybean", "cotton", and "maize" to the subintervals of the long-term time series using a logistic time-weight. The solid black line is the EVI time series, and the coloured lines are the alignments of the patterns that have dissimilarity measure lower than three.'), fig.pos='!h'}
+```{r alignments-all-patterns, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Alignments and dissimilarity measures of the patterns "soybean", "cotton", and "maize" to the subintervals of the long-term time series using a logistic time-weight. The solid black line is the EVI time series, and the coloured lines are the alignments of the patterns that have dissimilarity measure lower than three.'), fig.pos='!h'}
 plot(matches, type="alignments", attr = "evi", threshold = 3.0)
 ```
 
 ## Classifying the long-term time series 
 
 Using the matches and their associated dissimilarity measures, we can classify the subintervals of the long-term time series using \code{twdtwClassify}. To do this, we need to define a period for classification and the minimum overlap between the period and the alignments that intersect with it. We use the plot type \code{classification} to show the classification of the subintervals of the long-term time series based on the TWDTW analysis. For this example, we set classification periods of 6 months from September 2009 to September 2013, and a minimum overlap of 50% between the alignment and the classification period. This means that at least 50% of the alignment has to be contained inside of the classification period. 
-```{r time-series-classification, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Classification of each 6 months periods of the time series using results of the TWDTW analysis with logistic time-weight. The solid lines are the attributes of the time series, the background colours indicate the classification of the periods.'), fig.pos='!h'}
+```{r time-series-classification, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/2.5, fig.align='center', fig.cap=c('Classification of each 6 months periods of the time series using results of the TWDTW analysis with logistic time-weight. The solid lines are the attributes of the time series, the background colours indicate the classification of the periods.'), fig.pos='!h'}
 ts_classification = twdtwClassify(x = matches, 
   from = as.Date("2009-09-01"), to = as.Date("2013-09-01"), 
   by = "6 month", overlap = 0.5)
@@ -349,7 +349,7 @@ temporal_patterns =
   createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
 ```
 We use the plot method \code{type="patterns"} to show the results of the \code{createPatterns} in \autoref{fig:temporal-patterns}. 
-```{r temporal-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/1.5, fig.align='center', fig.pos='!h', fig.cap='Temporal patterns of forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet based on the ground truth samples.'}
+```{r temporal-patterns, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_width/1.5, fig.align='center', fig.pos='!h', fig.cap='Temporal patterns of forest, cotton-fallow, soybean-cotton, soybean-maize, and soybean-millet based on the ground truth samples.'}
 plot(temporal_patterns, type = "patterns") + 
   theme(legend.position = c(.8,.25))
 ```
@@ -390,7 +390,7 @@ t2/60
 #3.97525000 0.06543333 1.38298333 
 -->
 
-```{r plot-dissmilarity2013, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Illustration of the TWDTW dissimilarity from each temporal pattern in 2013. The blue areas are more similar to the pattern and the red areas are less similar to the pattern.', fig.pos='!h'}
+```{r plot-dissmilarity2013, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Illustration of the TWDTW dissimilarity from each temporal pattern in 2013. The blue areas are more similar to the pattern and the red areas are less similar to the pattern.', fig.pos='!h'}
 plot(x = twdtw_dist, type="distance", time.levels = 6)
 ```
 
@@ -403,21 +403,21 @@ land_use_maps = twdtwClassify(twdtw_dist, format="GTiff", overwrite=TRUE)
 ## Looking at the classification results
 
 The classification results can be visualised using the \code{plot} methods of the class \code{twdtwRaster}, which supports four plot types: "maps", "area", "changes", and "distance". The \code{type="maps"} shows the land cover classification maps for each period, cf. Figure \ref{fig:plot-map}.
-```{r plot-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Land use maps for each year from 2008 to 2013.', fig.pos='!h'}
+```{r plot-map, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Land use maps for each year from 2008 to 2013.', fig.pos='!h'}
 plot(x = land_use_maps, type = "maps")
 ```
 
 The next example shows the accumulated area for each class over time, using \code{type="area"}, cf. Figure \ref{fig:plot-area}. 
-```{r plot-area, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Percentage of area for each land use class from 2008 to 2013.', fig.pos='!h'}
+```{r plot-area, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Percentage of area for each land use class from 2008 to 2013.', fig.pos='!h'}
 plot(x = land_use_maps, type = "area")
 ```
 Users can also view the land cover transition for each time period, by setting \code{type="changes"}. For each land cover class and each period, the plot shows gains and losses in area from the other classes. This is the visual equivalent of a land transition matrix, cf. Figure \ref{fig:plot-change}. 
-```{r plot-change, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='Gains and losses in area from the other classes. The $y$ axis shows the actual class; the positive direction of $x$ axis shows the gains and the negative direction of $x$ axis shows the losses of the classes indicated in $y$. The colors indicate from/to which classes the gains/losses belong.', fig.pos='!h'}
+```{r plot-change, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='Gains and losses in area from the other classes. The $y$ axis shows the actual class; the positive direction of $x$ axis shows the gains and the negative direction of $x$ axis shows the losses of the classes indicated in $y$. The colors indicate from/to which classes the gains/losses belong.', fig.pos='!h'}
 plot(x = land_use_maps, type = "changes")
 ```
 
 We can also look at the dissimilarity of each classified pixel setting \code{type="distance"}. This plot can give a measure of the uncertainty of the classification of each pixel for each time period, cf. Figure \ref{fig:plot-dissmilarity}. 
-```{r plot-dissmilarity, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.align='center', fig.cap='TWDTW dissimilarity measure for each pixel over each classified period. The blue areas have high confidence and the red areas have low confidence in the classification.', fig.pos='!h'}
+```{r plot-dissmilarity, echo = TRUE, eval = TRUE, fig.width=page_width, fig.align='center', fig.cap='TWDTW dissimilarity measure for each pixel over each classified period. The blue areas have high confidence and the red areas have low confidence in the classification.', fig.pos='!h'}
 plot(x = land_use_maps, type="distance")
 ```
 
@@ -465,7 +465,7 @@ t2/60
 -->
 
 Figure \ref{fig:plot-accuracy} shows the average $\mu$ and standard deviation $\sigma$ of *user\'s* and *producer\'s accuracy* based on a bootstrap simulation of 100 different data partitions using resampling-with-replacement. The *user\'s accuracy* gives the confidence and the *producer\'s accuracy* gives the sensitivity of the method for each class. In our analysis all classes had high *user\'s* and *producer\'s accuracy*, meaning that TWDTW has high confidence and sensitivity for the classes included in the analysis. The average, standard deviation, and the 99\% confidence interval is also shown in Table \ref{tab:assessment}.
-```{r plot-accuracy, echo = FALSE, eval = TRUE, fig.path='figure/', fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='User\'s Accuracy (UA) and Producer\'s Accuracy (PA) of the TWDTW method for land cover classification. The plot shows the averages and their confidence interval for 99\\%.', fig.pos='!h'}
+```{r plot-accuracy, echo = FALSE, eval = TRUE, fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='User\'s Accuracy (UA) and Producer\'s Accuracy (PA) of the TWDTW method for land cover classification. The plot shows the averages and their confidence interval for 99\\%.', fig.pos='!h'}
 df = melt(assessment[,-1], id="label")
 df$variable = factor(df$variable, levels = c("UA", "PA"), labels = c("User's Accuracy", "Producer's Accuracy"))
 ggplot(df, aes(x=label, y=value)) +

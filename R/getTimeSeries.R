@@ -139,7 +139,6 @@ extractTimeSeries.twdtwRaster = function(x, y){
     
   # Reproject points to raster projection 
   y = spTransform(y, CRS(projection(x)))
-  
   # Check if the coordinates are over the raster extent
   pto = .getPointsOverRaster(x, y)
   if(length(pto)<1)
@@ -149,7 +148,6 @@ extractTimeSeries.twdtwRaster = function(x, y){
   
   # Extract time series 
   ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
-  
   # Crop period
   res = lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x))
   labels = as.character(y[pto,]$label)
@@ -166,8 +164,10 @@ extractTimeSeries.twdtwRaster = function(x, y){
   dates = getDatesFromDOY(year = year, doy = doy)
   if(is.null(from) | is(from, "try-error")) from = dates[1]
   if(is.null(to) | is(to, "try-error")) to = tail(dates,1)
-  layer =  which( from - dates <= 0 )[1]
-  nl    =  which(   to - dates <= 0 )[1] - layer
+  # layer =  which( from - dates <= 0 )[1]
+  # nl    =  which(   to - dates <= 0 )[1] - layer
+  layer =  which.min( abs(from - dates))
+  nl    =  which.min( abs(to   - dates)) - layer
   if(nl<=0){
     warning(paste("time period of sample ",pto[p]," does not overlap rester time series"), call. = FALSE)
     return(NULL)

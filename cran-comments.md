@@ -5,6 +5,18 @@
 ## REVIEWS
 
 # v0.2.0
+
+There were no ERRORs, WARNINGs, or NOTEs. 
+
+* Single quote software names in the Descriptoin.
+  
+  - Using dtwSat the user 
+  + Using 'dtwSat' the user 
+
+* Please reduce to < 5 MB, I do not believe this is not possible. 
+  
+  gdal_translate COMPRESS=DEFLATE reduced the size of the tiff files. 
+
 There were no ERRORs or WARNINGs. 
 
 There was 1 NOTE:

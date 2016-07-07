@@ -15,7 +15,8 @@ tardis.o
 ^.*\.png$
 ^.*\.xml$
 ^README-.*\.png$
-^cran-comments\.md
-^NEWS\.md$
-src/symbols.rds
-jss.bst$
+^cran-comments\.md$
+src/symbols.rds$
+jss\.bst$
+jss\.cls$
+

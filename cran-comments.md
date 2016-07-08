@@ -6,16 +6,35 @@
 
 # v0.2.0
 
-There were no ERRORs, WARNINGs, or NOTEs. 
 
 * Single quote software names in the Descriptoin.
   
-  - Using dtwSat the user 
-  + Using 'dtwSat' the user 
+    - Using dtwSat the user 
+    + Using 'dtwSat' the user 
 
 * Please reduce to < 5 MB, I do not believe this is not possible. 
   
-  gdal_translate COMPRESS=DEFLATE reduced the size of the tiff files. 
+    gdal_translate COMPRESS=DEFLATE reduced the size of the tiff files. 
+  
+* build_win() latex compilation error: 
+
+I have successfully built and compiled the latex of the vignette using a personal Windows machine. However, 'build_win' gives an error while compiling the latex of vignette. The error message given by the server is unclear for me:
+
+    * checking re-building of vignette outputs ... WARNING
+
+    Error in re-building vignettes:
+
+    ...
+
+    Error: processing vignette 'applying_twdtw.Rmd' failed with diagnostics:
+
+    Failed to compile applying_twdtw.tex.
+
+    Execution halted
+
+
+
+
 
 There were no ERRORs or WARNINGs. 
 

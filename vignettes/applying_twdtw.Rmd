@@ -58,7 +58,7 @@ opts_chunk$set(
   message = FALSE,
   error = FALSE,
   results = "hide",
-  cache = TRUE,
+  cache = FALSE,
   comment = ""
 )
 #knit_hooks$set(purl = hook_purl) # Save chunks to Rscript file  

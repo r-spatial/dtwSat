@@ -40,8 +40,7 @@
 #' @examples
 #' \dontrun{
 #' # Run TWDTW analysis for raster time series 
-#' load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
-#' patt = twdtwTimeSeries(temporal_patterns)
+#' patt = yearly_patterns_mt
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -61,7 +60,7 @@
 #' 
 #' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 #' 
-#' plotDistance(r_lucc)
+#' plotMaps(r_lucc)
 #' 
 #' }
 #' @export

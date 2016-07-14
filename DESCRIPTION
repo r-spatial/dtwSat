@@ -2,26 +2,27 @@ Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series
     Analysis
-Version: 0.2.0
-Date: 2016-07-06
+Version: 0.2.1.9000
+Date: 2016-07-14
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com'))
 Description: Provides an implementation of the Time-Weighted Dynamic Time
     Warping (TWDTW) method for land use and land cover mapping using satellite
     image time series. TWDTW is based on the Dynamic Time Warping technique and
     has achieved high accuracy for land use and land cover classification using
     satellite data. The method is based on comparing unclassified satellite image
-    time series with a set of known temporal patterns (e.g. phenological cycles associated 
-    with the vegetation). Using 'dtwSat' the user can build temporal patterns for land
-    cover types, apply the TWDTW analysis for satellite datasets, visualize the
-    results of the time series analysis, produce land cover maps, and
+    time series with a set of known temporal patterns (e.g. phenological cycles
+    associated with the vegetation). Using 'dtwSat' the user can build temporal
+    patterns for land cover types, apply the TWDTW analysis for satellite datasets,
+    visualize the results of the time series analysis, produce land cover maps, and
     create temporal plots for land cover change analysis.
 Depends:
-    R (>= 3.0.0),
+    R (>= 3.2.0),
     zoo,
     raster,
-    ggplot2,
-    methods
+    ggplot2
 Imports:
+    methods,
+    rgdal,
     dtw,
     proxy,
     scales,
@@ -43,9 +44,9 @@ Suggests:
     gridExtra,
     grid,
     png,
-    rgdal,
     Hmisc,
-    xtable
+    xtable,
+    tikzDevice
 License: GPL (>= 2) | file LICENSE
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
@@ -58,6 +59,7 @@ Collate:
     'createPatterns.R'
     'data.R'
     'dtw.R'
+    'dwtSat.R'
     'getInternals.R'
     'getTimeSeries.R'
     'linearWeight.R'

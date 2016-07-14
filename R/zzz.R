@@ -20,9 +20,10 @@
 
 
 #' @import zoo 
-#' @import raster 
+#' @import raster
 #' @import ggplot2
 #' @import methods
+#' @import rgdal 
 #' @importFrom proxy dist
 #' @importFrom reshape2 melt
 #' @importFrom scales pretty_breaks date_format percent

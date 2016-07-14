@@ -5,10 +5,25 @@ opts_chunk$set(
   message = FALSE,
   error = FALSE,
   results = "hide",
-  cache = TRUE,
+  cache = FALSE,
   comment = ""
 )
 #knit_hooks$set(purl = hook_purl) # Save chunks to Rscript file  
+
+###### Test 3
+# Work around encoding issue on Windows
+other_user <- Sys.getenv("USER") != "maus"
+set.seed(20160708L)
+library(tikzDevice)
+options(tikzDocumentDeclaration = "\\documentclass{jss}\\usepackage{siunitx}\\usepackage{latexsym}")
+if (other_user) {
+  opts_chunk$set(dev="png")
+} else {
+  opts_chunk$set(dev="pdf")
+}
+##### End test 3
+
+#options(tikzDocumentDeclaration = "\\documentclass{jss}\\usepackage{siunitx}\\usepackage{latexsym}")
 
 ## ---- echo=FALSE, eval = TRUE, cache = FALSE-----------------------------
 # Install dtwSat package  
@@ -21,7 +36,6 @@ library(scales)
 library(reshape2)
 
 new_theme = theme_get()
-new_theme$text$family = "Helvetica"
 new_theme$text$size = 8
 old_theme = theme_set(new_theme)
 
@@ -41,7 +55,7 @@ df_dist$y = 1.8
 plotMatches(mat, attr="evi", k=n) + 
   ylab("Time series                  Pattern") + 
   geom_text(data=df_dist, mapping = aes_string(x='to', y='y', label='label'),
-            size = 2, family="Helvetica") + 
+            size = 2) + 
   theme(legend.position="none")
 
 ## ---- echo = TRUE, eval = TRUE, results = 'markup'-----------------------
@@ -89,9 +103,9 @@ df_weight = melt(df_weight, id.vars = "Difference")
 names(df_weight)[-1] = c("Functions","Weight")
 ggplot(df_weight, aes_string(x="Difference", y="Weight", group="Functions", linetype="Functions")) + 
   geom_line() + xlab("Time difference (days)")  + 
-  theme(text = element_text(size = 10, family="Helvetica"), 
-        plot.title = element_text(size = 10, family="Helvetica", face="bold"),
-        axis.title = element_text(size = 10, family="Helvetica"),
+  theme(text = element_text(size = 10), 
+        plot.title = element_text(size = 10, face="bold"),
+        axis.title = element_text(size = 10),
         legend.position = c(.3,.85), legend.background = element_rect(fill="transparent")) +
   scale_linetype(guide_legend(title = ""))
 

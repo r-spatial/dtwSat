@@ -115,7 +115,7 @@ getTimeSeries.twdtwTimeSeries = function(object, labels){
 #' @rdname getTimeSeries 
 #' @export
 setMethod("getTimeSeries", "twdtwRaster",
-          function(object, y, labels=NULL, proj4string = CRS(as.character(NA)), id.labels=NULL){
+          function(object, y, labels=NULL, proj4string = NULL, id.labels=NULL){
           
               if(!"label"%in%names(y)) y$label = paste0("ts",row.names(y))
               if(!is.null(id.labels)) y$label = as.character(y[[id.labels]])
@@ -126,7 +126,15 @@ setMethod("getTimeSeries", "twdtwRaster",
               } else if(!is.null(labels)) { 
                         y$label = as.character(labels)
               }
+              if(!"from"%in%names(y))
+                y$from = as.Date(index(object)[1])
+              if(!"to"%in%names(y))
+                y$to = as.Date(tail(index(object),1))
               if(is(y, "data.frame")){
+                if(is.null(proj4string)){
+                  warning("Missing projection. Setting the same projection as the raster time series.", call. = FALSE)
+                  proj4string = CRS(projection(object))
+                }
                 if(!is(proj4string, "CRS")) proj4string = try(CRS(proj4string))
                   y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)
               }

@@ -2,22 +2,22 @@
 author:
   - name: Victor Maus
     affiliation: INPE 
-    affiliation2: University of Munster
+    affiliation2: University of Münster
     address: >
       Image Processing Division\newline
       National Institute for Space Research\newline
       Av. dos Astronautas, 1758\newline
-      12227-010 Sao Jose dos Campos, Brazil
+      12227-010 São José dos Campos, Brazil
     email: vwmaus1@gmail.com
     url: \url{www.dpi.inpe.br/maus}
     Telephone: +55/12/3208-7330
-  - name: "Gilberto Camara"
+  - name: "Gilberto Câmara"
     affiliation: INPE
-    affiliation2: University of Munster 
+    affiliation2: University of Münster 
   - name: Marius Appel
-    affiliation: University of Munster 
+    affiliation: University of Münster 
   - name: Edzer Pebesma
-    affiliation: University of Munster 
+    affiliation: University of Münster 
 title:
   formatted: "\\pkg{dtwSat}: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in \\proglang{R}$^1$"
   # If you use tex in the formatted title, also supply version without
@@ -38,16 +38,20 @@ preamble: >
   \usepackage{float}
   \usepackage{framed}
   \usepackage{listings}
+  \usepackage{siunitx}
+  \usepackage{latexsym}
 documentclass: nojss
 classoption: shortnames
-output: 
+output:
   rticles::jss_article:
-    pandoc_args: --natbib
+    fig_crop: false
+    citation_package: natbib
+bibliography: [ references.bib ]
 vignette: >
   %\VignetteIndexEntry{dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{rticles, dtwSat, ggplot2, scales, Hmisc, reshape2, xtable}
+  %\VignetteDepends{rticles, dtwSat, ggplot2, scales, Hmisc, reshape2, xtable, tikzDevice}
 ---
 
 <!-- Chunk settings -->
@@ -58,11 +62,28 @@ opts_chunk$set(
   message = FALSE,
   error = FALSE,
   results = "hide",
-  cache = TRUE,
+  cache = FALSE,
   comment = ""
 )
 #knit_hooks$set(purl = hook_purl) # Save chunks to Rscript file  
+
+###### Test 3
+# Work around encoding issue on Windows
+other_user <- Sys.getenv("USER") != "maus"
+set.seed(20160708L)
+library(tikzDevice)
+options(tikzDocumentDeclaration = "\\documentclass{jss}\\usepackage{siunitx}\\usepackage{latexsym}")
+if (other_user) {
+  opts_chunk$set(dev="png")
+} else {
+  opts_chunk$set(dev="pdf")
+}
+##### End test 3
+
+#options(tikzDocumentDeclaration = "\\documentclass{jss}\\usepackage{siunitx}\\usepackage{latexsym}")
 ```
+
+
 
 ```{r , echo=FALSE, eval = TRUE, cache = FALSE}
 # Install dtwSat package  
@@ -77,7 +98,6 @@ library(scales)
 library(reshape2)
 
 new_theme = theme_get()
-new_theme$text$family = "Helvetica"
 new_theme$text$size = 8
 old_theme = theme_set(new_theme)
 
@@ -123,7 +143,7 @@ df_dist$y = 1.8
 plotMatches(mat, attr="evi", k=n) + 
   ylab("Time series                  Pattern") + 
   geom_text(data=df_dist, mapping = aes_string(x='to', y='y', label='label'),
-            size = 2, family="Helvetica") + 
+            size = 2) + 
   theme(legend.position="none")
 ```
 
@@ -242,9 +262,9 @@ df_weight = melt(df_weight, id.vars = "Difference")
 names(df_weight)[-1] = c("Functions","Weight")
 ggplot(df_weight, aes_string(x="Difference", y="Weight", group="Functions", linetype="Functions")) + 
   geom_line() + xlab("Time difference (days)")  + 
-  theme(text = element_text(size = 10, family="Helvetica"), 
-        plot.title = element_text(size = 10, family="Helvetica", face="bold"),
-        axis.title = element_text(size = 10, family="Helvetica"),
+  theme(text = element_text(size = 10), 
+        plot.title = element_text(size = 10, face="bold"),
+        axis.title = element_text(size = 10),
         legend.position = c(.3,.85), legend.background = element_rect(fill="transparent")) +
   scale_linetype(guide_legend(title = ""))
 ```
@@ -525,8 +545,8 @@ To aim for maximum usage by the scientific community, the \pkg{dtwSat} package d
 
 
 \section*{Acknowledgments}
-Victor Maus has been supported by the Institute for Geoinformatics, University of Münster (Germany), and by the Earth System Science Center, National Institute for Space Research (Brazil). Part of the research was developed in the Young Scientists Summer Program at the International Institute for Applied Systems Analysis, Laxenburg (Austria). Gilberto Camara's term as Brazil Chair at IFGI has been supported by CAPES (grant 23038.007569\/2012-16). Gilberto's work is also supported by FAPESP e-science program (grant 2014-08398-6) and CNPq (grant 312151\/2014-4).
+Victor Maus has been supported by the Institute for Geoinformatics, University of Münster (Germany), and by the Earth System Science Center, National Institute for Space Research (Brazil). Part of the research was developed in the Young Scientists Summer Program at the International Institute for Applied Systems Analysis, Laxenburg (Austria). Gilberto Câmara's term as Brazil Chair at IFGI has been supported by CAPES (grant 23038.007569\/2012-16). Gilberto's work is also supported by FAPESP e-science program (grant 2014-08398-6) and CNPq (grant 312151\/2014-4).
 
 
-\bibliography{references}
+<!-- \bibliography{references} -->
 

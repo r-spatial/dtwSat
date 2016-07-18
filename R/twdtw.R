@@ -87,9 +87,12 @@
     alignments
   }
   
-  res = try(lapply(seq_along(labels), FUN=fun))
+  res = NULL 
   
-  if(is(res, "try-error")) 
+  if(length(timeseries)>3)
+    res = try(lapply(seq_along(labels), FUN=fun))
+    
+  if(is(res, "try-error") | is.null(res)) 
     res = lapply(labels, function(l) list(label = numeric(0), from = numeric(0), to = numeric(0), distance = numeric(0), K = numeric(0), matching = list(), internals  = list()))
   
   names(res) = labels

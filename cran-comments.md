@@ -6,6 +6,8 @@
 
 # v0.2.0
 
+* Fix Solaris installation errors. 
+    Replacing the GNU extension ISNAN with pure Fortran code to check for NAN. 
 
 * Single quote software names in the Descriptoin.
   

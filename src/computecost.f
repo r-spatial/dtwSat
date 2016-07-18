@@ -56,7 +56,7 @@ C     Initialize the firt row and col of the matrices
 C     Compute cumulative cost matrix
       DO 32 J = 1, M
          DO 22 I = 1, N
-            IF ( .NOT.ISNAN(CM(I,J)) ) THEN
+            IF ( CM(I,J).EQ.CM(I,J) ) THEN
                 GOTO 22 
             ENDIF
 C           Initialize list of step cost 
@@ -82,7 +82,7 @@ C           Initialize list of step cost
             JLMIN = -ONE
             DO 12 K = 1, NS
                PK = SM(K,1)
-               IF (.NOT.ISNAN(CP(PK)).AND.CP(PK).LT.VMIN) THEN
+               IF (CP(PK).EQ.CP(PK).AND.CP(PK).LT.VMIN) THEN
                   KMIN = PK
                   VMIN = CP(PK)
                   ILMIN = IL(K)

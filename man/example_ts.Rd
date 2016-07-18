@@ -27,9 +27,6 @@ datasets. Remote Sensing of Environment, 114(1), 168 182.
 \link[dtwSat]{example_ts.list},
 \link[dtwSat]{patterns.list}.
 
-The package \pkg{rwtss} provides a client for Web Time 
-Series Service \url{https://github.com/albhasan/rwtss.git}.
-
 MOD13Q1 documentation: 
 \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
 }

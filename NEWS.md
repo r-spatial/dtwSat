@@ -1,3 +1,8 @@
+
+# dtwSat v0.2.1 Release Notes
+
+* Fix Solaris installation errors. 
+
 # dtwSat v0.2.0 Release Notes
 
 * Include Fortran optimization 

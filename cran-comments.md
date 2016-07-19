@@ -4,10 +4,12 @@
 
 ## REVIEWS
 
-# v0.2.0
+# v0.2.1
 
 * Fix Solaris installation errors. 
     Replacing the GNU extension ISNAN with pure Fortran code to check for NAN. 
+
+# v0.2.0
 
 * Single quote software names in the Descriptoin.
   

@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^\vignettes$
 ^twdtw_results/
+^.travis.yml$
 
 # Other files
 README.md

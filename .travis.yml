@@ -1,1 +1,9 @@
 language: r
+sudo: required
+dist: trusty
+
+addons:
+  apt:
+    packages:
+      - libgdal-dev
+- libproj-dev

@@ -6,4 +6,4 @@ addons:
   apt:
     packages:
       - libgdal-dev
-- libproj-dev
+      - libproj-dev

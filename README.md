@@ -1,13 +1,11 @@
-<!-- rmarkdown::render("README.Rmd") -->
 <!-- Set global env -->
-<!--
-# Otput to render md file for github webpage 
-output_format = rmarkdown::md_document(variant = "markdown_github", preserve_yaml = TRUE)
-# Render vignettes
-rmarkdown::render(input="./vignettes/jss_draft.Rmd", output_format=output_format)
+<!-- 
+    rmarkdown::render("README.Rmd") 
 -->
 dtwSat
 ======
+
+[![Build Status](https://travis-ci.org/vwmaus/dtwSat.png?branch=master)](https://travis-ci.org/vwmaus/dtwSat) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/dtwSat)](http://cran.r-project.org/package=dtwSat) [![Downloads](http://cranlogs.r-pkg.org/badges/dtwSat?color=brightgreen)](http://www.r-pkg.org/pkg/dtwSat)
 
 ### Time-Weighted Dynamic Time Warping for satellite image time series analysis
 
@@ -112,37 +110,41 @@ Fig. 6. Classification using the best match for each subinterval.
 
 ### Raster time series classification
 
-Load raster time series:
+Load EVI raster time series:
 
 ``` r
+# The EVI index is based on the MODIS product MOD13Q1
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+```
+
+Load the dates of the MODIS images:
+
+``` r
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+```
+
+Load the set of ground truth samples and projection information:
+
+``` r
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+proj_str = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), what = "character")
 ```
 
 Build multi-band raster time series:
 
 ``` r
-rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+rts = twdtwRaster(evi, timeline = timeline)
 ```
 
-Load temporal patterns:
+Create temporal patterns:
 
 ``` r
-load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
-patt = twdtwTimeSeries(temporal_patterns)
+field_samples_ts = getTimeSeries(rts, y = field_samples, proj4string = proj_str)
+temporal_patterns = createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
 ```
 
 ``` r
-# Create and plot object time series 
-load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
-patt = twdtwTimeSeries(temporal_patterns)
-plot(patt, type="patterns") 
+plot(temporal_patterns, type="patterns") 
 ```
 
 <img src="figure/plot-patterns-map-1.png" alt="Fig. 7. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*."  />
@@ -154,7 +156,7 @@ Apply TWDTW analysis:
 
 ``` r
 log_fun = weight.fun=logisticWeight(-0.1,50)
-r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, format="GTiff", overwrite=TRUE)
+r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", overwrite=TRUE)
 ```
 
 Classify raster time series:
@@ -210,14 +212,14 @@ Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Fi
 
 Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
 
-Maus, Victor, Gilberto Camara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping Method for Land-Use and Land-Cover Mapping.” *IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* PP (99): 1–11. doi:<http://doi.org/10.1109/JSTARS.2016.2517118>.
+Maus, Victor, Gilberto Camara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping Method for Land-Use and Land-Cover Mapping.” *IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* PP (99): 1–11. doi:[10.1109/JSTARS.2016.2517118](https://doi.org/10.1109/JSTARS.2016.2517118).
 
 Müller, Meinard. 2007. *Information Retrieval for Music and Motion*. London: Springer-Verlag.
 
 Rabiner, Lawrence, and Biing-Hwang Juang. 1993. *Fundamentals of Speech Recognition*. New Jersey: Prentice-Hall International, Inc.
 
-Sakoe, H., and S. Chiba. 1978. “Dynamic Programming Algorithm Optimization for Spoken Word Recognition.” *IEEE Transactions on Acoustics, Speech, and Signal Processing* 26 (1): 43–49. doi:<http://doi.org/10.1109/TASSP.1978.1163055>.
+Sakoe, H., and S. Chiba. 1978. “Dynamic Programming Algorithm Optimization for Spoken Word Recognition.” *IEEE Transactions on Acoustics, Speech, and Signal Processing* 26 (1): 43–49. doi:[10.1109/TASSP.1978.1163055](https://doi.org/10.1109/TASSP.1978.1163055).
 
 Sakoe, Hiroaki, and Seibi Chiba. 1971. “A Dynamic Programming Approach to Continuous Speech Recognition.” In *Proceedings of the Seventh International Congress on Acoustics, Budapest*, 3:65–69. Budapest: Akadémiai Kiadó.
 
-Velichko, V.M., and N.G. Zagoruyko. 1970. “Automatic Recognition of 200 Words.” *International Journal of Man-Machine Studies* 2 (3): 223–34. doi:<http://doi.org/10.1016/S0020-7373(70)80008-6>.
+Velichko, V.M., and N.G. Zagoruyko. 1970. “Automatic Recognition of 200 Words.” *International Journal of Man-Machine Studies* 2 (3): 223–34. doi:[10.1016/S0020-7373(70)80008-6](https://doi.org/10.1016/S0020-7373(70)80008-6).

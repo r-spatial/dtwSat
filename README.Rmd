@@ -7,13 +7,13 @@ output:
     variant: markdown_github
 bibliography: ./vignettes/references.bib
 ---
-<!-- rmarkdown::render("README.Rmd") -->
 
 ```{r, echo=FALSE}
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
-  error = FALSE,
+  error = FALSE, 
+  cache = TRUE,
   results = "hide"
 )
 ```
@@ -27,16 +27,14 @@ new_theme$text$size = 8
 old_theme = theme_set(new_theme)
 ```
 
-<!--
-# Otput to render md file for github webpage 
-output_format = rmarkdown::md_document(variant = "markdown_github", preserve_yaml = TRUE)
-# Render vignettes
-rmarkdown::render(input="./vignettes/jss_draft.Rmd", output_format=output_format)
+<!-- 
+    rmarkdown::render("README.Rmd") 
 -->
-
 
 dtwSat
 =====
+
+[![Build Status](https://travis-ci.org/vwmaus/dtwSat.png?branch=master)](https://travis-ci.org/vwmaus/dtwSat) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/dtwSat)](http://cran.r-project.org/package=dtwSat) [![Downloads](http://cranlogs.r-pkg.org/badges/dtwSat?color=brightgreen)](http://www.r-pkg.org/pkg/dtwSat)
 
 ### Time-Weighted Dynamic Time Warping for satellite image time series analysis
 
@@ -120,35 +118,36 @@ k=k+1
 
 ### Raster time series classification
 
-Load raster time series:
+Load EVI raster time series:
 ```{r , echo = TRUE, eval = TRUE}
+# The EVI index is based on the MODIS product MOD13Q1
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+```
+
+Load the dates of the MODIS images:
+```{r , echo = TRUE, eval = TRUE}
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+```
+
+Load the set of ground truth samples and projection information: 
+```{r , echo = TRUE, eval = TRUE}
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+proj_str = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), what = "character")
 ```
 
 Build multi-band raster time series:
 ```{r , echo = TRUE, eval = TRUE}
-rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+rts = twdtwRaster(evi, timeline = timeline)
 ```
 
-Load temporal patterns: 
+Create temporal patterns:
 ```{r , echo = TRUE, eval = TRUE}
-load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
-patt = twdtwTimeSeries(temporal_patterns)
-
+field_samples_ts = getTimeSeries(rts, y = field_samples, proj4string = proj_str)
+temporal_patterns = createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
 ```
 
 ```{r plot-patterns-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*.')}
-# Create and plot object time series 
-load(system.file("lucc_MT/temporal_patterns.RData", package="dtwSat"))
-patt = twdtwTimeSeries(temporal_patterns)
-plot(patt, type="patterns") 
+plot(temporal_patterns, type="patterns") 
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k=k+1
@@ -157,7 +156,7 @@ k=k+1
 Apply TWDTW analysis: 
 ```{r , echo = TRUE, eval = TRUE}
 log_fun = weight.fun=logisticWeight(-0.1,50)
-r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, format="GTiff", overwrite=TRUE)
+r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", overwrite=TRUE)
 ```
 
 Classify raster time series: 

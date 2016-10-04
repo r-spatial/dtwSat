@@ -77,6 +77,13 @@ setMethod("initialize",
       .Object@labels = factor(NULL)
       if(!missing(timeseries)){
         if(is(timeseries, "zoo")) timeseries = list(timeseries)
+        # make sure the time is Date
+        timeseries <- lapply(timeseries, function(x){
+          if(!is(index(x), "Date")){
+            index(x) <- as.Date(index(x))
+          }
+          return(x)
+        })
         .Object@timeseries = timeseries
         .Object@labels = factor( paste0("ts",seq_along(timeseries)) ) 
         if(!is.null(names(timeseries))) .Object@labels = factor(names(timeseries))

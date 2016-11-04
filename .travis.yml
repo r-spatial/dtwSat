@@ -1,11 +1,11 @@
-language: r
-sudo: required
-dist: trusty
+language: C++
+os: osx
 
-warnings_are_errors: false
 
-addons:
-  apt:
-    packages:
-      - libgdal-dev
-      - libproj-dev
+before_install:
+  - brew update
+  - brew tap homebrew/science
+  - brew install Caskroom/cask/xquartz
+  - brew install r
+  - Rscript -e "install.packages('devtools')"
+  - Rscript -e "devtools::install_github('appelmar/dtwSat')"

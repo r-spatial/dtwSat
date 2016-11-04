@@ -4,8 +4,10 @@ os: osx
 
 before_install:
   - brew update
+  - brew install gdal
   - brew tap homebrew/science
   - brew install Caskroom/cask/xquartz
   - brew install r
   - Rscript -e "install.packages('devtools',repos='http://cran.us.r-project.org')"
-  - Rscript -e "devtools::install_github('appelmar/dtwSat')"
+  
+script: Rscript -e "devtools::install_github('appelmar/dtwSat')"

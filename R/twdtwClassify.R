@@ -69,8 +69,8 @@ setGeneric(name = "twdtwClassify",
 #' @aliases twdtwClassify-twdtwTimeSeries 
 #' @examples
 #' # Classifying time series based on TWDTW results 
-#' ts = twdtwTimeSeries(example_ts.list)
-#' patt = twdtwTimeSeries(patterns.list)
+#' ts = twdtwTimeSeries(MOD13Q1.ts.list)
+#' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' log_fun = logisticWeight(-0.1, 100)
 #' time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
 #' mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
@@ -119,7 +119,7 @@ setMethod("twdtwClassify", "twdtwMatches",
 #' @examples
 #' \dontrun{
 #' # Run TWDTW analysis for raster time series 
-#' patt = yearly_patterns_mt
+#' patt = MOD13Q1.MT.yearly.patterns
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))

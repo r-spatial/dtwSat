@@ -54,11 +54,11 @@ setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
 #'
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(example_ts.list)
+#' ts = twdtwTimeSeries(MOD13Q1.ts.list)
 #' getTimeSeries(ts, 2)
 #' # Getting time series from objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(example_ts.list)
-#' patt = twdtwTimeSeries(patterns.list)
+#' ts = twdtwTimeSeries(MOD13Q1.ts.list)
+#' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' mat = twdtwApply(x=ts, y=patt)
 #' getTimeSeries(mat, 2)
 #' ## This example creates a twdtwRaster object and extract time series from it. 

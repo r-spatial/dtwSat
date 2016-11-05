@@ -46,8 +46,8 @@ page_height = 9.173228#in 23.3#cm
 ## ----twdtw-example, echo = FALSE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Matches of the known temporal pattern to subintervals of the long-term time series. The solid black line is the long-term time series, the colored lines are the different matches of the same pattern ordered by TWDTW dissimilarity measure, and the gray dashed lines are the matching points.', fig.pos='h'----
 n=4
 log_fun = logisticWeight(alpha = -0.1, beta = 100)
-ts = twdtwTimeSeries(example_ts, labels="Time series")
-patt = twdtwTimeSeries(patterns.list$Cotton, labels="Matches")
+ts = twdtwTimeSeries(MOD13Q1.ts, labels="Time series")
+patt = twdtwTimeSeries(MOD13Q1.patterns.list$Cotton, labels="Matches")
 mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE, n=n)
 df_dist = mat[[1]]
 df_dist$label = paste("Distance:",round(df_dist$distance,2))
@@ -59,19 +59,19 @@ plotMatches(mat, attr="evi", k=n) +
   theme(legend.position="none")
 
 ## ---- echo = TRUE, eval = TRUE, results = 'markup'-----------------------
-ts = twdtwTimeSeries(example_ts, labels="Time series")
-patterns_ts = twdtwTimeSeries(patterns.list)
-example_ts_labels
+ts = twdtwTimeSeries(MOD13Q1.ts, labels="Time series")
+patterns_ts = twdtwTimeSeries(MOD13Q1.patterns.list)
+MOD13Q1.ts.labels
 
 ## ---- echo = TRUE, eval = TRUE, results = 'markup'-----------------------
 library(dtwSat)
-names(patterns.list)
-head(example_ts, n = 2)
+names(MOD13Q1.patterns.list)
+head(MOD13Q1.ts, n = 2)
 
 ## ----example-timeseries, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3, fig.align='center', fig.cap='Example of time series based on MODIS product MOD13Q1 \\citep{Friedl:2010}. The labels of the phenological cycle are shown in the plot.', fig.pos='!h'----
 plot(ts, type = "timeseries") + 
-  annotate(geom = "text", x = example_ts_labels$from+90, y = 0.98, 
-  label = example_ts_labels$label, size = 2)
+  annotate(geom = "text", x = MOD13Q1.ts.labels$from+90, y = 0.98, 
+  label = MOD13Q1.ts.labels$label, size = 2)
 
 ## ----temporal-patterns-soy-cot-mai, echo = TRUE, eval = TRUE, fig.width=page_width, fig.height=page_height/3.5, fig.align='center', fig.cap='Temporal patterns of soybean, cotton, and maize based on MODIS product MOD13Q1 \\citep{Friedl:2010}.', fig.pos='!h'----
 plot(patterns_ts, type = "patterns")

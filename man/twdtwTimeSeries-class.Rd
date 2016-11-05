@@ -76,7 +76,7 @@ Class for set of irregular time series.
 }
 \examples{
 # Creating new object of class twdtwTimeSeries  
-ptt = new("twdtwTimeSeries", timeseries = patterns.list, labels = names(patterns.list))
+ptt = new("twdtwTimeSeries", timeseries = MOD13Q1.patterns.list, labels = names(MOD13Q1.patterns.list))
 class(ptt)
 labels(ptt)
 levels(ptt)
@@ -85,17 +85,17 @@ nrow(ptt)
 ncol(ptt)
 dim(ptt)
 # Creating objects of class twdtwTimeSeries from zoo objects
-ts = twdtwTimeSeries(example_ts)
+ts = twdtwTimeSeries(MOD13Q1.ts)
 ts 
 
 # Creating objects of class twdtwTimeSeries from list of zoo objects 
-patt = twdtwTimeSeries(patterns.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 patt
 
 # Joining objects of class twdtwTimeSeries 
-tsA = twdtwTimeSeries(example_ts.list[[1]], labels = "A")
-tsB = twdtwTimeSeries(B = example_ts.list[[2]])
-ts = twdtwTimeSeries(tsA, tsB, C=example_ts)
+tsA = twdtwTimeSeries(MOD13Q1.ts.list[[1]], labels = "A")
+tsB = twdtwTimeSeries(B = MOD13Q1.ts.list[[2]])
+ts = twdtwTimeSeries(tsA, tsB, C=MOD13Q1.ts)
 ts
  
 }

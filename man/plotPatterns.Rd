@@ -27,7 +27,7 @@ A \link[ggplot2]{ggplot} object.
 Method for plotting the temporal patterns.
 }
 \examples{
-patt = twdtwTimeSeries(patterns.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 plotPatterns(patt)
 plotPatterns(patt, attr="evi")
 

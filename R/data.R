@@ -32,8 +32,8 @@
 #' and ''mir''.
 #' 
 #' @seealso 
-#' \link[dtwSat]{example_ts},
-#' \link[dtwSat]{example_ts.list}, and 
+#' \link[dtwSat]{MOD13Q1.ts},
+#' \link[dtwSat]{MOD13Q1.ts.list}, and 
 #' \link[dtwSat]{createPatterns}.
 #'  
 #' @seealso MOD13Q1 documentation: See 
@@ -44,7 +44,7 @@
 #' MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
 #' datasets. Remote Sensing of Environment, 114(1), 168 182.
 #' 
-"patterns.list"
+"MOD13Q1.patterns.list"
 
 
 #' @title Data: An example of satellite time series
@@ -60,8 +60,8 @@
 #' ''evi'', ''red'', ''nir'', ''blue'', and ''mir''.
 #' 
 #' @seealso 
-#' \link[dtwSat]{example_ts.list},
-#' \link[dtwSat]{patterns.list}. 
+#' \link[dtwSat]{MOD13Q1.ts.list},
+#' \link[dtwSat]{MOD13Q1.patterns.list}. 
 #' 
 #' 
 #' @seealso MOD13Q1 documentation: 
@@ -72,9 +72,9 @@
 #' MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
 #' datasets. Remote Sensing of Environment, 114(1), 168 182.
 #' 
-"example_ts"
+"MOD13Q1.ts"
 
-#' @title Data: Labels of the satellite time series in example_ts 
+#' @title Data: Labels of the satellite time series in MOD13Q1.ts 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This labels are based on field work.
@@ -85,9 +85,9 @@
 #' and the end of the crop period ''to''. The dates are in the format ''yyyy-mm-dd''.
 #' 
 #' @seealso 
-#' \link[dtwSat]{example_ts}. 
+#' \link[dtwSat]{MOD13Q1.ts}. 
 #' 
-"example_ts_labels"
+"MOD13Q1.ts.labels"
 
 #' @title Data: A list of satellite time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
@@ -102,8 +102,8 @@
 #' ''evi'', ''red'', ''nir'', ''blue'', and ''mir''.
 #' 
 #' @seealso 
-#' \link[dtwSat]{example_ts}, and 
-#' \link[dtwSat]{patterns.list}. 
+#' \link[dtwSat]{MOD13Q1.ts}, and 
+#' \link[dtwSat]{MOD13Q1.patterns.list}. 
 #' 
 #' 
 #' @seealso MOD13Q1 documentation: 
@@ -114,7 +114,7 @@
 #' MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
 #' datasets. Remote Sensing of Environment, 114(1), 168 182.
 #' 
-"example_ts.list"
+"MOD13Q1.ts.list"
 
 
 #' @title Data: patterns time series
@@ -137,5 +137,5 @@
 #' MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
 #' datasets. Remote Sensing of Environment, 114(1), 168 182.
 #' 
-"yearly_patterns_mt"
+"MOD13Q1.MT.yearly.patterns"
 

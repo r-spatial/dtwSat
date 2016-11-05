@@ -35,7 +35,7 @@
 #' \code{\link[dtwSat]{plotTimeSeries}}
 #'  
 #' @examples
-#' patt = twdtwTimeSeries(patterns.list)
+#' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' plotPatterns(patt)
 #' plotPatterns(patt, attr="evi")
 #' 

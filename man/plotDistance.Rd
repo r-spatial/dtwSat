@@ -29,7 +29,7 @@ Method for plotting TWDTW distance maps.
 \examples{
 \dontrun{
 # Run TWDTW analysis for raster time series 
-patt = yearly_patterns_mt
+patt = MOD13Q1.MT.yearly.patterns
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))

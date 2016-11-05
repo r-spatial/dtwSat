@@ -109,8 +109,8 @@ See [1] for details about the method.
 \examples{
 # Applying TWDTW analysis to objects of class twdtwTimeSeries
 log_fun = logisticWeight(-0.1, 100)
-ts = twdtwTimeSeries(example_ts.list)
-patt = twdtwTimeSeries(patterns.list)
+ts = twdtwTimeSeries(MOD13Q1.ts.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
 mat1
 
@@ -122,7 +122,7 @@ mat2 = twdtwMatches(alignments=mat_list)
 }
 \dontrun{
 # Run TWDTW analysis for raster time series 
-patt = yearly_patterns_mt
+patt = MOD13Q1.MT.yearly.patterns
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))

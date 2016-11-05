@@ -31,8 +31,8 @@ subinterval of the time series based on TWDTW analysis.
 }
 \examples{
 log_fun = logisticWeight(-0.1, 100)
-ts = twdtwTimeSeries(example_ts.list)
-patt = twdtwTimeSeries(patterns.list)
+ts = twdtwTimeSeries(MOD13Q1.ts.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
 
 # Classify interval

@@ -27,7 +27,7 @@ the length.
 }
 \examples{
 # Resampling time series from objects of class twdtwTimeSeries
-patt = twdtwTimeSeries(patterns.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 npatt = resampleTimeSeries(patt, length=46)
 nrow(patt)
 nrow(npatt)

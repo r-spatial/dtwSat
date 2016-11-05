@@ -50,11 +50,11 @@ devtools::install_github("vwmaus/dtwSat")
 k=1
 ```
 ### Quick demo
-In this quick dome we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `patterns.list` and an example of time series in `example_ts`. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
-```{r plot-example_ts-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. example_ts time series.')}
+In this quick dome we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `MOD13Q1.patterns.list` and an example of time series in `MOD13Q1.ts`. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
+```{r plot-MOD13Q1.ts-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. MOD13Q1.ts time series.')}
 library(dtwSat)
 # Create and plot object time series 
-ts = twdtwTimeSeries(example_ts)
+ts = twdtwTimeSeries(MOD13Q1.ts)
 class(ts)
 plot(ts, type="timeseries")
 ```
@@ -65,7 +65,7 @@ k=k+1
 We know that in the region where the time series was observed we have *soybean*, *cotton*, and *maize*, whose typical temporal pattern are:
 ```{r plot-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Typical temporal patterns of *soybean*, *cotton*, and *maize*.')}
 # Create and plot object time series 
-patt = twdtwTimeSeries(patterns.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 class(patt)
 plot(patt, type="patterns") 
 ```

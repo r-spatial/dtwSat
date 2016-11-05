@@ -33,7 +33,7 @@ This function shifts the dates of the time series to a
 given base year.
 }
 \examples{
-patt = twdtwTimeSeries(patterns.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 npatt = shiftDates(patt, year=2005)
 index(patt)
 index(npatt)

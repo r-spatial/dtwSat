@@ -19,17 +19,17 @@ devtools::install_github("vwmaus/dtwSat")
 
 ### Quick demo
 
-In this quick dome we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `patterns.list` and an example of time series in `example_ts`. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
+In this quick dome we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `MOD13Q1.patterns.list` and an example of time series in `MOD13Q1.ts`. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
 
 ``` r
 library(dtwSat)
 # Create and plot object time series 
-ts = twdtwTimeSeries(example_ts)
+ts = twdtwTimeSeries(MOD13Q1.ts)
 class(ts)
 plot(ts, type="timeseries")
 ```
 
-<img src="figure/plot-example_ts-ts-1.png" alt="Fig. 1. example_ts time series."  />
+<img src="figure/plot-MOD13Q1.ts-ts-1.png" alt="Fig. 1. MOD13Q1.ts time series."  />
 <p class="caption">
 Fig. 1. example\_ts time series.
 </p>
@@ -38,7 +38,7 @@ We know that in the region where the time series was observed we have *soybean*,
 
 ``` r
 # Create and plot object time series 
-patt = twdtwTimeSeries(patterns.list)
+patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 class(patt)
 plot(patt, type="patterns") 
 ```

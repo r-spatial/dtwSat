@@ -41,11 +41,11 @@
 #'
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
-#' ts = twdtwTimeSeries(example_ts.list)
+#' ts = twdtwTimeSeries(MOD13Q1.ts.list)
 #' ts = subset(ts, 2)
 #' ts
 #' # Getting time series from objects of class twdtwTimeSeries
-#' patt = twdtwTimeSeries(patterns.list)
+#' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100))
 #' mat = subset(mat, k=4)
 #' 

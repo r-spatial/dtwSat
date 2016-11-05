@@ -33,7 +33,7 @@
 #' \code{\link[dtwSat]{plotPatterns}}
 #'  
 #' @examples
-#' ts = twdtwTimeSeries(example_ts.list)
+#' ts = twdtwTimeSeries(MOD13Q1.ts.list)
 #' plotTimeSeries(ts)
 #' plotTimeSeries(ts, attr="evi")
 #' 

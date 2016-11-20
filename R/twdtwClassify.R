@@ -144,7 +144,8 @@ setMethod("twdtwClassify", "twdtwMatches",
 #' }
 setMethod("twdtwClassify", "twdtwRaster",
           function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath, ...){
-                  if(is.null(patterns.labels)) patterns.labels = coverages(x)[-1]
+                  if(is.null(patterns.labels)) patterns.labels = coverages(x)
+                  patterns.labels = patterns.labels[!patterns.labels%in%"doy"]
                   if(missing(filepath)) filepath = if(fromDisk(x[[2]])){dirname(filename(x[[2]]))}else{NULL}
                   twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, filepath=filepath, ...)
            })

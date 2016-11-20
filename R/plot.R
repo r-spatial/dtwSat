@@ -121,7 +121,8 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
           time.labels=NULL
         }
         else {
-          layers = coverages(x)[-1]
+          layers = coverages(x)
+          layers = layers[!layers%in%"doy"]
           time.levels = time.levels[1]
           time.labels = time.labels[1]
           labels = layers
@@ -162,7 +163,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
         class.levels = levels(x)
         
       if(length(class.levels)<1)
-        class.levels = sort(unique(as.numeric(x[[2]][])))
+        class.levels = sort(unique(as.numeric(x[["Class"]][])))
       
       if( is.null(class.labels))  
         class.labels = labels(x)
@@ -185,7 +186,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
       names(class.levels) = class.labels
       names(class.labels) = class.labels
       
-      x = subset(x=x[[2]], subset=time.levels)
+      x = subset(x=x[["Class"]], subset=time.levels)
 
       pt = pmatch(type, c("maps","area","changes"))
       

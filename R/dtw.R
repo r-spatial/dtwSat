@@ -88,7 +88,7 @@
                 XM = matrix(as.integer(c(as.numeric(x[[1]]$from), as.numeric(x[[1]]$to))), ncol = 2),
                 AM = matrix(as.double(fill), nrow = n, ncol = m), 
                 DM = as.double(x[[1]]$distance),
-                DP  = as.integer(as.numeric(breaks)),
+                DP = as.integer(as.numeric(breaks)),
                 X  = as.integer(match(x[[1]]$label, levels)),
                 IM = matrix(as.integer(0), nrow = n, ncol = 3),
                 A  = as.integer(x[[1]]$Alig.N),

@@ -167,9 +167,12 @@ extractTimeSeries.twdtwRaster = function(x, y){
   # Check if the sample time interval overlaps the raster time series 
   from  = try(as.Date(s$from))
   to    = try(as.Date(s$to))
-  doy   = c(x$doy[p,])
-  year  = format(timeline, "%Y")
-  dates = getDatesFromDOY(year = year, doy = doy)
+  dates = timeline
+  if(any(names(x)=="doy")){
+    doy   = c(x$doy[p,])
+    year  = format(timeline, "%Y")
+    dates = getDatesFromDOY(year = year, doy = doy)
+  }
   if(is.null(from) | is(from, "try-error")) from = dates[1]
   if(is.null(to) | is(to, "try-error")) to = tail(dates,1)
   # layer =  which( from - dates <= 0 )[1]
@@ -181,8 +184,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
     return(NULL)
   }
   # Extract raster values 
-  I = which(names(x) %in% c("doy"))
-  ts = data.frame(sapply(x[-I], function(x) x[p,layer:(layer+nl-1)]))
+  ts = data.frame(sapply(x[!names(x)%in%c("doy")], function(x) x[p,layer:(layer+nl-1)]))
   dates = dates[layer:(layer+nl-1)]
   k = !duplicated(dates)
   zoo(data.frame(ts[k,, drop=FALSE]), dates[k])

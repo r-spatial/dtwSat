@@ -10,6 +10,8 @@ C                                                             C
 C                                                             C
 C   Efficient computation of DTW cost matrix  - 2015-10-16    C
 C                                                             C
+C   This function was adpted from the C function 'computeCM'  C
+C   implemented in the R package 'dtw' by Toni Giorgino.      C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C
 C     CM - Input local cost and output cumulative cost matrix

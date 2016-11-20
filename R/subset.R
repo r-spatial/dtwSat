@@ -134,9 +134,10 @@ setMethod("subset", "twdtwRaster", function(x, e=NULL, layers=NULL)
           subset.twdtwRaster(x=x, e=e, layers=layers) )
 
 subset.twdtwRaster = function(x, e, layers){
-    if(is.null(layers)) layers = names(x)
-    layers = c("doy", layers[layers!="doy"])
-    if(is.null(e)) e = extent(x@timeseries$doy)
+    if(is.null(layers)) 
+      layers = names(x)
+    if(is.null(e))
+      e = extent(x)
     res = x
     res@layers = layers
     res@timeseries = res@timeseries[layers]

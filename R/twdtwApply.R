@@ -227,7 +227,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
      
     # Set blocks Multi-thread parameters
     minblocks = round(nrow(x)*ncol(x) / chunk.size)
-    blocks = blockSize(x@timeseries$doy, minblocks = minblocks)
+    blocks = blockSize(x@timeseries[[1]], minblocks = minblocks)
     threads = seq(1, blocks$n)
     
     # Match raster bands to pattern bands
@@ -245,7 +245,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     
     # Open raster fiels for results 
     if(is.null(filepath)) filepath = paste0(getwd(), "/twdtw_results")
-    r_template = brick(x@timeseries$doy, nl=length(breaks)-1)
+    r_template = brick(x@timeseries[[1]], nl=length(breaks)-1)
     dir.create(filepath, showWarnings = FALSE, recursive = TRUE)
     filename = paste0(filepath,"/twdtw_distance_from_",levels)
     names(filename) = levels
@@ -269,7 +269,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       ts_list = mclapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i], mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
       
       # Create a dummy array 
-      nts = seq(1, nrow(ts_list$doy))
+      nts = seq(1, nrow(ts_list[[1]]))
       m = length(levels)
       n = length(breaks)-1
 
@@ -332,7 +332,12 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
 .bulidZoo = function(p, x, timeline){
   # Get time series for each band 
   datasets = lapply(x, function(x) x[p,])
-  datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(timeline, "%Y"))
+  if(any("doy"==names(datasets))){
+    datasets$doy = getDatesFromDOY(doy=datasets$doy, year=format(timeline, "%Y"))
+  } else {
+    datasets$doy = timeline
+  }
+    
   idoy = which(names(datasets) %in% c("doy"))
   
   # Remove invalid values 

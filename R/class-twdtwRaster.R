@@ -119,20 +119,22 @@ setMethod("initialize",
   definition = 
     function(.Object, timeseries, timeline, doy, layers, labels, levels){
       
-      .Object@timeseries = list(doy=brick(), Layer0=brick())
+      .Object@timeseries = list(Layer0=brick())
       .Object@timeline = as.Date(0)
       .Object@labels = as.character()
       .Object@levels = numeric()
       if(!missing(timeseries)){
         if(is(timeseries, "RasterBrick") | is(timeseries, "RasterStack") | is(timeseries, "RasterLayer") ) 
-           timeseries = list(timeseries)
-        if(is.null(names(timeseries))) names(timeseries) = paste0("Layer",seq_along(timeseries))
-        .Object@timeseries = c(.Object@timeseries[1], timeseries)
+          timeseries = list(timeseries)
+        .Object@timeseries = timeseries
+        if(is.null(names(.Object@timeseries)))
+          names(.Object@timeseries) = paste0("Layer", seq_along(.Object@timeseries)-1)
+      } else {
+        if(!missing(layers))
+          names(.Object@timeseries) = layers
       }
-      if(missing(doy)) doy = creat.doy(.Object@timeseries[[2]], timeline)
-      .Object@timeseries$doy = doy 
-      if(!missing(layers))
-        names(.Object@timeseries) = c("doy", layers)
+      if(!missing(doy)) 
+        .Object@timeseries = c(doy = doy, .Object@timeseries)
       .Object@layers = names(.Object@timeseries)
       if(!missing(labels))
         .Object@labels = as.character(labels)
@@ -142,7 +144,7 @@ setMethod("initialize",
       if(!missing(timeline))
         .Object@timeline = as.Date(timeline)
       validObject(.Object)
-      names(.Object@timeline) = paste0("date.",format(.Object@timeline,"%Y.%m.%d"))
+      names(.Object@timeline) = paste0("date.", format(.Object@timeline,"%Y.%m.%d"))
       .Object@timeseries = lapply(.Object@timeseries, function(x) { names(x)=names(.Object@timeline); x})
       return(.Object)
   }
@@ -195,22 +197,24 @@ setMethod(f = "twdtwRaster",
                                 layers=layers, labels=labels, levels=levels, filepath=filepath, dotargs=dotargs)
           })
 
+
 creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, filepath, dotargs){
   
-  if(is.null(doy)) doy = creat.doy(timeseries[[1]], timeline)
-  
   # Check timeline 
-  nl = sapply(c(timeseries, doy), nlayers)
+  nl = sapply(c(timeseries), nlayers)
+  if(!is.null(doy))
+    nl = c(nlayers(doy), nl)
   if(any(nl!=length(timeline)))
     stop("raster objects do not have the same length as the timeline")
   
   res = timeseries
   # Save a single file (complete time series) for each raster attribute 
   if (!is.null(filepath)) {
-#     print("Saving raster objects. It might take some minutes depending on the objects size and format.")
     dir.create(filepath, showWarnings = FALSE)
     write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
-    aux = c(doy=doy, res)
+    aux = res
+    if(!is.null(doy))
+      aux = c(doy=doy, res)
     res_brick = lapply(names(aux), function(i){
       filename = paste(filepath, i, sep="/")
       dotargs = c(x = aux[[i]], filename = filename, dotargs)
@@ -218,16 +222,23 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, 
       r
     })
     names(res_brick) = names(aux)
-    res = res_brick[-1]
-    doy = res_brick[[1]]
+    doy = NULL
+    res = res_brick
+    if(any(names(res)=="doy")){
+      res = res_brick[-1]
+      doy = res_brick[[1]]
+    }
   }
   if(is.null(layers)) layers = names(res)
+  if(is.null(doy)) 
+    return(new("twdtwRaster", timeseries = res, timeline = timeline, layers = layers, labels = labels, levels=levels))
   new("twdtwRaster", timeseries = res, timeline = timeline, doy=doy, layers = layers, labels = labels, levels=levels)
 }
 
-creat.doy = function(x, timeline){
+.creat.doy = function(x, timeline){
     array_data = rep(as.numeric(format(as.Date(timeline), "%j")), each=ncell(x))
     e = extent(x)
     brick(array(array_data, dim = dim(x)), xmn=e[1], xmx=e[2], ymn=e[3], ymx=e[4], crs = projection(x))
 }
+
 

@@ -309,7 +309,9 @@ setMethod("[", "twdtwRaster", function(x, i) {
   if(any(i > nlayers(x)))
     stop("subscript out of bounds")
   if(any(is.na(i))) stop("NA index not permitted")
-  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[1]])
+  if(any("doy"==layers(x)))
+    return(new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline, doy = x@timeseries[[1]]))
+  new("twdtwRaster", timeseries=x@timeseries[i], timeline = x@timeline)
 })
 
 #' @inheritParams twdtwRaster-class
@@ -401,7 +403,7 @@ setMethod("crop",
 setMethod("extent", 
           signature = signature("twdtwRaster"),
           definition = function(x, y, ...){
-            extent(x@timeseries$doy)
+            extent(x@timeseries[[1]])
           }
 )
 

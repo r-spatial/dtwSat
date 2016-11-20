@@ -64,7 +64,7 @@
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
 #'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
 #' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
 #' 
 #' plotMaps(r_lucc)
 #' 

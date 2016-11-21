@@ -64,8 +64,7 @@ for the TWDTW computation. Use \code{theta=0} to cancel the time-weight,
 \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
 the time has the same weight as the curve shape in the TWDTW analysis.}
 
-\item{...}{arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
-processing to pass to \code{\link[parallel]{mclapply}}.}
+\item{...}{arguments to pass to \code{\link[raster]{writeRaster}}}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE. For plot methods use \code{keep=TRUE}.}

@@ -29,7 +29,6 @@
 #' @importFrom scales pretty_breaks date_format percent
 #' @importFrom grDevices terrain.colors gray.colors
 #' @importFrom plyr alply
-#' @importFrom parallel mclapply
 #' @importFrom sp Polygon Polygons SpatialPoints SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates bbox 
 #' @importFrom mgcv gam predict.gam 
 #' @importFrom RColorBrewer brewer.pal 

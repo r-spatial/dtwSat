@@ -32,7 +32,6 @@ Imports:
     RColorBrewer,
     plyr,
     stats,
-    parallel,
     sp,
     lubridate,
     caret,

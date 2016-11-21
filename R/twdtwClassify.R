@@ -79,7 +79,7 @@ setGeneric(name = "twdtwClassify",
 #' 
 #' \dontrun{
 #' require(parallel)
-#' best_mat = mclapply(as.list(mat), mc.cores=4, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
+#' best_mat = mclapply(as.list(mat), mc.cores=2, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
 #' best_mat = twdtwMatches(alignments=best_mat)
 #' }
 #' @export
@@ -110,8 +110,8 @@ setMethod("twdtwClassify", "twdtwMatches",
                       breaks = seq(from, to, paste(by,"month"))
                     }
                     breaks = as.Date(breaks)
-                  twdtwClassify.twdtwMatches(x, patterns.labels=patterns.labels, breaks=breaks, 
-                            overlap=overlap, thresholds=thresholds, fill=fill)
+                    twdtwClassify.twdtwMatches(x, patterns.labels=patterns.labels, breaks=breaks, 
+                              overlap=overlap, thresholds=thresholds, fill=fill)
            })
 
 #' @rdname twdtwClassify
@@ -181,7 +181,6 @@ twdtwClassify.twdtwMatches = function(x, patterns.labels, breaks, overlap, thres
     m = length(levels)
     n = length(breaks)-1
     aligs = lapply(as.list(x), FUN=.bestIntervals, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap)
-    # res = lapply(as.list(x), FUN = classifyIntervals, patterns.labels, breaks, overlap, thresholds, fill)
     twdtwMatches(x@timeseries, patterns=x@patterns, alignments=aligs)
 }
 

@@ -70,7 +70,7 @@ plot(x=best_mat, type="classification")
 
 \dontrun{
 require(parallel)
-best_mat = mclapply(as.list(mat), mc.cores=4, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
+best_mat = mclapply(as.list(mat), mc.cores=2, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
 best_mat = twdtwMatches(alignments=best_mat)
 }
 \dontrun{

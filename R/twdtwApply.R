@@ -29,8 +29,7 @@
 #' @param y an object of class \link[dtwSat]{twdtwTimeSeries}. 
 #' The temporal patterns. 
 #' 
-#' @param ... arguments to pass to \code{\link[raster]{writeRaster}} and for parallel 
-#' processing to pass to \code{\link[parallel]{mclapply}}.
+#' @param ... arguments to pass to \code{\link[raster]{writeRaster}}
 #'
 #' @param resample resample the patterns to have the same length. Default is TRUE.
 #' See \link[dtwSat]{resampleTimeSeries} for details.
@@ -265,8 +264,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       if(!mc.silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
       
       # Get time series from raster 
-      #ts_list = lapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i])
-      ts_list = mclapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i], mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
+      ts_list = lapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i])
       
       # Create a dummy array 
       nts = seq(1, nrow(ts_list[[1]]))
@@ -274,8 +272,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       n = length(breaks)-1
 
       # Create zoo time series  
-      #ts_zoo = lapply(nts, FUN=.bulidZoo, x=ts_list, timeline=timeline)
-      ts_zoo = mclapply(nts, FUN=.bulidZoo, x=ts_list, timeline=timeline, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
+      ts_zoo = lapply(nts, FUN=.bulidZoo, x=ts_list, timeline=timeline)
 
       # Create twdtwTimeSeries object  
       ts = try(twdtwTimeSeries(ts_zoo), silent = TRUE)
@@ -283,12 +280,10 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
          return(lapply(levels, function(l) writeValues(b_files[[l]], matrix(9999, nrow=length(nts), ncol=n), blocks$row[i])))
          
       # Apply TWDTW analysis  
-      #twdtw_results = lapply(as.list(ts), FUN=get_aligs)
-      twdtw_results = mclapply(as.list(ts), FUN=get_aligs, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
+      twdtw_results = lapply(as.list(ts), FUN=get_aligs)
 
       # Get best mathces for each point, period, and pattern 
-      #A = lapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)  
-      A = mclapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999, mc.preschedule = mc.preschedule, mc.set.seed = mc.set.seed, mc.silent = mc.silent, mc.cores = mc.cores, mc.cleanup = mc.cleanup)
+      A = lapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
       
       # Reshape list to array 
       A = sapply(A, matrix, nrow=n, ncol=m, simplify = 'array')

@@ -131,7 +131,7 @@ setMethod(f = "twdtwTimeSeries",
               } else {}
               if(check_class[2]){
                   list_obj = c(do.call("c", timeseries[which(timeseries_class=="list")]))
-                  if(is.null(names(list_obj))) names(list_obj) = paste0("ts",seq_along(list_obj))
+                  if(is.null(names(list_obj))) names(list_obj) = paste0("ts", seq_along(list_obj))
                   joint_timeseries = c(joint_timeseries, list_obj)
               } else {}
               if(check_class[3]){

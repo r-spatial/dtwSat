@@ -31,7 +31,7 @@ plot(ts, type="timeseries")
 
 <img src="figure/plot-MOD13Q1.ts-ts-1.png" alt="Fig. 1. MOD13Q1.ts time series."  />
 <p class="caption">
-Fig. 1. example\_ts time series.
+Fig. 1. MOD13Q1.ts time series.
 </p>
 
 We know that in the region where the time series was observed we have *soybean*, *cotton*, and *maize*, whose typical temporal pattern are:

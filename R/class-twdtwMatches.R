@@ -29,6 +29,8 @@
 #' the same length as \code{timeseries} or a list of twdtwMatches.
 #' @param ... objects of class twdtwMatches.
 #' 
+#' @include class-twdtwTimeSeries.R
+#' 
 #' @section Slots :
 #' \describe{
 #'  \item{\code{timeseries}:}{An object of class \code{\link[dtwSat]{twdtwTimeSeries-class}} with the satellite time series.}
@@ -73,8 +75,7 @@
 #' length(matches)
 #' matches 
 NULL
-setOldClass("twdtwTimeSeries")
-twdtwMatches = setClass(
+setClass(
   Class = "twdtwMatches",
   slots = c(timeseries="twdtwTimeSeries", 
             patterns = "twdtwTimeSeries", 

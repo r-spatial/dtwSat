@@ -83,7 +83,7 @@
 #' rts = new("twdtwRaster", timeseries = evi, timeline = timeline)
 #' 
 NULL
-twdtwRaster = setClass(
+setClass(
   Class = "twdtwRaster",
   slots = c(timeseries = "list", timeline="Date", layers = "character", labels = "character", levels="numeric"),
   validity = function(object){
@@ -158,6 +158,7 @@ setGeneric(name = "twdtwRaster",
 
 
 #' @inheritParams twdtwRaster
+#' @aliases twdtwRaster-create
 #' @describeIn twdtwRaster Create object of class twdtwRaster.
 #'
 #' @examples 

@@ -451,14 +451,14 @@ partitions = splitDataset(field_samples_ts, p=0.1, times=100,
   freq = 8, formula = y ~ s(x, bs="cc"))
 ```
 
-For each data partition we run the TWDTW analysis to classify the set of validation time series using the trained temporal patterns. The result is a list of \code{twdtwMatches} objects with the classified set of time series for each data partition. To compute the *User's Accuracy* (UA) and *Producer's Accuracy* (PA) of the classified time series we use the function \code{dtwSat::twdtwAssess} that retrieves a \code{data.frame} with the accuracy assessment for all data partitions.  
+For each data partition we run the TWDTW analysis to classify the set of validation time series using the trained temporal patterns. The result is a list of \code{twdtwMatches} objects with the classified set of time series for each data partition. To compute the *User's Accuracy* (UA) and *Producer's Accuracy* (PA) of the classified time series we use the function \code{dtwSat::twdtwCrossValidation} that retrieves a \code{data.frame} with the accuracy assessment for all data partitions.  
 ```{r, echo = TRUE, eval = FALSE, results = 'markup'}
 log_fun = logisticWeight(alpha=-0.1, beta=50) 
 twdtw_res = lapply(partitions, function(x){
   res = twdtwApply(x = x$ts, y = x$patterns, weight.fun = log_fun, n=1)
   twdtwClassify(x = res)
 })
-assessment = twdtwAssess(twdtw_res)
+assessment = twdtwCrossValidation(twdtw_res)
 head(assessment, 5)
 ```
 ```{r, echo = FALSE, eval = TRUE}
@@ -477,7 +477,7 @@ t1/60
 # 51.86498333  0.01046667 51.85880000 
 
 t2 = system.time(
-  assessment <- twdtwAssess(twdtw_res)
+  assessment <- twdtwCrossValidation(twdtw_res)
 )
 t2/60
 #         user       system      elapsed 

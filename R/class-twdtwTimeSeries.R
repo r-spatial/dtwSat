@@ -12,7 +12,6 @@
 #                                                             #
 ###############################################################
 
-
 #' @title class "twdtwTimeSeries"
 #' @name twdtwTimeSeries-class
 #' @aliases twdtwTimeSeries
@@ -50,7 +49,7 @@
 #' ncol(ptt)
 #' dim(ptt)
 NULL
-twdtwTimeSeries = setClass(
+setClass(
   Class = "twdtwTimeSeries",
   slots = c(timeseries = "list", labels = "factor"),
   validity = function(object){
@@ -96,6 +95,7 @@ setGeneric(name = "twdtwTimeSeries",
 )
 
 #' @inheritParams twdtwTimeSeries-class
+#' @aliases twdtwTimeSeries-create
 #' @describeIn twdtwTimeSeries Create object of class twdtwTimeSeries.
 #'
 #' @examples 

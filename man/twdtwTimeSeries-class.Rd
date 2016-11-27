@@ -18,6 +18,7 @@
 \alias{twdtwTimeSeries}
 \alias{twdtwTimeSeries,ANY-method}
 \alias{twdtwTimeSeries-class}
+\alias{twdtwTimeSeries-create}
 \title{class "twdtwTimeSeries"}
 \usage{
 \S4method{twdtwTimeSeries}{ANY}(..., labels = NULL)

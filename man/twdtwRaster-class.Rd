@@ -29,6 +29,7 @@
 \alias{twdtwRaster}
 \alias{twdtwRaster,ANY-method}
 \alias{twdtwRaster-class}
+\alias{twdtwRaster-create}
 \title{class "twdtwRaster"}
 \usage{
 \S4method{twdtwRaster}{ANY}(..., timeline, doy = NULL, layers = NULL,

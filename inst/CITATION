@@ -5,13 +5,13 @@ citEntry(
   journal="Selected Topics in Applied Earth Observations and Remote Sensing, IEEE Journal of",
   title="A Time-Weighted Dynamic Time Warping Method for Land-Use and Land-Cover Mapping",
   year="2016",
-  volume="PP",
-  number="99",
-  pages="1-11",
+  volume="9",
+  number="8",
+  pages="3729-3739",
   doi="10.1109/JSTARS.2016.2517118",
   ISSN="1939-1404",
-  month="",
-  textVersion="Victor Maus, Gilberto Camara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, Gilberto R. de Queiroz (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover mapping. in Selected Topics in Applied Earth Observations and Remote Sensing, IEEE Journal of, vol.PP, no.99, pp.1-11, 
+  month="Aug",
+  textVersion="Victor Maus, Gilberto Camara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, Gilberto R. de Queiroz (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover mapping. in Selected Topics in Applied Earth Observations and Remote Sensing, IEEE Journal of, vol.9, no.8, pp.3729-3739, 
 doi: 10.1109/JSTARS.2016.2517118." 
 )
 

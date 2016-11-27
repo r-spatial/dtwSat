@@ -80,7 +80,7 @@ matches = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
 ```
 
 The result is a `twdtwMatches` object with all possible matches of the patterns to the time series 
-```{r show-twdtw, echo = TRUE, eval = TRUE}
+```{r show-twdtw, echo = TRUE, eval = TRUE, results='markup'}
 class(matches)
 show(matches)
 ```

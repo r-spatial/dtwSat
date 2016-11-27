@@ -59,8 +59,20 @@ The result is a `twdtwMatches` object with all possible matches of the patterns 
 
 ``` r
 class(matches)
+```
+
+    ## [1] "twdtwMatches"
+    ## attr(,"package")
+    ## [1] "dtwSat"
+
+``` r
 show(matches)
 ```
+
+    ## An object of class "twdtwMatches"
+    ## Number of time series: 1 
+    ## Number of Alignments: 16 
+    ## Patterns labels: Soybean Cotton Maize
 
 We can use several plot methods to visualize the results of the analysis in the `twdtwMatches` object, for example, to plot the alignments
 

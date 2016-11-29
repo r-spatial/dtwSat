@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot}
 \alias{plot}
+\alias{plot,twdtwCrossValidation,ANY-method}
 \alias{plot,twdtwMatches,ANY-method}
 \alias{plot,twdtwRaster,ANY-method}
 \alias{plot,twdtwTimeSeries,ANY-method}
@@ -11,6 +12,8 @@
 \alias{plot-twdtwTimeSeries}
 \title{Plotting twdtw* objects}
 \usage{
+\S4method{plot}{twdtwCrossValidation,ANY}(x, type = "crossvalidation", ...)
+
 \S4method{plot}{twdtwTimeSeries,ANY}(x, type = "timeseries", ...)
 
 \S4method{plot}{twdtwMatches,ANY}(x, type = "alignments", ...)

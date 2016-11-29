@@ -441,6 +441,55 @@ show.twdtwRaster = function(object){
   invisible(NULL)
 }
 
+# Show objects of class twdtwCrossValidation
+show.twdtwCrossValidation = function(object){
+  res = summary(object, conf.int=.95)
+  res = lapply(res, FUN=round, digits = 2)
+  cat("An object of class \"twdtwCrossValidation\"\n")
+  cat("Number of data partitions:",length(object@partitions),"\n")
+  cat("Bootstrap simulation (CI .95)\n")
+  print(res)
+  invisible(NULL)
+}
+
+#' @inheritParams twdtwCrossValidation-class
+#' @rdname twdtwCrossValidation-class
+#' @export
+setMethod(f = "show", "twdtwCrossValidation",
+          definition = show.twdtwCrossValidation)
+
+summary.twdtwCrossValidation = function(object, conf.int=.95, ...){
+  
+  ov = do.call("rbind", lapply(object@accuracy, function(x){
+    data.frame(OV=x$OverallAccuracy, row.names = NULL)
+  }))
+  
+  uapa = do.call("rbind", lapply(object@accuracy, function(x){
+    data.frame(label=names(x$UsersAccuracy), UA=x$UsersAccuracy, PA=x$ProducersAccuracy, row.names = NULL)
+  }))
+  
+  sd_ov = sd(ov[, c("OV")])
+  sd_uapa = aggregate(uapa[, c("UA","PA")], list(uapa$label), sd)
+  l_names = levels(uapa$label)
+  names(l_names) = l_names
+  ic_ov = mean_cl_boot(x = ov[, c("OV")], conf.int = conf.int, ...)
+  names(ic_ov) = NULL
+  assess_ov = data.frame(OverallAccuracy=ic_ov[1], sd=sd_ov, CImin=ic_ov[2], CImax=ic_ov[3])
+  ic_ua = t(sapply(l_names, function(i) mean_cl_boot(x = uapa$UA[uapa$label==i], conf.int = conf.int, ...)))
+  names(ic_ua) = NULL
+  assess_ua = data.frame(UsersAccuracy=unlist(ic_ua[,1]), sd=sd_uapa[,"UA"], CImin=unlist(ic_ua[,2]), CImax=unlist(ic_ua[,3]))
+  ic_pa = t(sapply(l_names, function(i) mean_cl_boot(x = uapa$PA[uapa$label==i], conf.int = conf.int, ...)))
+  names(ic_pa) = NULL  
+  assess_pa = data.frame(ProducersAccuracy=unlist(ic_pa[,1]), sd=sd_uapa[,"PA"], CImin=unlist(ic_pa[,2]), CImax=unlist(ic_pa[,3]))
+  list(OverallAccuracy=assess_ov, UsersAccuracy=assess_ua, ProducersAccuracy=assess_pa)
+}
+
+#' @inheritParams twdtwCrossValidation-class
+#' @rdname twdtwCrossValidation-class
+#' @export
+setMethod(f = "summary", "twdtwCrossValidation",
+          definition = summary.twdtwCrossValidation)
+
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
@@ -479,25 +528,6 @@ setMethod("is.twdtwMatches", "ANY",
 #' @export
 setMethod("is.twdtwRaster", "ANY", 
           function(x) is(x, "twdtwRaster"))
-         
-# #' @aliases summary
-# #' @inheritParams twdtwMatches-class
-# #' @describeIn twdtwMatches Summary of objects of class twdtwMatches.
-# #' @export         
-# setMethod("summary", 
-#           signature(object = "twdtwMatches"),
-#           function(object, labels=NULL, ...){
-#             summary.twdtw(object, labels=labels, ...)
-#           }
-# )
-# 
-# summary.twdtw = function(object, ...){
-#   lapply(as.list(object), function(obj){
-#     res = lapply(labels(obj)$patterns, function(l){
-#       m = subset(obj, patterns.labels=l)[[1]]
-#       c(labels=l, N.Matches=nrow(m), summary(m$distance))
-#     })
-#     data.frame(res)
-#   })
-# }
+
+
 

@@ -7,16 +7,14 @@
 \alias{createPatterns-twdtwMatches}
 \title{Create patterns}
 \usage{
-createPatterns(x, ...)
+createPatterns(x, from = NULL, to = NULL, freq = 1, attr = NULL,
+  split = TRUE, formula, ...)
 
 \S4method{createPatterns}{twdtwTimeSeries}(x, from = NULL, to = NULL,
   freq = 1, attr = NULL, split = TRUE, formula, ...)
 }
 \arguments{
 \item{x}{an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.}
-
-\item{...}{other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
-packege \pkg{mgcv}.}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format 
 "yyyy-mm-dd". If not informed it is equal to the smallest date of the 
@@ -35,6 +33,9 @@ If not declared the function uses all attributes.}
 all samples are set to the same label.}
 
 \item{formula}{A formula. Argument to pass to \code{\link[mgcv]{gam}}.}
+
+\item{...}{other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
+packege \pkg{mgcv}.}
 }
 \value{
 an object of class \code{\link[dtwSat]{twdtwTimeSeries}}

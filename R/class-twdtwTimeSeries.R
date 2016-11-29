@@ -96,6 +96,7 @@ setGeneric(name = "twdtwTimeSeries",
 
 #' @inheritParams twdtwTimeSeries-class
 #' @aliases twdtwTimeSeries-create
+#' 
 #' @describeIn twdtwTimeSeries Create object of class twdtwTimeSeries.
 #'
 #' @examples 

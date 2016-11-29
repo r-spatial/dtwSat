@@ -73,6 +73,7 @@ Collate:
     'plotChanges.R'
     'plotClassification.R'
     'plotCostMatrix.R'
+    'plotCrossValidation.R'
     'plotDistance.R'
     'plotMaps.R'
     'plotMatches.R'

@@ -57,7 +57,7 @@
 #' \code{\link[dtwSat]{twdtwApply}}
 #' 
 #' @export
-setGeneric("createPatterns", function(x, ...) standardGeneric("createPatterns"))
+setGeneric("createPatterns", function(x, from=NULL, to=NULL, freq=1, attr=NULL, split=TRUE, formula, ...) standardGeneric("createPatterns"))
 
 #' @rdname createPatterns
 #' @aliases createPatterns-twdtwMatches
@@ -86,7 +86,7 @@ setGeneric("createPatterns", function(x, ...) standardGeneric("createPatterns"))
 #' }
 #' @export
 setMethod("createPatterns", "twdtwTimeSeries",
-          function(x, from=NULL, to=NULL, freq=1, attr=NULL, split=TRUE, formula, ...) {
+          function(x, from, to, freq, attr, split, formula, ...) {
           
                 # Get formula variables
                 if(!is(formula, "formula"))

@@ -60,6 +60,20 @@ NULL
 #' @rdname plot
 #' @export
 setMethod("plot", 
+          signature(x = "twdtwCrossValidation"),
+          function(x, type="crossvalidation", ...){
+            pt = pmatch(type, c("crossvalidation"))
+            switch(pt,
+                   plotCrossValidation(x, ...)
+            )
+          }
+)
+
+#' @aliases plot-twdtwTimeSeries
+#' @inheritParams plot
+#' @rdname plot
+#' @export
+setMethod("plot", 
           signature(x = "twdtwTimeSeries"),
           function(x, type="timeseries", ...){
             pt = pmatch(type,c("patterns","timeseries"))

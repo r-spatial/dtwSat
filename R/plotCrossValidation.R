@@ -19,6 +19,8 @@
 #' @description Method for plotting cross-validation results.
 #' 
 #' @param x An object of class \code{\link[dtwSat]{plotCrossValidation}}.
+#' @param conf.int confidence level (0-1) for interval estimation of the population mean.
+#' for details see \code{\link[Hmisc]{smean.cl.normal}}.
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
 #' 
@@ -57,12 +59,12 @@
 #' cross_validation = twdtwCrossValidation(field_samples_ts, times=3, p=0.1, 
 #'                           freq = 8, formula = y ~ s(x, bs="cc"), weight.fun = log_fun)
 #' 
-#' plot(cross_validation)
+#' plot(cross_validation, conf.int=.99)
 #' 
 #' }
 #' 
 #' @export
-plotCrossValidation = function(x){
+plotCrossValidation = function(x, conf.int=.95){
   UA = do.call("rbind", lapply(x@accuracy, function(x) data.frame(label="UA", rbind(x$UsersAccuracy))))
   PA = do.call("rbind", lapply(x@accuracy, function(x) data.frame(label="PA", rbind(x$UsersAccuracy))))
   df = melt(rbind(UA,PA), id="label")
@@ -71,7 +73,7 @@ plotCrossValidation = function(x){
   df$variable = factor(df$variable, levels = levels(df$variable), 
                     labels = gsub("[.]","-",levels(df$variable)))
   gp = ggplot(df, aes_string(x="variable", y="value")) +
-        stat_summary(fun.data="mean_cl_boot", fun.args=list(conf.int = .99), 
+        stat_summary(fun.data="mean_cl_boot", fun.args=list(conf.int = conf.int), 
                      width=0.5, geom="crossbar", size=0.1, fill = "gray") + 
         geom_point(size=0.2) +  
         facet_grid(. ~ label) + 

@@ -209,6 +209,7 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                       month(to) = month(to) + by
                       year(from) = year(range(index(x))[1])
                       year(to) = year(range(index(x))[2])
+                      if(to<from) year(to) = year(to) + 1
                       breaks = seq(from, to, paste(by,"month"))
                     }
                   breaks = as.Date(breaks)

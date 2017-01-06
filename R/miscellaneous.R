@@ -105,4 +105,16 @@ shiftDates.twdtwTimeSeries = function(x, year){
 }
 
 
+.adjustFactores = function(ref, pred, levels=NULL, labels=NULL){
+  ref  = as.character(ref)
+  pred = as.character(pred)
+  if(is.null(levels))
+    levels = sort(unique(ref))
+  if(is.null(labels))
+    labels = levels
+  ref  = factor(ref,  levels, labels)
+  pred = factor(pred, levels, labels)
+  data = data.frame(Predicted=pred, Reference=ref)
+}
+
 

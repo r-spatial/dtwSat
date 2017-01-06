@@ -70,7 +70,7 @@ setMethod("initialize",
             function(.Object, partitions, accuracy){
               .Object@partitions = list(Resample1=NULL)
               .Object@accuracy = list(OverallAccuracy=NULL, UsersAccuracy=NULL, ProducersAccuracy=NULL, 
-                                      error.matrix=table(NULL), data=data.frame(NULL))
+                                      ErrorMatrix=table(NULL), data=data.frame(NULL))
               if(!missing(partitions))
                 .Object@partitions = partitions
               if(!missing(accuracy))
@@ -127,6 +127,9 @@ setGeneric("twdtwCrossValidation",
 #' cross_validation = twdtwCrossValidation(field_samples_ts, times=3, p=0.1, 
 #'                           freq = 8, formula = y ~ s(x, bs="cc"), weight.fun = log_fun)
 #' cross_validation
+#' 
+#' summary(cross_validation)
+#' 
 #' }
 #' @export
 setMethod(f = "twdtwCrossValidation", 
@@ -139,22 +142,17 @@ twdtwCrossValidation.twdtwTimeSeries = function(object, times, p, ...){
   res = lapply(partitions, function(I){
     training_ts = subset(object, I)
     validation_ts = subset(object, -I)
-    # patt = createPatterns(training_ts, freq = 8, formula = y ~ s(x, bs="cc"))
     patt = createPatterns(training_ts, ...)
-    # twdtw_res = twdtwApply(x = validation_ts, y = patt, n=1, weight.fun = log_fun)
     twdtw_res = twdtwApply(x = validation_ts, y = patt, n=1, ...)
-    ref = as.character(labels(twdtw_res)$timeseries)
-    levels = sort(unique(ref))
-    labels = levels 
     df = do.call("rbind", lapply(twdtw_res[], function(xx) xx[which.min(xx$distance),]) )
-    ref = factor(ref, levels, labels)
-    pred = factor(as.character(df$label), levels, labels)
-    data = data.frame(Reference=ref, Predicted=pred, df[,!names(df)%in%"labels"])
-    error.matrix = table(Reference=ref, Predicted=pred)
-    UA = diag(error.matrix) / colSums(error.matrix)
-    PA = diag(error.matrix) / rowSums(error.matrix)
+    ref = labels(twdtw_res)$timeseries
+    pred = df$label
+    data = data.frame(.adjustFactores(ref, pred, levels=NULL, labels=NULL), df[,!names(df)%in%"labels"])
+    error.matrix = table(Predicted=data$Predicted, Reference=data$Reference)
+    UA = diag(error.matrix) / rowSums(error.matrix)
+    PA = diag(error.matrix) / colSums(error.matrix)
     O  = sum(diag(error.matrix)) / sum(rowSums(error.matrix))
-    list(OverallAccuracy=O, UsersAccuracy=UA, ProducersAccuracy=PA, error.matrix=error.matrix, data=data)
+    list(OverallAccuracy=O, UsersAccuracy=UA, ProducersAccuracy=PA, ErrorMatrix=error.matrix, data=data)
   })
   
   new("twdtwCrossValidation", partitions=partitions, accuracy=res)

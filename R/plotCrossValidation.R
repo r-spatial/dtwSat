@@ -57,6 +57,8 @@
 #' cross_validation = twdtwCrossValidation(field_samples_ts, times=3, p=0.1, 
 #'                           freq = 8, formula = y ~ s(x, bs="cc"), weight.fun = log_fun)
 #' 
+#' summary(cross_validation)
+#' 
 #' plot(cross_validation)
 #' 
 #' }

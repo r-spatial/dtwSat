@@ -395,7 +395,7 @@ setMethod("labels",
 setMethod("crop", 
           signature = signature("twdtwRaster"),
           definition = function(x, y, ...){
-            x@timeseries = lapply(x@timeseries, crop, y=extent(y), ...)
+            x@timeseries = lapply(x@timeseries, crop, y=y, ...)
             x
           }
 )

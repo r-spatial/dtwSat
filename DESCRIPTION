@@ -48,6 +48,8 @@ Suggests:
     xtable,
     tikzDevice
 License: GPL (>= 2) | file LICENSE
+URL: https://github.com/vwmaus/dtwSat/
+BugReports: https://github.com/vwmaus/dtwSat/issues
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true

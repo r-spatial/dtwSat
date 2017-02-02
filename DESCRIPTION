@@ -56,6 +56,7 @@ LazyData: true
 RoxygenNote: 5.0.1
 Collate:
     'class-crossValidation.R'
+    'class-twdtwAccuracy.R'
     'class-twdtwTimeSeries.R'
     'class-twdtwMatches.R'
     'class-twdtwRaster.R'
@@ -86,6 +87,8 @@ Collate:
     'subset.R'
     'twdtw.R'
     'twdtwApply.R'
+    'twdtwAssessment.R'
     'twdtwClassify.R'
+    'twdtwCrossValidation.R'
     'zzz.R'
 VignetteBuilder: knitr

@@ -8,41 +8,45 @@
 #       National Institute for Space Research (INPE), Brazil  #
 #                                                             #
 #                                                             #
-#   R Package dtwSat - 2016-11-27                             #
+#   R Package dtwSat - 2017-01-18                             #
 #                                                             #
 ###############################################################
 
 
-#' @title class "twdtwCrossValidation" 
-#' @name twdtwCrossValidation-class
-#' @aliases twdtwCrossValidation
+#' @title class "twdtwAssessment" 
+#' @name twdtwAssessment-class
+#' @aliases twdtwAssessment
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This class stores the cross-validation. 
+#' @description This class stores the map assessment.  
 #' 
-#' @param object an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
+#' @param object an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
+#' the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
 #' 
-#' @param times Number of partitions to create.
+#' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
+#' latitude, the start ''from'' and the end ''to'' of the time interval 
+#' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
+#' whose attributes are the start ''from'' and the end ''to'' of the time interval.
+#' If missing ''from'' and/or ''to'', they are set to the time range of the 
+#' \code{object}. 
 #' 
-#' @param p the percentage of data that goes to training. 
-#' See \code{\link[caret]{createDataPartition}} for details.
+#' @param id.labels a numeric or character with an column name from \code{y} to 
+#' be used as samples labels. Optional.
 #' 
-#' @param conf.int specifies the confidence level (0-1) for interval estimation of the 
-#' population mean. For more details see \code{\link[ggplot2]{mean_cl_boot}}.
+#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
+#' if \code{y} is a \code{\link[base]{data.frame}}.
 #' 
-#' @param ... Other arguments to be passed to \code{\link[dtwSat]{createPatterns}} and 
-#' to \code{\link[dtwSat]{twdtwApply}}.
+#' @param conf.int specifies the confidence level.
 #' 
 #' @seealso 
-#' \code{\link[dtwSat]{twdtwMatches-class}},
-#' \code{\link[dtwSat]{createPatterns}}, and 
-#' \code{\link[dtwSat]{twdtwApply}}.
+#' \code{\link[dtwSat]{twdtwRaster-class}}, and 
+#' \code{\link[dtwSat]{twdtwClassify}}.
 #'
 #' @section Slots :
 #' \describe{
-#'  \item{\code{partitions}:}{A list with the indices of time series used for training.}
-#'  \item{\code{accuracy}:}{A list with the accuracy and other TWDTW information for each 
-#'  data partitions.}
+#'  \item{\code{accuracy}:}{A list with the accuracy for each classified time period.}
+#'  \item{\code{data}:}{A \code{\link[base]{data.frame}} with reference labels, predicted labels, 
+#'  and other TWDTW information.}
 #' }
 #'
 #' @examples
@@ -51,8 +55,8 @@
 #' }
 NULL
 setClass(
-  Class = "twdtwCrossValidation",
-  slots = c(partitions = "list", accuracy = "list"),
+  Class = "twdtwAssessment",
+  slots = c(accuracy = "list", data = "list"),
   validity = function(object){
     if(!is(object@partitions, "list")){
       stop("[twdtwTimeSeries: validation] Invalid partitions, class different from list.")
@@ -65,12 +69,12 @@ setClass(
 )
 
 setMethod("initialize",
-          signature = "twdtwCrossValidation",
+          signature = "twdtwAssessment",
           definition = 
             function(.Object, partitions, accuracy){
               .Object@partitions = list(Resample1=NULL)
               .Object@accuracy = list(OverallAccuracy=NULL, UsersAccuracy=NULL, ProducersAccuracy=NULL, 
-                                      ErrorMatrix=table(NULL), data=data.frame(NULL))
+                                      error.matrix=table(NULL), data=data.frame(NULL))
               if(!missing(partitions))
                 .Object@partitions = partitions
               if(!missing(accuracy))
@@ -79,4 +83,5 @@ setMethod("initialize",
               return(.Object)
             }
 )
+
 

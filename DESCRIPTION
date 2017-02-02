@@ -55,11 +55,11 @@ Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
 RoxygenNote: 5.0.1
 Collate:
+    'class-crossValidation.R'
     'class-twdtwTimeSeries.R'
     'class-twdtwMatches.R'
     'class-twdtwRaster.R'
     'createPatterns.R'
-    'crossValidation.R'
     'data.R'
     'dtw.R'
     'dwtSat.R'
@@ -85,7 +85,6 @@ Collate:
     'resampleTimeSeries.R'
     'subset.R'
     'twdtw.R'
-    'twdtwAccuracy.R'
     'twdtwApply.R'
     'twdtwClassify.R'
     'zzz.R'

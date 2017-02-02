@@ -4,10 +4,13 @@
 \alias{plotCrossValidation}
 \title{Plotting cross-validation}
 \usage{
-plotCrossValidation(x)
+plotCrossValidation(x, conf.int = 0.95)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{plotCrossValidation}}.}
+
+\item{conf.int}{confidence level (0-1) for interval estimation of the population mean.
+for details see \code{\link[Hmisc]{smean.cl.normal}}.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.
@@ -49,7 +52,7 @@ cross_validation = twdtwCrossValidation(field_samples_ts, times=3, p=0.1,
 
 summary(cross_validation)
 
-plot(cross_validation)
+plot(cross_validation, conf.int=.99)
 
 }
 

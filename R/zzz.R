@@ -32,7 +32,7 @@
 #' @importFrom sp Polygon Polygons SpatialPoints SpatialPolygons SpatialPointsDataFrame over CRS spTransform coordinates bbox 
 #' @importFrom mgcv gam predict.gam 
 #' @importFrom RColorBrewer brewer.pal 
-#' @importFrom stats xtabs ave window na.omit sd 
+#' @importFrom stats xtabs ave window na.omit sd qnorm 
 #' @importFrom lubridate month month<- day day<- year year<-
 #' @importFrom caret createDataPartition 
 #' 

@@ -55,10 +55,10 @@ setClass(
   slots = c(partitions = "list", accuracy = "list"),
   validity = function(object){
     if(!is(object@partitions, "list")){
-      stop("[twdtwTimeSeries: validation] Invalid partitions, class different from list.")
+      stop("[twdtwCrossValidation: validation] Invalid partitions, class different from list.")
     }else{}
     if(!is(object@accuracy, "list")){
-      stop("[twdtwTimeSeries: validation] Invalid accuracy, class different from list.")
+      stop("[twdtwCrossValidation: validation] Invalid accuracy, class different from list.")
     }else{}
     return(TRUE)
   }

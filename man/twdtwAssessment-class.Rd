@@ -2,12 +2,14 @@
 % Please edit documentation in R/class-twdtwAccuracy.R, R/twdtwAssessment.R
 \docType{methods}
 \name{twdtwAssessment-class}
+\alias{twdtwAssess}
+\alias{twdtwAssess,twdtwRaster-method}
 \alias{twdtwAssessment}
-\alias{twdtwAssessment,ANY-method}
 \alias{twdtwAssessment-class}
 \title{class "twdtwAssessment"}
 \usage{
-\S4method{twdtwAssessment}{ANY}(object, y, id.labels, proj4string, conf.int)
+\S4method{twdtwAssess}{twdtwRaster}(object, y, labels = NULL,
+  id.labels = NULL, proj4string = NULL, conf.int = 0.95)
 }
 \arguments{
 \item{object}{an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
@@ -20,20 +22,25 @@ whose attributes are the start ''from'' and the end ''to'' of the time interval.
 If missing ''from'' and/or ''to'', they are set to the time range of the 
 \code{object}.}
 
+\item{labels}{character vector with time series labels. For signature 
+\code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
+labels for each sample in \code{y}, or it can be combined with \code{id.labels} 
+to select samples with a specific label.}
+
 \item{id.labels}{a numeric or character with an column name from \code{y} to 
 be used as samples labels. Optional.}
 
 \item{proj4string}{projection string, see \code{\link[sp]{CRS-class}}. Used 
 if \code{y} is a \code{\link[base]{data.frame}}.}
 
-\item{conf.int}{specifies the confidence level.}
+\item{conf.int}{specifies the confidence level (0-1).}
 }
 \description{
 This class stores the map assessment.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{twdtwAssessment}: this function performs an accuracy assessment 
+\item \code{twdtwAssess}: this function performs an accuracy assessment 
 of the classified maps. The function returns Overall Accuracy, 
 User's Accuracy, Produce's Accuracy, and error matrix (confusion matrix) for 
 each time interval and a summary considering all classified intervals.
@@ -41,9 +48,12 @@ each time interval and a summary considering all classified intervals.
 \section{Slots }{
 
 \describe{
- \item{\code{accuracy}:}{A list with the accuracy for each classified time period.}
- \item{\code{data}:}{A \code{\link[base]{data.frame}} with reference labels, predicted labels, 
- and other TWDTW information.}
+ \item{\code{accuracySummary}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+ and Error Matrix (confusion matrix) considering all time periods.}
+ \item{\code{accuracyByPeriod}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+ and Error Matrix (confusion matrix) for each time periods independently from each other.}
+ \item{\code{data}:}{A \code{\link[base]{data.frame}} with period (from - to), reference labels, 
+ predicted labels, and other TWDTW information.}
 }
 }
 \examples{
@@ -62,36 +72,37 @@ nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
 mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+
+# Read fiels samples 
 field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
 proj_str = scan(system.file("lucc_MT/data/samples_projection", 
                 package="dtwSat"), what = "character")
-field_samples_ts = getTimeSeries(rts, y = field_samples, proj4string = proj_str)
-temporal_patterns = createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
-log_fun = weight.fun=logisticWeight(-0.1,50)
+
+# Split samples for training (10\%) and validation (90\%) using stratified sampling 
+library(caret) 
+set.seed(1)
+I = unlist(createDataPartition(field_samples$label, p = 0.1))
+training_samples = field_samples[I,]
+validation_samples = field_samples[-I,]
+
+# Create temporal patterns 
+training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
 # Run TWDTW analysis for raster time series 
-
-r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", 
-                     overwrite=TRUE, chunk.size=1000)
-
-r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-
 log_fun = weight.fun=logisticWeight(-0.1,50)
-time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-                    by="12 month")
-r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-          filepath="~/test_twdtw", overwrite=TRUE, format="GTiff")
+r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", 
+                     overwrite=TRUE)
+                     
+# Classify raster based on the TWDTW analysis 
+r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE, filepath="res1")
+plot(r_lucc)
 
-r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-
-plotMaps(r_lucc)
-
-# Map assessment 
-
-
-  
+# Assess classification 
+twdtw_assess = twdtwAssess(r_lucc, validation_samples, proj4string=proj_str) 
+twdtw_assess@data
+ 
 }
 }
 \author{

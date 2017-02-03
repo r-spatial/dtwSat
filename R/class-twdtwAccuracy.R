@@ -33,10 +33,15 @@
 #' @param id.labels a numeric or character with an column name from \code{y} to 
 #' be used as samples labels. Optional.
 #' 
+#' @param labels character vector with time series labels. For signature 
+#' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
+#' labels for each sample in \code{y}, or it can be combined with \code{id.labels} 
+#' to select samples with a specific label.
+#' 
 #' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
 #' if \code{y} is a \code{\link[base]{data.frame}}.
 #' 
-#' @param conf.int specifies the confidence level.
+#' @param conf.int specifies the confidence level (0-1).
 #' 
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwRaster-class}}, and 
@@ -44,9 +49,12 @@
 #'
 #' @section Slots :
 #' \describe{
-#'  \item{\code{accuracy}:}{A list with the accuracy for each classified time period.}
-#'  \item{\code{data}:}{A \code{\link[base]{data.frame}} with reference labels, predicted labels, 
-#'  and other TWDTW information.}
+#'  \item{\code{accuracySummary}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+#'  and Error Matrix (confusion matrix) considering all time periods.}
+#'  \item{\code{accuracyByPeriod}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+#'  and Error Matrix (confusion matrix) for each time periods independently from each other.}
+#'  \item{\code{data}:}{A \code{\link[base]{data.frame}} with period (from - to), reference labels, 
+#'  predicted labels, and other TWDTW information.}
 #' }
 #'
 #' @examples
@@ -56,13 +64,16 @@
 NULL
 setClass(
   Class = "twdtwAssessment",
-  slots = c(accuracy = "list", data = "list"),
+  slots = c(accuracySummary = "list", accuracyByPeriod = "list", data = "data.frame"),
   validity = function(object){
-    if(!is(object@partitions, "list")){
-      stop("[twdtwTimeSeries: validation] Invalid partitions, class different from list.")
+    if(!is(object@accuracySummary, "list")){
+      stop("[twdtwAssessment: validation] Invalid partitions, class different from list.")
     }else{}
-    if(!is(object@accuracy, "list")){
-      stop("[twdtwTimeSeries: validation] Invalid accuracy, class different from list.")
+    if(!is(object@accuracyByPeriod, "list")){
+      stop("[twdtwAssessment: validation] Invalid accuracy, class different from list.")
+    }else{}
+    if(!is(object@data, "data.frame")){
+      stop("[twdtwAssessment: validation] Invalid accuracy, class different from data.frame.")
     }else{}
     return(TRUE)
   }
@@ -71,14 +82,17 @@ setClass(
 setMethod("initialize",
           signature = "twdtwAssessment",
           definition = 
-            function(.Object, partitions, accuracy){
-              .Object@partitions = list(Resample1=NULL)
-              .Object@accuracy = list(OverallAccuracy=NULL, UsersAccuracy=NULL, ProducersAccuracy=NULL, 
-                                      error.matrix=table(NULL), data=data.frame(NULL))
-              if(!missing(partitions))
-                .Object@partitions = partitions
-              if(!missing(accuracy))
-                .Object@accuracy = accuracy
+            function(.Object, accuracySummary, accuracyByPeriod, data){
+              .Object@accuracySummary = list(OverallAccuracy=NULL, UsersAccuracy=NULL, ProducersAccuracy=NULL, ErrorMatrix=table(NULL))
+              .Object@accuracyByPeriod = list(list(OverallAccuracy=NULL, UsersAccuracy=NULL, ProducersAccuracy=NULL, 
+                                                   ErrorMatrix=table(NULL)))
+              .Object@data = data.frame(Period=NULL, from=NULL, to=NULL, Distance=NULL, Predicted=NULL, Reference=NULL)
+              if(!missing(accuracySummary))
+                .Object@accuracySummary = accuracySummary
+              if(!missing(accuracyByPeriod))
+                .Object@accuracyByPeriod = accuracyByPeriod
+              if(!missing(data))
+                .Object@data = data
               validObject(.Object)
               return(.Object)
             }

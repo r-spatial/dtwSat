@@ -1,10 +1,10 @@
 
-setGeneric("twdtwAssessment", 
-           def = function(object, ...) standardGeneric("twdtwAssessment")
+setGeneric("twdtwAssess", 
+           def = function(object, ...) standardGeneric("twdtwAssess")
 )
 
 #' @inheritParams twdtwAssessment-class
-#' @aliases twdtwAssessment
+#' @aliases twdtwAssess
 #' 
 #' @describeIn twdtwAssessment this function performs an accuracy assessment 
 #' of the classified maps. The function returns Overall Accuracy, 
@@ -24,46 +24,59 @@ setGeneric("twdtwAssessment",
 #' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 #' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' 
 #' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+#' 
+#' # Read fiels samples 
 #' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
 #' proj_str = scan(system.file("lucc_MT/data/samples_projection", 
 #'                 package="dtwSat"), what = "character")
-#' field_samples_ts = getTimeSeries(rts, y = field_samples, proj4string = proj_str)
-#' temporal_patterns = createPatterns(field_samples_ts, freq = 8, formula = y ~ s(x))
-#' log_fun = weight.fun=logisticWeight(-0.1,50)
+#' 
+#' # Split samples for training (10%) and validation (90%) using stratified sampling 
+#' library(caret) 
+#' set.seed(1)
+#' I = unlist(createDataPartition(field_samples$label, p = 0.1))
+#' training_samples = field_samples[I,]
+#' validation_samples = field_samples[-I,]
+#' 
+#' # Create temporal patterns 
+#' training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+#' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 #' 
 #' # Run TWDTW analysis for raster time series 
-#' 
-#' r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", 
-#'                      overwrite=TRUE, chunk.size=1000)
-#' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-#' 
 #' log_fun = weight.fun=logisticWeight(-0.1,50)
-#' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-#'                     by="12 month")
-#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff")
+#' r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", 
+#'                      overwrite=TRUE)
+#'                      
+#' # Classify raster based on the TWDTW analysis 
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE, filepath="res1")
+#' plot(r_lucc)
 #' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-#' 
-#' plotMaps(r_lucc)
-#' 
-#' # Map assessment 
-#' 
-#' 
-#'   
+#' # Assess classification 
+#' twdtw_assess = twdtwAssess(r_lucc, validation_samples, proj4string=proj_str) 
+#' twdtw_assess@data
+#'  
 #' }
 #' @export
-setMethod(f = "twdtwAssessment", 
-          definition = function(object, y, id.labels, proj4string, conf.int) 
-              twdtwAssessment.twdtwRaster(object, y, id.labels, proj4string, conf.int))
+setMethod(f = "twdtwAssess", signature = "twdtwRaster",
+          definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95) 
+            twdtwAssess.twdtwRaster(object, y, labels, id.labels, proj4string, conf.int))
 
-twdtwAssessment.twdtwRaster = function(object, y, id.labels, proj4string, conf.int){
-
+twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int){
+  
+  # Check control points 
+  y = .adjustLabelID(y, labels, id.labels)
+  if(!"from"%in%names(y))
+    stop("samples starting date not found, the argument 'y' must have a column called 'from'")
+  if(!"to"%in%names(y))
+    stop("samples ending date not found, the argument 'y' must have a column called 'to'")
+  y = .toSpatialPointsDataFrame(y, object, proj4string)
+  
   # Get classified raster 
   x = object@timeseries$Class
+  x_twdtw = object@timeseries$Distance
+  
+  # Reproject points to raster projection 
+  y = spTransform(y, CRS(projection(x)))
   
   # Get time intervals 
   timeline = index(object)
@@ -75,7 +88,7 @@ twdtwAssessment.twdtwRaster = function(object, y, id.labels, proj4string, conf.i
   rlevels = levels(object)
   
   # Compute area of each class by classification interval 
-  a_by_interval = lapply(1:nlayers(x), FUN = .area_by_class, x, rlevels, rnames)
+  a_by_interval = lapply(1:nlayers(x), FUN = .getAreaByClass, x, rlevels, rnames)
   
   # Compute total area by class 
   area_by_class = do.call("rbind", a_by_interval)
@@ -83,45 +96,25 @@ twdtwAssessment.twdtwRaster = function(object, y, id.labels, proj4string, conf.i
   
   # Get classified and predicted land cover/use classes for each control point 
   pred_classes = extract(x, y)
-  samples_by_year = lapply(1:nrow(r_intervals), FUN = .get_pre_ref_classes, r_intervals, pred_classes, y, rlevels, rnames)
-  samples_all = do.call("rbind", samples_by_year)
+  pred_distance = extract(x_twdtw, y)
+  samples_by_period = lapply(1:nrow(r_intervals), FUN = .getPredRefClasses, r_intervals, pred_classes, pred_distance, y, rlevels, rnames)
+  samples_all = do.call("rbind", samples_by_period)
   
   # Compute error matrix 
-  error_matrix_by_year = lapply(samples_by_year, table)
-  error_matrix_summary = table(samples_all)
+  error_matrix_by_period = lapply(1:nrow(r_intervals), function(i) table(samples_by_period[[i]][,c("Predicted","Reference")]))
+  error_matrix_summary = table(samples_all[,c("Predicted","Reference")])
   
   # Compute accuracy assessment 
-  accuracy_by_year = lapply(seq_along(error_matrix_by_year), function(i) .twdtwAssessment(x = error_matrix_by_year[[i]], a_by_interval[[i]], conf.int))
-  accuracy_summary = .twdtwAssessment(error_matrix_summary, area_by_class, conf.int=1.96)  
+  accuracy_by_period = lapply(seq_along(error_matrix_by_period), function(i) .twdtwAssess(x = error_matrix_by_period[[i]], a_by_interval[[i]], conf.int=conf.int))
+  accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int)
   
-  # new("twdtwCrossValidation", partitions=partitions, accuracy=res)
-  
-  list(accuracy_summary, accuracy_by_year)
+  new("twdtwAssessment", accuracySummary=accuracy_summary, accuracyByPeriod=accuracy_by_period, data=samples_all)
   
 }
 
-.get_pre_ref_classes = function(i, r_intervals, pred, y, rlevels, rnames){
-  I = which((r_intervals$to[i] - as.Date(y$from) > 30) & (as.Date(y$to) - r_intervals$from[i] > 30) )
-  if(length(I)<1)
-    return(NULL)
-  J = match(pred[I,i], rlevels)
-  Predicted = factor(as.character(rnames[J]), levels = rnames, labels = rnames)
-  Reference = factor(as.character(y$label[I]), levels = rnames, labels = rnames)
-  data.frame(Predicted, Reference)
-}
-
-.area_by_class = function(l, r, rlevels, rnames){
-  r = raster(r, layer = l)
-  a = zonal(r, r, 'count')
-  I = match(a[,'zone'], rlevels)
-  out = rep(0, length(rnames))
-  names(out) = rnames
-  out[I] = a[,'count'] * prod(res(r))
-  names(out) = rnames
-  out  
-}
-
-.twdtwAssessment = function(x, area, conf.int){
+.twdtwAssess = function(x, area, conf.int){
+  
+  mult = qnorm(1-(1-conf.int)/2, mean = 0, sd = 1)
   
   cnames = names(area)
   # cnames = paste0("aux_classname_",seq_along(cnames))
@@ -167,16 +160,15 @@ twdtwAssessment.twdtwRaster = function(object, y, id.labels, proj4string, conf.i
   #a_pixel = as.numeric(prop_matrix["Total",cnames] * prop_matrix["Total","A"])
   #names(a_pixel) = cnames
   #a_ha = a_pixel*res^2/100^2
-  conf.int = 1.96
   temp = w^2*UA*(1-UA)/(total_map-1)
   
   VO = sum(temp, na.rm = TRUE)
   SO = sqrt(VO)
-  OCI = SO * conf.int
+  OCI = SO * mult
   
   VU = UA*(1-UA)/(total_map-1)
   SU = sqrt(VU)
-  UCI = SU * conf.int
+  UCI = SU * mult
   
   fun1 = function(x, xt, A){
     sum(A*x/xt, na.rm = TRUE)
@@ -197,7 +189,7 @@ twdtwAssessment.twdtwRaster = function(object, y, id.labels, proj4string, conf.i
   # VP = (1/Nj^2)*(expr1+expr2)
   VP = (1/sapply(Nj, function(x) ifelse(x==0, 1, x))^2)*(expr1+expr2)
   SP = sapply(VP, function(x) ifelse(x==0, 0, sqrt(x)))
-  PCI = SP * 1.96
+  PCI = SP * mult
   
   res = list(OverallAccuracy   = c(Accuracy=OA, Var=VO, sd=SO, ci95=OCI),
              UsersAccuracy     = cbind(Accuracy=UA, Var=VU, sd=SU, ci95=UCI),
@@ -208,6 +200,29 @@ twdtwAssessment.twdtwRaster = function(object, y, id.labels, proj4string, conf.i
   res
   
 }
+
+.getPredRefClasses = function(i, r_intervals, pred, pred_distance, y, rlevels, rnames){
+  I = which((r_intervals$to[i] - as.Date(y$from) > 30) & (as.Date(y$to) - r_intervals$from[i] > 30) )
+  if(length(I)<1)
+    return(NULL)
+  J = match(pred[I,i], rlevels)
+  Predicted = factor(as.character(rnames[J]), levels = rnames, labels = rnames)
+  Reference = factor(as.character(y$label[I]), levels = rnames, labels = rnames)
+  #d = pred_distance[J]
+  data.frame(Period=i, from=r_intervals$from[i], to=r_intervals$to[i], Predicted, Reference)
+}
+
+.getAreaByClass = function(l, r, rlevels, rnames){
+  r = raster(r, layer = l)
+  a = zonal(r, r, 'count')
+  I = match(a[,'zone'], rlevels)
+  out = rep(0, length(rnames))
+  names(out) = rnames
+  out[I] = a[,'count'] * prod(res(r))
+  names(out) = rnames
+  out  
+}
+
 
 
 

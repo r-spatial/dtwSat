@@ -15,7 +15,6 @@ setGeneric("twdtwAssess",
 #' \dontrun{
 #' 
 #' # Create raster time series
-#' 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -48,12 +47,12 @@ setGeneric("twdtwAssess",
 #'                      overwrite=TRUE)
 #'                      
 #' # Classify raster based on the TWDTW analysis 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE, filepath="res1")
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
 #' plot(r_lucc)
 #' 
 #' # Assess classification 
 #' twdtw_assess = twdtwAssess(r_lucc, validation_samples, proj4string=proj_str) 
-#' twdtw_assess@data
+#' twdtw_assess@accuracySummary
 #'  
 #' }
 #' @export
@@ -87,10 +86,10 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   rnames = labels(object)
   rlevels = levels(object)
   
-  # Compute area of each class by classification interval 
+  # Compute mapped area of each class by classification interval 
   a_by_interval = lapply(1:nlayers(x), FUN = .getAreaByClass, x, rlevels, rnames)
   
-  # Compute total area by class 
+  # Compute total mapped area by class 
   area_by_class = do.call("rbind", a_by_interval)
   area_by_class = colSums(area_by_class)
   
@@ -112,29 +111,29 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
 }
 
-.twdtwAssess = function(x, area, conf.int){
+.twdtwAssess = function(x, mapped_area, conf.int){
   
   mult = qnorm(1-(1-conf.int)/2, mean = 0, sd = 1)
   
-  cnames = names(area)
+  cnames = names(mapped_area)
   # cnames = paste0("aux_classname_",seq_along(cnames))
   x = data.frame(cbind(x), row.names = cnames)
   # names(x) = cnames
   cnames = names(x)
   rownames(x) = cnames
-  names(area) = cnames
+  names(mapped_area) = cnames
   
   total_map = rowSums(x)
   total_ref = colSums(x)
-  total_area = sum(area)
+  total_area = sum(mapped_area)
   total_samples = sum(total_ref)
   
   # Weight 
-  w = area / total_area
+  w = mapped_area / total_area
   
   # Error matrix 
   
-  error_matrix = data.frame(cbind(x, Total=total_map, A=area, w=w))
+  error_matrix = data.frame(cbind(x, Total=total_map, A=mapped_area, w=w))
   error_matrix["Total",] = colSums(error_matrix)
   
   # Proportions 
@@ -144,7 +143,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   total_prop_ref = colSums(y, na.rm = TRUE)
   
   # Proportions matrix 
-  prop_matrix = data.frame(y, Total = total_prop_map, A = area, w = w)
+  prop_matrix = data.frame(y, Total = total_prop_map, A = mapped_area, w = w)
   prop_matrix["Total",] = colSums(prop_matrix, na.rm = TRUE)
   
   # Accuracy 
@@ -183,17 +182,24 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
     PA^2*sum(A^2*x/xt*(1-x/xt)/(xt-1), na.rm = TRUE)
   }
   
-  Nj = apply(x, 2, fun1, total_map, area)
-  expr1 = area^2*(1-PA)^2*UA*(1-UA)/(total_map-1)
-  expr2 = sapply(1:nrow(x), fun2, x=x, xt=total_map, A=area, PA=PA)
+  Nj = apply(x, 2, fun1, total_map, mapped_area)
+  expr1 = mapped_area^2*(1-PA)^2*UA*(1-UA)/(total_map-1)
+  expr2 = sapply(1:nrow(x), fun2, x=x, xt=total_map, A=mapped_area, PA=PA)
   # VP = (1/Nj^2)*(expr1+expr2)
   VP = (1/sapply(Nj, function(x) ifelse(x==0, 1, x))^2)*(expr1+expr2)
   SP = sapply(VP, function(x) ifelse(x==0, 0, sqrt(x)))
   PCI = SP * mult
   
-  res = list(OverallAccuracy   = c(Accuracy=OA, Var=VO, sd=SO, ci95=OCI),
-             UsersAccuracy     = cbind(Accuracy=UA, Var=VU, sd=SU, ci95=UCI),
-             ProducersAccuracy = cbind(Accuracy=PA, Var=VP, sd=SP, ci95=PCI),
+  # Compute adjusted area 
+  estimated_area = prop_matrix["Total",cnames] * prop_matrix["Total","A"]
+  sd_error = apply(prop_matrix[cnames,cnames], 2, function(x) sqrt(sum( (prop_matrix[cnames,"w"]*x[cnames]-x[cnames]^2)/(error_matrix[cnames,"Total"]-1) )) ) 
+  sd_error_estimated_area = sd_error * prop_matrix["Total","A"]
+  CI_estimated_area = sd_error_estimated_area * mult
+  
+  res = list(OverallAccuracy   = c(Accuracy=OA, Var=VO, sd=SO, ci=OCI),
+             UsersAccuracy     = cbind(Accuracy=UA, Var=VU, sd=SU, ci=UCI),
+             ProducersAccuracy = cbind(Accuracy=PA, Var=VP, sd=SP, ci=PCI),
+             EstimateArea      = cbind(Mapped=c(prop_matrix[cnames,"A"]), Estimated=c(estimated_area), ci=c(CI_estimated_area)),
              ErrorMatrix = error_matrix
   )
   
@@ -213,13 +219,21 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
 }
 
 .getAreaByClass = function(l, r, rlevels, rnames){
-  r = raster(r, layer = l)
-  a = zonal(r, r, 'count')
-  I = match(a[,'zone'], rlevels)
-  out = rep(0, length(rnames))
-  names(out) = rnames
-  out[I] = a[,'count'] * prod(res(r))
-  names(out) = rnames
+  r = raster(r, layer = l)  
+  if(isLonLat(r)){
+    ra = area(r)
+    I = lapply(rlevels, function(i) r[]==i )
+    out = sapply(I, function(i) sum(ra[i], na.rm = TRUE) )
+    names(out) = rnames
+    # stop("Not implemented yet. Please reproject the raster to equal area projection.")
+  } else {
+    a = zonal(r, r, 'count')
+    I = match(a[,'zone'], rlevels)
+    out = rep(0, length(rnames))
+    names(out) = rnames
+    out[I] = a[,'count'] * prod(res(r))
+    names(out) = rnames
+  }
   out  
 }
 

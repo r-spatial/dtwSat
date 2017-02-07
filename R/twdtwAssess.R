@@ -6,7 +6,7 @@ setGeneric("twdtwAssess",
 #' @inheritParams twdtwAssessment-class
 #' @aliases twdtwAssess
 #' 
-#' @describeIn This function performs an accuracy assessment 
+#' @describeIn twdtwAssessment This function performs an accuracy assessment 
 #' of the classified maps. The function returns Overall Accuracy, 
 #' User's Accuracy, Produce's Accuracy, error matrix (confusion matrix),
 #' and estimated area according to [1]. The function returns the metrics 
@@ -54,7 +54,12 @@ setGeneric("twdtwAssess",
 #' # Assess classification 
 #' twdtw_assess = twdtwAssess(r_lucc, validation_samples, proj4string=proj_str) 
 #' twdtw_assess
-#'  
+#' 
+#' 
+#' xtable(twdtw_assess, type="matrix")
+#' xtable(twdtw_assess, type="accuracy")
+#' xtable(twdtw_assess, type="area")
+#' 
 #' }
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwRaster",
@@ -134,7 +139,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   # Error matrix 
   
-  error_matrix = data.frame(cbind(x, Total=total_map, A=mapped_area, w=w))
+  error_matrix = data.frame(cbind(x, Total=total_map, Area=mapped_area, w=w))
   error_matrix["Total",] = colSums(error_matrix)
   
   # Proportions 
@@ -144,7 +149,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   total_prop_ref = colSums(y, na.rm = TRUE)
   
   # Proportions matrix 
-  prop_matrix = data.frame(y, Total = total_prop_map, A = mapped_area, w = w)
+  prop_matrix = data.frame(y, Total = total_prop_map, Area = mapped_area, w = w)
   prop_matrix["Total",] = colSums(prop_matrix, na.rm = TRUE)
   
   # Accuracy 
@@ -157,9 +162,6 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   names(PA) = cnames
   OA = sum(diag(as.matrix(prop_matrix[cnames,cnames])), na.rm = TRUE)
   
-  #a_pixel = as.numeric(prop_matrix["Total",cnames] * prop_matrix["Total","A"])
-  #names(a_pixel) = cnames
-  #a_ha = a_pixel*res^2/100^2
   temp = w^2*UA*(1-UA)/(total_map-1)
   
   VO = sum(temp, na.rm = TRUE)
@@ -170,38 +172,41 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   SU = sqrt(VU)
   UCI = SU * mult
   
-  fun1 = function(x, xt, A){
-    sum(A*x/xt, na.rm = TRUE)
+  fun1 = function(x, xt, Area){
+    sum(Area*x/xt, na.rm = TRUE)
   }
   
-  fun2 = function(i, x, xt, A, PA){
+  fun2 = function(i, x, xt, Area, PA){
     x  =  as.numeric(x[,i])
     x  =  x[-i]
     xt =  xt[-i]
-    A  =  A[-i]
+    Area  =  Area[-i]
     PA = PA[i]
-    PA^2*sum(A^2*x/xt*(1-x/xt)/(xt-1), na.rm = TRUE)
+    PA^2*sum(Area^2*x/xt*(1-x/xt)/(xt-1), na.rm = TRUE)
   }
   
   Nj = apply(x, 2, fun1, total_map, mapped_area)
   expr1 = mapped_area^2*(1-PA)^2*UA*(1-UA)/(total_map-1)
-  expr2 = sapply(1:nrow(x), fun2, x=x, xt=total_map, A=mapped_area, PA=PA)
-  # VP = (1/Nj^2)*(expr1+expr2)
+  expr2 = sapply(1:nrow(x), fun2, x=x, xt=total_map, Area=mapped_area, PA=PA)
   VP = (1/sapply(Nj, function(x) ifelse(x==0, 1, x))^2)*(expr1+expr2)
   SP = sapply(VP, function(x) ifelse(x==0, 0, sqrt(x)))
   PCI = SP * mult
   
   # Compute adjusted area 
-  estimated_area = prop_matrix["Total",cnames] * prop_matrix["Total","A"]
+  estimated_area = prop_matrix["Total",cnames] * prop_matrix["Total","Area"]
   sd_error = apply(prop_matrix[cnames,cnames], 2, function(x) sqrt(sum( (prop_matrix[cnames,"w"]*x[cnames]-x[cnames]^2)/(error_matrix[cnames,"Total"]-1) )) ) 
-  sd_error_estimated_area = sd_error * prop_matrix["Total","A"]
+  sd_error_estimated_area = sd_error * prop_matrix["Total","Area"]
   CI_estimated_area = sd_error_estimated_area * mult
   
   res = list(OverallAccuracy   = c(Accuracy=OA, Var=VO, sd=SO, ci=OCI),
              UsersAccuracy     = cbind(Accuracy=UA, Var=VU, sd=SU, ci=UCI),
              ProducersAccuracy = cbind(Accuracy=PA, Var=VP, sd=SP, ci=PCI),
-             EstimateArea      = cbind(Mapped=c(prop_matrix[cnames,"A"]), Estimated=c(estimated_area), ci=c(CI_estimated_area)),
-             ErrorMatrix = error_matrix
+             AreaUncertainty   = cbind(Mapped=c(prop_matrix[cnames,"Area"]), 
+                                       Adjusted=c(estimated_area), 
+                                       ci=c(CI_estimated_area)),
+             ErrorMatrix = error_matrix,
+             ProportionMatrix = prop_matrix,
+             conf.int = conf.int
   )
   
   res

@@ -35,7 +35,8 @@ Imports:
     sp,
     lubridate,
     caret,
-    mgcv
+    mgcv,
+    xtable
 Suggests:
     testthat,
     knitr,
@@ -45,7 +46,6 @@ Suggests:
     grid,
     png,
     Hmisc,
-    xtable,
     tikzDevice
 License: GPL (>= 2) | file LICENSE
 URL: https://github.com/vwmaus/dtwSat/
@@ -90,5 +90,6 @@ Collate:
     'twdtwAssess.R'
     'twdtwClassify.R'
     'twdtwCrossValidation.R'
+    'xtable.R'
     'zzz.R'
 VignetteBuilder: knitr

@@ -12,7 +12,6 @@
 #                                                             #
 ###############################################################
 
-
 setGeneric("layers", 
            function(x) standardGeneric("layers"))
 
@@ -455,6 +454,8 @@ show.twdtwAssessment = function(object){
   print(object@accuracySummary$UsersAccuracy, digits=2)
   cat("\nProducers\n")
   print(object@accuracySummary$ProducersAccuracy, digits=2)
+  cat("\nArea and uncertainty\n")
+  print(object@accuracySummary$AreaUncertainty, digits=2)
   invisible(NULL)
 }
 
@@ -495,7 +496,7 @@ summary.twdtwCrossValidation = function(object, conf.int=.95, ...){
   names(l_names) = l_names
   ic_ov = mean_cl_boot(x = ov[, c("OV")], conf.int = conf.int, ...)
   names(ic_ov) = NULL
-  assess_ov = data.frame(Accuracy=ic_ov[1], sd=sd_ov, CImin=ic_ov[2], CImax=ic_ov[3])
+  assess_ov = unlist(c(Accuracy=ic_ov[1], sd=sd_ov, CImin=ic_ov[2], CImax=ic_ov[3]))
   ic_ua = t(sapply(l_names, function(i) mean_cl_boot(x = uapa$UA[uapa$label==i], conf.int = conf.int, ...)))
   names(ic_ua) = NULL
   assess_ua = data.frame(Accuracy=unlist(ic_ua[,1]), sd=sd_uapa[,"UA"], CImin=unlist(ic_ua[,2]), CImax=unlist(ic_ua[,3]))
@@ -572,6 +573,7 @@ setMethod("is.twdtwRaster", "ANY",
 #' @export
 setMethod("projecttwdtwRaster", "twdtwRaster", 
           function(x, crs, ...) projecttwdtwRaster.twdtwRaster(x, crs, ...))
+
 
 
 

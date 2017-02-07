@@ -6,7 +6,7 @@ setGeneric("twdtwCrossValidation",
 #' @inheritParams twdtwCrossValidation-class
 #' @aliases twdtwCrossValidation
 #' 
-#' @describeIn 
+#' @describeIn twdtwCrossValidation
 #' Splits the set of time series into training and validation. 
 #' The function uses stratified sampling and a simple random sampling for 
 #' each stratum. For each data partition this function performs a TWDTW 

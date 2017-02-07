@@ -34,6 +34,7 @@
 #' @importFrom stats xtabs ave window na.omit sd qnorm 
 #' @importFrom lubridate month month<- day day<- year year<-
 #' @importFrom caret createDataPartition 
+#' @importFrom xtable xtable print.xtable
 #' 
 NULL
 

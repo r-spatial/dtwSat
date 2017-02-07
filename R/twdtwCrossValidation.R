@@ -6,13 +6,14 @@ setGeneric("twdtwCrossValidation",
 #' @inheritParams twdtwCrossValidation-class
 #' @aliases twdtwCrossValidation
 #' 
-#' @describeIn twdtwCrossValidation Splits the set of time 
-#' series into training and validation. The function uses stratified 
-#' sampling and a simple random sampling for each stratum. For each data partition 
-#' this function performs a TWDTW analysis and returns the Overall Accuracy, 
-#' User's Accuracy, Produce's Accuracy, error matrix (confusion matrix), and a 
-#' \code{\link[base]{data.frame}} with the classification (Predicted), the 
-#' reference classes (Reference), and some TWDTW information.
+#' @describeIn 
+#' Splits the set of time series into training and validation. 
+#' The function uses stratified sampling and a simple random sampling for 
+#' each stratum. For each data partition this function performs a TWDTW 
+#' analysis and returns the Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+#' error matrix (confusion matrix), and a \code{\link[base]{data.frame}} with 
+#' the classification (Predicted), the reference classes (Reference), 
+#' and the results of the TWDTW analysis.
 #'
 #' @examples 
 #' \dontrun{
@@ -48,6 +49,8 @@ setGeneric("twdtwCrossValidation",
 #' cross_validation
 #' 
 #' summary(cross_validation)
+#' 
+#' plot(cross_validation)
 #' 
 #' }
 #' @export

@@ -6,10 +6,11 @@ setGeneric("twdtwAssess",
 #' @inheritParams twdtwAssessment-class
 #' @aliases twdtwAssess
 #' 
-#' @describeIn twdtwAssessment this function performs an accuracy assessment 
+#' @describeIn This function performs an accuracy assessment 
 #' of the classified maps. The function returns Overall Accuracy, 
-#' User's Accuracy, Produce's Accuracy, and error matrix (confusion matrix) for 
-#' each time interval and a summary considering all classified intervals. 
+#' User's Accuracy, Produce's Accuracy, error matrix (confusion matrix),
+#' and estimated area according to [1]. The function returns the metrics 
+#' for each time interval and a summary considering all classified intervals. 
 #'
 #' @examples 
 #' \dontrun{
@@ -52,7 +53,7 @@ setGeneric("twdtwAssess",
 #' 
 #' # Assess classification 
 #' twdtw_assess = twdtwAssess(r_lucc, validation_samples, proj4string=proj_str) 
-#' twdtw_assess@accuracySummary
+#' twdtw_assess
 #'  
 #' }
 #' @export
@@ -219,22 +220,23 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
 }
 
 .getAreaByClass = function(l, r, rlevels, rnames){
-  r = raster(r, layer = l)  
+  r = raster(r, layer = l)
   if(isLonLat(r)){
+    warning("Computing the approximate surface area in km2 of cells in an unprojected (longitude/latitude) Raster object. See ?raster::area", call. = TRUE)
+    # r = projectRaster(from = r, crs = proj_str, method = 'ngb')
     ra = area(r)
     I = lapply(rlevels, function(i) r[]==i )
     out = sapply(I, function(i) sum(ra[i], na.rm = TRUE) )
     names(out) = rnames
-    # stop("Not implemented yet. Please reproject the raster to equal area projection.")
   } else {
-    a = zonal(r, r, 'count')
-    I = match(a[,'zone'], rlevels)
+    npx = zonal(r, r, 'count')
+    I = match(npx[,'zone'], rlevels)
     out = rep(0, length(rnames))
     names(out) = rnames
-    out[I] = a[,'count'] * prod(res(r))
+    out[I] = npx[,'count'] * prod(res(r))
     names(out) = rnames
   }
-  out  
+  out
 }
 
 

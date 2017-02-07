@@ -21,7 +21,7 @@ setGeneric("coverages",
 
 setGeneric("bands", 
            function(x) standardGeneric("bands"))
-           
+
 setGeneric("is.twdtwTimeSeries", 
            function(x) standardGeneric("is.twdtwTimeSeries"))
 
@@ -30,18 +30,21 @@ setGeneric("is.twdtwMatches",
 
 setGeneric("is.twdtwRaster", 
            function(x) standardGeneric("is.twdtwRaster"))
-           
+
+setGeneric("projecttwdtwRaster", 
+           function(x, ...) standardGeneric("projecttwdtwRaster"))
+
 as.list.twdtwTimeSeries = function(x) lapply(seq_along(x), function(i) 
-      new("twdtwTimeSeries", x[[i]], labels(x)[i]) )
+  new("twdtwTimeSeries", x[[i]], labels(x)[i]) )
 
 as.list.twdtwRaster = function(x) {
-    I = coverages(x)
-    names(I) = I
-    lapply(I, function(i) x[[i]])
-  }
+  I = coverages(x)
+  names(I) = I
+  lapply(I, function(i) x[[i]])
+}
 
 as.list.twdtwMatches = function(x) lapply(seq_along(x@timeseries), function(i) 
-      new("twdtwMatches", new("twdtwTimeSeries", x@timeseries[[i]], labels(x@timeseries)[i]), x@patterns, list(x@alignments[[i]])) )
+  new("twdtwMatches", new("twdtwTimeSeries", x@timeseries[[i]], labels(x@timeseries)[i]), x@patterns, list(x@alignments[[i]])) )
 
 dim.twdtwTimeSeries = function(x){
   res = data.frame(as.character(labels(x)), t(sapply(x@timeseries, dim)))
@@ -178,7 +181,7 @@ setMethod(f = "ncol", "twdtwRaster",
 #' @export
 setMethod(f = "nrow", "twdtwRaster",
           definition = nrow.twdtwRaster)
-          
+
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
@@ -204,26 +207,26 @@ setMethod(f = "layers", "twdtwRaster",
 #' @export
 setMethod(f = "coverages", "twdtwRaster",
           definition = coverages.twdtwRaster)
-          
+
 #' @aliases bands
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
 setMethod(f = "bands", "twdtwRaster",
           definition = bands.twdtwRaster)
-         
+
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
 setMethod(f = "names", "twdtwRaster",
           definition = names.twdtwRaster)
-          
+
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
 #' @export
 setMethod(f = "index", "twdtwRaster",
           definition = index.twdtwRaster)
-   
+
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
@@ -235,13 +238,13 @@ setMethod(f = "index", "twdtwTimeSeries",
 #' @export
 setMethod(f = "index", "twdtwMatches",
           definition = index.twdtwMatches)
-          
+
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
 setMethod(f = "nrow", "twdtwTimeSeries",
           definition = nrow.twdtwTimeSeries)
-          
+
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
@@ -253,7 +256,7 @@ setMethod(f = "ncol", "twdtwTimeSeries",
 #' @export
 setMethod(f = "length", signature = signature("twdtwRaster"), 
           definition = length.twdtwRaster)
-          
+
 #' @inheritParams twdtwTimeSeries-class
 #' @rdname twdtwTimeSeries-class
 #' @export
@@ -344,8 +347,8 @@ setMethod("[", "twdtwMatches", function(x, i, j, drop=TRUE) {
   if(!drop) return(res)
   lapply(res, function(x){
     res = do.call("rbind", lapply(seq_along(x), function(jj){
-            data.frame(Alig.N=seq_along(x[[jj]]$distance),from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=x[[jj]]$label, row.names=NULL)
-          }))
+      data.frame(Alig.N=seq_along(x[[jj]]$distance),from=x[[jj]]$from, to=x[[jj]]$to, distance=x[[jj]]$distance, label=x[[jj]]$label, row.names=NULL)
+    }))
     res[order(res$from),]      
   })
 })
@@ -376,7 +379,7 @@ setMethod("levels", "twdtwTimeSeries",
 #' @export
 setMethod("labels", signature = signature(object="twdtwRaster"),
           definition = function(object) as.character(object@labels))
-          
+
 #' @inheritParams twdtwMatches-class
 #' @rdname twdtwMatches-class
 #' @export
@@ -441,22 +444,40 @@ show.twdtwRaster = function(object){
   invisible(NULL)
 }
 
-# Show objects of class twdtwCrossValidation
-show.twdtwCrossValidation = function(object){
-  res = summary(object, conf.int=.95)
-  res = lapply(res, FUN=round, digits = 2)
-  cat("An object of class \"twdtwCrossValidation\"\n")
-  cat("Number of data partitions:",length(object@partitions),"\n")
-  cat("Bootstrap simulation (CI .95)\n")
-  print(res)
+# Show objects of class twdtwAssessment
+show.twdtwAssessment = function(object){
+  cat("An object of class \"twdtwAssessment\"\n")
+  cat("Number of classification intervals:",length(object@accuracyByPeriod),"\n")
+  cat("Accuracy metrics summary\n")
+  cat("\nOverall\n")
+  print(object@accuracySummary$OverallAccuracy, digits=2)
+  cat("\nUsers\n")
+  print(object@accuracySummary$UsersAccuracy, digits=2)
+  cat("\nProducers\n")
+  print(object@accuracySummary$ProducersAccuracy, digits=2)
   invisible(NULL)
 }
 
-#' @inheritParams twdtwCrossValidation-class
-#' @rdname twdtwCrossValidation-class
-#' @export
-setMethod(f = "show", "twdtwCrossValidation",
-          definition = show.twdtwCrossValidation)
+# Show objects of class twdtwCrossValidation
+show.twdtwCrossValidation = function(object){
+  res = summary(object, conf.int=.95)
+  cat("An object of class \"twdtwCrossValidation\"\n")
+  cat("Number of data partitions:",length(object@partitions),"\n")
+  cat("Accuracy metrics using bootstrap simulation (CI .95)\n")
+  cat("\nOverall\n")
+  print(res$Overall, digits=2)
+  cat("\nUsers\n")
+  print(res$Users, digits=2)
+  cat("\nProducers\n")
+  print(res$Producers, digits=2)
+  invisible(NULL)
+}
+
+# Project raster which belong to a twdtwRaster object 
+projecttwdtwRaster.twdtwRaster = function(x, to, ...){
+  x@timeseries = lapply(x@timeseries, projectRaster, to, ...)
+  x
+}
 
 summary.twdtwCrossValidation = function(object, conf.int=.95, ...){
   
@@ -474,15 +495,27 @@ summary.twdtwCrossValidation = function(object, conf.int=.95, ...){
   names(l_names) = l_names
   ic_ov = mean_cl_boot(x = ov[, c("OV")], conf.int = conf.int, ...)
   names(ic_ov) = NULL
-  assess_ov = data.frame(OverallAccuracy=ic_ov[1], sd=sd_ov, CImin=ic_ov[2], CImax=ic_ov[3])
+  assess_ov = data.frame(Accuracy=ic_ov[1], sd=sd_ov, CImin=ic_ov[2], CImax=ic_ov[3])
   ic_ua = t(sapply(l_names, function(i) mean_cl_boot(x = uapa$UA[uapa$label==i], conf.int = conf.int, ...)))
   names(ic_ua) = NULL
-  assess_ua = data.frame(UsersAccuracy=unlist(ic_ua[,1]), sd=sd_uapa[,"UA"], CImin=unlist(ic_ua[,2]), CImax=unlist(ic_ua[,3]))
+  assess_ua = data.frame(Accuracy=unlist(ic_ua[,1]), sd=sd_uapa[,"UA"], CImin=unlist(ic_ua[,2]), CImax=unlist(ic_ua[,3]))
   ic_pa = t(sapply(l_names, function(i) mean_cl_boot(x = uapa$PA[uapa$label==i], conf.int = conf.int, ...)))
   names(ic_pa) = NULL  
-  assess_pa = data.frame(ProducersAccuracy=unlist(ic_pa[,1]), sd=sd_uapa[,"PA"], CImin=unlist(ic_pa[,2]), CImax=unlist(ic_pa[,3]))
-  list(OverallAccuracy=assess_ov, UsersAccuracy=assess_ua, ProducersAccuracy=assess_pa)
+  assess_pa = data.frame(Accuracy=unlist(ic_pa[,1]), sd=sd_uapa[,"PA"], CImin=unlist(ic_pa[,2]), CImax=unlist(ic_pa[,3]))
+  list(Overall=assess_ov, Users=assess_ua, Producers=assess_pa)
 }
+
+#' @inheritParams twdtwCrossValidation-class
+#' @rdname twdtwCrossValidation-class
+#' @export
+setMethod(f = "show", "twdtwCrossValidation",
+          definition = show.twdtwCrossValidation)
+
+#' @inheritParams twdtwAssessment-class
+#' @rdname twdtwAssessment-class
+#' @export
+setMethod(f = "show", "twdtwAssessment",
+          definition = show.twdtwAssessment)
 
 #' @inheritParams twdtwCrossValidation-class
 #' @rdname twdtwCrossValidation-class
@@ -507,7 +540,7 @@ setMethod(f = "show", "twdtwMatches",
 #' @export
 setMethod(f = "show", "twdtwRaster",
           definition = show.twdtwRaster)
-           
+
 #' @aliases is.twdtwTimeSeries
 #' @inheritParams twdtwTimeSeries-class
 #' @describeIn twdtwTimeSeries Check if the object belongs to the class twdtwTimeSeries.
@@ -521,13 +554,26 @@ setMethod("is.twdtwTimeSeries", "ANY",
 #' @export
 setMethod("is.twdtwMatches", "ANY", 
           function(x) is(x, "twdtwMatches"))
-          
+
 #' @aliases is.twdtwRaster
 #' @inheritParams twdtwRaster-class
 #' @describeIn twdtwRaster Check if the object belongs to the class twdtwRaster.
 #' @export
 setMethod("is.twdtwRaster", "ANY", 
           function(x) is(x, "twdtwRaster"))
+
+#' @aliases projecttwdtwRaster
+#' @inheritParams twdtwRaster-class
+#' @describeIn twdtwRaster project twdtwRaster object.
+#' @param crs character or object of class 'CRS'. PROJ.4 description of 
+#' the coordinate reference system. For other arguments and more details see 
+#' \code{\link[raster]{projectRaster}}.
+#' 
+#' @export
+setMethod("projecttwdtwRaster", "twdtwRaster", 
+          function(x, crs, ...) projecttwdtwRaster.twdtwRaster(x, crs, ...))
+
+
 
 
 

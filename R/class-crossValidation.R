@@ -18,7 +18,7 @@
 #' @aliases twdtwCrossValidation
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This class stores the cross-validation. 
+#' @description This class stores the results of the cross-validation. 
 #' 
 #' @param object an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
 #' 

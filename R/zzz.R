@@ -18,7 +18,6 @@
             utils::packageDescription("dtwSat")$Version) )
 }
 
-
 #' @import zoo 
 #' @import raster
 #' @import ggplot2

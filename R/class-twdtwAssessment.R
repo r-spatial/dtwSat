@@ -50,12 +50,18 @@
 #' @section Slots :
 #' \describe{
 #'  \item{\code{accuracySummary}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
-#'  and Error Matrix (confusion matrix) considering all time periods.}
+#'  Error Matrix (confusion matrix), and Estimated Area, considering all time periods.}
 #'  \item{\code{accuracyByPeriod}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
-#'  and Error Matrix (confusion matrix) for each time periods independently from each other.}
+#'  Error Matrix (confusion matrix), and Estimated Area, for each time periods independently 
+#'  from each other.}
 #'  \item{\code{data}:}{A \code{\link[base]{data.frame}} with period (from - to), reference labels, 
 #'  predicted labels, and other TWDTW information.}
 #' }
+#' 
+#' @details
+#' If the twdtwRaster is unprojected (longitude/latitude) the estimated area is sum of the approximate 
+#' surface area in km2 of each cell (pixel). If the twdtwRaster is projected the estimated area is calculated 
+#' using the the pixel resolution in the map unit.
 #'
 #' @examples
 #' \dontrun{

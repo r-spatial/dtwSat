@@ -66,6 +66,10 @@ summary(cross_validation)
 
 plot(cross_validation)
 
+twdtwXtable(cross_validation)
+
+twdtwXtable(cross_validation, show.overall=FALSE)
+
 }
 }
 \author{

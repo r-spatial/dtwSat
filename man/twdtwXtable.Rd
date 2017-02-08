@@ -4,12 +4,17 @@
 \name{twdtwXtable}
 \alias{twdtwXtable}
 \alias{twdtwXtable,twdtwAssessment-method}
+\alias{twdtwXtable,twdtwCrossValidation-method}
 \alias{twdtwXtable-twdtwAssessment}
+\alias{twdtwXtable-twdtwCrossValidation}
 \title{Latex table from accuracy metrics}
 \usage{
 \S4method{twdtwXtable}{twdtwAssessment}(object, table.type = "accuracy",
   show.prop = TRUE, category.name = NULL, category.type = NULL,
   time.labels = NULL, ...)
+
+\S4method{twdtwXtable}{twdtwCrossValidation}(object, conf.int = 0.95,
+  show.overall = TRUE, category.name = NULL, category.type = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class twdtwAssessment.}
@@ -18,7 +23,7 @@
 'matrix' for error matrix, and 'area' for area and uncertainty. 
 Default is 'accuracy'.}
 
-\item{show.prop}{if TRUE shows the the estimated proportion of area.
+\item{show.prop}{if TRUE shows the estimated proportion of area.
 Used with \code{table.type='accuracy'}. Default is TRUE.}
 
 \item{category.name}{a character vector defining the class names. If NULL
@@ -31,6 +36,11 @@ or "letter", if NULL then use the class names. Default is NULL.}
 include all classified periods. Default is NULL.}
 
 \item{...}{other arguments to pass to \code{\link[xtable]{xtable}}.}
+
+\item{conf.int}{specifies the confidence level (0-1).}
+
+\item{show.overall}{if TRUE shows the overall accuracy of the cross-validation.
+Default is TRUE.}
 }
 \description{
 Creates Latex table from accuracy metrics
@@ -80,9 +90,9 @@ twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples,
 twdtw_assess
 
 # Create latex tables 
-xtable(twdtw_assess, table.type="matrix", category.type="letter")
-xtable(twdtw_assess, table.type="accuracy", category.type="letter")
-xtable(twdtw_assess, table.type="area", category.type="letter")
+twdtwXtable(twdtw_assess, table.type="matrix", category.type="letter")
+twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter")
+twdtwXtable(twdtw_assess, table.type="area", category.type="letter")
 
 }
 }

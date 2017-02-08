@@ -23,8 +23,13 @@ setGeneric("twdtwXtable",
 #' @param category.type a character defining the categories type "numeric" 
 #' or "letter", if NULL then use the class names. Default is NULL. 
 #' 
-#' @param show.prop if TRUE shows the the estimated proportion of area.
+#' @param show.prop if TRUE shows the estimated proportion of area.
 #' Used with \code{table.type='accuracy'}. Default is TRUE. 
+#' 
+#' @param show.overall if TRUE shows the overall accuracy of the cross-validation.
+#' Default is TRUE. 
+#' 
+#' @param conf.int specifies the confidence level (0-1).
 #' 
 #' @param ... other arguments to pass to \code{\link[xtable]{xtable}}.
 #'
@@ -76,9 +81,9 @@ setGeneric("twdtwXtable",
 #' twdtw_assess
 #' 
 #' # Create latex tables 
-#' xtable(twdtw_assess, table.type="matrix", category.type="letter")
-#' xtable(twdtw_assess, table.type="accuracy", category.type="letter")
-#' xtable(twdtw_assess, table.type="area", category.type="letter")
+#' twdtwXtable(twdtw_assess, table.type="matrix", category.type="letter")
+#' twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter")
+#' twdtwXtable(twdtw_assess, table.type="area", category.type="letter")
 #' 
 #' }
 NULL
@@ -91,7 +96,6 @@ setMethod("twdtwXtable",
           signature = signature(object = "twdtwAssessment"),
           definition = function(object, table.type="accuracy", show.prop=TRUE, category.name=NULL,
                                 category.type=NULL, time.labels=NULL, ...){
-            xtable(object@accuracySummary$ErrorMatrix, ...)
             y = object@accuracySummary
             if(!is.null(time.labels))
               y = object@accuracyByPeriod[[time.labels]]
@@ -113,6 +117,76 @@ setMethod("twdtwXtable",
             )
           }
 )
+
+#' @aliases twdtwXtable-twdtwCrossValidation
+#' @inheritParams twdtwXtable
+#' @rdname twdtwXtable 
+#' @export
+setMethod("twdtwXtable", 
+          signature = signature(object = "twdtwCrossValidation"),
+          definition = function(object, conf.int=.95, show.overall=TRUE, 
+                                category.name=NULL, category.type=NULL, ...){
+            y = summary(object, conf.int = conf.int)
+            n = nrow(y$Users)
+            if(is.null(category.name))
+              category.name = rownames(y$Users)
+            if(!is.null(category.type))
+              category.name = switch(pmatch(category.type,c("numeric","letter")),
+                                     as.character(seq(1:n)),
+                                     LETTERS[1:n]
+              )
+            .xtable.crossvalidation(x=y, category.name, show.overall, conf.int, ...)
+          }
+)
+
+.xtable.crossvalidation = function(x, category.name, show.overall, conf.int, ...){
+  
+  ua = sprintf("%.2f", round(x$Users[["Accuracy"]],2))
+  ua_sd = sprintf("(%.2f)", round(x$Users[["sd"]],2))
+  ua_ci = sprintf("[%.2f-%.2f]", round(x$Users[["CImin"]],2), round(x$Users[["CImax"]],2))
+  
+  pa = sprintf("%.2f", round(x$Producers[["Accuracy"]],2))
+  pa_sd = sprintf("(%.2f)", round(x$Producers[["sd"]],2))
+  pa_ci = sprintf("[%.2f-%.2f]", round(x$Producers[["CImin"]],2), round(x$Producers[["CImax"]],2))
+
+  tbl = data.frame(ua, ua_sd, ua_ci, pa, pa_sd, pa_ci)
+  table_columns = " & \\multicolumn{3}{c}{User's} & \\multicolumn{3}{c}{Producer's}"
+  n = 2
+  
+  if(show.overall){
+    oa = sprintf("%.2f", round(x$Overall[["Accuracy"]],2))
+    oa_sd = sprintf("(%.2f)", round(x$Overall[["sd"]],2))
+    oa_ci = sprintf("[%.2f-%.2f]", round(x$Overall[["CImin"]],2), round(x$Overall[["CImax"]],2))
+
+    tbl$oa = ""
+    tbl$oa_sd = ""
+    tbl$oa_ci = ""
+    
+    tbl$oa[1] = oa
+    tbl$oa_sd[1] = oa_sd
+    tbl$oa_ci[1] = oa_ci 
+    
+    table_columns = paste0(table_columns, " & \\multicolumn{3}{c}{Overall}")
+    n = 3
+  }
+  
+  comment          = list()
+  comment$pos      = list()
+  comment$pos[[1]] = c(0)
+  comment$pos[[2]] = c(nrow(tbl))
+  comment$command  = c(paste0(table_columns, "\\\\\n", 
+                              "Class", paste(rep(" & $\\mu$ & $\\sigma$ & ci*", n),collapse = ""),"\\\\\n"),
+                       paste("\\hline \n", "\\multicolumn{",ncol(tbl)+1,"}{l}{* ",conf.int*100,"\\% confidence interval.}\n", sep = ""))
+  
+  rownames(tbl) = category.name
+  
+  tbl = xtable(tbl, ...)
+  
+  print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
+               hline.after = c(-1, 0), sanitize.text.function = function(x) x)
+  
+}
+
 
 .xtable.accuracy = function(x, category.name, show.prop, ...){
   

@@ -96,9 +96,9 @@ setGeneric("twdtwAssess",
 #' twdtw_assess
 #' 
 #' # Create latex tables 
-#' xtable(twdtw_assess, table.type="matrix")
-#' xtable(twdtw_assess, table.type="accuracy")
-#' xtable(twdtw_assess, table.type="area")
+#' twdtwXtable(twdtw_assess, table.type="matrix")
+#' twdtwXtable(twdtw_assess, table.type="accuracy")
+#' twdtwXtable(twdtw_assess, table.type="area")
 #' 
 #' }
 NULL

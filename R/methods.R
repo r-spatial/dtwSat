@@ -449,13 +449,22 @@ show.twdtwAssessment = function(object){
   cat("Number of classification intervals:",length(object@accuracyByPeriod),"\n")
   cat("Accuracy metrics summary\n")
   cat("\nOverall\n")
-  print(object@accuracySummary$OverallAccuracy, digits=2)
-  cat("\nUsers\n")
-  print(object@accuracySummary$UsersAccuracy, digits=2)
-  cat("\nProducers\n")
-  print(object@accuracySummary$ProducersAccuracy, digits=2)
+  aux = object@accuracySummary$OverallAccuracy
+  names(aux) = gsub("ci", "ci*", names(aux))
+  print(aux, digits=2)
+  cat("\nUser's\n")
+  aux = object@accuracySummary$UsersAccuracy
+  colnames(aux) = gsub("ci", "ci*", colnames(aux))
+  print(aux, digits=2)
+  cat("\nProducer's\n")
+  aux = object@accuracySummary$ProducersAccuracy
+  colnames(aux) = gsub("ci", "ci*", colnames(aux))
+  print(aux, digits=2)
   cat("\nArea and uncertainty\n")
-  print(object@accuracySummary$AreaUncertainty, digits=2)
+  aux = object@accuracySummary$AreaUncertainty
+  colnames(aux) = gsub("ci", "ci*", colnames(aux))
+  print(aux, digits=2)
+  cat("\n*",100*object@accuracySummary$conf.int,"% confidence interval\n")
   invisible(NULL)
 }
 

@@ -89,7 +89,7 @@ Collate:
     'twdtwApply.R'
     'twdtwAssess.R'
     'twdtwClassify.R'
-    'twdtwCrossValidation.R'
-    'xtable.R'
+    'twdtwCrossValidate.R'
+    'twdtwXtable.R'
     'zzz.R'
 VignetteBuilder: knitr

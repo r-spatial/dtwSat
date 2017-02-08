@@ -79,8 +79,8 @@
 #' @references 
 #' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 #' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
-#' mapping. Selected Topics in Applied Earth Observations and Remote Sensing, 
-#' IEEE Journal of, vol.PP, no.99, pp.1-11.
+#' mapping. IEEE Journal of Selected Topics in Applied Earth Observations and Remote 
+#' Sensing, vol.9, no.8, pp.3729-3739.
 #' @references 
 #' [2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
 #' The dtw Package. Journal of Statistical Software, 31, 1-24.

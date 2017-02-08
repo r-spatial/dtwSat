@@ -3,15 +3,54 @@ setGeneric("twdtwAssess",
            def = function(object, ...) standardGeneric("twdtwAssess")
 )
 
-#' @inheritParams twdtwAssessment-class
-#' @aliases twdtwAssess
-#' 
-#' @describeIn twdtwAssessment This function performs an accuracy assessment 
+#' @title Assess TWDTW classification 
+#' @name twdtwAssess
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#'  
+#' @description Performs an accuracy assessment 
 #' of the classified maps. The function returns Overall Accuracy, 
 #' User's Accuracy, Produce's Accuracy, error matrix (confusion matrix),
-#' and estimated area according to [1]. The function returns the metrics 
+#' and estimated area according to [1-2]. The function returns the metrics 
 #' for each time interval and a summary considering all classified intervals. 
+#' 
+#' @param object an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
+#' the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
+#' 
+#' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
+#' latitude, the start ''from'' and the end ''to'' of the time interval 
+#' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
+#' whose attributes are the start ''from'' and the end ''to'' of the time interval.
+#' If missing ''from'' and/or ''to'', they are set to the time range of the 
+#' \code{object}. 
+#' 
+#' @param id.labels a numeric or character with an column name from \code{y} to 
+#' be used as samples labels. Optional.
+#' 
+#' @param labels character vector with time series labels. For signature 
+#' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
+#' labels for each sample in \code{y}, or it can be combined with \code{id.labels} 
+#' to select samples with a specific label.
+#' 
+#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
+#' if \code{y} is a \code{\link[base]{data.frame}}.
+#' 
+#' @param conf.int specifies the confidence level (0-1).
+#' 
+#' @references 
+#' [1] Olofsson, P., Foody, G.M., Stehman, S.V., Woodcock, C.E. (2013). 
+#' Making better use of accuracy data in land change studies: Estimating 
+#' accuracy and area and quantifying uncertainty using stratified estimation. 
+#' Remote Sensing of Environment, 129, pp.122-131.
+#' 
+#' @references 
+#' [2] Olofsson, P., Foody G.M., Herold M., Stehman, S.V., Woodcock, C.E., Wulder, M.A. (2014)
+#' Good practices for estimating area and assessing accuracy of land change. Remote Sensing of 
+#' Environment, 148, pp. 42-57.
 #'
+#' @seealso \code{\link[dtwSat]{twdtwClassify}},  
+#' \code{\link[dtwSat]{twdtwAssessment}}, and
+#' \code{\link[dtwSat]{twdtwXtable}}.
+#' 
 #' @examples 
 #' \dontrun{
 #' 
@@ -52,15 +91,21 @@ setGeneric("twdtwAssess",
 #' plot(r_lucc)
 #' 
 #' # Assess classification 
-#' twdtw_assess = twdtwAssess(r_lucc, validation_samples, proj4string=proj_str) 
+#' twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
+#'                            proj4string = proj_str, conf.int=.95) 
 #' twdtw_assess
 #' 
-#' 
-#' xtable(twdtw_assess, type="matrix")
-#' xtable(twdtw_assess, type="accuracy")
-#' xtable(twdtw_assess, type="area")
+#' # Create latex tables 
+#' xtable(twdtw_assess, table.type="matrix")
+#' xtable(twdtw_assess, table.type="accuracy")
+#' xtable(twdtw_assess, table.type="area")
 #' 
 #' }
+NULL
+
+#' @aliases twdtwAssess-twdtwRaster
+#' @inheritParams twdtwAssess
+#' @rdname twdtwAssess 
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwRaster",
           definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95) 
@@ -111,6 +156,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   # Compute accuracy assessment 
   accuracy_by_period = lapply(seq_along(error_matrix_by_period), function(i) .twdtwAssess(x = error_matrix_by_period[[i]], a_by_interval[[i]], conf.int=conf.int))
+  names(accuracy_by_period) = index(object)
   accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int)
   
   new("twdtwAssessment", accuracySummary=accuracy_summary, accuracyByPeriod=accuracy_by_period, data=samples_all)
@@ -214,13 +260,28 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
 }
 
 .getPredRefClasses = function(i, r_intervals, pred, pred_distance, y, rlevels, rnames){
-  I = which((r_intervals$to[i] - as.Date(y$from) > 30) & (as.Date(y$to) - r_intervals$from[i] > 30) )
-  if(length(I)<1)
+  i_leng = as.numeric(r_intervals$to[i] - r_intervals$from[i])
+  from   = as.Date(y$from)
+  to     = as.Date(y$to)
+  # Select overlapping alignments 
+  J      = which(from <= r_intervals$to[i] & to >= r_intervals$from[i])
+  # Adjust overlapping 
+  from   = sapply(from[J], function(x) ifelse(x < r_intervals$from[i], r_intervals$from[i], x))
+  to     = sapply(to[J], function(x) ifelse(x > r_intervals$to[i], r_intervals$to[i], x))
+  # Compute overlapping proportion 
+  i_over = to - from 
+  print(i_leng)
+  print(i_over)
+  prop_over = abs(i_over / i_leng)
+  # Select alignments 
+  I = which(prop_over > .5)
+  # I = which((r_intervals$to[i] - as.Date(y$from) > 30) & (as.Date(y$to) - r_intervals$from[i] > 30) )
+  if(length(J[I])<1)
     return(NULL)
-  J = match(pred[I,i], rlevels)
-  Predicted = factor(as.character(rnames[J]), levels = rnames, labels = rnames)
-  Reference = factor(as.character(y$label[I]), levels = rnames, labels = rnames)
-  #d = pred_distance[J]
+  K = match(pred[J[I],i], rlevels)
+  Predicted = factor(as.character(rnames[K]), levels = rnames, labels = rnames)
+  Reference = factor(as.character(y$label[J[I]]), levels = rnames, labels = rnames)
+  #d = pred_distance[K]
   data.frame(Period=i, from=r_intervals$from[i], to=r_intervals$to[i], Predicted, Reference)
 }
 

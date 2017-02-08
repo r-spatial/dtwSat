@@ -18,34 +18,13 @@
 #' @aliases twdtwAssessment
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This class stores the map assessment.  
+#' @description This class stores the map assessment metrics.  
 #' 
-#' @param object an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
-#' the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
+#' @param object an object of class twdtwAssessment.
 #' 
-#' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
-#' latitude, the start ''from'' and the end ''to'' of the time interval 
-#' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
-#' whose attributes are the start ''from'' and the end ''to'' of the time interval.
-#' If missing ''from'' and/or ''to'', they are set to the time range of the 
-#' \code{object}. 
-#' 
-#' @param id.labels a numeric or character with an column name from \code{y} to 
-#' be used as samples labels. Optional.
-#' 
-#' @param labels character vector with time series labels. For signature 
-#' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
-#' labels for each sample in \code{y}, or it can be combined with \code{id.labels} 
-#' to select samples with a specific label.
-#' 
-#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
-#' if \code{y} is a \code{\link[base]{data.frame}}.
-#' 
-#' @param conf.int specifies the confidence level (0-1).
-#' 
-#' @seealso 
-#' \code{\link[dtwSat]{twdtwRaster-class}}, and 
-#' \code{\link[dtwSat]{twdtwClassify}}.
+#' @seealso \code{\link[dtwSat]{twdtwClassify}},  
+#' \code{\link[dtwSat]{twdtwAssess}}, and
+#' \code{\link[dtwSat]{twdtwXtable}}.
 #'
 #' @section Slots :
 #' \describe{
@@ -63,10 +42,6 @@
 #' surface area in km2 of each cell (pixel). If the twdtwRaster is projected the estimated area is calculated 
 #' using the the pixel resolution in the map unit.
 #'
-#' @examples
-#' \dontrun{
-#' 
-#' }
 NULL
 setClass(
   Class = "twdtwAssessment",

@@ -1,19 +1,29 @@
 
-setGeneric("twdtwCrossValidation", 
-           def = function(object, ...) standardGeneric("twdtwCrossValidation")
+setGeneric("twdtwCrossValidate", 
+           def = function(object, ...) standardGeneric("twdtwCrossValidate")
 )
 
-#' @inheritParams twdtwCrossValidation-class
-#' @aliases twdtwCrossValidation
+#' @title Cross Validate temporal patterns  
+#' @name twdtwCrossValidate
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @describeIn twdtwCrossValidation
-#' Splits the set of time series into training and validation. 
-#' The function uses stratified sampling and a simple random sampling for 
-#' each stratum. For each data partition this function performs a TWDTW 
-#' analysis and returns the Overall Accuracy, User's Accuracy, Produce's Accuracy, 
-#' error matrix (confusion matrix), and a \code{\link[base]{data.frame}} with 
-#' the classification (Predicted), the reference classes (Reference), 
+#' @description Splits the set of time series into training and validation and 
+#' compute accuracy metrics. The function uses stratified sampling and a simple 
+#' random sampling for each stratum. For each data partition this function 
+#' performs a TWDTW analysis and returns the Overall Accuracy, User's Accuracy, 
+#' Produce's Accuracy, error matrix (confusion matrix), and a \code{\link[base]{data.frame}} 
+#' with the classification (Predicted), the reference classes (Reference), 
 #' and the results of the TWDTW analysis.
+#'
+#' @param object an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
+#' 
+#' @param times Number of partitions to create.
+#' 
+#' @param p the percentage of data that goes to training. 
+#' See \code{\link[caret]{createDataPartition}} for details.
+#' 
+#' @param ... Other arguments to be passed to \code{\link[dtwSat]{createPatterns}} and 
+#' to \code{\link[dtwSat]{twdtwApply}}.
 #'
 #' @examples 
 #' \dontrun{
@@ -44,7 +54,7 @@ setGeneric("twdtwCrossValidation",
 #' set.seed(1)
 #' # Define TWDTW weight function 
 #' log_fun = logisticWeight(alpha=-0.1, beta=50) 
-#' cross_validation = twdtwCrossValidation(field_samples_ts, times=3, p=0.1, 
+#' cross_validation = twdtwCrossValidate(field_samples_ts, times=3, p=0.1, 
 #'                           freq = 8, formula = y ~ s(x, bs="cc"), weight.fun = log_fun)
 #' cross_validation
 #' 
@@ -53,11 +63,16 @@ setGeneric("twdtwCrossValidation",
 #' plot(cross_validation)
 #' 
 #' }
-#' @export
-setMethod(f = "twdtwCrossValidation", 
-          definition = function(object, times, p, ...) twdtwCrossValidation.twdtwTimeSeries(object, times, p, ...))
+NULL
 
-twdtwCrossValidation.twdtwTimeSeries = function(object, times, p, ...){
+#' @aliases twdtwCrossValidate-twdtwTimeSeries
+#' @inheritParams twdtwCrossValidate
+#' @rdname twdtwCrossValidate 
+#' @export
+setMethod(f = "twdtwCrossValidate", signature = "twdtwTimeSeries",
+          definition = function(object, times, p, ...) twdtwCrossValidate.twdtwTimeSeries(object, times, p, ...))
+
+twdtwCrossValidate.twdtwTimeSeries = function(object, times, p, ...){
   
   partitions = createDataPartition(y = labels(object), times, p, list = TRUE)
   

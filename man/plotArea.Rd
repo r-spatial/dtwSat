@@ -40,8 +40,8 @@ Method for plotting time series of maps.
 }
 \examples{
 \dontrun{
-# Run TWDTW analysis for raster time series 
-patt = MOD13Q1.MT.yearly.patterns
+
+# Create raster time series
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -52,18 +52,33 @@ doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 
-time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-                    by="12 month")
+# Read fiels samples 
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+proj_str = scan(system.file("lucc_MT/data/samples_projection", 
+                package="dtwSat"), what = "character")
+
+# Split samples for training (10\%) and validation (90\%) using stratified sampling 
+library(caret) 
+set.seed(1)
+I = unlist(createDataPartition(field_samples$label, p = 0.1))
+training_samples = field_samples[I,]
+validation_samples = field_samples[-I,]
+
+# Create temporal patterns 
+training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+
+# Run TWDTW analysis for raster time series 
 log_fun = weight.fun=logisticWeight(-0.1,50)
-
-r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-          filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
-
-r_lucc = twdtwClassify(r_twdtw, format="GTiff")
+r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", 
+                     overwrite=TRUE)
+                     
+# Classify raster based on the TWDTW analysis 
+r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
 
 plotArea(r_lucc)
 
-plotArea(r_lucc, prec=FALSE)
+plotArea(r_lucc, perc=FALSE)
 
 }
 }

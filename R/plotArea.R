@@ -33,7 +33,9 @@
 #' @param class.colors a set of aesthetic values. It must have the same 
 #' length as class.levels. Default is NULL. See 
 #' \link[ggplot2]{scale_fill_manual} for details.
-#' 
+#' @param perc if TRUE shows the results in percent of area. Otherwise shows the 
+#' area in the map units or km2 for no project raster. Default is TRUE.
+#'  
 #' @return A \link[ggplot2]{ggplot} object.
 #' 
 #' @seealso 
@@ -68,31 +70,53 @@
 #' 
 #' plotArea(r_lucc)
 #' 
+#' plotArea(r_lucc, perc=FALSE)
+#' 
 #' }
 #' @export
-plotArea = function(x, time.levels=NULL, time.labels=NULL, class.levels=NULL, class.labels=NULL, class.colors=NULL){
-  plot(x, type="area", time.levels=time.levels, time.labels=time.labels, class.levels=class.levels, class.labels=class.labels, class.colors=class.colors)
+plotArea = function(x, time.levels=NULL, time.labels=NULL, class.levels=NULL, class.labels=NULL, class.colors=NULL, perc=TRUE){
+  plot(x, type="area", time.levels=time.levels, time.labels=time.labels, class.levels=class.levels, class.labels=class.labels, class.colors=class.colors, perc=perc)
 }
 
-.plotArea = function(x, time.levels, time.labels, class.levels, class.labels, class.colors){
+.plotArea = function(x, time.levels, time.labels, class.levels, class.labels, class.colors, perc){
   df.map = data.frame(coordinates(x), x[], stringsAsFactors=FALSE)
   df.map = melt(df.map, id.vars = c("x", "y"))
   df.map$value = factor(df.map$value, levels = class.levels, labels = class.labels)
   df.map$variable = time.labels[match(as.character(df.map$variable), time.levels)]
   
-  df.area = data.frame(prop.table(xtabs(~ variable + value, df.map), 1))
-  df.area$Time = as.numeric(as.character(df.area$variable))
+  # > df.area
+  # variable          value        Freq Time
+  # 1      2008  Cotton-fallow 0.292292292 2008
+  # 2      2009  Cotton-fallow 0.345345345 2009
+  # 3      2010  Cotton-fallow 0.034034034 2010
   
+  df.area = do.call("rbind", lapply(time.levels, .getAreaByClass, x, class.levels, class.labels))
+  df.area = data.frame(variable = as.numeric(time.labels), df.area, stringsAsFactors = FALSE)
+  df.area = melt(df.area, "variable", value.name = "Freq", variable.name = "value")
+  df.area$Time = as.numeric(df.area$variable)
+  df.area$variable = factor(df.area$variable)
+  # df.area = data.frame(prop.table(xtabs(~ variable + value, df.map), 1))
+  # df.area$Time = as.numeric(as.character(df.area$variable))
+  if(perc){
+    df.area$Freq = df.area$Freq / sum(df.area$Freq) / length(time.levels)
+  }
+    
   x.breaks = pretty_breaks()(range(df.area$Time))
   
   gp = ggplot(data=df.area, aes_string(x="Time", y="Freq", fill="value")) +
     geom_area(position = 'stack') + 
     scale_fill_manual(name="Legend", values = class.colors) + 
     scale_x_continuous(expand = c(0.01, 0), breaks = x.breaks) + 
-    scale_y_continuous(expand = c(0, 0), labels = percent) +
     theme(legend.position = "bottom",
           panel.background = element_blank()) + 
-    ylab("Percentage of area")
+    ylab("Area")
+  
+  if(perc){
+    gp = gp + scale_y_continuous(expand = c(0, 0), labels = percent)
+  } else {
+    gp = gp + scale_y_continuous(expand = c(0, 0)) 
+  }
+
   gp 
   
 }

@@ -125,7 +125,7 @@ setMethod("plot",
 #' @export
 setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .PlotRaster(x, type=type, ...))
 
-.PlotRaster = function(x, type, time.levels=NULL, time.labels=NULL, class.levels=NULL, class.labels=NULL, class.colors=NULL, layers=NULL, ...){
+.PlotRaster = function(x, type, time.levels=NULL, time.labels=NULL, class.levels=NULL, class.labels=NULL, class.colors=NULL, layers=NULL, perc=TRUE, ...){
   
   if(type=="distance") {
       
@@ -220,7 +220,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
       
       gp = switch(pt,
             .plotMaps(x, time.levels, time.labels, class.levels, class.labels, class.colors),
-            .plotArea(x, time.levels, time.labels, class.levels, class.labels, class.colors),
+            .plotArea(x, time.levels, time.labels, class.levels, class.labels, class.colors, perc),
             .plotChanges(x, time.levels, time.labels, class.levels, class.labels, class.colors)
       )
   }

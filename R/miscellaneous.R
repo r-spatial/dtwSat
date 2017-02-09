@@ -144,3 +144,52 @@ shiftDates.twdtwTimeSeries = function(x, year){
   row.names(y) = 1:nrow(y)
   y
 }
+
+
+.getPredRefClasses = function(i, r_intervals, pred, pred_distance, y, rlevels, rnames){
+  i_leng = as.numeric(r_intervals$to[i] - r_intervals$from[i])
+  from   = as.Date(y$from)
+  to     = as.Date(y$to)
+  # Select overlapping alignments 
+  J      = which(from <= r_intervals$to[i] & to >= r_intervals$from[i])
+  # Adjust overlapping 
+  from   = sapply(from[J], function(x) ifelse(x < r_intervals$from[i], r_intervals$from[i], x))
+  to     = sapply(to[J], function(x) ifelse(x > r_intervals$to[i], r_intervals$to[i], x))
+  # Compute overlapping proportion 
+  i_over = to - from 
+  print(i_leng)
+  print(i_over)
+  prop_over = abs(i_over / i_leng)
+  # Select alignments 
+  I = which(prop_over > .5)
+  # I = which((r_intervals$to[i] - as.Date(y$from) > 30) & (as.Date(y$to) - r_intervals$from[i] > 30) )
+  if(length(J[I])<1)
+    return(NULL)
+  K = match(pred[J[I],i], rlevels)
+  Predicted = factor(as.character(rnames[K]), levels = rnames, labels = rnames)
+  Reference = factor(as.character(y$label[J[I]]), levels = rnames, labels = rnames)
+  #d = pred_distance[K]
+  data.frame(Period=i, from=r_intervals$from[i], to=r_intervals$to[i], Predicted, Reference)
+}
+
+.getAreaByClass = function(l, r, rlevels, rnames){
+  r = raster(r, layer = l)
+  if(isLonLat(r)){
+    warning("Computing the approximate surface area in km2 of cells in an unprojected (longitude/latitude) Raster object. See ?raster::area", call. = TRUE)
+    # r = projectRaster(from = r, crs = proj_str, method = 'ngb')
+    ra = area(r)
+    I = lapply(rlevels, function(i) r[]==i )
+    out = sapply(I, function(i) sum(ra[i], na.rm = TRUE) )
+    names(out) = rnames
+  } else {
+    npx = zonal(r, r, 'count')
+    I = match(npx[,'zone'], rlevels)
+    out = rep(0, length(rnames))
+    names(out) = rnames
+    out[I] = npx[,'count'] * prod(res(r))
+    names(out) = rnames
+  }
+  out
+}
+
+

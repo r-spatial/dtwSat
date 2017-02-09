@@ -5,7 +5,7 @@
 \title{Plotting maps}
 \usage{
 plotArea(x, time.levels = NULL, time.labels = NULL, class.levels = NULL,
-  class.labels = NULL, class.colors = NULL)
+  class.labels = NULL, class.colors = NULL, perc = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwRaster}}.}
@@ -28,6 +28,9 @@ length as class.levels. Default is NULL.}
 \item{class.colors}{a set of aesthetic values. It must have the same 
 length as class.levels. Default is NULL. See 
 \link[ggplot2]{scale_fill_manual} for details.}
+
+\item{perc}{if TRUE shows the results in percent of area. Otherwise shows the 
+area in the map units or km2 for no project raster. Default is TRUE.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.
@@ -59,6 +62,8 @@ r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval,
 r_lucc = twdtwClassify(r_twdtw, format="GTiff")
 
 plotArea(r_lucc)
+
+plotArea(r_lucc, prec=FALSE)
 
 }
 }

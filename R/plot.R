@@ -54,6 +54,20 @@
 #' @export
 NULL
 
+#' @aliases plot-twdtwAssessment
+#' @inheritParams plot
+#' @rdname plot
+#' @export
+setMethod("plot", 
+          signature(x = "twdtwAssessment"),
+          function(x, type="area", ...){
+            pt = pmatch(type, c("area","accuracy"))
+            switch(pt,
+                   plotAdjustedArea(x, ...),
+                   plotAccuracy(x, ...)
+            )
+          }
+)
 
 #' @aliases plot-twdtwTimeSeries
 #' @inheritParams plot
@@ -64,7 +78,7 @@ setMethod("plot",
           function(x, type="crossvalidation", ...){
             pt = pmatch(type, c("crossvalidation"))
             switch(pt,
-                   plotCrossValidation(x, ...)
+                   plotAccuracy(x, ...)
             )
           }
 )

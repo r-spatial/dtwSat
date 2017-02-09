@@ -3,15 +3,19 @@
 \docType{methods}
 \name{plot}
 \alias{plot}
+\alias{plot,twdtwAssessment,ANY-method}
 \alias{plot,twdtwCrossValidation,ANY-method}
 \alias{plot,twdtwMatches,ANY-method}
 \alias{plot,twdtwRaster,ANY-method}
 \alias{plot,twdtwTimeSeries,ANY-method}
+\alias{plot-twdtwAssessment}
 \alias{plot-twdtwMatches}
 \alias{plot-twdtwRaster}
 \alias{plot-twdtwTimeSeries}
 \title{Plotting twdtw* objects}
 \usage{
+\S4method{plot}{twdtwAssessment,ANY}(x, type = "area", ...)
+
 \S4method{plot}{twdtwCrossValidation,ANY}(x, type = "crossvalidation", ...)
 
 \S4method{plot}{twdtwTimeSeries,ANY}(x, type = "timeseries", ...)

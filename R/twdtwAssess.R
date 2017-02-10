@@ -15,7 +15,13 @@ setGeneric("twdtwAssess",
 #' 
 #' @param object an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
 #' the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
+#' The argument can also receive an error matrix (confusion matrix) in using the classes 
+#' \code{\link[base]{data.frame}} or \code{\link[base]{table}}. In this case the user 
+#' must inform the area for each class to the argument \code{area}. 
 #' 
+#' @param area a numeric vector with the area for each class if the argument \code{object}
+#' is an error matrix (confusion matrix). 
+#'
 #' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
 #' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
@@ -111,6 +117,58 @@ setMethod(f = "twdtwAssess", signature = "twdtwRaster",
           definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95) 
             twdtwAssess.twdtwRaster(object, y, labels, id.labels, proj4string, conf.int))
 
+#' @aliases twdtwAssess-data.frame
+#' @inheritParams twdtwAssess
+#' @rdname twdtwAssess 
+#' 
+#' @examples 
+#' 
+#' # Total mapped area by class. Data from [1]
+#' area = c(A = 22353, B = 1122543, C = 610228) 
+#' 
+#' # Error matrix, columns (Reference) rows (Map)
+#' x = data.frame(
+#'               rbind(
+#'               c( 97,	 0,   3),
+#'               c(  3, 279,  18),
+#'               c(  2,   1,  97)
+#'    ))
+#'
+#' names(x) = names(area)
+#' rownames(x) = names(area)
+#' 
+#' table_assess = twdtwAssess(x, area, conf.int = .95)
+#' 
+#' table_assess
+#' 
+#' plot(table_assess, type="area", perc=FALSE)
+#' 
+#' @export
+setMethod(f = "twdtwAssess", signature = "data.frame",
+          definition = function(object, area, conf.int=.95) 
+            twdtwAssess.table(object, area, conf.int))
+
+#' @aliases twdtwAssess-twdtwRaster
+#' @inheritParams twdtwAssess
+#' @rdname twdtwAssess 
+#' @export
+setMethod(f = "twdtwAssess", signature = "table",
+          definition = function(object, area, conf.int=.95) 
+            twdtwAssess(as.data.frame.matrix(object), area, conf.int))
+
+twdtwAssess.table = function(object, area, conf.int){
+  
+  if(ncol(object)!=nrow(object))
+    stop("object has have the same number of rows and columns")
+  
+  if(nrow(object)!=length(area))
+    stop("area must have length equal to the number of rows in object")
+  
+  accuracy = .twdtwAssess(object, area, conf.int)
+  
+  new("twdtwAssessment", accuracySummary=accuracy, accuracyByPeriod=accuracy)
+}
+  
 twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int){
   
   # Check control points 
@@ -159,7 +217,9 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   names(accuracy_by_period) = index(object)
   accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int)
   
-  new("twdtwAssessment", accuracySummary=accuracy_summary, accuracyByPeriod=accuracy_by_period, data=samples_all)
+  new("twdtwAssessment", accuracySummary = accuracy_summary, 
+                         accuracyByPeriod = accuracy_by_period, 
+                         data = samples_all)
   
 }
 

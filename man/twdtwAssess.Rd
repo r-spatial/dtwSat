@@ -3,16 +3,26 @@
 \docType{methods}
 \name{twdtwAssess}
 \alias{twdtwAssess}
+\alias{twdtwAssess,data.frame-method}
+\alias{twdtwAssess,table-method}
 \alias{twdtwAssess,twdtwRaster-method}
+\alias{twdtwAssess-data.frame}
 \alias{twdtwAssess-twdtwRaster}
 \title{Assess TWDTW classification}
 \usage{
 \S4method{twdtwAssess}{twdtwRaster}(object, y, labels = NULL,
   id.labels = NULL, proj4string = NULL, conf.int = 0.95)
+
+\S4method{twdtwAssess}{data.frame}(object, area, conf.int = 0.95)
+
+\S4method{twdtwAssess}{table}(object, area, conf.int = 0.95)
 }
 \arguments{
 \item{object}{an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
-the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.}
+the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
+The argument can also receive an error matrix (confusion matrix) in using the classes 
+\code{\link[base]{data.frame}} or \code{\link[base]{table}}. In this case the user 
+must inform the area for each class to the argument \code{area}.}
 
 \item{y}{a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 latitude, the start ''from'' and the end ''to'' of the time interval 
@@ -33,6 +43,9 @@ be used as samples labels. Optional.}
 if \code{y} is a \code{\link[base]{data.frame}}.}
 
 \item{conf.int}{specifies the confidence level (0-1).}
+
+\item{area}{a numeric vector with the area for each class if the argument \code{object}
+is an error matrix (confusion matrix).}
 }
 \description{
 Performs an accuracy assessment 
@@ -91,6 +104,27 @@ twdtwXtable(twdtw_assess, table.type="accuracy")
 twdtwXtable(twdtw_assess, table.type="area")
 
 }
+
+# Total mapped area by class. Data from [1]
+area = c(A = 22353, B = 1122543, C = 610228) 
+
+# Error matrix, columns (Reference) rows (Map)
+x = data.frame(
+              rbind(
+              c( 97,	 0,   3),
+              c(  3, 279,  18),
+              c(  2,   1,  97)
+   ))
+
+names(x) = names(area)
+rownames(x) = names(area)
+
+table_assess = twdtwAssess(x, area, conf.int = .95)
+
+table_assess
+
+plot(table_assess, type="area", perc=FALSE)
+
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

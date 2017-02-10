@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotArea.R
 \name{plotArea}
 \alias{plotArea}
-\title{Plotting maps}
+\title{Plotting accumulated area}
 \usage{
 plotArea(x, time.levels = NULL, time.labels = NULL, class.levels = NULL,
   class.labels = NULL, class.colors = NULL, perc = TRUE)
@@ -36,7 +36,7 @@ area in the map units or km2 for no project raster. Default is TRUE.}
 A \link[ggplot2]{ggplot} object.
 }
 \description{
-Method for plotting time series of maps.
+Method for plotting time series of accumulated area.
 }
 \examples{
 \dontrun{

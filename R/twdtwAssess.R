@@ -101,6 +101,10 @@ setGeneric("twdtwAssess",
 #'                            proj4string = proj_str, conf.int=.95) 
 #' twdtw_assess
 #' 
+#' # Plot assessment 
+#' plot(twdtw_assess, type="accuracy")  
+#' plot(twdtw_assess, type="area") 
+#' 
 #' # Create latex tables 
 #' twdtwXtable(twdtw_assess, table.type="matrix")
 #' twdtwXtable(twdtw_assess, table.type="accuracy")

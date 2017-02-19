@@ -3,10 +3,11 @@
 \docType{methods}
 \name{twdtwAssess}
 \alias{twdtwAssess}
-\alias{twdtwAssess,data.frame-method}
-\alias{twdtwAssess,table-method}
 \alias{twdtwAssess,twdtwRaster-method}
+\alias{twdtwAssess-twdtwRaster}
+\alias{twdtwAssess,data.frame-method}
 \alias{twdtwAssess-data.frame}
+\alias{twdtwAssess,table-method}
 \alias{twdtwAssess-twdtwRaster}
 \title{Assess TWDTW classification}
 \usage{
@@ -98,6 +99,10 @@ twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples,
                            proj4string = proj_str, conf.int=.95) 
 twdtw_assess
 
+# Plot assessment 
+plot(twdtw_assess, type="accuracy")  
+plot(twdtw_assess, type="area") 
+
 # Create latex tables 
 twdtwXtable(twdtw_assess, table.type="matrix")
 twdtwXtable(twdtw_assess, table.type="accuracy")
@@ -126,9 +131,6 @@ table_assess
 plot(table_assess, type="area", perc=FALSE)
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \references{
 [1] Olofsson, P., Foody, G.M., Stehman, S.V., Woodcock, C.E. (2013). 
 Making better use of accuracy data in land change studies: Estimating 
@@ -144,4 +146,6 @@ Environment, 148, pp. 42-57.
 \code{\link[dtwSat]{twdtwAssessment}}, and
 \code{\link[dtwSat]{twdtwXtable}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

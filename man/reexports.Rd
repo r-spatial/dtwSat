@@ -2,12 +2,16 @@
 % Please edit documentation in R/zzz.R
 \docType{import}
 \name{reexports}
-\alias{asymmetric}
-\alias{rabinerJuangStepPattern}
 \alias{reexports}
 \alias{symmetric1}
+\alias{reexports}
 \alias{symmetric2}
+\alias{reexports}
+\alias{asymmetric}
+\alias{reexports}
+\alias{rabinerJuangStepPattern}
 \title{Objects exported from other packages}
+\keyword{internal}
 \description{
 These objects are imported from other packages. Follow the links
 below to see their documentation.
@@ -15,5 +19,4 @@ below to see their documentation.
 \describe{
   \item{dtw}{\code{\link[dtw]{symmetric1}}, \code{\link[dtw]{symmetric2}}, \code{\link[dtw]{asymmetric}}, \code{\link[dtw]{rabinerJuangStepPattern}}}
 }}
-\keyword{internal}
 

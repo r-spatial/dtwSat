@@ -1,4 +1,27 @@
+# dtwSat v0.2.2.9000 Release Notes
 
+* New features
+
+  New accuracy metrics (twdtwAssess) for classified map, including User's and Producer's accuracy, and area uncertainty. 
+
+  Include methods for accuracy visualization (plot and LaTeX tables) 
+
+
+* Update data set names 
+
+  Rename the data sets in ordes to avoid future overwriting of functions and data sets. "example\_ts" replaced with "MOD13Q1.ts". Tthe data sets are now called:
+    
+    MOD13Q1.MT.yearly.patterns	Data: patterns time series
+    MOD13Q1.patterns.list	Data: patterns time series
+    MOD13Q1.ts	Data: An example of satellite time series
+    MOD13Q1.ts.labels	Data: Labels of the satellite time series in MOD13Q1.ts
+    MOD13Q1.ts.list
+
+* Fixing bugs
+
+  Fix bug in twdtwApply wrong sign in 'by' argument
+  
+  
 # dtwSat v0.2.1 Release Notes
 
 * Fix Solaris installation errors. 

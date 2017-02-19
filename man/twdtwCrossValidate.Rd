@@ -75,4 +75,3 @@ twdtwXtable(cross_validation, show.overall=FALSE)
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }
-

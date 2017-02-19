@@ -27,10 +27,9 @@ dates = getDatesFromDOY(year, doy)
 dates
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \link[dtwSat]{shiftDates}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

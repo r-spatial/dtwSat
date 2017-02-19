@@ -3,12 +3,12 @@
 \docType{methods}
 \name{get}
 \alias{get}
-\alias{getAlignments}
 \alias{getAlignments,twdtwMatches-method}
-\alias{getInternals}
+\alias{getAlignments}
 \alias{getInternals,twdtwMatches-method}
-\alias{getMatches}
+\alias{getInternals}
 \alias{getMatches,twdtwMatches-method}
+\alias{getMatches}
 \title{Get elements from twdtwMatches objects}
 \usage{
 \S4method{getAlignments}{twdtwMatches}(object, timeseries.labels = NULL,
@@ -45,11 +45,10 @@ getMatches(mat)
 getInternals(mat)
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, and
 \code{\link[dtwSat]{twdtwApply}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

@@ -33,11 +33,10 @@ nrow(patt)
 nrow(npatt)
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and
 \code{\link[dtwSat]{twdtwApply}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

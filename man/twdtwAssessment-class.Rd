@@ -2,9 +2,9 @@
 % Please edit documentation in R/class-twdtwAssessment.R, R/methods.R
 \docType{methods}
 \name{twdtwAssessment-class}
-\alias{show,twdtwAssessment-method}
-\alias{twdtwAssessment}
 \alias{twdtwAssessment-class}
+\alias{twdtwAssessment}
+\alias{show,twdtwAssessment-method}
 \title{class "twdtwAssessment"}
 \usage{
 \S4method{show}{twdtwAssessment}(object)
@@ -32,12 +32,12 @@ using the the pixel resolution in the map unit.
  predicted labels, and other TWDTW information.}
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
+
 \seealso{
 \code{\link[dtwSat]{twdtwClassify}},  
 \code{\link[dtwSat]{twdtwAssess}}, and
 \code{\link[dtwSat]{twdtwXtable}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

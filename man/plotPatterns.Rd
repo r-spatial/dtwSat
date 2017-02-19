@@ -32,11 +32,10 @@ plotPatterns(patt)
 plotPatterns(patt, attr="evi")
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwTimeSeries-class}} and 
 \code{\link[dtwSat]{plotTimeSeries}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

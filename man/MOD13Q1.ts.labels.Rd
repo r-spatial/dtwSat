@@ -13,11 +13,10 @@ MOD13Q1.ts.labels
 \description{
 This labels are based on field work.
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \link[dtwSat]{MOD13Q1.ts}.
 }
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}
 \keyword{datasets}
-

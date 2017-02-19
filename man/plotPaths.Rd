@@ -38,9 +38,6 @@ plotPaths(mat1, patterns.labels="Soybean", k=1:2)
 plotPaths(mat1, patterns.labels=c("Maize","Cotton"), k=2)
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 
@@ -49,4 +46,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotMatches}}, and
 \code{\link[dtwSat]{plotClassification}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

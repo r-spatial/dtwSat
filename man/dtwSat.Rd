@@ -14,9 +14,6 @@ the user can build temporal patterns for land cover types, apply the TWDTW analy
 for satellite datasets, visualize the results of the time series analysis, produce 
 land cover maps, and create temporal plots for land cover change analysis.
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \references{
 [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
@@ -26,4 +23,6 @@ IEEE Journal of, vol.PP, no.99, pp.1-11.
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

@@ -82,9 +82,6 @@ plotArea(r_lucc, perc=FALSE)
 
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwRaster-class}},
 \code{\link[dtwSat]{twdtwApply}}, 
@@ -92,4 +89,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotChanges}}, and
 \code{\link[dtwSat]{plotDistance}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

@@ -73,13 +73,12 @@ autoplot(patt[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
 \code{\link[dtwSat]{getTimeSeries}}, and 
 \code{\link[dtwSat]{twdtwApply}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

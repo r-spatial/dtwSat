@@ -2,36 +2,37 @@
 % Please edit documentation in R/class-twdtwRaster.R, R/methods.R
 \docType{methods}
 \name{twdtwRaster-class}
-\alias{[,twdtwRaster,ANY,ANY,ANY-method}
-\alias{[[,twdtwRaster,ANY,ANY-method}
-\alias{bands}
-\alias{bands,twdtwRaster-method}
-\alias{coverages}
-\alias{coverages,twdtwRaster-method}
-\alias{crop,twdtwRaster-method}
-\alias{dim,twdtwRaster-method}
-\alias{extent,twdtwRaster-method}
-\alias{index,twdtwRaster-method}
-\alias{is.twdtwRaster}
-\alias{is.twdtwRaster,ANY-method}
-\alias{labels,twdtwRaster-method}
-\alias{layers}
-\alias{layers,twdtwRaster-method}
-\alias{length,twdtwRaster-method}
-\alias{levels,twdtwRaster-method}
-\alias{names,twdtwRaster-method}
-\alias{ncol,twdtwRaster-method}
-\alias{nlayers,twdtwRaster-method}
-\alias{nrow,twdtwRaster-method}
-\alias{projection,twdtwRaster-method}
-\alias{projecttwdtwRaster}
-\alias{projecttwdtwRaster,twdtwRaster-method}
-\alias{res,twdtwRaster-method}
-\alias{show,twdtwRaster-method}
+\alias{twdtwRaster-class}
 \alias{twdtwRaster}
 \alias{twdtwRaster,ANY-method}
-\alias{twdtwRaster-class}
 \alias{twdtwRaster-create}
+\alias{dim,twdtwRaster-method}
+\alias{res,twdtwRaster-method}
+\alias{extent,twdtwRaster-method}
+\alias{projection,twdtwRaster-method}
+\alias{ncol,twdtwRaster-method}
+\alias{nrow,twdtwRaster-method}
+\alias{nlayers,twdtwRaster-method}
+\alias{levels,twdtwRaster-method}
+\alias{layers,twdtwRaster-method}
+\alias{layers}
+\alias{coverages,twdtwRaster-method}
+\alias{coverages}
+\alias{bands,twdtwRaster-method}
+\alias{bands}
+\alias{names,twdtwRaster-method}
+\alias{index,twdtwRaster-method}
+\alias{length,twdtwRaster-method}
+\alias{[,twdtwRaster,ANY,ANY,ANY-method}
+\alias{[[,twdtwRaster,ANY,ANY-method}
+\alias{labels,twdtwRaster-method}
+\alias{crop,twdtwRaster-method}
+\alias{extent,twdtwRaster-method}
+\alias{show,twdtwRaster-method}
+\alias{is.twdtwRaster,ANY-method}
+\alias{is.twdtwRaster}
+\alias{projecttwdtwRaster,twdtwRaster-method}
+\alias{projecttwdtwRaster}
 \title{class "twdtwRaster"}
 \usage{
 \S4method{twdtwRaster}{ANY}(..., timeline, doy = NULL, layers = NULL,
@@ -139,6 +140,7 @@ to files with the whole time series for each attribute.
 
 \item \code{projecttwdtwRaster}: project twdtwRaster object.
 }}
+
 \section{Slots }{
 
 \describe{
@@ -153,6 +155,7 @@ to files with the whole time series for each attribute.
        is useful for categorical Raster* values of land use classes.}
 }
 }
+
 \examples{
 # Creating new object of class twdtwTimeSeries 
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
@@ -174,13 +177,12 @@ doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}, 
 \code{\link[dtwSat]{getTimeSeries}},
 \code{\link[dtwSat]{twdtwMatches-class}}, and 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

@@ -42,10 +42,9 @@ plotAdjustedArea(twdtw_assess, category.type="letter")
 }
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwAssessment}} and \code{\link[dtwSat]{twdtwAssess}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

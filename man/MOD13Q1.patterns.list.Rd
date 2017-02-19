@@ -17,9 +17,6 @@ Cotton, and Maize. These time series are based on the MODIS product
 MOD13Q1 250 m 16 days [1]. The patterns were build from ground truth samples of each 
 crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPatterns}.
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \references{
 [1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
 MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
@@ -33,5 +30,7 @@ datasets. Remote Sensing of Environment, 114(1), 168 182.
 MOD13Q1 documentation: See 
 \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
 }
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}
 \keyword{datasets}
-

@@ -2,23 +2,23 @@
 % Please edit documentation in R/class-twdtwTimeSeries.R, R/methods.R
 \docType{methods}
 \name{twdtwTimeSeries-class}
-\alias{[,twdtwTimeSeries,ANY,ANY,ANY-method}
-\alias{[[,twdtwTimeSeries,ANY,ANY-method}
-\alias{as.list,twdtwTimeSeries-method}
-\alias{dim,twdtwTimeSeries-method}
-\alias{index,twdtwTimeSeries-method}
-\alias{is.twdtwTimeSeries}
-\alias{is.twdtwTimeSeries,ANY-method}
-\alias{labels,twdtwTimeSeries-method}
-\alias{length,twdtwTimeSeries-method}
-\alias{levels,twdtwTimeSeries-method}
-\alias{ncol,twdtwTimeSeries-method}
-\alias{nrow,twdtwTimeSeries-method}
-\alias{show,twdtwTimeSeries-method}
+\alias{twdtwTimeSeries-class}
 \alias{twdtwTimeSeries}
 \alias{twdtwTimeSeries,ANY-method}
-\alias{twdtwTimeSeries-class}
 \alias{twdtwTimeSeries-create}
+\alias{dim,twdtwTimeSeries-method}
+\alias{index,twdtwTimeSeries-method}
+\alias{nrow,twdtwTimeSeries-method}
+\alias{ncol,twdtwTimeSeries-method}
+\alias{length,twdtwTimeSeries-method}
+\alias{as.list,twdtwTimeSeries-method}
+\alias{[,twdtwTimeSeries,ANY,ANY,ANY-method}
+\alias{[[,twdtwTimeSeries,ANY,ANY-method}
+\alias{labels,twdtwTimeSeries-method}
+\alias{levels,twdtwTimeSeries-method}
+\alias{show,twdtwTimeSeries-method}
+\alias{is.twdtwTimeSeries,ANY-method}
+\alias{is.twdtwTimeSeries}
 \title{class "twdtwTimeSeries"}
 \usage{
 \S4method{twdtwTimeSeries}{ANY}(..., labels = NULL)
@@ -68,6 +68,7 @@ Class for set of irregular time series.
 
 \item \code{is.twdtwTimeSeries}: Check if the object belongs to the class twdtwTimeSeries.
 }}
+
 \section{Slots }{
 
 \describe{
@@ -75,6 +76,7 @@ Class for set of irregular time series.
  \item{\code{labels}:}{A vector of class \code{\link[base]{factor}} with time series labels.}
 }
 }
+
 \examples{
 # Creating new object of class twdtwTimeSeries  
 ptt = new("twdtwTimeSeries", timeseries = MOD13Q1.patterns.list, 
@@ -101,13 +103,12 @@ ts = twdtwTimeSeries(tsA, tsB, C=MOD13Q1.ts)
 ts
  
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwRaster-class}}, 
 \code{\link[dtwSat]{getTimeSeries}}, and
 \code{\link[dtwSat]{twdtwApply}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

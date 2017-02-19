@@ -51,9 +51,6 @@ plotMatches(mat1, patterns.labels=c("Soybean","Maize"), k=4)
 plotMatches(mat1, patterns.labels=c("Soybean","Cotton"), k=c(3,1))
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 
@@ -62,4 +59,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotAlignments}}, and
 \code{\link[dtwSat]{plotClassification}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

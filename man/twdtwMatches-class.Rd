@@ -2,20 +2,20 @@
 % Please edit documentation in R/class-twdtwMatches.R, R/methods.R
 \docType{methods}
 \name{twdtwMatches-class}
-\alias{[,twdtwMatches,ANY,ANY,ANY-method}
-\alias{[[,twdtwMatches,numeric,ANY-method}
-\alias{as.list,twdtwMatches-method}
-\alias{as.list,twdtwRaster-method}
-\alias{index,twdtwMatches-method}
-\alias{is.twdtwMatches}
-\alias{is.twdtwMatches,ANY-method}
-\alias{labels,twdtwMatches-method}
-\alias{length,twdtwMatches-method}
-\alias{show,twdtwMatches-method}
+\alias{twdtwMatches-class}
 \alias{twdtwMatches}
 \alias{twdtwMatches,ANY-method}
-\alias{twdtwMatches-class}
 \alias{twdtwMatches-create}
+\alias{index,twdtwMatches-method}
+\alias{length,twdtwMatches-method}
+\alias{as.list,twdtwMatches-method}
+\alias{as.list,twdtwRaster-method}
+\alias{[,twdtwMatches,ANY,ANY,ANY-method}
+\alias{[[,twdtwMatches,numeric,ANY-method}
+\alias{labels,twdtwMatches-method}
+\alias{show,twdtwMatches-method}
+\alias{is.twdtwMatches,ANY-method}
+\alias{is.twdtwMatches}
 \title{class "twdtwMatches"}
 \usage{
 \S4method{twdtwMatches}{ANY}(timeseries = NULL, patterns = NULL,
@@ -71,6 +71,7 @@ Class for Time-Weighted Dynamic Time Warping results.
 
 \item \code{is.twdtwMatches}: Check if the object belongs to the class twdtwMatches.
 }}
+
 \section{Slots }{
 
 \describe{
@@ -102,6 +103,7 @@ Class for Time-Weighted Dynamic Time Warping results.
       }
 }
 }
+
 \examples{
 ts = twdtwTimeSeries(timeseries=MOD13Q1.ts.list)
 patterns = twdtwTimeSeries(timeseries=MOD13Q1.patterns.list)
@@ -117,12 +119,11 @@ mat = twdtwMatches(ts, patterns=patt, alignments=mat)
 mat
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
 \code{\link[dtwSat]{twdtwRaster-class}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

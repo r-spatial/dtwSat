@@ -2,10 +2,10 @@
 % Please edit documentation in R/class-crossValidation.R, R/methods.R
 \docType{methods}
 \name{twdtwCrossValidation-class}
+\alias{twdtwCrossValidation-class}
+\alias{twdtwCrossValidation}
 \alias{show,twdtwCrossValidation-method}
 \alias{summary,twdtwCrossValidation-method}
-\alias{twdtwCrossValidation}
-\alias{twdtwCrossValidation-class}
 \title{class "twdtwCrossValidation"}
 \usage{
 \S4method{show}{twdtwCrossValidation}(object)
@@ -31,6 +31,7 @@ This class stores the results of the cross-validation.
  data partitions.}
 }
 }
+
 \examples{
 \dontrun{
 # Data folder 
@@ -70,12 +71,11 @@ plot(cross_validation)
 
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}},
 \code{\link[dtwSat]{createPatterns}}, and 
 \code{\link[dtwSat]{twdtwApply}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

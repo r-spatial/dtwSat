@@ -44,9 +44,6 @@ gp
 
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 
@@ -56,4 +53,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotMatches}}, and
 \code{\link[dtwSat]{plotCostMatrix}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

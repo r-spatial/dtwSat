@@ -3,10 +3,10 @@
 \docType{methods}
 \name{twdtwApply}
 \alias{twdtwApply}
-\alias{twdtwApply,twdtwRaster-method}
 \alias{twdtwApply,twdtwTimeSeries-method}
-\alias{twdtwApply-twdtwRaster}
 \alias{twdtwApply-twdtwTimeSeries}
+\alias{twdtwApply,twdtwRaster-method}
+\alias{twdtwApply-twdtwRaster}
 \title{Apply TWDTW analysis}
 \usage{
 twdtwApply(x, y, resample = TRUE, length = NULL, weight.fun = NULL,
@@ -150,9 +150,6 @@ plot(r_lucc, type="distance")
 
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \references{
 [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
@@ -172,4 +169,6 @@ and Motion (pp. 79-84). London: Springer London, Limited.
 \code{\link[dtwSat]{getTimeSeries}}, and 
 \code{\link[dtwSat]{createPatterns}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

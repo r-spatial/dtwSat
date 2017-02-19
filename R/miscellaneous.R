@@ -157,8 +157,8 @@ shiftDates.twdtwTimeSeries = function(x, year){
   to     = sapply(to[J], function(x) ifelse(x > r_intervals$to[i], r_intervals$to[i], x))
   # Compute overlapping proportion 
   i_over = to - from 
-  print(i_leng)
-  print(i_over)
+  # print(i_leng)
+  # print(i_over)
   prop_over = abs(i_over / i_leng)
   # Select alignments 
   I = which(prop_over > .5)

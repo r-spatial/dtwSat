@@ -29,11 +29,10 @@ plotTimeSeries(ts)
 plotTimeSeries(ts, attr="evi")
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwTimeSeries-class}} and 
 \code{\link[dtwSat]{plotPatterns}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

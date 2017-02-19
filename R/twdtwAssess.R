@@ -232,9 +232,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   mult = qnorm(1-(1-conf.int)/2, mean = 0, sd = 1)
   
   cnames = names(mapped_area)
-  # cnames = paste0("aux_classname_",seq_along(cnames))
   x = data.frame(cbind(x), row.names = cnames)
-  # names(x) = cnames
   cnames = names(x)
   rownames(x) = cnames
   names(mapped_area) = cnames
@@ -248,7 +246,6 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   w = mapped_area / total_area
   
   # Error matrix 
-  
   error_matrix = data.frame(cbind(x, Total=total_map, Area=mapped_area, w=w))
   error_matrix["Total",] = colSums(error_matrix)
   

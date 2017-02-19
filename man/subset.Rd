@@ -3,12 +3,12 @@
 \docType{methods}
 \name{subset}
 \alias{subset}
-\alias{subset,twdtwMatches-method}
-\alias{subset,twdtwRaster-method}
 \alias{subset,twdtwTimeSeries-method}
-\alias{subset-twdtwMatches}
-\alias{subset-twdtwRaster}
 \alias{subset-twdtwTimeSeries}
+\alias{subset,twdtwMatches-method}
+\alias{subset-twdtwMatches}
+\alias{subset,twdtwRaster-method}
+\alias{subset-twdtwRaster}
 \title{Subset time series}
 \usage{
 \S4method{subset}{twdtwTimeSeries}(x, labels = NULL)
@@ -73,12 +73,11 @@ ts_evi = getTimeSeries(rts_evi, y = field_samples, proj4string = prj_string)
 ts_forest = subset(ts_evi, labels="Forest")
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwRaster-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
 \code{\link[dtwSat]{twdtwMatches-class}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

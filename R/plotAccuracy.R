@@ -109,7 +109,7 @@ plotAccuracy = function(x, perc=TRUE, conf.int=.95, time.labels=NULL,
     geom_errorbar(limits, position=dodge, width=0.25, na.rm=TRUE) + 
     scale_fill_grey(start = .6, end = .3) + 
     xlab("") + 
-    ylab("Area")
+    ylab("Accuracy")
   
   if(perc)
     gp = gp + scale_y_continuous(labels = percent)

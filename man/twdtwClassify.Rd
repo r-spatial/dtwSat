@@ -4,9 +4,9 @@
 \name{twdtwClassify}
 \alias{twdtwClassify}
 \alias{twdtwClassify,twdtwMatches-method}
+\alias{twdtwClassify-twdtwTimeSeries}
 \alias{twdtwClassify,twdtwRaster-method}
 \alias{twdtwClassify-twdtwRaster}
-\alias{twdtwClassify-twdtwTimeSeries}
 \title{Classify time series}
 \usage{
 twdtwClassify(x, ...)
@@ -99,13 +99,12 @@ plotMaps(r_lucc)
 
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}, 
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
 \code{\link[dtwSat]{twdtwRaster-class}},
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

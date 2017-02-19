@@ -11,7 +11,7 @@ setGeneric("twdtwXtable",
 #' @inheritParams twdtwAssessment-class
 #' 
 #' @param table.type table type, 'accuracy' for User's and Producer's Accuracy, 
-#' 'matrix' for error matrix, and 'area' for area and uncertainty. 
+#' 'errormatrix' for error matrix, and 'area' for area and uncertainty. 
 #' Default is 'accuracy'.
 #' 
 #' @param time.labels a character or numeric for the time period or NULL to 
@@ -81,7 +81,7 @@ setGeneric("twdtwXtable",
 #' twdtw_assess
 #' 
 #' # Create latex tables 
-#' twdtwXtable(twdtw_assess, table.type="matrix", category.type="letter")
+#' twdtwXtable(twdtw_assess, table.type="errormatrix", category.type="letter")
 #' twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter")
 #' twdtwXtable(twdtw_assess, table.type="area", category.type="letter")
 #' 
@@ -109,11 +109,12 @@ setMethod("twdtwXtable",
                    as.character(seq(1:n)),
                    LETTERS[1:n]
               )
-            pt = pmatch(table.type,c("accuracy","matrix","area"))
+            pt = pmatch(table.type,c("accuracy","matrix","area","errormatrix"))
             switch(pt,
                    .xtable.accuracy(x=y, category.name, show.prop, ...),
                    .xtable.matrix(x=y, category.name, ...),
-                   .xtable.area(x=y, category.name, ...)
+                   .xtable.area(x=y, category.name, ...),
+                   .xtable.matrix(x=y, category.name, ...)
             )
           }
 )

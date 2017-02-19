@@ -2,16 +2,16 @@
 % Please edit documentation in R/getTimeSeries.R
 \docType{methods}
 \name{getTimeSeries}
+\alias{getTimeSeries}
 \alias{getPatterns}
+\alias{getTimeSeries,twdtwTimeSeries-method}
+\alias{getTimeSeries-twdtwTimeSeries}
+\alias{getTimeSeries,twdtwMatches-method}
+\alias{getTimeSeries-twdtwMatches}
 \alias{getPatterns,twdtwMatches-method}
 \alias{getPatterns-twdtwMatches}
-\alias{getTimeSeries}
-\alias{getTimeSeries,twdtwMatches-method}
 \alias{getTimeSeries,twdtwRaster-method}
-\alias{getTimeSeries,twdtwTimeSeries-method}
-\alias{getTimeSeries-twdtwMatches}
 \alias{getTimeSeries-twdtwRaster}
-\alias{getTimeSeries-twdtwTimeSeries}
 \title{Get time series from twdtw* objects}
 \usage{
 \S4method{getTimeSeries}{twdtwTimeSeries}(object, labels = NULL)
@@ -80,12 +80,11 @@ ts = getTimeSeries(rts, y = ts_location, proj4string = prj_string)
 autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwRaster-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
 \code{\link[dtwSat]{twdtwMatches-class}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

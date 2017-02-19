@@ -40,9 +40,6 @@ plotAlignments(mat1)
 plotAlignments(mat1, attr=c("evi","ndvi"))
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 
@@ -51,4 +48,6 @@ Victor Maus, \email{vwmaus1@gmail.com}
 \code{\link[dtwSat]{plotMatches}}, and
 \code{\link[dtwSat]{plotClassification}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

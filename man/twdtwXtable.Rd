@@ -4,8 +4,8 @@
 \name{twdtwXtable}
 \alias{twdtwXtable}
 \alias{twdtwXtable,twdtwAssessment-method}
-\alias{twdtwXtable,twdtwCrossValidation-method}
 \alias{twdtwXtable-twdtwAssessment}
+\alias{twdtwXtable,twdtwCrossValidation-method}
 \alias{twdtwXtable-twdtwCrossValidation}
 \title{Latex table from accuracy metrics}
 \usage{
@@ -20,7 +20,7 @@
 \item{object}{an object of class twdtwAssessment.}
 
 \item{table.type}{table type, 'accuracy' for User's and Producer's Accuracy, 
-'matrix' for error matrix, and 'area' for area and uncertainty. 
+'errormatrix' for error matrix, and 'area' for area and uncertainty. 
 Default is 'accuracy'.}
 
 \item{show.prop}{if TRUE shows the estimated proportion of area.
@@ -90,17 +90,16 @@ twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples,
 twdtw_assess
 
 # Create latex tables 
-twdtwXtable(twdtw_assess, table.type="matrix", category.type="letter")
+twdtwXtable(twdtw_assess, table.type="errormatrix", category.type="letter")
 twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter")
 twdtwXtable(twdtw_assess, table.type="area", category.type="letter")
 
 }
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \seealso{
 \code{\link[dtwSat]{twdtwAssess}} and  
 \code{\link[dtwSat]{twdtwAssessment}}.
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

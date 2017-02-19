@@ -7,15 +7,16 @@ Date: 2016-11-20
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com'), 
              person('Marius', 'Appel', role = c('ctb')))
 Description: Provides an implementation of the Time-Weighted Dynamic Time
-    Warping (TWDTW) method for land use and land cover mapping using satellite
+    Warping (TWDTW) method for land cover mapping using satellite
     image time series. TWDTW is based on the Dynamic Time Warping technique and
-    has achieved high accuracy for land use and land cover classification using
+    has achieved high accuracy for land cover classification using
     satellite data. The method is based on comparing unclassified satellite image
     time series with a set of known temporal patterns (e.g. phenological cycles
     associated with the vegetation). Using 'dtwSat' the user can build temporal
     patterns for land cover types, apply the TWDTW analysis for satellite datasets,
-    visualize the results of the time series analysis, produce land cover maps, and
-    create temporal plots for land cover change analysis.
+    visualize the results of the time series analysis, produce land cover maps,
+    create temporal plots for land cover change, and compute accuracy assessment 
+    metrics.
 Depends:
     R (>= 3.2.0),
     zoo,
@@ -53,7 +54,7 @@ BugReports: https://github.com/vwmaus/dtwSat/issues
 Author: Victor Maus [aut, cre]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Collate:
     'class-crossValidation.R'
     'class-twdtwAssessment.R'

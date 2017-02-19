@@ -33,9 +33,6 @@ lin_fun = linearWeight(a=0.1)
 lin_fun
 
 }
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
-}
 \references{
 [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
@@ -45,4 +42,6 @@ IEEE Journal of, vol.PP, no.99, pp.1-11.
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}
 }
-
+\author{
+Victor Maus, \email{vwmaus1@gmail.com}
+}

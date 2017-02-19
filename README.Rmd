@@ -211,7 +211,7 @@ k=k+1
 ```
 
 We use the validation samples to compute the metrics for accuracy assessment. 
-```{r , echo = TRUE, eval = TRUE, echo=TRUE}
+```{r , echo = TRUE, eval = TRUE, echo=TRUE, results='markup'}
 twdtw_assess = twdtwAssess(r_lucc, y = validation_samples, 
                            proj4string = proj_str, conf.int=.95) 
 show(twdtw_assess)

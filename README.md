@@ -241,6 +241,43 @@ twdtw_assess = twdtwAssess(r_lucc, y = validation_samples,
 show(twdtw_assess)
 ```
 
+    ## An object of class "twdtwAssessment"
+    ## Number of classification intervals: 6 
+    ## Accuracy metrics summary
+    ## 
+    ## Overall
+    ## Accuracy      Var       sd      ci* 
+    ##  0.90573  0.00016  0.01257  0.02463 
+    ## 
+    ## User's
+    ##                Accuracy     Var     sd   ci*
+    ## Cotton.fallow      0.95 7.1e-04 0.0266 0.052
+    ## Forest             1.00 0.0e+00 0.0000 0.000
+    ## Soybean.cotton     1.00 0.0e+00 0.0000 0.000
+    ## Soybean.maize      0.75 1.2e-03 0.0343 0.067
+    ## Soybean.millet     0.99 5.7e-05 0.0076 0.015
+    ## unclassified       1.00 0.0e+00 0.0000 0.000
+    ## 
+    ## Producer's
+    ##                Accuracy     Var    sd   ci*
+    ## Cotton.fallow      1.00 0.00000 0.000 0.000
+    ## Forest             1.00 0.00000 0.000 0.000
+    ## Soybean.cotton     0.68 0.00471 0.069 0.135
+    ## Soybean.maize      1.00 0.00000 0.000 0.000
+    ## Soybean.millet     0.74 0.00085 0.029 0.057
+    ## unclassified       1.00 0.00000 0.000 0.000
+    ## 
+    ## Area and uncertainty
+    ##                Mapped  Adjusted ci*    
+    ## Cotton.fallow  5.3e+07 5e+07    2750574
+    ## Forest         7.7e+07 7.7e+07  0      
+    ## Soybean.cotton 1.5e+07 2.2e+07  4359225
+    ## Soybean.maize  1.1e+08 8.2e+07  7361101
+    ## Soybean.millet 6.8e+07 9e+07    7e+06  
+    ## unclassified   0       0        0      
+    ## 
+    ## * 95 % confidence interval
+
 Visualizing User's and Producer's accuracy
 
 ``` r

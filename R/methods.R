@@ -476,9 +476,9 @@ show.twdtwCrossValidation = function(object){
   cat("Accuracy metrics using bootstrap simulation (CI .95)\n")
   cat("\nOverall\n")
   print(res$Overall, digits=2)
-  cat("\nUsers\n")
+  cat("\nUser's\n")
   print(res$Users, digits=2)
-  cat("\nProducers\n")
+  cat("\nProducer's\n")
   print(res$Producers, digits=2)
   invisible(NULL)
 }

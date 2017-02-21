@@ -1,17 +1,3 @@
-###############################################################
-#                                                             #
-#   (c) Victor Maus <vwmaus1@gmail.com>                       #
-#       Institute for Geoinformatics (IFGI)                   #
-#       University of Muenster (WWU), Germany                 #
-#                                                             #
-#       Earth System Science Center (CCST)                    #
-#       National Institute for Space Research (INPE), Brazil  #
-#                                                             #
-#                                                             #
-#   R Package dtwSat - 2016-01-16                             #
-#                                                             #
-###############################################################
-
 
 #' @title Get dates from year and day of the year
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
@@ -146,7 +132,7 @@ shiftDates.twdtwTimeSeries = function(x, year){
 }
 
 
-.getPredRefClasses = function(i, r_intervals, pred, pred_distance, y, rlevels, rnames){
+.getPredRefClasses = function(i, r_intervals, pred_classes, pred_distance, y, rlevels, rnames){
   i_leng = as.numeric(r_intervals$to[i] - r_intervals$from[i])
   from   = as.Date(y$from)
   to     = as.Date(y$to)
@@ -165,11 +151,11 @@ shiftDates.twdtwTimeSeries = function(x, year){
   # I = which((r_intervals$to[i] - as.Date(y$from) > 30) & (as.Date(y$to) - r_intervals$from[i] > 30) )
   if(length(J[I])<1)
     return(NULL)
-  K = match(pred[J[I],i], rlevels)
+  K = match(pred_classes[J[I],i], rlevels)
   Predicted = factor(as.character(rnames[K]), levels = rnames, labels = rnames)
   Reference = factor(as.character(y$label[J[I]]), levels = rnames, labels = rnames)
-  #d = pred_distance[K]
-  data.frame(Period=i, from=r_intervals$from[i], to=r_intervals$to[i], Predicted, Reference)
+  Distance = pred_distance[J[I],i]
+  data.frame(Sample.id = row.names(y)[J[I]], coordinates(y[J[I],]), Period=i, from=r_intervals$from[i], to=r_intervals$to[i], Predicted, Reference, Distance)
 }
 
 .getAreaByClass = function(l, r, rlevels, rnames){

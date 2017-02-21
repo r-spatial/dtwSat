@@ -20,8 +20,10 @@ setGeneric("twdtwAssess",
 #' must inform the area for each class to the argument \code{area}. 
 #' 
 #' @param area a numeric vector with the area for each class if the argument \code{object}
-#' is an error matrix (confusion matrix). 
-#'
+#' is an error matrix (confusion matrix). If \code{object} is \code{\link[dtwSat]{twdtwMatches}} 
+#' area can be either a vector with the area of each classified object, or a single number 
+#' if the objects are single pixels. 
+
 #' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
 #' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
@@ -83,8 +85,11 @@ setGeneric("twdtwAssess",
 #' training_samples = field_samples[I,]
 #' validation_samples = field_samples[-I,]
 #' 
-#' # Create temporal patterns 
+#' # Get time series form raster
 #' training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+#' validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
+#' 
+#' # Create temporal patterns 
 #' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 #' 
 #' # Run TWDTW analysis for raster time series 
@@ -98,12 +103,15 @@ setGeneric("twdtwAssess",
 #' 
 #' # Assess classification 
 #' twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
-#'                            proj4string = proj_str, conf.int=.95) 
+#'                            proj4string = proj_str, conf.int = .95) 
 #' twdtw_assess
 #' 
 #' # Plot assessment 
-#' plot(twdtw_assess, type="accuracy")  
-#' plot(twdtw_assess, type="area") 
+#' plot(twdtw_assess, type="accuracy")
+#' plot(twdtw_assess, type="area")
+#' plot(twdtw_assess, type="map", samples = "all")
+#' plot(twdtw_assess, type="map", samples = "incorrect")
+#' 
 #' 
 #' # Create latex tables 
 #' twdtwXtable(twdtw_assess, table.type="matrix")
@@ -160,6 +168,91 @@ setMethod(f = "twdtwAssess", signature = "table",
           definition = function(object, area, conf.int=.95) 
             twdtwAssess(as.data.frame.matrix(object), area, conf.int))
 
+#' @aliases twdtwAssess-data.frame
+#' @inheritParams twdtwAssess
+#' @rdname twdtwAssess 
+#' 
+#' @examples 
+#' \dontrun{
+#' 
+#' # Create raster time series
+#' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+#' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+#' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+#' 
+#' # Read fiels samples 
+#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+#' proj_str = scan(system.file("lucc_MT/data/samples_projection", 
+#'                 package="dtwSat"), what = "character")
+#' 
+#' # Split samples for training (10%) and validation (90%) using stratified sampling 
+#' library(caret) 
+#' set.seed(1)
+#' I = unlist(createDataPartition(field_samples$label, p = 0.1))
+#' training_samples = field_samples[I,]
+#' validation_samples = field_samples[-I,]
+#' 
+#' # Get time series form raster
+#' training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+#' validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
+#' 
+#' # Create temporal patterns 
+#' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+#' 
+#' # Run TWDTW analysis for raster time series 
+#' log_fun = weight.fun=logisticWeight(-0.1,50)
+#' r_twdtw = twdtwApply(x = validation_ts, 
+#'                      y = temporal_patterns, weight.fun = log_fun)
+#' 
+#' # Accuracy assessment 
+#' twdtw_assess = twdtwAssess(r_twdtw, area = 53664.67, conf.int=.95)
+#' twdtw_assess
+#' 
+#' plot(twdtw_assess, type="accuracy")
+#' plot(twdtw_assess, type="area")
+#' 
+#' twdtwXtable(twdtw_assess, table.type="matrix")
+#' twdtwXtable(twdtw_assess, table.type="accuracy")
+#' twdtwXtable(twdtw_assess, table.type="area")
+#' 
+#' }
+#' @export
+setMethod(f = "twdtwAssess", signature = "twdtwMatches",
+          definition = function(object, area, conf.int) 
+            twdtwAssess.twdtwTimeSeries(object, area, conf.int))
+
+twdtwAssess.twdtwTimeSeries = function(object, area, conf.int){
+  
+  df = do.call("rbind", lapply(object[], function(xx) xx[which.min(xx$distance),]) )
+  
+  ref = labels(object)$timeseries
+  
+  pred = as.character(df$label)
+  
+  data = data.frame(.adjustFactores(ref, pred, levels=NULL, labels=NULL), df[,!names(df)%in%"labels"])
+
+  error_matrix = table(Predicted=data$Predicted, Reference=data$Reference)
+  
+  if(length(area)==1)
+    a = rep(area, length(object@timeseries))
+
+  a = aggregate(x = a, by = list(pred), FUN = sum)
+  
+  area = a$x 
+  
+  names(area) = a$Group.1
+  
+  res = .twdtwAssess(error_matrix, area, conf.int)
+
+  new("twdtwAssessment", accuracySummary=res)
+}
+
 twdtwAssess.table = function(object, area, conf.int){
   
   if(ncol(object)!=nrow(object))
@@ -188,7 +281,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   x_twdtw = object@timeseries$Distance
   
   # Reproject points to raster projection 
-  y = spTransform(y, CRS(projection(x)))
+  y = spTransform(y, CRS(projection(object)))
   
   # Get time intervals 
   timeline = index(object)
@@ -221,9 +314,14 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   names(accuracy_by_period) = index(object)
   accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int)
   
+  sp.data = SpatialPointsDataFrame(coords = samples_all[,c("longitude", "latitude")], 
+                                   data = samples_all[,!names(samples_all)%in%c("longitude", "latitude")],
+                                   proj4string = CRS(projection(object)))
+  
   new("twdtwAssessment", accuracySummary = accuracy_summary, 
                          accuracyByPeriod = accuracy_by_period, 
-                         data = samples_all)
+                         data = sp.data,
+                         map = object)
   
 }
 

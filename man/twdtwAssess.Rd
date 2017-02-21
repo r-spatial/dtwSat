@@ -9,6 +9,8 @@
 \alias{twdtwAssess-data.frame}
 \alias{twdtwAssess,table-method}
 \alias{twdtwAssess-twdtwRaster}
+\alias{twdtwAssess,twdtwMatches-method}
+\alias{twdtwAssess-data.frame}
 \title{Assess TWDTW classification}
 \usage{
 \S4method{twdtwAssess}{twdtwRaster}(object, y, labels = NULL,
@@ -17,6 +19,8 @@
 \S4method{twdtwAssess}{data.frame}(object, area, conf.int = 0.95)
 
 \S4method{twdtwAssess}{table}(object, area, conf.int = 0.95)
+
+\S4method{twdtwAssess}{twdtwMatches}(object, area, conf.int)
 }
 \arguments{
 \item{object}{an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
@@ -46,7 +50,9 @@ if \code{y} is a \code{\link[base]{data.frame}}.}
 \item{conf.int}{specifies the confidence level (0-1).}
 
 \item{area}{a numeric vector with the area for each class if the argument \code{object}
-is an error matrix (confusion matrix).}
+is an error matrix (confusion matrix). If \code{object} is \code{\link[dtwSat]{twdtwMatches}} 
+area can be either a vector with the area of each classified object, or a single number 
+if the objects are single pixels.}
 }
 \description{
 Performs an accuracy assessment 
@@ -81,8 +87,11 @@ I = unlist(createDataPartition(field_samples$label, p = 0.1))
 training_samples = field_samples[I,]
 validation_samples = field_samples[-I,]
 
-# Create temporal patterns 
+# Get time series form raster
 training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
+
+# Create temporal patterns 
 temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
 # Run TWDTW analysis for raster time series 
@@ -96,12 +105,15 @@ plot(r_lucc)
 
 # Assess classification 
 twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
-                           proj4string = proj_str, conf.int=.95) 
+                           proj4string = proj_str, conf.int = .95) 
 twdtw_assess
 
 # Plot assessment 
-plot(twdtw_assess, type="accuracy")  
-plot(twdtw_assess, type="area") 
+plot(twdtw_assess, type="accuracy")
+plot(twdtw_assess, type="area")
+plot(twdtw_assess, type="map", samples = "all")
+plot(twdtw_assess, type="map", samples = "incorrect")
+
 
 # Create latex tables 
 twdtwXtable(twdtw_assess, table.type="matrix")
@@ -130,6 +142,55 @@ table_assess
 
 plot(table_assess, type="area", perc=FALSE)
 
+\dontrun{
+
+# Create raster time series
+evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+
+# Read fiels samples 
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+proj_str = scan(system.file("lucc_MT/data/samples_projection", 
+                package="dtwSat"), what = "character")
+
+# Split samples for training (10\%) and validation (90\%) using stratified sampling 
+library(caret) 
+set.seed(1)
+I = unlist(createDataPartition(field_samples$label, p = 0.1))
+training_samples = field_samples[I,]
+validation_samples = field_samples[-I,]
+
+# Get time series form raster
+training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
+
+# Create temporal patterns 
+temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+
+# Run TWDTW analysis for raster time series 
+log_fun = weight.fun=logisticWeight(-0.1,50)
+r_twdtw = twdtwApply(x = validation_ts, 
+                     y = temporal_patterns, weight.fun = log_fun)
+
+# Accuracy assessment 
+twdtw_assess = twdtwAssess(r_twdtw, area = 53664.67, conf.int=.95)
+twdtw_assess
+
+plot(twdtw_assess, type="accuracy")
+plot(twdtw_assess, type="area")
+
+twdtwXtable(twdtw_assess, table.type="matrix")
+twdtwXtable(twdtw_assess, table.type="accuracy")
+twdtwXtable(twdtw_assess, table.type="area")
+
+}
 }
 \references{
 [1] Olofsson, P., Foody, G.M., Stehman, S.V., Woodcock, C.E. (2013). 

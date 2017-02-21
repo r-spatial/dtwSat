@@ -79,6 +79,8 @@ plotMaps = function(x, time.levels=NULL, time.labels=NULL, class.levels=NULL, cl
   df.map = data.frame(coordinates(x), x[], stringsAsFactors=FALSE)
   df.map = melt(df.map, id.vars = c("x", "y"))
   df.map$value = factor(df.map$value, levels = class.levels, labels = class.labels)
+  df.map$rast.layer = seq_along(time.levels)[match(as.character(df.map$variable), time.levels)]
+  df.map$rast.level = time.levels[match(as.character(df.map$variable), time.levels)]
   df.map$variable = time.labels[match(as.character(df.map$variable), time.levels)]
   
   gp = ggplot(data=df.map, aes_string(x="x", y="y")) +
@@ -91,8 +93,6 @@ plotMaps = function(x, time.levels=NULL, time.labels=NULL, class.levels=NULL, cl
     coord_fixed(ratio = 1) + 
     xlab("") +
     ylab("")
-    # xlab("Longitude") + 
-    # ylab("Latitude")
   gp 
   
 }

@@ -61,10 +61,11 @@ NULL
 setMethod("plot", 
           signature(x = "twdtwAssessment"),
           function(x, type="area", ...){
-            pt = pmatch(type, c("area","accuracy"))
+            pt = pmatch(type, c("area","accuracy","map"))
             switch(pt,
                    plotAdjustedArea(x, ...),
-                   plotAccuracy(x, ...)
+                   plotAccuracy(x, ...),
+                   plotMapSamples(x, ...)
             )
           }
 )

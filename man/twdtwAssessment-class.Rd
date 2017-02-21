@@ -28,8 +28,9 @@ using the the pixel resolution in the map unit.
  \item{\code{accuracyByPeriod}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
  Error Matrix (confusion matrix), and Estimated Area, for each time periods independently 
  from each other.}
- \item{\code{data}:}{A \code{\link[base]{data.frame}} with period (from - to), reference labels, 
- predicted labels, and other TWDTW information.}
+ \item{\code{data}:}{A \code{\link[sp]{SpatialPointsDataFrame}} with sample ID, period,
+ date from, date to, reference labels, predicted labels, and TWDTW distance.}
+ \item{\code{map}:}{A \code{\link[dtwSat]{twdtwRaster}} with the raster maps.}
 }
 }
 

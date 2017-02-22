@@ -111,7 +111,7 @@ setGeneric("twdtwAssess",
 #' plot(twdtw_assess, type="area")
 #' plot(twdtw_assess, type="map", samples = "all")
 #' plot(twdtw_assess, type="map", samples = "incorrect")
-#' 
+#' plot(twdtw_assess, type="map", samples = "correct")
 #' 
 #' # Create latex tables 
 #' twdtwXtable(twdtw_assess, table.type="matrix")
@@ -359,11 +359,11 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   # Accuracy 
   UA = as.numeric(diag(as.matrix(prop_matrix[cnames,cnames])) / prop_matrix[cnames,"Total"])
-  UA[total_map==0] = 1 
+  # UA[total_map==0] = 1 
   names(UA) = cnames
   
   PA = as.numeric(diag(as.matrix(prop_matrix[cnames,cnames])) / prop_matrix["Total",cnames])
-  PA[total_ref==0] = 1 
+  # PA[total_ref==0] = 1 
   names(PA) = cnames
   OA = sum(diag(as.matrix(prop_matrix[cnames,cnames])), na.rm = TRUE)
   

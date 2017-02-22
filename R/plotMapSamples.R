@@ -34,12 +34,13 @@ plotMapSamples = function(x, samples="all", ...){
                 incorrect = x@data[x@data$Predicted != x@data$Reference, ])
 
   gp = plot(x@map, type="maps") 
+  
 
   df = data.frame(x.sp) 
   df$variable = gp$data[match(df$Period, gp$data$rast.layer),"variable"] 
   df$variable = as.numeric(format(as.Date(df$to), "%Y"))
   
-  gp = gp + geom_point(data = df, aes_string(x = "longitude", y = "latitude", shape = "*")) + 
+  gp = gp + geom_point(shape = 1, data = df, aes_string(x = "longitude", y = "latitude")) + 
     scale_shape(solid = FALSE) 
   gp 
   

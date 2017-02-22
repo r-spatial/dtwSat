@@ -172,8 +172,7 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' log_fun = weight.fun=logisticWeight(-0.1,50)
 #' 
 #' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3, 
-#'           chunk.size=1000)
+#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff")
 #'
 #' plot(r_twdtw, type="distance")
 #' 

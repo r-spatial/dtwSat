@@ -27,6 +27,7 @@
 \alias{[[,twdtwRaster,ANY,ANY-method}
 \alias{labels,twdtwRaster-method}
 \alias{crop,twdtwRaster-method}
+\alias{coordinates,twdtwRaster-method}
 \alias{extent,twdtwRaster-method}
 \alias{show,twdtwRaster-method}
 \alias{is.twdtwRaster,ANY-method}
@@ -74,6 +75,8 @@
 
 \S4method{crop}{twdtwRaster}(x, y, ...)
 
+\S4method{coordinates}{twdtwRaster}(obj, ...)
+
 \S4method{extent}{twdtwRaster}(x, y, ...)
 
 \S4method{show}{twdtwRaster}(object)
@@ -119,6 +122,8 @@ originally stores in separated files. See details.}
 \item{i}{indices of the time series.}
 
 \item{object}{an object of class twdtwRaster.}
+
+\item{obj}{object of cless twdtwRaster}
 
 \item{crs}{character or object of class 'CRS'. PROJ.4 description of 
 the coordinate reference system. For other arguments and more details see 

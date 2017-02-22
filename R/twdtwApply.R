@@ -75,6 +75,8 @@
 #' 
 #' @param chunk.size An integer. Set the number of cells for each block, 
 #' see \code{\link[raster]{blockSize}} for details.  
+#' 
+#' @param silent if set to TRUE then hide chunk processing message. Default is FALSE. 
 #'
 #' @references 
 #' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
@@ -186,7 +188,7 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                        breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, chunk.size=1000, filepath=NULL, ...){
+                        breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, chunk.size=1000, filepath=NULL, silent=FALSE, ...){
                   if(!is(step.matrix, "stepPattern"))
                     stop("step.matrix is not of class stepPattern")
                   if(is.null(weight.fun))
@@ -215,14 +217,12 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
                   twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                          breaks, overlap, chunk.size, filepath, ...)
+                                          breaks, overlap, chunk.size, filepath, silent, ...)
            })
            
            
 twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                  breaks, overlap, chunk.size, filepath, 
-                                  mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE, 
-                                  mc.cores = getOption("mc.cores", 1L), mc.cleanup = TRUE, ...){
+                                  breaks, overlap, chunk.size, filepath, silent, ...){
      
     # Set blocks Multi-thread parameters
     minblocks = round(nrow(x)*ncol(x) / chunk.size)
@@ -235,6 +235,8 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     matching_bands = pattern_names[pattern_names %in% raster_bands]
     if(length(matching_bands)<1)
       stop(paste0("Attributes (bands) of the raster and patterns do not match"))
+    if("doy"%in%coverages(x) & !"doy"%in%matching_bands)
+      matching_bands = c("doy", matching_bands)
     x = subset(x, layers=matching_bands)
     raster_bands = coverages(x)
     
@@ -254,42 +256,34 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     # Get time line 
     timeline = as.Date(index(x))
     
-    get_aligs = function(x){
-      # twdtwApply(x, y=y, weight.fun=weight.fun)
-      twdtwApply(x, y=y, weight.fun=weight.fun, dist.method=dist.method, step.matrix=step.matrix, n=n, span=span, min.length=min.length, theta=theta, keep=FALSE)
-    }
+    # Raster info 
+    proj_str = projection(x)
+    coord    = data.frame(coordinates(x))
+    names(coord) = c("longitude","latitude")
     
     fun = function(i){
 
-      if(!mc.silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
+      if(!silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
       
-      # Get time series from raster 
-      ts_list = lapply(as.list(x), FUN=getValuesBlock, row=blocks$row[i], nrows=blocks$nrows[i])
-      
-      # Create a dummy array 
-      nts = seq(1, nrow(ts_list[[1]]))
-      m = length(levels)
-      n = length(breaks)-1
+      # Get twdtwTimeSeries from raster 
+      cells = cellFromRow(x@timeseries$ndvi, blocks$row[i]:blocks$nrows[i])
+      ts = getTimeSeries(x, y = coord[cells,], proj4string = proj_str)
 
-      # Create zoo time series  
-      ts_zoo = lapply(nts, FUN=.bulidZoo, x=ts_list, timeline=timeline)
-
-      # Create twdtwTimeSeries object  
-      ts = try(twdtwTimeSeries(ts_zoo), silent = TRUE)
-      if(is(ts, "try-error"))
-         return(lapply(levels, function(l) writeValues(b_files[[l]], matrix(9999, nrow=length(nts), ncol=n), blocks$row[i])))
-         
       # Apply TWDTW analysis  
-      twdtw_results = lapply(as.list(ts), FUN=get_aligs)
+      twdtw_results = twdtwApply(ts, y=y, weight.fun=weight.fun, dist.method=dist.method, 
+                                 step.matrix=step.matrix, n=n, span=span, 
+                                 min.length=min.length, theta=theta, keep=FALSE)
 
       # Get best mathces for each point, period, and pattern 
-      A = lapply(twdtw_results, FUN=.lowestDistances, m=m, n=n, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
+      m = length(levels)
+      h = length(breaks)-1
+      A = lapply(as.list(twdtw_results), FUN=.lowestDistances, m=m, n=h, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
       
       # Reshape list to array 
-      A = sapply(A, matrix, nrow=n, ncol=m, simplify = 'array')
+      A = sapply(A, matrix, nrow=h, ncol=m, simplify = 'array')
       
       # Write raster files 
-      lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], matrix(t(A[,l,]),ncol=n), blocks$row[i]))
+      lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], matrix(t(A[,l,]),ncol=h), blocks$row[i]))
     }
     
     # Apply TWDTW analysis 

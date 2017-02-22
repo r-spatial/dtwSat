@@ -113,7 +113,7 @@ plot(twdtw_assess, type="accuracy")
 plot(twdtw_assess, type="area")
 plot(twdtw_assess, type="map", samples = "all")
 plot(twdtw_assess, type="map", samples = "incorrect")
-
+plot(twdtw_assess, type="map", samples = "correct")
 
 # Create latex tables 
 twdtwXtable(twdtw_assess, table.type="matrix")

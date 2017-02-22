@@ -404,6 +404,17 @@ setMethod("crop",
 
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
+#' @param obj object of cless twdtwRaster 
+#' @export
+setMethod("coordinates", 
+          signature = signature("twdtwRaster"),
+          definition = function(obj, ...){
+            coordinates(obj@timeseries[[1]], ...)
+          }
+)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
 #' @export
 setMethod("extent", 
           signature = signature("twdtwRaster"),

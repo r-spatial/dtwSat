@@ -17,6 +17,8 @@
   labels = as.character(labels(y))
   names(labels) = labels
   timeseries = x[[1]]
+  # Remove possible NA values 
+  timeseries = timeseries[!apply(is.na(timeseries), 1, all),,drop=FALSE]
   
   fun = function(l){
     pattern = y[[l]]

@@ -123,10 +123,16 @@ k=k+1
 
 ### Raster time series classification
 
-The next example shows how to classify a raster time series, i.e. the same as we did in the quick demo but now for each pixel location. For that we use a set of MODIS EVI (MOD13Q1 product) images from 2007 to 2013 for a region in the Brazilian Amazon. These data is included in the package installation. 
-Load EVI raster time series:
+The next example shows how to classify a raster time series, i.e. the same as we did in the quick demo but now for each pixel location. For that we use a set of MODIS (MOD13Q1 product) images from 2007 to 2013 for a region in the Brazilian Amazon. These data is included in the package installation. 
+Load raster time series:
 ```{r , echo = TRUE, eval = TRUE}
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 ```
 
 Load the dates of the MODIS images:
@@ -136,7 +142,7 @@ timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="da
 
 Build raster time series:
 ```{r , echo = TRUE, eval = TRUE}
-rts = twdtwRaster(evi, timeline = timeline)
+rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 ```
 
 Load the set of ground truth samples and projection information: 
@@ -154,12 +160,12 @@ training_samples   = field_samples[I,]
 validation_samples = field_samples[-I,]
 ```
 
-Extract the EVI time for each sample location 
+Extract training time series from raster time series 
 ```{r , echo = TRUE, eval = TRUE}
 ts_training_samples = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
 ```
 
-Create EVI temporal patterns using training samples 
+Create temporal patterns using training samples 
 ```{r , echo = TRUE, eval = TRUE}
 temporal_patterns = createPatterns(ts_training_samples, freq = 8, formula = y ~ s(x))
 ```
@@ -232,7 +238,6 @@ plot(x = twdtw_assess, type = "area")
 ```{r, echo = FALSE, eval = TRUE}
 k=k+1
 ```
-
 
 For further discussion on the package see the [vignettes][Vignettes] and if you want to learn more about the TWDTW method [see, @Maus:2016].
 

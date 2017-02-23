@@ -266,7 +266,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
       if(!silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
       
       # Get twdtwTimeSeries from raster 
-      cells = cellFromRow(x@timeseries$ndvi, blocks$row[i]:blocks$nrows[i])
+      cells = cellFromRow(x@timeseries[[1]], blocks$row[i]:blocks$nrows[i])
       ts = getTimeSeries(x, y = coord[cells,], proj4string = proj_str)
 
       # Apply TWDTW analysis  

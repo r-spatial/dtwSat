@@ -127,10 +127,16 @@ Fig. 6. Classification using the best match for each subinterval.
 
 ### Raster time series classification
 
-The next example shows how to classify a raster time series, i.e. the same as we did in the quick demo but now for each pixel location. For that we use a set of MODIS EVI (MOD13Q1 product) images from 2007 to 2013 for a region in the Brazilian Amazon. These data is included in the package installation. Load EVI raster time series:
+The next example shows how to classify a raster time series, i.e. the same as we did in the quick demo but now for each pixel location. For that we use a set of MODIS (MOD13Q1 product) images from 2007 to 2013 for a region in the Brazilian Amazon. These data is included in the package installation. Load raster time series:
 
 ``` r
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
+ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
+red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
+blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
+nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
+mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
+doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 ```
 
 Load the dates of the MODIS images:
@@ -142,7 +148,7 @@ timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="da
 Build raster time series:
 
 ``` r
-rts = twdtwRaster(evi, timeline = timeline)
+rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 ```
 
 Load the set of ground truth samples and projection information:
@@ -162,13 +168,13 @@ training_samples   = field_samples[I,]
 validation_samples = field_samples[-I,]
 ```
 
-Extract the EVI time for each sample location
+Extract training time series from raster time series
 
 ``` r
 ts_training_samples = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
 ```
 
-Create EVI temporal patterns using training samples
+Create temporal patterns using training samples
 
 ``` r
 temporal_patterns = createPatterns(ts_training_samples, freq = 8, formula = y ~ s(x))
@@ -247,33 +253,33 @@ show(twdtw_assess)
     ## 
     ## Overall
     ## Accuracy      Var       sd      ci* 
-    ##  0.90573  0.00016  0.01257  0.02463 
+    ##  9.8e-01  5.8e-05  7.6e-03  1.5e-02 
     ## 
     ## User's
-    ##                Accuracy     Var     sd   ci*
-    ## Cotton.fallow      0.95 7.1e-04 0.0266 0.052
-    ## Forest             1.00 0.0e+00 0.0000 0.000
-    ## Soybean.cotton     1.00 0.0e+00 0.0000 0.000
-    ## Soybean.maize      0.75 1.2e-03 0.0343 0.067
-    ## Soybean.millet     0.99 5.7e-05 0.0076 0.015
-    ## unclassified       1.00 0.0e+00 0.0000 0.000
+    ##                Accuracy     Var    sd   ci*
+    ## Cotton.fallow      0.95 0.00071 0.027 0.052
+    ## Forest             1.00 0.00000 0.000 0.000
+    ## Soybean.cotton     1.00 0.00000 0.000 0.000
+    ## Soybean.maize      0.95 0.00036 0.019 0.037
+    ## Soybean.millet     1.00 0.00000 0.000 0.000
+    ## unclassified        NaN     NaN   NaN   NaN
     ## 
     ## Producer's
-    ##                Accuracy     Var    sd   ci*
-    ## Cotton.fallow      1.00 0.00000 0.000 0.000
-    ## Forest             1.00 0.00000 0.000 0.000
-    ## Soybean.cotton     0.68 0.00471 0.069 0.135
-    ## Soybean.maize      1.00 0.00000 0.000 0.000
-    ## Soybean.millet     0.74 0.00085 0.029 0.057
-    ## unclassified       1.00 0.00000 0.000 0.000
+    ##                Accuracy    Var    sd  ci*
+    ## Cotton.fallow      1.00 0.0000 0.000 0.00
+    ## Forest             1.00 0.0000 0.000 0.00
+    ## Soybean.cotton     0.72 0.0045 0.067 0.13
+    ## Soybean.maize      1.00 0.0000 0.000 0.00
+    ## Soybean.millet     1.00 0.0000 0.000 0.00
+    ## unclassified        NaN    NaN    NA   NA
     ## 
     ## Area and uncertainty
     ##                Mapped  Adjusted ci*    
-    ## Cotton.fallow  5.3e+07 5e+07    2750574
-    ## Forest         7.7e+07 7.7e+07  0      
-    ## Soybean.cotton 1.5e+07 2.2e+07  4359225
-    ## Soybean.maize  1.1e+08 8.2e+07  7361101
-    ## Soybean.millet 6.8e+07 9e+07    7e+06  
+    ## Cotton.fallow  4.8e+07 4.5e+07  2484480
+    ## Forest         7.5e+07 7.5e+07  0      
+    ## Soybean.cotton 1.9e+07 2.6e+07  4805205
+    ## Soybean.maize  1.1e+08 1e+08    4113071
+    ## Soybean.millet 7e+07   7e+07    0      
     ## unclassified   0       0        0      
     ## 
     ## * 95 % confidence interval

@@ -132,35 +132,12 @@ setMethod(f = "twdtwAssess", signature = "twdtwRaster",
 #' @aliases twdtwAssess-data.frame
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
-#' 
-#' @examples 
-#' 
-#' # Total mapped area by class. Data from [1]
-#' area = c(A = 22353, B = 1122543, C = 610228) 
-#' 
-#' # Error matrix, columns (Reference) rows (Map)
-#' x = data.frame(
-#'               rbind(
-#'               c( 97,	 0,   3),
-#'               c(  3, 279,  18),
-#'               c(  2,   1,  97)
-#'    ))
-#'
-#' names(x) = names(area)
-#' rownames(x) = names(area)
-#' 
-#' table_assess = twdtwAssess(x, area, conf.int = .95)
-#' 
-#' table_assess
-#' 
-#' plot(table_assess, type="area", perc=FALSE)
-#' 
 #' @export
 setMethod(f = "twdtwAssess", signature = "data.frame",
           definition = function(object, area, conf.int=.95) 
             twdtwAssess.table(object, area, conf.int))
 
-#' @aliases twdtwAssess-twdtwRaster
+#' @aliases twdtwAssess-table
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
 #' @export
@@ -168,7 +145,35 @@ setMethod(f = "twdtwAssess", signature = "table",
           definition = function(object, area, conf.int=.95) 
             twdtwAssess(as.data.frame.matrix(object), area, conf.int))
 
-#' @aliases twdtwAssess-data.frame
+#' @aliases twdtwAssess-matrix
+#' @inheritParams twdtwAssess
+#' @rdname twdtwAssess 
+#' 
+#' @examples 
+#' 
+#' # Total mapped area by class. Data from [1]
+#' area = c(A = 22353, B = 1122543, C = 610228) 
+#' 
+#' # Error matrix, columns (Reference) rows (Map)
+#' x = 
+#'     rbind(
+#'          c( 97,	 0,   3),
+#'          c(  3, 279,  18),
+#'          c(  2,   1,  97)
+#'    )
+#'
+#' table_assess = twdtwAssess(x, area, conf.int = .95)
+#' 
+#' table_assess
+#' 
+#' plot(table_assess, type="area", perc=FALSE)
+#' 
+#' @export
+setMethod(f = "twdtwAssess", signature = "matrix",
+          definition = function(object, area, conf.int=.95) 
+            twdtwAssess(as.data.frame.matrix(object), area, conf.int))
+
+#' @aliases twdtwAssess-twdtwMatches
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
 #' 
@@ -331,9 +336,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   cnames = names(mapped_area)
   x = data.frame(cbind(x), row.names = cnames)
-  cnames = names(x)
-  rownames(x) = cnames
-  names(mapped_area) = cnames
+  names(x) = cnames
   
   total_map = rowSums(x)
   total_ref = colSums(x)

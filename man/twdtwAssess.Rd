@@ -8,9 +8,11 @@
 \alias{twdtwAssess,data.frame-method}
 \alias{twdtwAssess-data.frame}
 \alias{twdtwAssess,table-method}
-\alias{twdtwAssess-twdtwRaster}
+\alias{twdtwAssess-table}
+\alias{twdtwAssess,matrix-method}
+\alias{twdtwAssess-matrix}
 \alias{twdtwAssess,twdtwMatches-method}
-\alias{twdtwAssess-data.frame}
+\alias{twdtwAssess-twdtwMatches}
 \title{Assess TWDTW classification}
 \usage{
 \S4method{twdtwAssess}{twdtwRaster}(object, y, labels = NULL,
@@ -19,6 +21,8 @@
 \S4method{twdtwAssess}{data.frame}(object, area, conf.int = 0.95)
 
 \S4method{twdtwAssess}{table}(object, area, conf.int = 0.95)
+
+\S4method{twdtwAssess}{matrix}(object, area, conf.int = 0.95)
 
 \S4method{twdtwAssess}{twdtwMatches}(object, area, conf.int)
 }
@@ -126,15 +130,12 @@ twdtwXtable(twdtw_assess, table.type="area")
 area = c(A = 22353, B = 1122543, C = 610228) 
 
 # Error matrix, columns (Reference) rows (Map)
-x = data.frame(
-              rbind(
-              c( 97,	 0,   3),
-              c(  3, 279,  18),
-              c(  2,   1,  97)
-   ))
-
-names(x) = names(area)
-rownames(x) = names(area)
+x = 
+    rbind(
+         c( 97,	 0,   3),
+         c(  3, 279,  18),
+         c(  2,   1,  97)
+   )
 
 table_assess = twdtwAssess(x, area, conf.int = .95)
 

@@ -1,11 +1,10 @@
-# dtwSat v0.2.2.9000 Release Notes
+# dtwSat v0.2.2 Release Notes
 
 * New features
 
   New accuracy metrics (twdtwAssess) for classified map, including User's and Producer's accuracy, and area uncertainty. 
 
   Include methods for accuracy visualization (plot and LaTeX tables) 
-
 
 * Update data set names 
 
@@ -21,6 +20,7 @@
 
   Fix bug in twdtwApply wrong sign in 'by' argument
   
+  Fix bug in time index for twdtwApply-twdtwRaster
   
 # dtwSat v0.2.1 Release Notes
 

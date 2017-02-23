@@ -462,7 +462,7 @@ assessment = twdtwCrossValidation(twdtw_res)
 head(assessment, 5)
 ```
 ```{r, echo = FALSE, eval = TRUE}
-load(system.file("lucc_MT/assessment.RData", package = "dtwSat"))
+load(system.file("lucc_MT/cross_validation.RData", package = "dtwSat"))
 ```
 
 <!--

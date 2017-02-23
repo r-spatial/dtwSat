@@ -198,7 +198,7 @@ plot(x = land_use_maps, type="distance")
 #  head(assessment, 5)
 
 ## ---- echo = FALSE, eval = TRUE------------------------------------------
-load(system.file("lucc_MT/assessment.RData", package = "dtwSat"))
+load(system.file("lucc_MT/cross_validation.RData", package = "dtwSat"))
 
 ## ----plot-accuracy, echo = FALSE, eval = TRUE, fig.width=page_width, fig.height=page_width/2, fig.align='center', fig.cap='User\'s Accuracy (UA) and Producer\'s Accuracy (PA) of the TWDTW method for land cover classification. The plot shows the averages and their confidence interval for 99\\%.', fig.pos='!h'----
 df = melt(assessment[,-1], id="label")

@@ -48,13 +48,13 @@ plotAdjustedArea = function(x, perc=TRUE, time.labels=NULL,
   df = do.call("rbind", lapply(time.labels, function(i){
     df           = data.frame(y[[i]]$AreaUncertainty)
     total_area   = sum(unlist(df$Mapped))
-    df_m         = data.frame(df$Mapped)
+    df_m         = data.frame(t(df$Mapped))
     names(df_m)  = category.name
     df_m         = melt(df_m)
     df_m$Legend  = "Mapped"
     df_m$ci      = as.numeric(NA)
     df_m$Period  = i
-    df_a         = data.frame(df$Adjusted)
+    df_a         = data.frame(t(df$Adjusted))
     names(df_a)  = category.name
     df_a         = melt(df_a)
     df_a$Legend  = "Adjusted"

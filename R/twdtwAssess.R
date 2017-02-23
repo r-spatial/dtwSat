@@ -59,6 +59,12 @@ setGeneric("twdtwAssess",
 #' \code{\link[dtwSat]{twdtwAssessment}}, and
 #' \code{\link[dtwSat]{twdtwXtable}}.
 #' 
+NULL
+
+#' @aliases twdtwAssess-twdtwRaster
+#' @inheritParams twdtwAssess
+#' @rdname twdtwAssess 
+#' 
 #' @examples 
 #' \dontrun{
 #' 
@@ -119,11 +125,6 @@ setGeneric("twdtwAssess",
 #' twdtwXtable(twdtw_assess, table.type="area")
 #' 
 #' }
-NULL
-
-#' @aliases twdtwAssess-twdtwRaster
-#' @inheritParams twdtwAssess
-#' @rdname twdtwAssess 
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwRaster",
           definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95) 
@@ -335,7 +336,8 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   mult = qnorm(1-(1-conf.int)/2, mean = 0, sd = 1)
   
   cnames = names(mapped_area)
-  x = data.frame(cbind(x), row.names = cnames)
+  # x = data.frame(cbind(x), row.names = cnames)
+  rownames(x) = cnames
   names(x) = cnames
   
   total_map = rowSums(x)
@@ -347,8 +349,8 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   w = mapped_area / total_area
   
   # Error matrix 
-  error_matrix = data.frame(cbind(x, Total=total_map, Area=mapped_area, w=w))
-  error_matrix["Total",] = colSums(error_matrix)
+  error_matrix = cbind(x, Total=total_map, Area=mapped_area, w=w)
+  error_matrix = rbind(error_matrix, Total = colSums(error_matrix))
   
   # Proportions 
   y = t(apply(error_matrix[!rownames(error_matrix)%in%"Total",], 1, function(x) (x[cnames] / x["Total"]) * x["w"]))
@@ -357,8 +359,8 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   total_prop_ref = colSums(y, na.rm = TRUE)
   
   # Proportions matrix 
-  prop_matrix = data.frame(y, Total = total_prop_map, Area = mapped_area, w = w)
-  prop_matrix["Total",] = colSums(prop_matrix, na.rm = TRUE)
+  prop_matrix = cbind(y, Total = total_prop_map, Area = mapped_area, w = w)
+  prop_matrix = rbind(prop_matrix, Total = colSums(prop_matrix, na.rm = TRUE))
   
   # Accuracy 
   UA = as.numeric(diag(as.matrix(prop_matrix[cnames,cnames])) / prop_matrix[cnames,"Total"])

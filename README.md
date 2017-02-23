@@ -257,30 +257,30 @@ show(twdtw_assess)
     ## 
     ## User's
     ##                Accuracy     Var    sd   ci*
-    ## Cotton.fallow      0.95 0.00071 0.027 0.052
+    ## Cotton-fallow      0.95 0.00071 0.027 0.052
     ## Forest             1.00 0.00000 0.000 0.000
-    ## Soybean.cotton     1.00 0.00000 0.000 0.000
-    ## Soybean.maize      0.95 0.00036 0.019 0.037
-    ## Soybean.millet     1.00 0.00000 0.000 0.000
+    ## Soybean-cotton     1.00 0.00000 0.000 0.000
+    ## Soybean-maize      0.95 0.00036 0.019 0.037
+    ## Soybean-millet     1.00 0.00000 0.000 0.000
     ## unclassified        NaN     NaN   NaN   NaN
     ## 
     ## Producer's
     ##                Accuracy    Var    sd  ci*
-    ## Cotton.fallow      1.00 0.0000 0.000 0.00
+    ## Cotton-fallow      1.00 0.0000 0.000 0.00
     ## Forest             1.00 0.0000 0.000 0.00
-    ## Soybean.cotton     0.72 0.0045 0.067 0.13
-    ## Soybean.maize      1.00 0.0000 0.000 0.00
-    ## Soybean.millet     1.00 0.0000 0.000 0.00
+    ## Soybean-cotton     0.72 0.0045 0.067 0.13
+    ## Soybean-maize      1.00 0.0000 0.000 0.00
+    ## Soybean-millet     1.00 0.0000 0.000 0.00
     ## unclassified        NaN    NaN    NA   NA
     ## 
     ## Area and uncertainty
-    ##                Mapped  Adjusted ci*    
-    ## Cotton.fallow  4.8e+07 4.5e+07  2484480
-    ## Forest         7.5e+07 7.5e+07  0      
-    ## Soybean.cotton 1.9e+07 2.6e+07  4805205
-    ## Soybean.maize  1.1e+08 1e+08    4113071
-    ## Soybean.millet 7e+07   7e+07    0      
-    ## unclassified   0       0        0      
+    ##                 Mapped Adjusted     ci*
+    ## Cotton-fallow  4.8e+07  4.5e+07 2484480
+    ## Forest         7.5e+07  7.5e+07       0
+    ## Soybean-cotton 1.9e+07  2.6e+07 4805205
+    ## Soybean-maize  1.1e+08  1.0e+08 4113071
+    ## Soybean-millet 7.0e+07  7.0e+07       0
+    ## unclassified   0.0e+00  0.0e+00       0
     ## 
     ## * 95 % confidence interval
 

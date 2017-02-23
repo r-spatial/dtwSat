@@ -191,7 +191,7 @@ setMethod("twdtwXtable",
 
 .xtable.accuracy = function(x, category.name, show.prop, ...){
   
-  prop = x$ProportionMatrix
+  prop = as.data.frame.matrix(x$ProportionMatrix)
   prop = data.frame(apply(prop[,!names(prop)%in%c("Area","w")], 1, FUN = sprintf, fmt="%.2f"), stringsAsFactors = FALSE)
   rownames(prop) = names(prop)
   prop$`User's*` = ""

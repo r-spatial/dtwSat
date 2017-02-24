@@ -29,9 +29,15 @@ setGeneric("twdtwXtable",
 #' @param show.overall if TRUE shows the overall accuracy of the cross-validation.
 #' Default is TRUE. 
 #' 
+#' @param rotate.col rotate class column names in latex table. Default is FALSE. 
+#' 
+#' @param caption the table caption. 
+#' 
+#' @param digits number of digits to show. 
+#' 
 #' @param conf.int specifies the confidence level (0-1).
 #' 
-#' @param ... other arguments to pass to \code{\link[xtable]{xtable}}.
+#' @param ... other arguments to pass to and \code{\link[xtable]{print.xtable}}.
 #'
 #' @seealso \code{\link[dtwSat]{twdtwAssess}} and  
 #' \code{\link[dtwSat]{twdtwAssessment}}.
@@ -81,9 +87,12 @@ setGeneric("twdtwXtable",
 #' twdtw_assess
 #' 
 #' # Create latex tables 
-#' twdtwXtable(twdtw_assess, table.type="errormatrix", category.type="letter")
-#' twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter")
-#' twdtwXtable(twdtw_assess, table.type="area", category.type="letter")
+#' twdtwXtable(twdtw_assess, table.type="errormatrix", rotate.col=TRUE,
+#'   caption="Error matrix", digits=2, comment=FALSE)
+#' twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter", 
+#'   caption="Accuracy metrics.")
+#' twdtwXtable(twdtw_assess, table.type="area", category.type="letter",
+#'   digits = 0, caption="Area and uncertainty")
 #' 
 #' }
 NULL
@@ -95,7 +104,8 @@ NULL
 setMethod("twdtwXtable", 
           signature = signature(object = "twdtwAssessment"),
           definition = function(object, table.type="accuracy", show.prop=TRUE, category.name=NULL,
-                                category.type=NULL, time.labels=NULL, ...){
+                                category.type=NULL, rotate.col=FALSE, time.labels=NULL, 
+                                caption = NULL, digits = 2, ...){
             y = object@accuracySummary
             if(!is.null(time.labels))
               y = object@accuracyByPeriod[[time.labels]]
@@ -109,12 +119,15 @@ setMethod("twdtwXtable",
                    as.character(seq(1:n)),
                    LETTERS[1:n]
               )
+            category.colname = category.name
+            if(rotate.col)
+              category.colname = paste0("\\rotatebox[origin=l]{90}{",category.colname,"}")
             pt = pmatch(table.type,c("accuracy","matrix","area","errormatrix"))
             switch(pt,
-                   .xtable.accuracy(x=y, category.name, show.prop, ...),
-                   .xtable.matrix(x=y, category.name, ...),
-                   .xtable.area(x=y, category.name, ...),
-                   .xtable.matrix(x=y, category.name, ...)
+                   .xtable.accuracy(x=y, category.name, category.colname, show.prop, caption, digits, ...),
+                   .xtable.matrix(x=y, category.name, category.colname, caption, digits, ...),
+                   .xtable.area(x=y, category.name, caption, digits, ...),
+                   .xtable.matrix(x=y, category.name, category.colname, caption, digits, ...)
             )
           }
 )
@@ -126,7 +139,7 @@ setMethod("twdtwXtable",
 setMethod("twdtwXtable", 
           signature = signature(object = "twdtwCrossValidation"),
           definition = function(object, conf.int=.95, show.overall=TRUE, 
-                                category.name=NULL, category.type=NULL, ...){
+                                category.name=NULL, category.type=NULL, caption, digits, ...){
             y = summary(object, conf.int = conf.int)
             n = nrow(y$Users)
             if(is.null(category.name))
@@ -136,28 +149,28 @@ setMethod("twdtwXtable",
                                      as.character(seq(1:n)),
                                      LETTERS[1:n]
               )
-            .xtable.crossvalidation(x=y, category.name, show.overall, conf.int, ...)
+            .xtable.crossvalidation(x=y, category.name, show.overall, conf.int, caption, digits, ...)
           }
 )
 
-.xtable.crossvalidation = function(x, category.name, show.overall, conf.int, ...){
+.xtable.crossvalidation = function(x, category.name, show.overall, conf.int, caption, digits, ...){
   
-  ua = sprintf("%.2f", round(x$Users[["Accuracy"]],2))
-  ua_sd = sprintf("(%.2f)", round(x$Users[["sd"]],2))
-  ua_ci = sprintf("[%.2f-%.2f]", round(x$Users[["CImin"]],2), round(x$Users[["CImax"]],2))
+  ua = sprintf(paste0("%.",digits,"f"), round(x$Users[["Accuracy"]],digits))
+  ua_sd = sprintf(paste0("(%.",digits,"f)"), round(x$Users[["sd"]],digits))
+  ua_ci = sprintf(paste0("[%.",digits,"f-%.",digits,"f]"), round(x$Users[["CImin"]],digits), round(x$Users[["CImax"]],digits))
   
-  pa = sprintf("%.2f", round(x$Producers[["Accuracy"]],2))
-  pa_sd = sprintf("(%.2f)", round(x$Producers[["sd"]],2))
-  pa_ci = sprintf("[%.2f-%.2f]", round(x$Producers[["CImin"]],2), round(x$Producers[["CImax"]],2))
+  pa = sprintf(paste0("%.",digits,"f"), round(x$Producers[["Accuracy"]],digits))
+  pa_sd = sprintf(paste0("(%.",digits,"f)"), round(x$Producers[["sd"]],digits))
+  pa_ci = sprintf(paste0("[%.",digits,"f-%.",digits,"f]"), round(x$Producers[["CImin"]],digits), round(x$Producers[["CImax"]],digits))
 
   tbl = data.frame(ua, ua_sd, ua_ci, pa, pa_sd, pa_ci)
   table_columns = " & \\multicolumn{3}{c}{User's} & \\multicolumn{3}{c}{Producer's}"
   n = 2
   
   if(show.overall){
-    oa = sprintf("%.2f", round(x$Overall[["Accuracy"]],2))
-    oa_sd = sprintf("(%.2f)", round(x$Overall[["sd"]],2))
-    oa_ci = sprintf("[%.2f-%.2f]", round(x$Overall[["CImin"]],2), round(x$Overall[["CImax"]],2))
+    oa = sprintf(paste0("%.",digits,"f"), round(x$Overall[["Accuracy"]],digits))
+    oa_sd = sprintf(paste0("(%.",digits,"f)"), round(x$Overall[["sd"]],digits))
+    oa_ci = sprintf(paste0("[%.",digits,"f-%.",digits,"f]"), round(x$Overall[["CImin"]],digits), round(x$Overall[["CImax"]],digits))
 
     tbl$oa = ""
     tbl$oa_sd = ""
@@ -176,92 +189,106 @@ setMethod("twdtwXtable",
   comment$pos[[1]] = c(0)
   comment$pos[[2]] = c(nrow(tbl))
   comment$command  = c(paste0(table_columns, "\\\\\n", 
-                              "Class", paste(rep(" & $\\mu$ & $\\sigma$ & ci*", n),collapse = ""),"\\\\\n"),
+                              "\\multicolumn{1}{c}{Class}", paste(rep(" & \\multicolumn{1}{c}{$\\mu$} & \\multicolumn{1}{c}{$\\sigma$} & \\multicolumn{1}{c}{ci*}", n),collapse = ""),"\\\\\n"),
                        paste("\\hline \n", "\\multicolumn{",ncol(tbl)+1,"}{l}{* ",conf.int*100,"\\% confidence interval.}\n", sep = ""))
   
   rownames(tbl) = category.name
   
-  tbl = xtable(tbl, ...)
+  tbl = xtable(tbl, caption)
   
   print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
-               hline.after = c(-1, 0), sanitize.text.function = function(x) x)
+               hline.after = c(-1, 0), sanitize.text.function = function(x) x, ...)
   
 }
 
 
-.xtable.accuracy = function(x, category.name, show.prop, ...){
-  
-  prop = as.data.frame.matrix(x$ProportionMatrix)
-  prop = data.frame(apply(prop[,!names(prop)%in%c("Area","w")], 1, FUN = sprintf, fmt="%.2f"), stringsAsFactors = FALSE)
-  rownames(prop) = names(prop)
-  prop$`User's*` = ""
-  prop$`Producers's*` = ""
-  prop$`Overall*` = ""
+.xtable.accuracy = function(x, category.name, category.colname, show.prop, caption, digits, ...){
 
-  ua = sprintf("%.2f$\\pm$%.2f", round(x$UsersAccuracy[,"Accuracy"],2), round(x$UsersAccuracy[,"ci"], 2))
-  pa = sprintf("%.2f$\\pm$%.2f", round(x$ProducersAccuracy[,"Accuracy"],2), round(x$ProducersAccuracy[,"ci"], 2))
-  oa = sprintf("%.2f$\\pm$%.2f", round(x$OverallAccuracy["Accuracy"],2), round(x$OverallAccuracy["ci"], 2))
+  ua = sprintf(paste0("%.",digits,"f$\\pm$%.",digits,"f"), round(x$UsersAccuracy[,"Accuracy"],digits), round(x$UsersAccuracy[,"ci"], digits))
+  pa = sprintf(paste0("%.",digits,"f$\\pm$%.",digits,"f"), round(x$ProducersAccuracy[,"Accuracy"],digits), round(x$ProducersAccuracy[,"ci"], digits))
+  oa = c(sprintf(paste0("%.",digits,"f$\\pm$%.",digits,"f"), round(x$OverallAccuracy["Accuracy"],digits), round(x$OverallAccuracy["ci"], digits)), rep("", length(pa)-1))
   
-  prop$`User's*`[1:length(ua)] = ua
-  prop$`Producers's*`[1:length(pa)] = pa
-  prop$`Overall*`[1:length(oa)] = oa
-  names(prop)[1:length(category.name)] = category.name
+  prop = data.frame(ua, pa, oa)
+  names(prop) = c("User's*", "Producers's*", "Overall*")
+  
+  if(show.prop){
+    prop = data.frame(`User's*` = "", `Producers's*` = "", `Overall*` = "")
+    prop = as.data.frame.matrix(x$ProportionMatrix)
+    prop = data.frame(apply(prop[,!names(prop)%in%c("Area","w")], 1, FUN = sprintf, fmt=paste0(paste0("%.",digits,"f"))), stringsAsFactors = FALSE)
+    rownames(prop) = names(prop)    
+    prop$`User's*` = ""
+    prop$`Producers's*` = ""
+    prop$`Overall*` = ""
+    names(prop)[1:length(category.name)] = category.colname
+    prop$`User's*`[1:length(ua)] = ua
+    prop$`Producers's*`[1:length(pa)] = pa
+    prop$`Overall*`[1:length(oa)] = oa
+  }
+
   rownames(prop)[1:length(category.name)] = category.name
-  tbl = xtable(prop, ...)
+  tbl = xtable(prop, caption)
   
   comment          = list()
   comment$pos      = list()
   comment$pos[[1]] = c(0)
   comment$pos[[2]] = c(nrow(tbl))
-  comment$command  = c(paste0("&\\multicolumn{",ncol(tbl)-1,"}{c}{Reference class}\\\\\n", 
-                              paste(c("Map class",names(tbl)), collapse = " & "),"\\\\\n"),
-                       paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))
+  if(show.prop){
+    comment$command  = c(paste0("&\\multicolumn{",length(category.name),"}{c}{Reference class}&&&&\\\\\n", 
+                                paste(c("\\multicolumn{1}{c}{Map class}",names(tbl)), collapse = " & "),"\\\\\n"),
+                         paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))    
+  } else {
+    comment$command  = c(paste0(paste(c("\\multicolumn{1}{c}{Class}",names(tbl)), collapse = " & "),"\\\\\n"),
+                         paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))
+  }
+  
+
   
   print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
-                       hline.after = c(-1, 0), sanitize.text.function = function(x) x)
+                       hline.after = c(-1, 0), sanitize.text.function = function(x) x, ...)
 }
 
-.xtable.matrix = function(x, category.name, ...){
-  m = x$ErrorMatrix
-  names(m)[ncol(m)] = "Estimation weight"
-  names(m)[1:length(category.name)] = category.name
+.xtable.matrix = function(x, category.name, category.colname, caption, digits, ...){
+  m = as.data.frame.matrix(x$ErrorMatrix)
+  # names(m)[ncol(m)] = "Estimation weight"
+  names(m)[1:length(category.name)] = category.colname
   rownames(m)[1:length(category.name)] = category.name
   
-  tbl = xtable(m, digits = c(rep(0, ncol(m)-1), 2, 2), ...)
+  tbl = xtable(m, caption, digits = c(rep(0, ncol(m)-1), digits, 3))
+
   comment          = list()
   comment$pos      = list()
   comment$pos[[1]] = c(0)
-  comment$command  = c(paste0("&\\multicolumn{",ncol(tbl)-1,"}{c}{Reference class}\\\\\n", 
-                              paste(c("Map class",names(tbl)), collapse = " & "),"\\\\\n"))
+  comment$command  = c(paste0("&\\multicolumn{",length(category.name),"}{c}{Reference class}&&\\\\\n", 
+                              paste(c("\\multicolumn{1}{c}{Map class}",names(tbl)), collapse = " & "),"\\\\\n"))
   
   print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
-               hline.after = c(-1, 0), sanitize.text.function = function(x) x)
+               hline.after = c(-1, 0, nrow(tbl)), sanitize.text.function = function(x) x, ...)
   
 }
 
-.xtable.area = function(x, category.name, ...){
+.xtable.area = function(x, category.name, caption, digits, ...){
   
   a = x$AreaUncertainty
   a = data.frame(a)
-  
-  mp = sprintf("%.2f", round(unlist(a$Mapped),2))
-  ad = sprintf("%.2f", round(unlist(a$Adjusted),2))
-  ci = sprintf("$\\pm$%.2f", round(unlist(a$ci),2))
+
+  mp = sprintf(paste0("%.",digits,"f"), round(unlist(a$Mapped),digits))
+  ad = sprintf(paste0("%.",digits,"f"), round(unlist(a$Adjusted),digits))
+  ci = sprintf(paste0("$\\pm$%.",digits,"f"), round(unlist(a$ci),digits))
   
   tbl = data.frame(mp, ad, ci)
   rownames(tbl) = category.name
   names(tbl) = c("Mapped area", "Adjusted area", "Margin of error*")
-  tbl = xtable(tbl, ...)
+  tbl = xtable(tbl, caption)
   
   comment          = list()
   comment$pos      = list()
   comment$pos[[1]] = c(0)
   comment$pos[[2]] = c(nrow(tbl))
-  comment$command  = c(paste0(paste(c("Class",names(tbl)), collapse = " & "), "\\\\\n"),
+  comment$command  = c(paste0(paste(c("\\multicolumn{1}{c}{Class}",names(tbl)), collapse = " & "), "\\\\\n"),
                        paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))
   
   print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
-               hline.after = c(-1, 0), sanitize.text.function = function(x) x)
+               hline.after = c(-1, 0), sanitize.text.function = function(x) x, ...)
   
 }
 

@@ -11,10 +11,12 @@
 \usage{
 \S4method{twdtwXtable}{twdtwAssessment}(object, table.type = "accuracy",
   show.prop = TRUE, category.name = NULL, category.type = NULL,
-  time.labels = NULL, ...)
+  rotate.col = FALSE, time.labels = NULL, caption = NULL, digits = 2,
+  ...)
 
 \S4method{twdtwXtable}{twdtwCrossValidation}(object, conf.int = 0.95,
-  show.overall = TRUE, category.name = NULL, category.type = NULL, ...)
+  show.overall = TRUE, category.name = NULL, category.type = NULL,
+  caption, digits, ...)
 }
 \arguments{
 \item{object}{an object of class twdtwAssessment.}
@@ -32,10 +34,16 @@ then use the classe names in the object \code{x}. Default is NULL.}
 \item{category.type}{a character defining the categories type "numeric" 
 or "letter", if NULL then use the class names. Default is NULL.}
 
+\item{rotate.col}{rotate class column names in latex table. Default is FALSE.}
+
 \item{time.labels}{a character or numeric for the time period or NULL to 
 include all classified periods. Default is NULL.}
 
-\item{...}{other arguments to pass to \code{\link[xtable]{xtable}}.}
+\item{caption}{the table caption.}
+
+\item{digits}{number of digits to show.}
+
+\item{...}{other arguments to pass to and \code{\link[xtable]{print.xtable}}.}
 
 \item{conf.int}{specifies the confidence level (0-1).}
 
@@ -90,9 +98,12 @@ twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples,
 twdtw_assess
 
 # Create latex tables 
-twdtwXtable(twdtw_assess, table.type="errormatrix", category.type="letter")
-twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter")
-twdtwXtable(twdtw_assess, table.type="area", category.type="letter")
+twdtwXtable(twdtw_assess, table.type="errormatrix", rotate.col=TRUE,
+  caption="Error matrix", digits=2, comment=FALSE)
+twdtwXtable(twdtw_assess, table.type="accuracy", category.type="letter", 
+  caption="Accuracy metrics.")
+twdtwXtable(twdtw_assess, table.type="area", category.type="letter",
+  digits = 0, caption="Area and uncertainty")
 
 }
 }

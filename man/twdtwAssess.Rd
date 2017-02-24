@@ -16,15 +16,19 @@
 \title{Assess TWDTW classification}
 \usage{
 \S4method{twdtwAssess}{twdtwRaster}(object, y, labels = NULL,
-  id.labels = NULL, proj4string = NULL, conf.int = 0.95)
+  id.labels = NULL, proj4string = NULL, conf.int = 0.95,
+  rm.nosample = TRUE)
 
-\S4method{twdtwAssess}{data.frame}(object, area, conf.int = 0.95)
+\S4method{twdtwAssess}{data.frame}(object, area, conf.int = 0.95,
+  rm.nosample = TRUE)
 
-\S4method{twdtwAssess}{table}(object, area, conf.int = 0.95)
+\S4method{twdtwAssess}{table}(object, area, conf.int = 0.95,
+  rm.nosample = TRUE)
 
-\S4method{twdtwAssess}{matrix}(object, area, conf.int = 0.95)
+\S4method{twdtwAssess}{matrix}(object, area, conf.int = 0.95,
+  rm.nosample = TRUE)
 
-\S4method{twdtwAssess}{twdtwMatches}(object, area, conf.int)
+\S4method{twdtwAssess}{twdtwMatches}(object, area, conf.int, rm.nosample)
 }
 \arguments{
 \item{object}{an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
@@ -52,6 +56,9 @@ be used as samples labels. Optional.}
 if \code{y} is a \code{\link[base]{data.frame}}.}
 
 \item{conf.int}{specifies the confidence level (0-1).}
+
+\item{rm.nosample}{if sum of columns and sum of rows of the error matrix are zero 
+then remove class. Default is TRUE.}
 
 \item{area}{a numeric vector with the area for each class if the argument \code{object}
 is an error matrix (confusion matrix). If \code{object} is \code{\link[dtwSat]{twdtwMatches}} 
@@ -109,7 +116,7 @@ plot(r_lucc)
 
 # Assess classification 
 twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
-                           proj4string = proj_str, conf.int = .95) 
+                           proj4string = proj_str, conf.int = .95, rm.nosample=TRUE) 
 twdtw_assess
 
 # Plot assessment 

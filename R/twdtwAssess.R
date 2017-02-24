@@ -44,6 +44,9 @@ setGeneric("twdtwAssess",
 #' 
 #' @param conf.int specifies the confidence level (0-1).
 #' 
+#' @param rm.nosample if sum of columns and sum of rows of the error matrix are zero 
+#' then remove class. Default is TRUE. 
+#' 
 #' @references 
 #' [1] Olofsson, P., Foody, G.M., Stehman, S.V., Woodcock, C.E. (2013). 
 #' Making better use of accuracy data in land change studies: Estimating 
@@ -109,7 +112,7 @@ NULL
 #' 
 #' # Assess classification 
 #' twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
-#'                            proj4string = proj_str, conf.int = .95) 
+#'                            proj4string = proj_str, conf.int = .95, rm.nosample=TRUE) 
 #' twdtw_assess
 #' 
 #' # Plot assessment 
@@ -127,24 +130,24 @@ NULL
 #' }
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwRaster",
-          definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95) 
-            twdtwAssess.twdtwRaster(object, y, labels, id.labels, proj4string, conf.int))
+          definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95, rm.nosample=TRUE) 
+            twdtwAssess.twdtwRaster(object, y, labels, id.labels, proj4string, conf.int, rm.nosample))
 
 #' @aliases twdtwAssess-data.frame
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
 #' @export
 setMethod(f = "twdtwAssess", signature = "data.frame",
-          definition = function(object, area, conf.int=.95) 
-            twdtwAssess.table(object, area, conf.int))
+          definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 
+            twdtwAssess.table(object, area, conf.int, rm.nosample))
 
 #' @aliases twdtwAssess-table
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
 #' @export
 setMethod(f = "twdtwAssess", signature = "table",
-          definition = function(object, area, conf.int=.95) 
-            twdtwAssess(as.data.frame.matrix(object), area, conf.int))
+          definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 
+            twdtwAssess(as.data.frame.matrix(object), area, conf.int, rm.nosample))
 
 #' @aliases twdtwAssess-matrix
 #' @inheritParams twdtwAssess
@@ -171,8 +174,8 @@ setMethod(f = "twdtwAssess", signature = "table",
 #' 
 #' @export
 setMethod(f = "twdtwAssess", signature = "matrix",
-          definition = function(object, area, conf.int=.95) 
-            twdtwAssess(as.data.frame.matrix(object), area, conf.int))
+          definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 
+            twdtwAssess(as.data.frame.matrix(object), area, conf.int, rm.nosample))
 
 #' @aliases twdtwAssess-twdtwMatches
 #' @inheritParams twdtwAssess
@@ -230,10 +233,10 @@ setMethod(f = "twdtwAssess", signature = "matrix",
 #' }
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwMatches",
-          definition = function(object, area, conf.int) 
-            twdtwAssess.twdtwTimeSeries(object, area, conf.int))
+          definition = function(object, area, conf.int, rm.nosample) 
+            twdtwAssess.twdtwTimeSeries(object, area, conf.int, rm.nosample))
 
-twdtwAssess.twdtwTimeSeries = function(object, area, conf.int){
+twdtwAssess.twdtwTimeSeries = function(object, area, conf.int, rm.nosample){
   
   df = do.call("rbind", lapply(object[], function(xx) xx[which.min(xx$distance),]) )
   
@@ -254,12 +257,12 @@ twdtwAssess.twdtwTimeSeries = function(object, area, conf.int){
   
   names(area) = a$Group.1
   
-  res = .twdtwAssess(error_matrix, area, conf.int)
+  res = .twdtwAssess(error_matrix, area, conf.int, rm.nosample)
 
   new("twdtwAssessment", accuracySummary=res)
 }
 
-twdtwAssess.table = function(object, area, conf.int){
+twdtwAssess.table = function(object, area, conf.int, rm.nosample){
   
   if(ncol(object)!=nrow(object))
     stop("object has have the same number of rows and columns")
@@ -267,12 +270,12 @@ twdtwAssess.table = function(object, area, conf.int){
   if(nrow(object)!=length(area))
     stop("area must have length equal to the number of rows in object")
   
-  accuracy = .twdtwAssess(object, area, conf.int)
+  accuracy = .twdtwAssess(object, area, conf.int, rm.nosample)
   
   new("twdtwAssessment", accuracySummary=accuracy, accuracyByPeriod=accuracy)
 }
   
-twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int){
+twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int, rm.nosample){
   
   # Check control points 
   y = .adjustLabelID(y, labels, id.labels)
@@ -316,9 +319,10 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   error_matrix_summary = table(samples_all[,c("Predicted","Reference")])
   
   # Compute accuracy assessment 
-  accuracy_by_period = lapply(seq_along(error_matrix_by_period), function(i) .twdtwAssess(x = error_matrix_by_period[[i]], a_by_interval[[i]], conf.int=conf.int))
+  accuracy_by_period = lapply(seq_along(error_matrix_by_period), function(i) 
+    .twdtwAssess(x = error_matrix_by_period[[i]], a_by_interval[[i]], conf.int=conf.int, rm.nosample=FALSE))
   names(accuracy_by_period) = index(object)
-  accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int)
+  accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int, rm.nosample)
   
   sp.data = SpatialPointsDataFrame(coords = samples_all[,c("longitude", "latitude")], 
                                    data = samples_all[,!names(samples_all)%in%c("longitude", "latitude")],
@@ -331,12 +335,11 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
 }
 
-.twdtwAssess = function(x, mapped_area, conf.int){
+.twdtwAssess = function(x, mapped_area, conf.int, rm.nosample){
   
   mult = qnorm(1-(1-conf.int)/2, mean = 0, sd = 1)
   
   cnames = names(mapped_area)
-  # x = data.frame(cbind(x), row.names = cnames)
   rownames(x) = cnames
   names(x) = cnames
   
@@ -344,6 +347,17 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   total_ref = colSums(x)
   total_area = sum(mapped_area)
   total_samples = sum(total_ref)
+  
+  if(rm.nosample){
+    I = total_ref>0 & total_map>0
+    x = x[I,I]
+    cnames = cnames[I]
+    total_map = total_map[I]
+    total_ref = total_ref[I]
+    mapped_area = mapped_area[I]
+    total_area = sum(mapped_area)
+    total_samples = sum(total_ref)
+  }
   
   # Weight 
   w = mapped_area / total_area

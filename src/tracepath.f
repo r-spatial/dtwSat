@@ -5,7 +5,7 @@ C       Institute for Geoinformatics (IFGI)                   C
 C       University of Muenster (WWU), Germany                 C
 C                                                             C
 C       Earth System Science Center (CCST)                    C
-C       National Institute for Space Research (INJE), Brazil  C
+C       National Institute for Space Research (INPE), Brazil  C
 C                                                             C
 C                                                             C
 C   Efficient computation of DTW trace back - 2015-10-17      C

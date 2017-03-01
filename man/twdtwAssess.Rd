@@ -150,6 +150,8 @@ table_assess
 
 plot(table_assess, type="area", perc=FALSE)
 
+plot(table_assess, type="accuracy")
+
 \dontrun{
 
 # Create raster time series

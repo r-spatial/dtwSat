@@ -172,6 +172,8 @@ setMethod(f = "twdtwAssess", signature = "table",
 #' 
 #' plot(table_assess, type="area", perc=FALSE)
 #' 
+#' plot(table_assess, type="accuracy")
+#' 
 #' @export
 setMethod(f = "twdtwAssess", signature = "matrix",
           definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 

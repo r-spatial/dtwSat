@@ -11,7 +11,7 @@
 \usage{
 twdtwApply(x, y, resample = TRUE, length = NULL, weight.fun = NULL,
   dist.method = "Euclidean", step.matrix = symmetric1, n = NULL,
-  span = NULL, min.length = 0.5, theta = 0.5, ...)
+  span = NULL, min.length = 0, theta = 0.5, ...)
 
 \S4method{twdtwApply}{twdtwTimeSeries}(x, y, resample, length, weight.fun,
   dist.method, step.matrix, n, span, min.length, theta, keep = FALSE, ...)

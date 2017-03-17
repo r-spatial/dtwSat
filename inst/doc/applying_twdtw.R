@@ -35,6 +35,7 @@ library(dtwSat)
 library(ggplot2)
 library(scales)
 library(Hmisc)
+library(reshape2)
 
 new_theme = theme_get()
 new_theme$text$family = "Helvetica"

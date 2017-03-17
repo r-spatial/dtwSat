@@ -85,7 +85,12 @@ twdtwCrossValidate.twdtwTimeSeries = function(object, times, p, ...){
     validation_ts = subset(object, -I)
     patt = createPatterns(training_ts, ...)
     twdtw_res = twdtwApply(x = validation_ts, y = patt, n=1, ...)
-    df = do.call("rbind", lapply(twdtw_res[], function(xx) xx[which.min(xx$distance),]) )
+    df = do.call("rbind", lapply(twdtw_res[], function(xx) {
+      i = which.min(xx$distance)
+      if(length(i)<1)
+        return(data.frame(Alig.N=NA, from=NA, to=NA, distance=NA, label = "Unclassified"))
+      xx[i,]
+    }))
     ref = labels(twdtw_res)$timeseries
     pred = df$label
     data = data.frame(.adjustFactores(ref, pred, levels=NULL, labels=NULL), df[,!names(df)%in%"labels"])

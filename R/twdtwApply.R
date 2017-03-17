@@ -111,7 +111,7 @@
 setGeneric(name = "twdtwApply", 
           def = function(x, y, resample=TRUE, length=NULL, weight.fun=NULL, 
                 dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
-                span=NULL, min.length=0.5, theta = 0.5, ...) standardGeneric("twdtwApply"))
+                span=NULL, min.length=0, theta = 0.5, ...) standardGeneric("twdtwApply"))
 
 
 #' @rdname twdtwApply 

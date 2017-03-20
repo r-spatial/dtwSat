@@ -147,7 +147,7 @@ initAlignments = function(...){
 #' @useDynLib dtwSat g
 .g = function(phi, step.matrix){
 
-  if(!is.loaded("computecost", PACKAGE = "dtwSat", type = "Fortran"))
+  if(!is.loaded("g", PACKAGE = "dtwSat", type = "Fortran"))
     stop("Fortran lib is not loaded")
 
   n = nrow(phi)

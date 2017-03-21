@@ -4,8 +4,8 @@ Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series
     Analysis
 Version: 0.2.2.9000
 Date: 2016-11-20
-Authors@R: c(person('Victor', 'Maus',     role = c('aut', 'cre'), email = 'vwmaus1@gmail.com'), 
-             person('Marius', 'Appel',    role = c('ctb')),
+Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com'), 
+             person('Marius', 'Appel', role = c('ctb')),
              person('Toni',   'Giorgino', role = c('ctb')))
 Description: Provides an implementation of the Time-Weighted Dynamic Time
     Warping (TWDTW) method for land cover mapping using satellite image time series.

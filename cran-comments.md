@@ -1,9 +1,19 @@
 ## Test environments
 * local Fedora 23 (64-bit), R 3.3.1
-* win-builder 
+* win-builder R-devel and R-release 
 
 
 ## REVIEWS
+
+# v0.2.2
+
+* Fixed from previous version 
+
+checking compiled code ... NOTE
+  File 'dtwSat/libs/i386/dtwSat.dll':
+    Found no call to: 'R_registerRoutines'
+  File 'dtwSat/libs/x64/dtwSat.dll':
+    Found no call to: 'R_registerRoutines'
 
 # v0.2.1
 

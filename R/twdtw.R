@@ -144,7 +144,7 @@ initAlignments = function(...){
   res
 }
 
-#' @useDynLib dtwSat g
+# @useDynLib dtwSat g
 .g = function(phi, step.matrix){
 
   if(!is.loaded("g", PACKAGE = "dtwSat", type = "Fortran"))
@@ -152,12 +152,11 @@ initAlignments = function(...){
 
   n = nrow(phi)
   m = ncol(phi)
-  res = .Fortran("g", 
+  res = .Fortran(g, 
       TM = matrix(as.double(phi), n, m),
       N  = as.integer(n),
       M  = as.integer(m),
-      PC = as.double(366),
-      PACKAGE="dtwSat")
+      PC = as.double(366))
   res$TM
 }
 

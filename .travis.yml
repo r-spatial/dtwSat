@@ -1,8 +1,9 @@
 language: C++
+cache: packages
 os: 
   - osx
   - linux
-  
+
 dist: trusty
 sudo: required
 
@@ -23,4 +24,9 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo Rscript -e "devtools::install_github('vwmaus/dtwSat')"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then Rscript -e "devtools::install_github('vwmaus/dtwSat')"; fi
 
+r_packages:
+  - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
 

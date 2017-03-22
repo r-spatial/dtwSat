@@ -1,7 +1,6 @@
 ## Test environments
-* local Fedora 23 (64-bit), R 3.3.1
+* local Fedora 23 (64-bit), R 3.3.2
 * win-builder R-devel and R-release 
-
 
 ## REVIEWS
 

@@ -1,5 +1,4 @@
 language: C++
-cache: packages
 os: 
   - osx
   - linux

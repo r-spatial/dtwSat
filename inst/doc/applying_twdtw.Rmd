@@ -38,13 +38,16 @@ preamble: >
   \usepackage{float}
   \usepackage{microtype}
   \setlength{\tabcolsep}{4pt}
-documentclass: nojss
+  \usepackage{xcolor}
+  \usepackage[printwatermark]{xwatermark}
+documentclass: article
 classoption: shortnames
 output:
   rticles::jss_article:
     fig_crop: false
     citation_package: natbib
 bibliography: [ references.bib ]
+biblio-style: jss
 vignette: >
   %\VignetteIndexEntry{dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R}
   %\VignetteEngine{knitr::rmarkdown}
@@ -105,6 +108,7 @@ page_width = 5.590551#in 14.2#cm
 page_height = 9.173228#in 23.3#cm
 ```
 
+\newwatermark[allpages,angle=45,scale=1.5,xpos=0,ypos=0]{Conditionally accepted}
 \sloppy
 
 # Introduction 

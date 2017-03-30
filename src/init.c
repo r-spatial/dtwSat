@@ -2,6 +2,7 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
+
 /* FIXME: 
  Check these declarations against the C/Fortran source code.
  */
@@ -24,4 +25,7 @@ void R_init_dtwSat(DllInfo *dll)
 {
   R_registerRoutines(dll, NULL, NULL, FortranEntries, NULL);
   R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, FALSE);
 }
+
+

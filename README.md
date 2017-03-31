@@ -76,7 +76,7 @@ show(matches)
 
     ## An object of class "twdtwMatches"
     ## Number of time series: 1 
-    ## Number of Alignments: 16 
+    ## Number of Alignments: 27 
     ## Patterns labels: Soybean Cotton Maize
 
 We can use several plot methods to visualize the results of the analysis in the `twdtwMatches` object, for example, to plot the alignments
@@ -262,7 +262,6 @@ show(twdtw_assess)
     ## Soybean-cotton     1.00 0.00000 0.000 0.000
     ## Soybean-maize      0.95 0.00036 0.019 0.037
     ## Soybean-millet     1.00 0.00000 0.000 0.000
-    ## unclassified        NaN     NaN   NaN   NaN
     ## 
     ## Producer's
     ##                Accuracy    Var    sd  ci*
@@ -271,7 +270,6 @@ show(twdtw_assess)
     ## Soybean-cotton     0.72 0.0045 0.067 0.13
     ## Soybean-maize      1.00 0.0000 0.000 0.00
     ## Soybean-millet     1.00 0.0000 0.000 0.00
-    ## unclassified        NaN    NaN    NA   NA
     ## 
     ## Area and uncertainty
     ##                 Mapped Adjusted     ci*
@@ -280,7 +278,6 @@ show(twdtw_assess)
     ## Soybean-cotton 1.9e+07  2.6e+07 4805205
     ## Soybean-maize  1.1e+08  1.0e+08 4113071
     ## Soybean-millet 7.0e+07  7.0e+07       0
-    ## unclassified   0.0e+00  0.0e+00       0
     ## 
     ## * 95 % confidence interval
 

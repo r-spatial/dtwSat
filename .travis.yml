@@ -18,9 +18,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libgdal-dev libproj-dev r-base r-base-dev; fi
   
 script: 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo Rscript -e "install.packages(c('devtools','lme4','stringr'),repos='http://cran.us.r-project.org')"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo Rscript -e "install.packages(c('devtools','lme4','stringr','caret'),repos='http://cran.us.r-project.org')"; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo Rscript -e "devtools::install_github('vwmaus/dtwSat')"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then Rscript -e "install.packages(c('devtools','lme4','stringr'),repos='http://cran.us.r-project.org')"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then Rscript -e "install.packages(c('devtools','lme4','stringr','caret'),repos='http://cran.us.r-project.org')"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then Rscript -e "devtools::install_github('vwmaus/dtwSat')"; fi
 
 r_packages:

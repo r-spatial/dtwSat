@@ -16,6 +16,15 @@
   packageStartupMessage(
     sprintf("Loaded dtwSat v%s. See ?dtwSat for help, citation(\"dtwSat\") for use in publication.\n",
             utils::packageDescription("dtwSat")$Version) )
+  
+  ## Register TWDTW as a distance function into package proxy
+  pr_DB$set_entry(FUN   = .twdtwDist,
+                  names = c("TWDTW","twdtw"),
+                  loop  = FALSE,
+                  type  = "metric",
+                  description = "Time-Weighted Dynamic Time Warping",
+                  reference   = "Maus V, Camara G, Cartaxo R, Sanchez A, Ramos FM, de Queiroz GR (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover mapping. IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, 9 (8), pp. 3729--3739. <doi: 10.1109/JSTARS.2016.2517118>."
+  );
 }
 
 #' @import zoo 
@@ -23,7 +32,7 @@
 #' @import ggplot2
 #' @import methods
 #' @import rgdal 
-#' @importFrom proxy dist
+#' @importFrom proxy dist pr_DB
 #' @importFrom reshape2 melt
 #' @importFrom scales pretty_breaks date_format percent
 #' @importFrom grDevices terrain.colors gray.colors

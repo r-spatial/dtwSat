@@ -57,7 +57,7 @@ Author: Victor Maus [aut, cre],
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
 RoxygenNote: 6.0.1
-Collate:
+Collate: 
     'class-crossValidation.R'
     'class-twdtwRaster.R'
     'class-twdtwAssessment.R'
@@ -95,6 +95,7 @@ Collate:
     'twdtwAssess.R'
     'twdtwClassify.R'
     'twdtwCrossValidate.R'
+    'twdtwDist.R'
     'twdtwXtable.R'
     'zzz.R'
 VignetteBuilder: knitr

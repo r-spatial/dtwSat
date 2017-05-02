@@ -18,4 +18,4 @@ PackageInstallArgs: --no-multiarch --with-keep.source
 PackageBuildArgs: --compact-vignettes=gs+qpdf
 PackageBuildBinaryArgs: --compact-vignettes=gs+qpdf
 PackageCheckArgs: --as-cran --no-build-vignettes --no-vignettes
-PackageRoxygenize: rd,collate
+PackageRoxygenize: rd,collate,namespace

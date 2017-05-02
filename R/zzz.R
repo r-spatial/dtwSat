@@ -44,7 +44,6 @@
 #' @importFrom lubridate month month<- day day<- year year<-
 #' @importFrom caret createDataPartition 
 #' @importFrom xtable xtable print.xtable
-#' @importFrom dtwclust tsclust 
 #' @useDynLib dtwSat, .registration = TRUE
 #' 
 NULL

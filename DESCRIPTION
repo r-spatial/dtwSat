@@ -37,8 +37,7 @@ Imports:
     lubridate,
     caret,
     mgcv,
-    xtable,
-    dtwclust
+    xtable
 Suggests:
     testthat,
     knitr,

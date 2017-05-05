@@ -107,7 +107,6 @@ plotAccuracy = function(x, perc=TRUE, conf.int=.95, time.labels=NULL,
     facet_wrap(~Period, scales = "free") + 
     geom_bar(position="dodge", stat="identity", na.rm=TRUE) +
     geom_errorbar(limits, position=dodge, width=0.25, na.rm=TRUE) + 
-    # scale_fill_grey(start = .6, end = .3) + 
     xlab("") + 
     ylab("Accuracy")
   

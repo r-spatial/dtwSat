@@ -63,7 +63,9 @@ plotPatterns = function(x, labels=NULL, attr, year=2005){
     geom_line() + 
     facet_wrap(~Pattern) + 
     theme(legend.position = "bottom") + 
-    scale_x_date(labels = date_format("%b"))
+    scale_x_date(labels = date_format("%b")) + 
+    guides(colour = guide_legend(title = "Bands")) + 
+    ylab("Value")
   
   gp
   

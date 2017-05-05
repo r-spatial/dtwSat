@@ -101,6 +101,7 @@ plotClassification = function(x, timeseries.labels=NULL, patterns.labels=NULL, a
     scale_y_continuous(expand = c(0, 0), breaks=y.breaks, labels=y.labels) +
     scale_x_date(breaks=waiver(), labels=waiver()) +
     theme(legend.position = "bottom") + 
+    guides(colour = guide_legend(title = "Bands")) + 
     ylab("Value") + 
     xlab("Time")
   gp

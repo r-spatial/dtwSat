@@ -12,11 +12,11 @@
 \S4method{twdtwXtable}{twdtwAssessment}(object, table.type = "accuracy",
   show.prop = TRUE, category.name = NULL, category.type = NULL,
   rotate.col = FALSE, time.labels = NULL, caption = NULL, digits = 2,
-  ...)
+  show.footnote = TRUE, ...)
 
 \S4method{twdtwXtable}{twdtwCrossValidation}(object, conf.int = 0.95,
   show.overall = TRUE, category.name = NULL, category.type = NULL,
-  caption, digits, ...)
+  caption = NULL, digits = 2, show.footnote = TRUE, ...)
 }
 \arguments{
 \item{object}{an object of class twdtwAssessment.}
@@ -42,6 +42,8 @@ include all classified periods. Default is NULL.}
 \item{caption}{the table caption.}
 
 \item{digits}{number of digits to show.}
+
+\item{show.footnote}{show confidence interval in the footnote.}
 
 \item{...}{other arguments to pass to and \code{\link[xtable]{print.xtable}}.}
 

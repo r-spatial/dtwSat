@@ -66,7 +66,9 @@ plotTimeSeries = function(x, labels=NULL, attr){
   gp = ggplot(df.p, aes_string(x="Time", y="value", colour="variable") ) + 
     geom_line() + 
     theme(legend.position = "bottom") + 
-    facet_wrap(~Series, scales = "free_x", ncol=1) 
+    facet_wrap(~Series, scales = "free_x", ncol=1) + 
+    guides(colour = guide_legend(title = "Bands")) + 
+    ylab("Value") 
   
   gp
   

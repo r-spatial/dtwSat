@@ -37,6 +37,8 @@ setGeneric("twdtwXtable",
 #' 
 #' @param conf.int specifies the confidence level (0-1).
 #' 
+#' @param show.footnote show confidence interval in the footnote. 
+#' 
 #' @param ... other arguments to pass to and \code{\link[xtable]{print.xtable}}.
 #'
 #' @seealso \code{\link[dtwSat]{twdtwAssess}} and  
@@ -105,7 +107,7 @@ setMethod("twdtwXtable",
           signature = signature(object = "twdtwAssessment"),
           definition = function(object, table.type="accuracy", show.prop=TRUE, category.name=NULL,
                                 category.type=NULL, rotate.col=FALSE, time.labels=NULL, 
-                                caption = NULL, digits = 2, ...){
+                                caption = NULL, digits = 2, show.footnote=TRUE, ...){
             y = object@accuracySummary
             if(!is.null(time.labels))
               y = object@accuracyByPeriod[[time.labels]]
@@ -124,9 +126,9 @@ setMethod("twdtwXtable",
               category.colname = paste0("\\rotatebox[origin=l]{90}{",category.colname,"}")
             pt = pmatch(table.type,c("accuracy","matrix","area","errormatrix"))
             switch(pt,
-                   .xtable.accuracy(x=y, category.name, category.colname, show.prop, caption, digits, ...),
+                   .xtable.accuracy(x=y, category.name, category.colname, show.prop, caption, digits, show.footnote, ...),
                    .xtable.matrix(x=y, category.name, category.colname, caption, digits, ...),
-                   .xtable.area(x=y, category.name, caption, digits, ...),
+                   .xtable.area(x=y, category.name, caption, digits, show.footnote, ...),
                    .xtable.matrix(x=y, category.name, category.colname, caption, digits, ...)
             )
           }
@@ -139,7 +141,7 @@ setMethod("twdtwXtable",
 setMethod("twdtwXtable", 
           signature = signature(object = "twdtwCrossValidation"),
           definition = function(object, conf.int=.95, show.overall=TRUE, 
-                                category.name=NULL, category.type=NULL, caption, digits, ...){
+                                category.name=NULL, category.type=NULL, caption = NULL, digits = 2, show.footnote=TRUE, ...){
             y = summary(object, conf.int = conf.int)
             n = nrow(y$Users)
             if(is.null(category.name))
@@ -149,11 +151,11 @@ setMethod("twdtwXtable",
                                      as.character(seq(1:n)),
                                      LETTERS[1:n]
               )
-            .xtable.crossvalidation(x=y, category.name, show.overall, conf.int, caption, digits, ...)
+            .xtable.crossvalidation(x=y, category.name, show.overall, conf.int, caption, digits, show.footnote, ...)
           }
 )
 
-.xtable.crossvalidation = function(x, category.name, show.overall, conf.int, caption, digits, ...){
+.xtable.crossvalidation = function(x, category.name, show.overall, conf.int, caption, digits, show.footnote, ...){
   
   ua = sprintf(paste0("%.",digits,"f"), round(x$Users[["Accuracy"]],digits))
   ua_sd = sprintf(paste0("(%.",digits,"f)"), round(x$Users[["sd"]],digits))
@@ -190,7 +192,7 @@ setMethod("twdtwXtable",
   comment$pos[[2]] = c(nrow(tbl))
   comment$command  = c(paste0(table_columns, "\\\\\n", 
                               "\\multicolumn{1}{c}{Class}", paste(rep(" & \\multicolumn{1}{c}{$\\mu$} & \\multicolumn{1}{c}{$\\sigma$} & \\multicolumn{1}{c}{ci*}", n),collapse = ""),"\\\\\n"),
-                       paste("\\hline \n", "\\multicolumn{",ncol(tbl)+1,"}{l}{* ",conf.int*100,"\\% confidence interval.}\n", sep = ""))
+                       paste("\\hline \n", ifelse(show.footnote, paste0("\\multicolumn{",ncol(tbl)+1,"}{l}{* ",conf.int*100,"\\% confidence interval.}\n"), ""), sep = ""))
   
   rownames(tbl) = category.name
   
@@ -202,7 +204,7 @@ setMethod("twdtwXtable",
 }
 
 
-.xtable.accuracy = function(x, category.name, category.colname, show.prop, caption, digits, ...){
+.xtable.accuracy = function(x, category.name, category.colname, show.prop, caption, digits, show.footnote, ...){
 
   ua = sprintf(paste0("%.",digits,"f$\\pm$%.",digits,"f"), round(x$UsersAccuracy[,"Accuracy"],digits), round(x$UsersAccuracy[,"ci"], digits))
   pa = sprintf(paste0("%.",digits,"f$\\pm$%.",digits,"f"), round(x$ProducersAccuracy[,"Accuracy"],digits), round(x$ProducersAccuracy[,"ci"], digits))
@@ -235,12 +237,11 @@ setMethod("twdtwXtable",
   if(show.prop){
     comment$command  = c(paste0("&\\multicolumn{",length(category.name),"}{c}{Reference class}&&&&\\\\\n", 
                                 paste(c("\\multicolumn{1}{c}{Map class}",names(tbl)), collapse = " & "),"\\\\\n"),
-                         paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))    
+                         paste("\\hline \n", ifelse(show.footnote, paste0("\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n"), ""), sep = ""))
   } else {
     comment$command  = c(paste0(paste(c("\\multicolumn{1}{c}{Class}",names(tbl)), collapse = " & "),"\\\\\n"),
-                         paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))
+                         paste("\\hline \n", ifelse(show.footnote, paste0("\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n"), ""), sep = ""))
   }
-  
 
   
   print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
@@ -266,7 +267,7 @@ setMethod("twdtwXtable",
   
 }
 
-.xtable.area = function(x, category.name, caption, digits, ...){
+.xtable.area = function(x, category.name, caption, digits, show.footnote, ...){
   
   a = x$AreaUncertainty
   a = data.frame(a)
@@ -285,7 +286,7 @@ setMethod("twdtwXtable",
   comment$pos[[1]] = c(0)
   comment$pos[[2]] = c(nrow(tbl))
   comment$command  = c(paste0(paste(c("\\multicolumn{1}{c}{Class}",names(tbl)), collapse = " & "), "\\\\\n"),
-                       paste("\\hline \n", "\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n", sep = ""))
+                       paste("\\hline \n", ifelse(show.footnote, paste0("\\multicolumn{",ncol(tbl),"}{l}{* ",x$conf.int*100,"\\% confidence interval.}\n"), ""), sep = ""))
   
   print.xtable(tbl, add.to.row = comment, include.rownames=TRUE, include.colnames = FALSE,
                hline.after = c(-1, 0), sanitize.text.function = function(x) x, ...)

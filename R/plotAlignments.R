@@ -92,9 +92,11 @@ plotAlignments = function(x, timeseries.labels=NULL, patterns.labels=NULL, attr=
   
   gp = ggplot(data=df.all) +  
     geom_line(data=df.alignments, aes_string(x='Time', y='value', group='group', linetype='Variable')) + 
+    guides(linetype = guide_legend(title = "Bands")) + 
     facet_wrap(~facets, ncol = 1, scales = "free_y") + 
     geom_path(data=df.matches, aes_string(x='Time', y='distance', group='group', colour='Pattern')) +
-    geom_point(data=df.matches, aes_string(x='Time', y='distance', group='group', colour='Pattern')) 
+    geom_point(data=df.matches, aes_string(x='Time', y='distance', group='group', colour='Pattern')) + 
+    ylab("Value")
   gp
 }
 

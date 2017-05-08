@@ -44,6 +44,7 @@ documentclass: article
 classoption: shortnames
 output:
   rticles::jss_article:
+    pandoc_args: --natbib 
     fig_crop: false
 bibliography: references.bib
 biblio-style: jss
@@ -505,6 +506,27 @@ plot(x = maps_assessment, type = "area", perc = FALSE) +
 # Conclusions and Discussion 
 
 
+The overall accuracy of the classification with a 95% confidence level is within 97% and 99%. With same confidence level, user's and producer's accuracy are between 90% and 100% for all classes, except for "Soybean-cotton", which has wide confidence interval for user's accuracy, between 59% and 85%. A small sample size will likely have large confidence intervals [@Foody:2009], therefore, this analysis could be improved by increasing the number of "Soybean-cotton" samples. In addition, our access to field information is limited to a set of samples irregularly distributed over time, which are not enough to assess each mapped period independently from each other. Nevertheless, the results of the accuracy assessment show that the TWDTW has great potential to classify different crop types. 
+
+DTW based approaches have achieved good results for land cover classification [@Petitjean:2012; @Maus:2016], however, a reduced number of points in the time series will negatively impact the accuracy. Remotely sensed images often present noise and poor coverage due to clouds, aerosol load, surface directional effects, and sensor problems. This leads to large amount of gaps in satellite image time series. Therefore, methods that deal with irregular temporal sampling, i.e., irregular sampling intervals, have great potential to fully exploit the available satellite images archive. DTW is known to be one of the most robust methods for irregular time series [@Keogh:2005; @Tormene:2009]. It was successfully applied for satellite time series clustering using FORMOSAT-2 [@Petitjean:2012] and using MODIS [@Maus:2016]. @Petitjean:2012, for example, showed that clustering based on DTW is consistent even when there are several images missing per year because of cloud cover. However, the effect of a reduced number of samples in the time needs to be better evaluated in order to point out the limiting gap size for satellite image time series analysis using DTW based methods.
+
+DTW searches for matches of a temporal pattern, therefore the number of points in the time series should represent the phenological cycles of the different land cover types. The number of available observations might be a limitation for sensors with lower temporal resolution, such as Landsat. We believe that this limitation could be addressed, for example, by combining TWDTW analysis with pixel-based compositing techniques [@Griffiths:2013; @White:2014]. These approaches have become more popular with the opening of the USGS Landsat archive and could be used to increase the availability of gap-free time series [@Gomez:2016].
+
+\pkg{dtwSat} provides a dissimilarity measure in the n-dimensional space, allowing multispectral satellite image time series analysis. Our experience using MODIS data sets has shown that n-dimensional analysis, i.e., using RED, NIR, NDVI, EVI, and NDVI, increases the separability among classes when compared to single band analysis, for example using only EVI or NDVI. Further studies on multispectral data using TWDTW analysis will help to optimize the selection of bands.
+
+The main goal of \pkg{dtwSat} package is to make TWDTW accessible for researchers. The package supports the full cycle of land cover classification using image time series, ranging from selecting temporal patterns to visualising and assessing the results. The current version of the \pkg{dtwSat} package provides a pixel-based time series classification method. We envisage that future versions of the package could include local neighborhoods to reduce border effects and improve classification homogeneity. 
+
+The \pkg{dtwSat} package provides two in-built functions for linear and logistic time weight. In the current version of the package the parameters of the weight functions are set manually to the same value for all land cover classes. Future versions could include methods to search for the best parameters for each land cover class using field data.
+
+Nowadays, there are large open archives of Earth Observation data, but few open source methods for analysing them. With this motivation, this paper provides guidance on how to use the Time-Weighed Dynamic Time Warping (TWDTW) method for remote sensing applications. As we have discussed in a companion paper [@Maus:2016], the TWDTW method is well suited for land cover change analysis of satellite image time series. 
+
+The TWDTW algorithm is computationally intensive and for large areas one should consider parallel processing. The algorithm is pixel time series based, i.e., each time series is processed independently from each other, and therefore, it can be easily parallelized. To aim for maximum usage by the scientific community, the \pkg{dtwSat} package described in this paper works with well-known \proglang{R} data classes such as provided by \pkg{raster}, which offers the option to work with raster data sets stored on disk that are too large to be loaded into memory (RAM) at once [@Hijmans:2015]. We are planning improvements, so that \pkg{dtwSat} can also be combined with array databases, such as SciDB [@Stonebraker:2013]. We believe that combining array databases with image time series analysis software such as presented here is one way forward to scaling the process of information extracting from very large Earth Observation data.
+
+
+
+
 \section*{Acknowledgments}
 Victor Maus has been supported by the Institute for Geoinformatics, University of Münster (Germany), and by the Earth System Science Center, National Institute for Space Research (Brazil). Gilberto Camara's term as Brazil Chair at IFGI has been supported by CAPES (grant 23038.007569\/2012-16). Gilberto's work is also supported by FAPESP e-science program (grant 2014-08398-6) and CNPq (grant 312151\/2014-4).
 
+
+\bibliographystyle{jss}

@@ -6,6 +6,11 @@
 
 # v0.2.3
 
+* Fix check error 
+   checking re-building of vignette outputs ... [1s/1s] WARNING 
+   Error in re-building vignettes: 
+   ... 
+
 # v0.2.2
 
 # v0.2.1

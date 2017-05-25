@@ -34,7 +34,7 @@ old_theme = theme_set(new_theme)
 dtwSat
 =====
 
-[![Build Status](https://travis-ci.org/vwmaus/dtwSat.png?branch=master)](https://travis-ci.org/vwmaus/dtwSat) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/dtwSat)](http://cran.r-project.org/package=dtwSat) [![Downloads](http://cranlogs.r-pkg.org/badges/dtwSat?color=brightgreen)](http://www.r-pkg.org/pkg/dtwSat)
+[![Build Status](https://travis-ci.org/vwmaus/dtwSat.png?branch=master)](https://travis-ci.org/vwmaus/dtwSat) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/dtwSat)](http://cran.r-project.org/package=dtwSat) [![month](http://cranlogs.r-pkg.org/badges/dtwSat)](http://www.r-pkg.org/pkg/dtwSat) [![total](http://cranlogs.r-pkg.org/badges/grand-total/dtwSat)](http://www.r-pkg.org/pkg/dtwSat)
 
 ### Time-Weighted Dynamic Time Warping for satellite image time series analysis
 

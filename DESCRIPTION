@@ -92,6 +92,7 @@ Collate:
     'subset.R'
     'twdtw.R'
     'twdtwApply.R'
+    'twdtwApplyParallel.R'
     'twdtwAssess.R'
     'twdtwClassify.R'
     'twdtwCrossValidate.R'

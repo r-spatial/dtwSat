@@ -273,10 +273,10 @@ apply_raster_parallel <- function(x, fun, A, filepath="", ...) {
     # Get best mathces for each point, period, and pattern 
     m = length(levels)
     h = length(breaks)-1
-    A = lapply(as.list(twdtw_results), FUN=.lowestDistances, m=m, n=h, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
-    
-    t(data.frame(A))
-    
+  
+    A <- lapply(as.list(twdtw_results), FUN=.lowestDistances, m=m, n=h, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
+    B <- as.list(data.frame(do.call("rbind", A)))
+    lapply(B, function(m) matrix(as.numeric(m), nrow = length(A), ncol = nrow(A[[1]]), byrow = TRUE))
   }
   
   # get all nodes going
@@ -343,3 +343,6 @@ apply_raster_parallel <- function(x, fun, A, filepath="", ...) {
   return(out)
 }
 
+.lowestDistances2 = function(x, m, n, levels, breaks, overlap, fill){
+  t(.bestmatches(x, m, n, levels, breaks, overlap, fill)$AM)
+}

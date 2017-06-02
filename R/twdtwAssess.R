@@ -112,7 +112,7 @@ NULL
 #' 
 #' # Assess classification 
 #' twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
-#'                            proj4string = proj_str, conf.int = .95, rm.nosample=TRUE) 
+#'                            proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
 #' twdtw_assess
 #' 
 #' # Plot assessment 

@@ -45,6 +45,8 @@
 #' @importFrom lubridate month month<- day day<- year year<-
 #' @importFrom caret createDataPartition 
 #' @importFrom xtable xtable print.xtable
+#' @importFrom utils packageDescription flush.console 
+#' @importFrom snow clusterExport sendCall recvOneData 
 #' @useDynLib dtwSat, .registration = TRUE
 #' 
 NULL

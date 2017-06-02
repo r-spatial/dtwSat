@@ -37,7 +37,8 @@ Imports:
     lubridate,
     caret,
     mgcv,
-    xtable
+    xtable,
+    snow
 Suggests:
     testthat,
     knitr,

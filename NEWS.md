@@ -1,3 +1,12 @@
+# dtwSat v0.2.4.9999
+
+* New features 
+
+  Include the function twdtwApplyParallel for TWDTW parallel processing using the package snow. 
+* Fixing bugs
+
+  Improve memory usage of functions twdtwApply and twdtwClassify for raster files. 
+
 # dtwSat v0.2.3
 
 * New features 

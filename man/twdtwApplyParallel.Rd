@@ -14,7 +14,7 @@ twdtwApplyParallel(x, y, resample = TRUE, length = NULL,
 \S4method{twdtwApplyParallel}{twdtwRaster}(x, y, resample, length, weight.fun,
   dist.method, step.matrix, n, span, min.length, theta, breaks = NULL,
   from = NULL, to = NULL, by = NULL, overlap = 0.5, filepath = "",
-  silent = FALSE, ...)
+  ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -76,8 +76,6 @@ between one match and the interval of classification. Default is 0.5,
 
 \item{filepath}{A character. The path to save the raster with results. If not informed the 
 function saves in the current work directory.}
-
-\item{silent}{if set to TRUE then hide chunk processing message. Default is FALSE.}
 }
 \value{
 An object of class twdtwRaster.
@@ -97,7 +95,6 @@ logistic weight had better results than the linear for land cover classification
 See [1] for details about the method.
 }
 \examples{
-\dontrun{
 # Create raster time series
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
@@ -128,15 +125,15 @@ validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_st
 # Create temporal patterns 
 temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
-# Run TWDTW analysis for raster time series 
+# Set TWDTW weight function 
 log_fun = weight.fun=logisticWeight(-0.1, 50)
-time_s <- system.time(
-  r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, 
-                        weight.fun = log_fun, overwrite = TRUE))
+
+# Run serial TWDTW analysis 
+r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun)
+                                
+# Run parallel TWDTW analysis
 beginCluster()
-time_p <- system.time(
-  r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, 
-                                weight.fun = log_fun, progress = 'text'))
+r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun)
 endCluster()
 
 # Classify raster based on the TWDTW analysis 
@@ -152,7 +149,6 @@ twdtw_assess
 plot(twdtw_assess, type="accuracy")
 plot(twdtw_assess, type="area")
 
-}
 }
 \references{
 [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.

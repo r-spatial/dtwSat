@@ -45,8 +45,8 @@ setGeneric(name = "twdtwApplyParallel",
 
 #' @rdname twdtwApplyParallel 
 #' @aliases twdtwApplyParallel-twdtwRaster
+# # \dontrun{
 #' @examples
-#' \dontrun{
 #' # Create raster time series
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
@@ -77,15 +77,15 @@ setGeneric(name = "twdtwApplyParallel",
 #' # Create temporal patterns 
 #' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 #' 
-#' # Run TWDTW analysis for raster time series 
+#' # Set TWDTW weight function 
 #' log_fun = weight.fun=logisticWeight(-0.1, 50)
-#' time_s <- system.time(
-#'   r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, 
-#'                         weight.fun = log_fun, overwrite = TRUE))
+#' 
+#' # Run serial TWDTW analysis 
+#' r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun)
+#'                                 
+#' # Run parallel TWDTW analysis
 #' beginCluster()
-#' time_p <- system.time(
-#'   r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, 
-#'                                 weight.fun = log_fun, progress = 'text'))
+#' r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun)
 #' endCluster()
 #' 
 #' # Classify raster based on the TWDTW analysis 
@@ -101,11 +101,10 @@ setGeneric(name = "twdtwApplyParallel",
 #' plot(twdtw_assess, type="accuracy")
 #' plot(twdtw_assess, type="area")
 #' 
-#' }
 #' @export
 setMethod(f = "twdtwApplyParallel", "twdtwRaster",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                         breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", silent=FALSE, ...){
+                         breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", ...){
             if(!is(step.matrix, "stepPattern"))
               stop("step.matrix is not of class stepPattern")
             if(is.null(weight.fun))
@@ -134,12 +133,12 @@ setMethod(f = "twdtwApplyParallel", "twdtwRaster",
             if(resample)
               y = resampleTimeSeries(object=y, length=length)
             twdtwApplyParallel.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                   breaks, overlap, filepath, silent, ...)
+                                   breaks, overlap, filepath, ...)
           })
 
 
 twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                  breaks, overlap, filepath, silent, ...){
+                                  breaks, overlap, filepath, ...){
   
   # Match raster bands to pattern bands
   raster_bands <- coverages(x)
@@ -164,21 +163,16 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
   out <- rep(list(r_template), length(levels))
   names(out) <- names(levels)
   
-  cl <- getCluster()
-  on.exit( returnCluster() )
-  
-  nodes <- length(cl)
-  
-  bs <- blockSize(x, minblocks = nodes*4)
-  bs$array_rows <- cumsum(c(1, bs$nrows*out[[1]]@ncols))
-  
   filepath <- trim(filepath)
   filename <- NULL
   if (filepath != "") {
+    dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
     filename <- paste0(filepath, "/", names(out), ".grd")
+    names(filename) <- names(out)
   } else if (!canProcessInMemory(r_template, n = length(breaks))) {
     filename <- sapply(names(out), rasterTmpFile)
   }
+  # filename <- sapply(names(out), rasterTmpFile)
   
   if (!is.null(filename)) {
     out <- lapply(names(out), function(i) writeStart(out[[i]], filename = filename[i], ...))
@@ -187,12 +181,19 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
     names(vv) <- names(out)
   }
   
+  cl <- getCluster()
+  on.exit( returnCluster() )
+  
+  nodes <- length(cl)
+  
+  bs <- blockSize(x@timeseries[[1]], minblocks = nodes*4)
+  bs$array_rows <- cumsum(c(1, bs$nrows*out[[1]]@ncols))
   pb <- pbCreate(bs$n, ...)
 
   clusterExport(cl = cl, list = c("y", "weight.fun", "dist.method", "step.matrix", "n", "span", 
                                   "min.length", "theta", "breaks", "overlap"), envir = environment())
   
-  clFun <- function(k){
+  fun <- function(k){
     
     # Get raster data
     v <- lapply(x@timeseries, getValues, row = bs$row[k], nrows = bs$nrows[k])
@@ -230,7 +231,7 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
   
   # get all nodes going
   for (k in 1:nodes) {
-    sendCall(cl[[k]], clFun, list(k), tag = k)
+    sendCall(cl[[k]], fun, list(k), tag = k)
   }
   
   for (k in 1:bs$n) {
@@ -244,7 +245,6 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
     
     # which block is this?
     b <- d$value$tag
-    # cat('received block: ',b," / ",bs$n,'\n'); flush.console();
     
     if (!is.null(filename)) {
       out <- lapply(seq_along(levels), function(l) writeValues(out[[l]], d$value$value[[l]], bs$row[b]))
@@ -258,18 +258,21 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
     # need to send more data?
     ni <- nodes + k
     if (ni <= bs$n) {
-      sendCall(cl[[d$node]], clFun, list(ni), tag = ni)
+      sendCall(cl[[d$node]], fun, list(ni), tag = ni)
     }
     pbStep(pb, k)
   }
+  
   if (!is.null(filename)) {
     out <- lapply(out, writeStop)
   } else {
     out <- lapply(seq_along(levels), function(i) setValues(out[[i]], values = vv[[i]]))
-    names(out) <- names(vv)
   }
+
   pbClose(pb)
   
+  names(out) <- levels
+    
   new("twdtwRaster", timeseries = out, timeline = breaks[-1], layers = levels)
   
 }

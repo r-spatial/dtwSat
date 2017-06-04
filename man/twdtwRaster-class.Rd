@@ -37,7 +37,7 @@
 \title{class "twdtwRaster"}
 \usage{
 \S4method{twdtwRaster}{ANY}(..., timeline, doy = NULL, layers = NULL,
-  labels = NULL, levels = NULL, filepath = NULL)
+  labels = NULL, levels = NULL, filepath = "")
 
 \S4method{dim}{twdtwRaster}(x)
 

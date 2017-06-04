@@ -59,7 +59,8 @@ for the TWDTW computation. Use \code{theta=0} to cancel the time-weight,
 \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
 the time has the same weight as the curve shape in the TWDTW analysis.}
 
-\item{...}{arguments to pass to \code{\link[raster]{writeRaster}}}
+\item{...}{arguments to pass to \code{\link[raster]{writeRaster}} and 
+\code{\link[raster]{pbCreate}}}
 
 \item{breaks}{A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
 \code{to}, and \code{by}.}

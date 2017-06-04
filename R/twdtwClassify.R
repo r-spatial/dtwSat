@@ -50,8 +50,9 @@
 #' @param filepath A character. The path to save the raster with results. If not informed the 
 #' function saves in the same directory as the input time series raster. 
 #'  
-#' @param ... arguments to pass to specifique methods for each twdtw* signature 
-#' and other arguments to pass to \code{\link[raster]{writeRaster}}. 
+#' @param ... arguments to pass to specifique methods for each twdtw* class 
+#' and other arguments to pass to \code{\link[raster]{writeRaster}} and 
+#' \code{\link[raster]{pbCreate}}. 
 #'
 #' @return An object of class twdtw*.
 #' 
@@ -118,8 +119,7 @@ setMethod("twdtwClassify", "twdtwMatches",
 #' @aliases twdtwClassify-twdtwRaster 
 #' @examples
 #' \dontrun{
-#' # Run TWDTW analysis for raster time series 
-#' patt = MOD13Q1.MT.yearly.patterns
+#' # Create raster time series
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 #' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -130,30 +130,91 @@ setMethod("twdtwClassify", "twdtwMatches",
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 #' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 #' 
-#' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-#'                     by="12 month")
-#' log_fun = weight.fun=logisticWeight(-0.1,50)
+#' # Read fiels samples 
+#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+#' proj_str = scan(system.file("lucc_MT/data/samples_projection", 
+#'                 package="dtwSat"), what = "character")
 #' 
-#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
+#' # Split samples for training (10%) and validation (90%) using stratified sampling 
+#' library(caret) 
+#' set.seed(1)
+#' I = unlist(createDataPartition(field_samples$label, p = 0.1))
+#' training_samples = field_samples[I,]
+#' validation_samples = field_samples[-I,]
 #' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
+#' # Get time series form raster
+#' training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+#' validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
 #' 
-#' plotMaps(r_lucc)
+#' # Create temporal patterns 
+#' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+#' 
+#' # Set TWDTW weight function 
+#' log_fun = weight.fun=logisticWeight(-0.1, 50)
+#' 
+#' # Run serial TWDTW analysis 
+#' r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun)
+#'                                 
+#' # Run parallel TWDTW analysis
+#' beginCluster()
+#' r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun)
+#' endCluster()
+#' 
+#' # Classify raster based on the TWDTW analysis 
+#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
+#' 
+#' plot(r_lucc)
+#' 
 #' 
 #' }
 setMethod("twdtwClassify", "twdtwRaster",
-          function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath, ...){
+          function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath="", ...){
                   if(is.null(patterns.labels)) patterns.labels = coverages(x)
                   patterns.labels = patterns.labels[!patterns.labels%in%"doy"]
-                  if(missing(filepath)) filepath = if(fromDisk(x[[2]])){dirname(filename(x[[2]]))}else{NULL}
+                  # if(missing(filepath)) filepath = if(fromDisk(x[[2]])){dirname(filename(x[[2]]))}else{NULL}
                   twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, filepath=filepath, ...)
            })
            
 twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, filepath, ...){
     
-    if(thresholds==Inf) thresholds = 9999
-   
+  if(thresholds == Inf) {
+    thresholds = 9999
+  }
+  
+  # # Create output raster objects 
+  # class_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
+  # distance_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
+  # names(class_b) = paste0("date.",index(x)) 
+  # names(distance_b) = paste0("date.",index(x)) 
+  # 
+  # filepath <- trim(filepath)
+  # filename <- NULL
+  # if (filepath != "") {
+  #   dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
+  #   filename <- paste0(filepath, "/", c("Class", "Distance"), ".grd")
+  #   names(filename) <- c("Class", "Distance")
+  # } else if (!canProcessInMemory(r_template, n = length(x@timeseries) + 2)) {
+  #   filename <- c(rasterTmpFile("Class"), rasterTmpFile("Distance"))
+  # }
+  # 
+  # if (!is.null(filename)) {
+  #   class_b <- writeStart(class_b, filename = filename[1], ...)
+  #   distance_b <- writeStart(distance_b, filename = filename[2], ...)
+  # } else {
+  #   class_vv <- matrix(class_b, ncol = nlayers(class_b))
+  #   distance_vv <- matrix(distance_b, ncol = nlayers(distance_b))
+  # }
+  # 
+  # bs <- blockSize(x@timeseries[[1]])
+  # bs$array_rows <- cumsum(c(1, bs$nrows * class_vv@ncols))
+  # pb <- pbCreate(bs$n, ...)
+  # 
+  # for(k in 1:bs$n){
+  #   # Get raster data
+  #   v <- lapply(x@timeseries, getValues, row = bs$row[k], nrows = bs$nrows[k])
+  #   
+  # }
+  
     out = lapply(seq_along(index(x)), function(i) {
       r = lapply(as.list(x)[patterns.labels], raster, layer=i)
       b = brick(r)
@@ -170,8 +231,8 @@ twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, filep
     
     levels = c(seq_along(patterns.labels), fill)
     labels = c(patterns.labels, "unclassified")
-    twdtwRaster(Class=class_b, Distance=distance_b, ..., timeline=index(x), 
-                labels=labels, levels=levels, filepath=filepath)
+    twdtwRaster(Class = class_b, Distance = distance_b, ..., timeline = index(x), 
+                labels = labels, levels = levels, filepath = filepath)
                 
 }
 

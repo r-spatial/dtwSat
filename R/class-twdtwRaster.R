@@ -178,7 +178,7 @@ setGeneric(name = "twdtwRaster",
 #' }
 #' @export
 setMethod(f = "twdtwRaster",  
-          definition = function(..., timeline, doy, layers, labels, levels, filepath){
+          definition = function(..., timeline, doy, layers, labels, levels, filepath=""){
               arg_names = names(list(...))
               not_named = setdiff(as.character(match.call(expand.dots=TRUE)), as.character(match.call(expand.dots=FALSE)))
               if(is.null(arg_names)){ 
@@ -210,7 +210,7 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, 
   
   res = timeseries
   # Save a single file (complete time series) for each raster attribute 
-  if (!is.null(filepath)) {
+  if (filepath != "") {
     dir.create(filepath, showWarnings = FALSE)
     write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
     aux = res

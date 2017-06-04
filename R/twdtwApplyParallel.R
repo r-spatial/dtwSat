@@ -169,7 +169,7 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
     dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
     filename <- paste0(filepath, "/", names(out), ".grd")
     names(filename) <- names(out)
-  } else if (!canProcessInMemory(r_template, n = length(breaks))) {
+  } else if (!canProcessInMemory(r_template, n = length(breaks) + length(x@timeseries))) {
     filename <- sapply(names(out), rasterTmpFile)
   }
   # filename <- sapply(names(out), rasterTmpFile)

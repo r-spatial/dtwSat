@@ -64,7 +64,8 @@ for the TWDTW computation. Use \code{theta=0} to cancel the time-weight,
 \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
 the time has the same weight as the curve shape in the TWDTW analysis.}
 
-\item{...}{arguments to pass to \code{\link[raster]{writeRaster}}}
+\item{...}{arguments to pass to \code{\link[raster]{writeRaster}} and 
+\code{\link[raster]{pbCreate}}}
 
 \item{keep}{preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE. For plot methods use \code{keep=TRUE}.}
@@ -117,8 +118,7 @@ mat_list = mclapply(as.list(ts), mc.cores=2, FUN=twdtwApply, y=patt, weight.fun=
 mat2 = twdtwMatches(alignments=mat_list)
 }
 \dontrun{
-# Run TWDTW analysis for raster time series 
-patt = MOD13Q1.MT.yearly.patterns
+# Create raster time series
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -129,19 +129,50 @@ doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 
-time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-                    by="12 month")
-log_fun = weight.fun=logisticWeight(-0.1,50)
+# Read fiels samples 
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+proj_str = scan(system.file("lucc_MT/data/samples_projection", 
+                package="dtwSat"), what = "character")
 
-r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, progress = 'text')
+# Split samples for training (10\%) and validation (90\%) using stratified sampling 
+library(caret) 
+set.seed(1)
+I = unlist(createDataPartition(field_samples$label, p = 0.1))
+training_samples = field_samples[I,]
+validation_samples = field_samples[-I,]
 
-plot(r_twdtw, type="distance")
+# Get time series form raster
+training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
 
+# Create temporal patterns 
+temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+
+# Set TWDTW weight function 
+log_fun = weight.fun=logisticWeight(-0.1, 50)
+
+# Run serial TWDTW analysis 
+r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun)
+                                
+# Run parallel TWDTW analysis
+beginCluster()
+r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun)
+endCluster()
+
+plot(r_twdtw, type = "distance")
+
+# Classify raster based on the TWDTW analysis 
 r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-
 plot(r_lucc)
 
-plot(r_lucc, type="distance")
+# Assess classification 
+twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
+                           proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+twdtw_assess
+
+# Plot assessment 
+plot(twdtw_assess, type="accuracy")
+plot(twdtw_assess, type="area")
 
 }
 }

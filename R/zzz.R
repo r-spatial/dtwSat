@@ -33,6 +33,7 @@
 #' @import ggplot2
 #' @import methods
 #' @import rgdal 
+#' @import snow 
 #' @importFrom proxy dist pr_DB
 #' @importFrom reshape2 melt
 #' @importFrom scales pretty_breaks date_format percent
@@ -46,7 +47,6 @@
 #' @importFrom caret createDataPartition 
 #' @importFrom xtable xtable print.xtable
 #' @importFrom utils packageDescription flush.console 
-#' @importFrom snow clusterExport sendCall recvOneData 
 #' @useDynLib dtwSat, .registration = TRUE
 #' 
 NULL

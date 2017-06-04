@@ -21,6 +21,7 @@ Depends:
     R (>= 3.2.0),
     zoo,
     raster,
+    snow,
     ggplot2
 Imports:
     methods,
@@ -37,8 +38,7 @@ Imports:
     lubridate,
     caret,
     mgcv,
-    xtable,
-    snow
+    xtable
 Suggests:
     testthat,
     knitr,

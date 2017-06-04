@@ -98,8 +98,7 @@ See [1] for details about the method.
 }
 \examples{
 \dontrun{
-# Run TWDTW analysis for raster time series 
-temporal_patterns = MOD13Q1.MT.yearly.patterns
+# Create raster time series
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
 red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
@@ -110,23 +109,48 @@ doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 
-time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-                    by="12 month")
-log_fun = weight.fun=logisticWeight(-0.1,50)
+# Read fiels samples 
+field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
+proj_str = scan(system.file("lucc_MT/data/samples_projection", 
+                package="dtwSat"), what = "character")
 
-library(snow)
+# Split samples for training (10\%) and validation (90\%) using stratified sampling 
+library(caret) 
+set.seed(1)
+I = unlist(createDataPartition(field_samples$label, p = 0.1))
+training_samples = field_samples[I,]
+validation_samples = field_samples[-I,]
+
+# Get time series form raster
+training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
+
+# Create temporal patterns 
+temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+
+# Run TWDTW analysis for raster time series 
+log_fun = weight.fun=logisticWeight(-0.1, 50)
+time_s <- system.time(
+  r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, 
+                        weight.fun = log_fun, overwrite = TRUE))
 beginCluster()
-r_twdtw = twdtwApplyParallel(x = rts, y = temporal_patterns, 
-          weight.fun = log_fun, breaks = time_interval)
+time_p <- system.time(
+  r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, 
+                                weight.fun = log_fun, progress = 'text'))
 endCluster()
 
-plot(r_twdtw, type="distance")
-
+# Classify raster based on the TWDTW analysis 
 r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-
 plot(r_lucc)
 
-plot(r_lucc, type="distance")
+# Assess classification 
+twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
+                           proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+twdtw_assess
+
+# Plot assessment 
+plot(twdtw_assess, type="accuracy")
+plot(twdtw_assess, type="area")
 
 }
 }

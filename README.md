@@ -93,7 +93,7 @@ Fig. 3. TWDTW alignments over time and cost (distance) in y-axis.
 to plot matching point
 
 ``` r
-plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean", k = 4) 
+plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean", k <- 4) 
 ```
 
 <img src="figure/plot-match-1.png" alt="Fig. 4. The four best matches of *soybean*."  />
@@ -104,12 +104,12 @@ Fig. 4. The four best matches of *soybean*.
 to plot minimum cost paths
 
 ``` r
-plot(x = matches, type = "paths", k = 1:4) 
+plot(x = matches, type = "paths", k <- 1:4) 
 ```
 
-<img src="figure/plot-path-1.png" alt="Fig. 5. The minimum cost path of the TWDTW alignment for each crop type."  />
+<img src="figure/plot-path-1.png" alt="Fig. 1. The minimum cost path of the TWDTW alignment for each crop type."  />
 <p class="caption">
-Fig. 5. The minimum cost path of the TWDTW alignment for each crop type.
+Fig. 1. The minimum cost path of the TWDTW alignment for each crop type.
 </p>
 
 and, finally to classify the subintervals of the time series. The plot will select the best match for each period of 6 months, i.e. the class for each period.
@@ -120,9 +120,9 @@ plot(x = matches, type = "classification",
      by = "6 month", overlap = 0.5) 
 ```
 
-<img src="figure/plot-group-1.png" alt="Fig. 6. Classification using the best match for each subinterval."  />
+<img src="figure/plot-group-1.png" alt="Fig. 2. Classification using the best match for each subinterval."  />
 <p class="caption">
-Fig. 6. Classification using the best match for each subinterval.
+Fig. 2. Classification using the best match for each subinterval.
 </p>
 
 ### Raster time series classification
@@ -185,9 +185,9 @@ temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 plot(temporal_patterns, type = "patterns") 
 ```
 
-<img src="figure/plot-patterns-map-1.png" alt="Fig. 7. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*."  />
+<img src="figure/plot-patterns-map-1.png" alt="Fig. 3. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*."  />
 <p class="caption">
-Fig. 7. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*.
+Fig. 3. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*.
 </p>
 
 Apply TWDTW analysis:
@@ -219,9 +219,9 @@ Land cover maps
 plot(x = r_lucc, type = "maps")
 ```
 
-<img src="figure/plot-maps-1.png" alt="Fig. 8. Land cover maps based on TWDTW analysis."  />
+<img src="figure/plot-maps-1.png" alt="Fig. 4. Land cover maps based on TWDTW analysis."  />
 <p class="caption">
-Fig. 8. Land cover maps based on TWDTW analysis.
+Fig. 4. Land cover maps based on TWDTW analysis.
 </p>
 
 Land cover area for each class over time
@@ -230,9 +230,9 @@ Land cover area for each class over time
 plot(x = r_lucc, type = "area")
 ```
 
-<img src="figure/plot-area-1.png" alt="Fig. 9. Land cover area based on TWDTW analysis."  />
+<img src="figure/plot-area-1.png" alt="Fig. 5. Land cover area based on TWDTW analysis."  />
 <p class="caption">
-Fig. 9. Land cover area based on TWDTW analysis.
+Fig. 5. Land cover area based on TWDTW analysis.
 </p>
 
 Land cover changes over time (gains and losses from/to classes)
@@ -241,9 +241,9 @@ Land cover changes over time (gains and losses from/to classes)
 plot(x = r_lucc, type = "changes")
 ```
 
-<img src="figure/plot-changes-1.png" alt="Fig. 10. Land cover changes based on TWDTW analysis."  />
+<img src="figure/plot-changes-1.png" alt="Fig. 6. Land cover changes based on TWDTW analysis."  />
 <p class="caption">
-Fig. 10. Land cover changes based on TWDTW analysis.
+Fig. 6. Land cover changes based on TWDTW analysis.
 </p>
 
 We use the validation samples to compute the metrics for accuracy assessment.
@@ -294,9 +294,9 @@ Visualizing User's and Producer's accuracy
 plot(twdtw_assess, type = "accuracy")
 ```
 
-<img src="figure/plot-users-prodcucers-1.png" alt="Fig. 11. User's and Producer's accuracy."  />
+<img src="figure/plot-users-prodcucers-1.png" alt="Fig. 7. User's and Producer's accuracy."  />
 <p class="caption">
-Fig. 11. User's and Producer's accuracy.
+Fig. 7. User's and Producer's accuracy.
 </p>
 
 Visualizing area uncertainty
@@ -305,9 +305,9 @@ Visualizing area uncertainty
 plot(twdtw_assess, type = "area")
 ```
 
-<img src="figure/plot-area-uncertainty-1.png" alt="Fig. 12. Area uncertainty."  />
+<img src="figure/plot-area-uncertainty-1.png" alt="Fig. 8. Area uncertainty."  />
 <p class="caption">
-Fig. 12. Area uncertainty.
+Fig. 8. Area uncertainty.
 </p>
 
 For further discussion on the package see the [vignettes](#vignettes) and if you want to learn more about the TWDTW method (see, Maus et al. 2016).

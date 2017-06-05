@@ -50,7 +50,7 @@ devtools::install_github("vwmaus/dtwSat")
 
 
 ```{r, echo = FALSE, eval = TRUE}
-k = 1
+k <- 1
 ```
 ### Quick demo
 In this quick dome we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `MOD13Q1.patterns.list` and an example of time series in `MOD13Q1.ts`. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
@@ -62,7 +62,7 @@ class(ts)
 plot(ts, type = "timeseries")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 We know that in the region where the time series was observed we have *soybean*, *cotton*, and *maize*, whose typical temporal pattern are:
@@ -73,7 +73,7 @@ class(patt)
 plot(patt, type = "patterns") 
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 Using these temporal patterns we run the TWDTW analysis, such that 
@@ -95,21 +95,21 @@ We can use several plot methods to visualize the results of the analysis in the 
 plot(x = matches, type = "alignments")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 to plot matching point 
 ```{r plot-match, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. The four best matches of *soybean*.')}
-plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean", k = 4) 
+plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean", k <- 4) 
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1 
+k <- k + 1 
 ```
 to plot minimum cost paths 
 ```{r plot-path, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. The minimum cost path of the TWDTW alignment for each crop type.')}
-plot(x = matches, type = "paths", k = 1:4) 
+plot(x = matches, type = "paths", k <- 1:4) 
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1 
+k <- k + 1 
 ```
 and, finally to classify the subintervals of the time series. The plot will select the best match for each period of 6 months, i.e. the class for each period.
 ```{r plot-group, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4.5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Classification using the best match for each subinterval.')}
@@ -118,7 +118,7 @@ plot(x = matches, type = "classification",
      by = "6 month", overlap = 0.5) 
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 ### Raster time series classification
@@ -175,7 +175,7 @@ temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 plot(temporal_patterns, type = "patterns") 
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1 
+k <- k + 1 
 ```
 
 Apply TWDTW analysis: 
@@ -204,7 +204,7 @@ Land cover maps
 plot(x = r_lucc, type = "maps")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 Land cover area for each class over time 
@@ -212,7 +212,7 @@ Land cover area for each class over time
 plot(x = r_lucc, type = "area")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 Land cover changes over time (gains and losses from/to classes) 
@@ -220,7 +220,7 @@ Land cover changes over time (gains and losses from/to classes)
 plot(x = r_lucc, type = "changes")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 We use the validation samples to compute the metrics for accuracy assessment. 
@@ -235,7 +235,7 @@ Visualizing User's and Producer's accuracy
 plot(twdtw_assess, type = "accuracy")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 Visualizing area uncertainty 
@@ -243,7 +243,7 @@ Visualizing area uncertainty
 plot(twdtw_assess, type = "area")
 ```
 ```{r, echo = FALSE, eval = TRUE}
-k = k + 1
+k <- k + 1
 ```
 
 For further discussion on the package see the [vignettes][Vignettes] and if you want to learn more about the TWDTW method [see, @Maus:2016].

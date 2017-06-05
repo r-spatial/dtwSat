@@ -44,7 +44,7 @@ r_twdtw <-
   twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
 
 # or Run parallel TWDTW analysis
-beginCluster()
+beginCluster(n = 4)
 r_twdtw <- 
   twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
 endCluster()

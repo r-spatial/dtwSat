@@ -178,7 +178,7 @@ setGeneric(name = "twdtwRaster",
 #' }
 #' @export
 setMethod(f = "twdtwRaster",  
-          definition = function(..., timeline, doy, layers, labels, levels, filepath){
+          definition = function(..., timeline, doy, layers, labels, levels){
               arg_names = names(list(...))
               not_named = setdiff(as.character(match.call(expand.dots=TRUE)), as.character(match.call(expand.dots=FALSE)))
               if(is.null(arg_names)){ 
@@ -195,11 +195,11 @@ setMethod(f = "twdtwRaster",
               timeseries = x[I]
               dotargs = x[-I]
               creat.twdtwRaster(timeseries=timeseries, timeline=as.Date(timeline), doy=doy,
-                                layers=layers, labels=labels, levels=levels, filepath=filepath, dotargs=dotargs)
+                                layers=layers, labels=labels, levels=levels, dotargs=dotargs)
           })
 
 
-creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, filepath, dotargs){
+creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, dotargs){
   
   # Check timeline 
   nl = sapply(c(timeseries), nlayers)
@@ -210,26 +210,26 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, 
   
   res = timeseries
   # Save a single file (complete time series) for each raster attribute 
-  if (!is.null(filepath)) {
-    dir.create(filepath, showWarnings = FALSE)
-    write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
-    aux = res
-    if(!is.null(doy))
-      aux = c(doy=doy, res)
-    res_brick = lapply(names(aux), function(i){
-      filename = paste(filepath, i, sep="/")
-      dotargs = c(x = aux[[i]], filename = filename, dotargs)
-      r = do.call(writeRaster, dotargs)
-      r
-    })
-    names(res_brick) = names(aux)
-    doy = NULL
-    res = res_brick
-    if(any(names(res)=="doy")){
-      res = res_brick[-1]
-      doy = res_brick[[1]]
-    }
-  }
+  # if (filepath != "") {
+  #   dir.create(filepath, showWarnings = FALSE)
+  #   write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
+  #   aux = res
+  #   if(!is.null(doy))
+  #     aux = c(doy=doy, res)
+  #   res_brick = lapply(names(aux), function(i){
+  #     filename = paste(filepath, i, sep="/")
+  #     dotargs = c(x = aux[[i]], filename = filename, dotargs)
+  #     r = do.call(writeRaster, dotargs)
+  #     r
+  #   })
+  #   names(res_brick) = names(aux)
+  #   doy = NULL
+  #   res = res_brick
+  #   if(any(names(res)=="doy")){
+  #     res = res_brick[-1]
+  #     doy = res_brick[[1]]
+  #   }
+  # }
   if(is.null(layers)) layers = names(res)
   if(is.null(doy)) 
     return(new("twdtwRaster", timeseries = res, timeline = timeline, layers = layers, labels = labels, levels=levels))

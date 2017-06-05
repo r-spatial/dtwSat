@@ -29,7 +29,8 @@
 #' @param y an object of class \link[dtwSat]{twdtwTimeSeries}. 
 #' The temporal patterns. 
 #' 
-#' @param ... arguments to pass to \code{\link[raster]{writeRaster}}
+#' @param ... arguments to pass to \code{\link[raster]{writeRaster}} and 
+#' \code{\link[raster]{pbCreate}}
 #'
 #' @param resample resample the patterns to have the same length. Default is TRUE.
 #' See \link[dtwSat]{resampleTimeSeries} for details.
@@ -73,11 +74,6 @@
 #' @param filepath A character. The path to save the raster with results. If not informed the 
 #' function saves in the current work directory. 
 #' 
-#' @param chunk.size An integer. Set the number of cells for each block, 
-#' see \code{\link[raster]{blockSize}} for details.  
-#' 
-#' @param silent if set to TRUE then hide chunk processing message. Default is FALSE. 
-#'
 #' @references 
 #' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
 #' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
@@ -149,46 +145,17 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
 twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep){
     res = lapply(as.list(x), FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
     new("twdtwMatches", timeseries=x, patterns=y, alignments=res)
-}      
+}
 
 
            
 #' @rdname twdtwApply 
-#' @aliases twdtwApply-twdtwRaster
-#' @examples
-#' \dontrun{
-#' # Run TWDTW analysis for raster time series 
-#' patt = MOD13Q1.MT.yearly.patterns
-#' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-#' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
-#' 
-#' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-#'                     by="12 month")
-#' log_fun = weight.fun=logisticWeight(-0.1,50)
-#' 
-#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff")
-#'
-#' plot(r_twdtw, type="distance")
-#' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-#' 
-#' plot(r_lucc)
-#' 
-#' plot(r_lucc, type="distance")
-#' 
-#' }
+#' @aliases twdtwApply-twdtwRaster 
+#' @example examples/test_twdtw_raster_analysis.R 
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                        breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, chunk.size=1000, filepath=NULL, silent=FALSE, ...){
+                        breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", ...){
                   if(!is(step.matrix, "stepPattern"))
                     stop("step.matrix is not of class stepPattern")
                   if(is.null(weight.fun))
@@ -217,94 +184,129 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
                   twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                          breaks, overlap, chunk.size, filepath, silent, ...)
+                                          breaks, overlap, filepath, ...)
            })
            
-           
+
 twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-                                  breaks, overlap, chunk.size, filepath, silent, ...){
-     
-    # Set blocks Multi-thread parameters
-    minblocks = round(nrow(x)*ncol(x) / chunk.size)
-    blocks = blockSize(x@timeseries[[1]], minblocks = minblocks)
-    threads = seq(1, blocks$n)
+                                  breaks, overlap, filepath, ...){
+  
+  
+  # Match raster bands to pattern bands
+  raster_bands <- coverages(x)
+  pattern_bands <- names(y@timeseries[[1]])
+  matching_bands <- pattern_bands[pattern_bands %in% raster_bands]
+  
+  if(length(matching_bands) < 1)
+    stop(paste0("Bands from twdtwRaster do not match the bands from patterns"))
+  
+  if("doy" %in% coverages(x) & !"doy" %in% matching_bands)
+    matching_bands <- c("doy", matching_bands)
+  
+  x <- subset(x, layers = matching_bands)
+  raster_bands <- coverages(x)
+  
+  # Set raster levels and labels 
+  levels <- levels(y)
+  names(levels) <- levels
+  
+  # Create output raster objects 
+  r_template <- brick(x@timeseries[[1]], nl = length(breaks) - 1, values = FALSE)
+  out <- rep(list(r_template), length(levels))
+  names(out) <- names(levels)
+  
+  filepath <- trim(filepath)
+  filename <- NULL
+  if (filepath != "") {
+    dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
+    filename <- paste0(filepath, "/", names(out), ".grd")
+    names(filename) <- names(out)
+  } else if (!canProcessInMemory(r_template, n = length(breaks) + length(x@timeseries) )) {
+    filename <- sapply(names(out), rasterTmpFile)
+  }
+  
+  if (!is.null(filename)) {
+    out <- lapply(names(out), function(i) writeStart(out[[i]], filename = filename[i], ...))
+  } else {
+    vv <- lapply(names(out), function(i) matrix(out[[i]], ncol = nlayers(out[[i]])))
+    names(vv) <- names(out)
+  }
+  
+  bs <- blockSize(x@timeseries[[1]])
+  bs$array_rows <- cumsum(c(1, bs$nrows*out[[1]]@ncols))
+  pb <- pbCreate(bs$n, ...)
+  
+  for(k in 1:bs$n){
     
-    # Match raster bands to pattern bands
-    raster_bands = coverages(x)
-    pattern_names = names(y@timeseries[[1]])
-    matching_bands = pattern_names[pattern_names %in% raster_bands]
-    if(length(matching_bands)<1)
-      stop(paste0("Attributes (bands) of the raster and patterns do not match"))
-    if("doy"%in%coverages(x) & !"doy"%in%matching_bands)
-      matching_bands = c("doy", matching_bands)
-    x = subset(x, layers=matching_bands)
-    raster_bands = coverages(x)
+    # Get raster data
+    v <- lapply(x@timeseries, getValues, row = bs$row[k], nrows = bs$nrows[k])
     
-    # Set raster levels and labels 
-    levels = levels(y)
-    names(levels) = levels
+    # Create twdtwTimeSeries
+    ts <- dtwSat::twdtwTimeSeries(lapply(1:nrow(v[[1]]), function(i){
+      # Get time series dates
+      if(any(names(v) %in% "doy")){
+        timeline <- dtwSat::getDatesFromDOY(year = format(dtwSat::index(x), "%Y"), doy = v[["doy"]][i,])
+      } else {
+        timeline <- dtwSat::index(x)
+      }
+      # Tag duplicate dates for removal
+      s = !duplicated(timeline)
+      # Create multi band time series
+      zoo::zoo(sapply(v[!(names(v) %in% "doy")], function(v) v[i, s, drop = FALSE]), timeline[s])
+    }))
     
-    # Open raster fiels for results 
-    if(is.null(filepath)) filepath = paste0(getwd(), "/twdtw_results")
-    r_template = brick(x@timeseries[[1]], nl=length(breaks)-1)
-    dir.create(filepath, showWarnings = FALSE, recursive = TRUE)
-    filename = paste0(filepath,"/twdtw_distance_from_",levels)
-    names(filename) = levels
-    # b_files = lapply(filename, function(i) writeStart(r_template, filename=i, format="GTiff", overwrite=TRUE))
-    b_files = lapply(filename, function(i) writeStart(r_template, filename=i, ...))
-
-    # Get time line 
-    timeline = as.Date(index(x))
+    # Apply TWDTW analysis
+    twdtw_results <- dtwSat::twdtwApply(x = ts, y = y, weight.fun = weight.fun, dist.method = dist.method,
+                                        step.matrix = step.matrix, n = n, span = span,
+                                        min.length = min.length, theta = theta, keep = FALSE)
     
-    # Raster info 
-    proj_str = projection(x)
-    coord    = data.frame(coordinates(x))
-    names(coord) = c("longitude","latitude")
+    # Get best mathces for each point, period, and pattern
+    m <- length(levels)
+    h <- length(breaks) - 1
     
-    fun = function(i){
-
-      if(!silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
-      
-      # Get twdtwTimeSeries from raster 
-      cells = cellFromRow(x@timeseries[[1]], blocks$row[i]:blocks$nrows[i])
-      ts = getTimeSeries(x, y = coord[cells,], proj4string = proj_str)
-
-      # Apply TWDTW analysis  
-      twdtw_results = twdtwApply(ts, y=y, weight.fun=weight.fun, dist.method=dist.method, 
-                                 step.matrix=step.matrix, n=n, span=span, 
-                                 min.length=min.length, theta=theta, keep=FALSE)
-
-      # Get best mathces for each point, period, and pattern 
-      m = length(levels)
-      h = length(breaks)-1
-      A = lapply(as.list(twdtw_results), FUN=.lowestDistances, m=m, n=h, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
-      
-      # Reshape list to array 
-      A = sapply(A, matrix, nrow=h, ncol=m, simplify = 'array')
-      
-      # Write raster files 
-      lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], matrix(t(A[,l,]),ncol=h), blocks$row[i]))
+    A <- lapply(as.list(twdtw_results), FUN = .lowestDistances, m = m, n = h, 
+                levels = levels, breaks = breaks, overlap = overlap, fill = 9999)
+    
+    B <- as.list(data.frame(do.call("rbind", A)))
+    
+    names(B) <- levels
+    
+    B <- lapply(B, function(m) matrix(as.numeric(m), nrow = length(A), ncol = nrow(A[[1]]), byrow = TRUE))
+    
+    rows <- seq(from = bs$array_rows[k], by = 1, length.out = bs$nrows[k]*out[[1]]@ncols)
+    for(l in seq_along(levels)){
+      if (!is.null(filename)) {
+        writeValues(out[[l]], B[[l]], bs$row[k])
+      } else {
+        vv[[l]][rows,] <- B[[l]]
+      }
     }
     
-    # Apply TWDTW analysis 
-    out.list = lapply(threads, FUN = fun)
-
-    # Close raster files 
-    b_files = lapply(b_files, writeStop)
+    pbStep(pb, k)
     
-    # Create brick list for output 
-    out = lapply(sapply(b_files, filename), brick)
-    
-    # Save output timeline 
-    timeline = breaks[-1]
-    write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
-    
-    new("twdtwRaster", timeseries = out, timeline=timeline, layers = names(out))
+  }
+  
+  if (!is.null(filename)) {
+    out <- lapply(out, writeStop)
+  } else {
+    out <- lapply(seq_along(levels), function(i) setValues(out[[i]], values = vv[[i]]))
+  }
+  
+  pbClose(pb)
+  
+  names(out) <- levels
+  
+  new("twdtwRaster", timeseries = out, timeline = breaks[-1], layers = levels)
+  
 }
 
 .lowestDistances = function(x, m, n, levels, breaks, overlap, fill){
   .bestmatches(x, m, n, levels, breaks, overlap, fill)$AM
 }
+
+# .TlowestDistances = function(x, m, n, levels, breaks, overlap, fill){
+#   t(.bestmatches(x, m, n, levels, breaks, overlap, fill)$AM)
+# }
 
 # Crop raster time series. Returns a 3D array 
 .cropTimeSeries = function(x, r1, r2){

@@ -50,8 +50,9 @@
 #' @param filepath A character. The path to save the raster with results. If not informed the 
 #' function saves in the same directory as the input time series raster. 
 #'  
-#' @param ... arguments to pass to specifique methods for each twdtw* signature 
-#' and other arguments to pass to \code{\link[raster]{writeRaster}}. 
+#' @param ... arguments to pass to specifique methods for each twdtw* class 
+#' and other arguments to pass to \code{\link[raster]{writeRaster}} and 
+#' \code{\link[raster]{pbCreate}}. 
 #'
 #' @return An object of class twdtw*.
 #' 
@@ -67,21 +68,7 @@ setGeneric(name = "twdtwClassify",
 
 #' @rdname twdtwClassify
 #' @aliases twdtwClassify-twdtwTimeSeries 
-#' @examples
-#' # Classifying time series based on TWDTW results 
-#' ts = twdtwTimeSeries(MOD13Q1.ts.list)
-#' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-#' log_fun = logisticWeight(-0.1, 100)
-#' time_intervals = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), by="6 month")
-#' mat = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
-#' best_mat = twdtwClassify(x=mat, breaks=time_intervals, overlap=0.5)
-#' plot(x=best_mat, type="classification")
-#' 
-#' \dontrun{
-#' require(parallel)
-#' best_mat = mclapply(as.list(mat), mc.cores=2, FUN=twdtwClassify, breaks=time_intervals, overlap=0.5)
-#' best_mat = twdtwMatches(alignments=best_mat)
-#' }
+#' @example examples/test_twdtw_timeseries_analysis.R 
 #' @export
 setMethod("twdtwClassify", "twdtwMatches",
           function(x, patterns.labels=NULL, from=NULL, to=NULL, by=NULL, breaks=NULL,
@@ -116,62 +103,86 @@ setMethod("twdtwClassify", "twdtwMatches",
 
 #' @rdname twdtwClassify
 #' @aliases twdtwClassify-twdtwRaster 
-#' @examples
-#' \dontrun{
-#' # Run TWDTW analysis for raster time series 
-#' patt = MOD13Q1.MT.yearly.patterns
-#' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-#' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
-#' 
-#' time_interval = seq(from=as.Date("2007-09-01"), to=as.Date("2013-09-01"), 
-#'                     by="12 month")
-#' log_fun = weight.fun=logisticWeight(-0.1,50)
-#' 
-#' r_twdtw = twdtwApply(x=rts, y=patt, weight.fun=log_fun, breaks=time_interval, 
-#'           filepath="~/test_twdtw", overwrite=TRUE, format="GTiff", mc.cores=3)
-#' 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff")
-#' 
-#' plotMaps(r_lucc)
-#' 
-#' }
+#' @example examples/test_twdtw_raster_analysis.R
 setMethod("twdtwClassify", "twdtwRaster",
-          function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath, ...){
+          function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath="", ...){
                   if(is.null(patterns.labels)) patterns.labels = coverages(x)
                   patterns.labels = patterns.labels[!patterns.labels%in%"doy"]
-                  if(missing(filepath)) filepath = if(fromDisk(x[[2]])){dirname(filename(x[[2]]))}else{NULL}
                   twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, filepath=filepath, ...)
            })
            
 twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, filepath, ...){
     
-    if(thresholds==Inf) thresholds = 9999
-   
-    out = lapply(seq_along(index(x)), function(i) {
-      r = lapply(as.list(x)[patterns.labels], raster, layer=i)
-      b = brick(r)
-      mb = min(b)
-      res = which.min(b)
-      res[which(mb[]>=thresholds)] = fill
-      list(class=res, distance=mb)
-    })
+  if(thresholds == Inf) {
+    thresholds = 9999
+  }
+  
+  levels = c(seq_along(patterns.labels), fill)
+  labels = c(patterns.labels, "unclassified")
+  
+  # Create output raster objects
+  class_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
+  distance_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
+  class_vv <- matrix(class_b, ncol = nlayers(class_b))
+  distance_vv <- matrix(distance_b, ncol = nlayers(distance_b))
+  names(class_b) = paste0("date.",index(x))
+  names(distance_b) = paste0("date.",index(x))
+
+  filepath <- trim(filepath)
+  filename <- NULL
+  if (filepath != "") {
+    dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
+    filename <- paste0(filepath, "/", c("Class", "Distance"), ".grd")
+    names(filename) <- c("Class", "Distance")
+  } else if (!canProcessInMemory(class_b, n = length(x@timeseries) + 2)) {
+    filename <- c(rasterTmpFile("Class"), rasterTmpFile("Distance"))
+  }
+
+  if (!is.null(filename)) {
+    class_b <- writeStart(class_b, filename = filename[1], ...)
+    distance_b <- writeStart(distance_b, filename = filename[2], ...)
+  }
+
+  bs <- blockSize(x@timeseries[[1]])
+  bs$array_rows <- cumsum(c(1, bs$nrows * class_b@ncols))
+  pb <- pbCreate(bs$n, ...)
+
+  for(k in 1:bs$n){
     
-    class_b = do.call("brick", lapply(out, function(x) x$class))
-    distance_b = do.call("brick", lapply(out, function(x) x$distance)) 
-    names(class_b) = paste0("date.",index(x)) 
-    names(distance_b) = paste0("date.",index(x)) 
+    v <- lapply(x@timeseries[patterns.labels], getValues, row = bs$row[k], nrows = bs$nrows[k])
+    rows <- seq(from = bs$array_rows[k], by = 1, length.out = bs$nrows[k]*class_b@ncols)
     
-    levels = c(seq_along(patterns.labels), fill)
-    labels = c(patterns.labels, "unclassified")
-    twdtwRaster(Class=class_b, Distance=distance_b, ..., timeline=index(x), 
-                labels=labels, levels=levels, filepath=filepath)
+    for(i in seq_along(index(x))) {
+      
+      r <- sapply(v, function(vv) vv[, i])
+      d <- apply(r, 1, min)
+      dc <- apply(r, 1, which.min)
+      dc[which(d[]>=thresholds)] = fill
+      class_vv[rows, i] <- dc
+      distance_vv[rows, i] <- d
+    }
+    
+    if (!is.null(filename)) {
+      writeValues(class_b, class_vv[rows, ], bs$row[k])
+      writeValues(distance_b, distance_vv[rows, ], bs$row[k])
+    } 
+    
+    pbStep(pb, k)
+    
+  }
+  
+  if (!is.null(filename)) {
+    class_b <- writeStop(class_b)
+    distance_b <- writeStop(distance_b)
+  } else {
+    class_b <- setValues(class_b, values = class_vv)
+    distance_b <- setValues(distance_b, values = distance_vv)
+  }
+  
+  pbClose(pb)
+  
+  twdtwRaster(Class = class_b, Distance = distance_b, ..., timeline = index(x), 
+              labels = labels, levels = levels, filepath = filepath)
                 
 }
 

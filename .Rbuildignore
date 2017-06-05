@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^\vignettes$
 ^twdtw_results/
+^examples/
 ^.travis.yml$
 
 # Other files

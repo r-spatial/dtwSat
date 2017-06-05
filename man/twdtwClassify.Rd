@@ -109,11 +109,12 @@ temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 log_fun = weight.fun=logisticWeight(-0.1, 50)
 
 # Run serial TWDTW analysis 
-r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun)
+r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
                                 
 # Run parallel TWDTW analysis
 beginCluster()
-r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun)
+r_twdtw <- 
+  twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
 endCluster()
 
 # Classify raster based on the TWDTW analysis 

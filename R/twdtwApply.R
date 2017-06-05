@@ -150,66 +150,8 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 
            
 #' @rdname twdtwApply 
-#' @aliases twdtwApply-twdtwRaster
-#' @examples
-#' \dontrun{
-#' # Create raster time series
-#' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-#' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
-#' 
-#' # Read fiels samples 
-#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
-#' proj_str = scan(system.file("lucc_MT/data/samples_projection", 
-#'                 package="dtwSat"), what = "character")
-#' 
-#' # Split samples for training (10%) and validation (90%) using stratified sampling 
-#' library(caret) 
-#' set.seed(1)
-#' I = unlist(createDataPartition(field_samples$label, p = 0.1))
-#' training_samples = field_samples[I,]
-#' validation_samples = field_samples[-I,]
-#' 
-#' # Get time series form raster
-#' training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
-#' validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
-#' 
-#' # Create temporal patterns 
-#' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
-#' 
-#' # Set TWDTW weight function 
-#' log_fun = weight.fun=logisticWeight(-0.1, 50)
-#' 
-#' # Run serial TWDTW analysis 
-#' r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun)
-#'                                 
-#' # Run parallel TWDTW analysis
-#' beginCluster()
-#' r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun)
-#' endCluster()
-#' 
-#' plot(r_twdtw, type = "distance")
-#' 
-#' # Classify raster based on the TWDTW analysis 
-#' r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
-#' plot(r_lucc)
-#' 
-#' # Assess classification 
-#' twdtw_assess = twdtwAssess(object = r_lucc, y = validation_samples, 
-#'                            proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
-#' twdtw_assess
-#' 
-#' # Plot assessment 
-#' plot(twdtw_assess, type="accuracy")
-#' plot(twdtw_assess, type="area")
-#' 
-#' }
+#' @aliases twdtwApply-twdtwRaster 
+#' @example examples/test_twdtw_raster_analysis.R 
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
@@ -357,87 +299,6 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
   new("twdtwRaster", timeseries = out, timeline = breaks[-1], layers = levels)
   
 }
-           
-# twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
-#                                   breaks, overlap, chunk.size, filepath, silent, ...){
-#      
-#     # Set blocks Multi-thread parameters
-#     minblocks = round(nrow(x)*ncol(x) / chunk.size)
-#     blocks = blockSize(x@timeseries[[1]], minblocks = minblocks)
-#     threads = seq(1, blocks$n)
-#     
-#     # Match raster bands to pattern bands
-#     raster_bands = coverages(x)
-#     pattern_names = names(y@timeseries[[1]])
-#     matching_bands = pattern_names[pattern_names %in% raster_bands]
-#     if(length(matching_bands)<1)
-#       stop(paste0("Attributes (bands) of the raster and patterns do not match"))
-#     if("doy"%in%coverages(x) & !"doy"%in%matching_bands)
-#       matching_bands = c("doy", matching_bands)
-#     x = subset(x, layers=matching_bands)
-#     raster_bands = coverages(x)
-#     
-#     # Set raster levels and labels 
-#     levels = levels(y)
-#     names(levels) = levels
-#     
-#     # Open raster fiels for results 
-#     if(is.null(filepath)) filepath = paste0(getwd(), "/twdtw_results")
-#     r_template = brick(x@timeseries[[1]], nl=length(breaks)-1)
-#     dir.create(filepath, showWarnings = FALSE, recursive = TRUE)
-#     filename = paste0(filepath,"/twdtw_distance_from_",levels)
-#     names(filename) = levels
-#     # b_files = lapply(filename, function(i) writeStart(r_template, filename=i, format="GTiff", overwrite=TRUE))
-#     b_files = lapply(filename, function(i) writeStart(r_template, filename=i, ...))
-# 
-#     # Get time line 
-#     timeline = as.Date(index(x))
-#     
-#     # Raster info 
-#     proj_str = projection(x)
-#     coord    = data.frame(coordinates(x))
-#     names(coord) = c("longitude","latitude")
-#     
-#     fun = function(i){
-# 
-#       if(!silent) print(paste0("Procesing chunk ",i,"/",threads[length(threads)]))
-#       
-#       # Get twdtwTimeSeries from raster 
-#       cells = cellFromRow(x@timeseries[[1]], blocks$row[i]:blocks$nrows[i])
-#       ts = getTimeSeries(x, y = coord[cells,], proj4string = proj_str)
-# 
-#       # Apply TWDTW analysis  
-#       twdtw_results = twdtwApply(ts, y=y, weight.fun=weight.fun, dist.method=dist.method, 
-#                                  step.matrix=step.matrix, n=n, span=span, 
-#                                  min.length=min.length, theta=theta, keep=FALSE)
-# 
-#       # Get best mathces for each point, period, and pattern 
-#       m = length(levels)
-#       h = length(breaks)-1
-#       A = lapply(as.list(twdtw_results), FUN=.lowestDistances, m=m, n=h, levels=levels, breaks=breaks, overlap=overlap, fill=9999)
-#       
-#       # Reshape list to array 
-#       A = sapply(A, matrix, nrow=h, ncol=m, simplify = 'array')
-#       
-#       # Write raster files 
-#       lapply(seq_along(levels), function(l) writeValues(b_files[[levels[l]]], matrix(t(A[,l,]),ncol=h), blocks$row[i]))
-#     }
-#     
-#     # Apply TWDTW analysis 
-#     out.list = lapply(threads, FUN = fun)
-# 
-#     # Close raster files 
-#     b_files = lapply(b_files, writeStop)
-#     
-#     # Create brick list for output 
-#     out = lapply(sapply(b_files, filename), brick)
-#     
-#     # Save output timeline 
-#     timeline = breaks[-1]
-#     write(as.character(timeline), file = paste(filepath, "timeline", sep="/"))
-#     
-#     new("twdtwRaster", timeseries = out, timeline=timeline, layers = names(out))
-# }
 
 .lowestDistances = function(x, m, n, levels, breaks, overlap, fill){
   .bestmatches(x, m, n, levels, breaks, overlap, fill)$AM

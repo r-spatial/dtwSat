@@ -27,9 +27,9 @@ In this quick dome we will perform a TWDTW analysis for a single time series. Th
 ``` r
 library(dtwSat)
 # Create and plot object time series 
-ts = twdtwTimeSeries(MOD13Q1.ts)
+ts <- twdtwTimeSeries(MOD13Q1.ts)
 class(ts)
-plot(ts, type="timeseries")
+plot(ts, type = "timeseries")
 ```
 
 <img src="figure/plot-MOD13Q1.ts-ts-1.png" alt="Fig. 1. Example time series which we want to classify."  />
@@ -41,9 +41,9 @@ We know that in the region where the time series was observed we have *soybean*,
 
 ``` r
 # Create and plot object time series 
-patt = twdtwTimeSeries(MOD13Q1.patterns.list)
+patt <- twdtwTimeSeries(MOD13Q1.patterns.list)
 class(patt)
-plot(patt, type="patterns") 
+plot(patt, type = "patterns") 
 ```
 
 <img src="figure/plot-patterns-1.png" alt="Fig. 2. Typical temporal patterns of *soybean*, *cotton*, and *maize*."  />
@@ -55,9 +55,9 @@ Using these temporal patterns we run the TWDTW analysis, such that
 
 ``` r
 # Define logistic time-weight, see Maus et al. (2016)
-log_fun = logisticWeight(alpha=-0.1, beta=100) 
+log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
 # Run TWDTW analysis 
-matches = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE) 
+matches <- twdtwApply(x = ts, y = patt, weight.fun = log_fun, keep = TRUE) 
 ```
 
 The result is a `twdtwMatches` object with all possible matches of the patterns to the time series
@@ -93,7 +93,7 @@ Fig. 3. TWDTW alignments over time and cost (distance) in y-axis.
 to plot matching point
 
 ``` r
-plot(x = matches, type = "matches", attr = "evi", patterns.labels="Soybean", k=4) 
+plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean", k = 4) 
 ```
 
 <img src="figure/plot-match-1.png" alt="Fig. 4. The four best matches of *soybean*."  />
@@ -130,32 +130,32 @@ Fig. 6. Classification using the best match for each subinterval.
 The next example shows how to classify a raster time series, i.e. the same as we did in the quick demo but now for each pixel location. For that we use a set of MODIS (MOD13Q1 product) images from 2007 to 2013 for a region in the Brazilian Amazon. These data is included in the package installation. Load raster time series:
 
 ``` r
-evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
+evi  <- brick(system.file("lucc_MT/data/evi.tif",  package = "dtwSat"))
+ndvi <- brick(system.file("lucc_MT/data/ndvi.tif", package = "dtwSat"))
+red  <- brick(system.file("lucc_MT/data/red.tif",  package = "dtwSat"))
+blue <- brick(system.file("lucc_MT/data/blue.tif", package = "dtwSat"))
+nir  <- brick(system.file("lucc_MT/data/nir.tif",  package = "dtwSat"))
+mir  <- brick(system.file("lucc_MT/data/mir.tif",  package = "dtwSat"))
+doy  <- brick(system.file("lucc_MT/data/doy.tif",  package = "dtwSat"))
 ```
 
 Load the dates of the MODIS images:
 
 ``` r
-timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
+timeline <- scan(system.file("lucc_MT/data/timeline", package = "dtwSat"), what = "date")
 ```
 
 Build raster time series:
 
 ``` r
-rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
+rts <- twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 ```
 
 Load the set of ground truth samples and projection information:
 
 ``` r
-field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
-proj_str = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat"), what = "character")
+field_samples <- read.csv(system.file("lucc_MT/data/samples.csv", package = "dtwSat"))
+proj_str <- scan(system.file("lucc_MT/data/samples_projection", package = "dtwSat"), what = "character")
 ```
 
 We use the package *caret* to split the samples into training (10%) and validation (90%)
@@ -163,25 +163,26 @@ We use the package *caret* to split the samples into training (10%) and validati
 ``` r
 library(caret)
 set.seed(1)
-I = unlist(createDataPartition(field_samples$label, p = 0.1))
-training_samples   = field_samples[I,]
-validation_samples = field_samples[-I,]
+I <- unlist(createDataPartition(field_samples$label, p = 0.1))
+training_samples <- field_samples[I, ]
+validation_samples <- field_samples[-I, ]
 ```
 
 Extract training time series from raster time series
 
 ``` r
-ts_training_samples = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+training_ts <- getTimeSeries(rts, y = training_samples, proj4string = proj_str)
+validation_ts <- getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
 ```
 
 Create temporal patterns using training samples
 
 ``` r
-temporal_patterns = createPatterns(ts_training_samples, freq = 8, formula = y ~ s(x))
+temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 ```
 
 ``` r
-plot(temporal_patterns, type="patterns") 
+plot(temporal_patterns, type = "patterns") 
 ```
 
 <img src="figure/plot-patterns-map-1.png" alt="Fig. 7. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*."  />
@@ -193,15 +194,21 @@ Apply TWDTW analysis:
 
 ``` r
 # Define logistic time-weight, see Maus et al. (2016)
-log_fun = logisticWeight(-0.1,50)
-# Run TWDTW analysis 
-r_twdtw = twdtwApply(x=rts, y=temporal_patterns, weight.fun=log_fun, format="GTiff", overwrite=TRUE)
+# Run serial TWDTW analysis 
+r_twdtw <-
+  twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
+
+# or Run parallel TWDTW analysis
+beginCluster()
+r_twdtw <- 
+  twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
+endCluster()
 ```
 
 Classify raster raster time series using the results from the TWDTW analysis
 
 ``` r
-r_lucc = twdtwClassify(r_twdtw, format="GTiff", overwrite=TRUE)
+r_lucc <- twdtwClassify(r_twdtw, progress = 'text')
 ```
 
 Visualising the results.
@@ -242,8 +249,8 @@ Fig. 10. Land cover changes based on TWDTW analysis.
 We use the validation samples to compute the metrics for accuracy assessment.
 
 ``` r
-twdtw_assess = twdtwAssess(r_lucc, y = validation_samples, 
-                           proj4string = proj_str, conf.int=.95) 
+twdtw_assess <- twdtwAssess(object = r_lucc, y = validation_samples, 
+  proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
 show(twdtw_assess)
 ```
 
@@ -253,38 +260,38 @@ show(twdtw_assess)
     ## 
     ## Overall
     ## Accuracy      Var       sd      ci* 
-    ##  9.8e-01  5.8e-05  7.6e-03  1.5e-02 
+    ##  0.90336  0.00013  0.01129  0.02213 
     ## 
     ## User's
-    ##                Accuracy     Var    sd   ci*
-    ## Cotton-fallow      0.95 0.00071 0.027 0.052
-    ## Forest             1.00 0.00000 0.000 0.000
-    ## Soybean-cotton     1.00 0.00000 0.000 0.000
-    ## Soybean-maize      0.95 0.00036 0.019 0.037
-    ## Soybean-millet     1.00 0.00000 0.000 0.000
+    ##                Accuracy     Var     sd   ci*
+    ## Cotton-fallow      0.95 7.1e-04 0.0266 0.052
+    ## Forest             0.98 1.2e-04 0.0112 0.022
+    ## Soybean-cotton     0.97 4.7e-04 0.0216 0.042
+    ## Soybean-maize      0.71 1.2e-03 0.0350 0.069
+    ## Soybean-millet     0.99 7.2e-05 0.0085 0.017
     ## 
     ## Producer's
-    ##                Accuracy    Var    sd  ci*
-    ## Cotton-fallow      1.00 0.0000 0.000 0.00
-    ## Forest             1.00 0.0000 0.000 0.00
-    ## Soybean-cotton     0.72 0.0045 0.067 0.13
-    ## Soybean-maize      1.00 0.0000 0.000 0.00
-    ## Soybean-millet     1.00 0.0000 0.000 0.00
+    ##                Accuracy     Var    sd   ci*
+    ## Cotton-fallow      1.00 0.00000 0.000 0.000
+    ## Forest             1.00 0.00000 0.000 0.000
+    ## Soybean-cotton     0.90 0.00106 0.032 0.064
+    ## Soybean-maize      1.00 0.00000 0.000 0.000
+    ## Soybean-millet     0.73 0.00064 0.025 0.049
     ## 
     ## Area and uncertainty
     ##                 Mapped Adjusted     ci*
-    ## Cotton-fallow  4.8e+07  4.5e+07 2484480
-    ## Forest         7.5e+07  7.5e+07       0
-    ## Soybean-cotton 1.9e+07  2.6e+07 4805205
-    ## Soybean-maize  1.1e+08  1.0e+08 4113071
-    ## Soybean-millet 7.0e+07  7.0e+07       0
+    ## Cotton-fallow  3.6e+07  3.4e+07 1859859
+    ## Forest         8.3e+07  8.2e+07 1815449
+    ## Soybean-cotton 4.0e+07  4.3e+07 3498515
+    ## Soybean-maize  9.2e+07  6.6e+07 6298507
+    ## Soybean-millet 7.1e+07  9.7e+07 6718312
     ## 
     ## * 95 % confidence interval
 
 Visualizing User's and Producer's accuracy
 
 ``` r
-plot(x = twdtw_assess, type = "accuracy")
+plot(twdtw_assess, type = "accuracy")
 ```
 
 <img src="figure/plot-users-prodcucers-1.png" alt="Fig. 11. User's and Producer's accuracy."  />
@@ -295,7 +302,7 @@ Fig. 11. User's and Producer's accuracy.
 Visualizing area uncertainty
 
 ``` r
-plot(x = twdtw_assess, type = "area")
+plot(twdtw_assess, type = "area")
 ```
 
 <img src="figure/plot-area-uncertainty-1.png" alt="Fig. 12. Area uncertainty."  />

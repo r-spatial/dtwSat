@@ -4,13 +4,15 @@
 
   Include the function twdtwApplyParallel for TWDTW parallel processing using the package snow 
   
+  Include writeRaster for twdtwRaster class 
+  
   Improve tests and documentation 
   
-* Fixing bugs
-
   Improve memory usage of twdtwApply 
   
   Improve memory usage and speed of twdtwClassify 
+  
+* Fixing bugs
   
   Fix bug in twdtwAssess for class twdtwMatches 
   

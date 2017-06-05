@@ -66,6 +66,10 @@ extent.twdtwRaster = function(x){
   extent(x@timeseries[[1]])
 }
 
+writeRaster.twdtwRaster = function(x, filepath, ...){
+  lapply(names(x@timeseries), function(i) writeRaster(x@timeseries[[i]], filename = paste0(filepath, "/", i, ".grd"), ...))
+}
+
 projection.twdtwRaster = function(x){
   projection(x@timeseries[[1]])
 }
@@ -162,6 +166,15 @@ setMethod(f = "res", "twdtwRaster",
 #' @export
 setMethod(f = "extent", "twdtwRaster",
           definition = extent.twdtwRaster)
+
+#' @inheritParams twdtwRaster-class
+#' @rdname twdtwRaster-class
+#' @export
+setMethod("writeRaster", "twdtwRaster", 
+          definition = function(x, filepath = ".", ...) {
+            writeRaster.twdtwRaster(x, filepath, ...)
+          }
+)
 
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class

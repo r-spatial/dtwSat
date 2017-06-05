@@ -3,6 +3,7 @@
 * New features 
 
   Include the function twdtwApplyParallel for TWDTW parallel processing using the package snow   
+  
 * Fixing bugs
 
   Improve memory usage of functions twdtwApply 

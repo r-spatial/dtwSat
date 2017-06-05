@@ -40,7 +40,6 @@ Imports:
     mgcv,
     xtable
 Suggests:
-    testthat,
     knitr,
     rmarkdown,
     rticles,

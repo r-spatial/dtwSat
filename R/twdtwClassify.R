@@ -108,7 +108,6 @@ setMethod("twdtwClassify", "twdtwRaster",
           function(x, patterns.labels=NULL, thresholds=Inf, fill=255, filepath="", ...){
                   if(is.null(patterns.labels)) patterns.labels = coverages(x)
                   patterns.labels = patterns.labels[!patterns.labels%in%"doy"]
-                  # if(missing(filepath)) filepath = if(fromDisk(x[[2]])){dirname(filename(x[[2]]))}else{NULL}
                   twdtwClassify.twdtwRaster(x, patterns.labels=patterns.labels, thresholds=thresholds, fill=fill, filepath=filepath, ...)
            })
            
@@ -118,58 +117,72 @@ twdtwClassify.twdtwRaster = function(x, patterns.labels, thresholds, fill, filep
     thresholds = 9999
   }
   
-  # # Create output raster objects 
-  # class_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
-  # distance_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
-  # names(class_b) = paste0("date.",index(x)) 
-  # names(distance_b) = paste0("date.",index(x)) 
-  # 
-  # filepath <- trim(filepath)
-  # filename <- NULL
-  # if (filepath != "") {
-  #   dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
-  #   filename <- paste0(filepath, "/", c("Class", "Distance"), ".grd")
-  #   names(filename) <- c("Class", "Distance")
-  # } else if (!canProcessInMemory(r_template, n = length(x@timeseries) + 2)) {
-  #   filename <- c(rasterTmpFile("Class"), rasterTmpFile("Distance"))
-  # }
-  # 
-  # if (!is.null(filename)) {
-  #   class_b <- writeStart(class_b, filename = filename[1], ...)
-  #   distance_b <- writeStart(distance_b, filename = filename[2], ...)
-  # } else {
-  #   class_vv <- matrix(class_b, ncol = nlayers(class_b))
-  #   distance_vv <- matrix(distance_b, ncol = nlayers(distance_b))
-  # }
-  # 
-  # bs <- blockSize(x@timeseries[[1]])
-  # bs$array_rows <- cumsum(c(1, bs$nrows * class_vv@ncols))
-  # pb <- pbCreate(bs$n, ...)
-  # 
-  # for(k in 1:bs$n){
-  #   # Get raster data
-  #   v <- lapply(x@timeseries, getValues, row = bs$row[k], nrows = bs$nrows[k])
-  #   
-  # }
+  levels = c(seq_along(patterns.labels), fill)
+  labels = c(patterns.labels, "unclassified")
   
-    out = lapply(seq_along(index(x)), function(i) {
-      r = lapply(as.list(x)[patterns.labels], raster, layer=i)
-      b = brick(r)
-      mb = min(b)
-      res = which.min(b)
-      res[which(mb[]>=thresholds)] = fill
-      list(class=res, distance=mb)
-    })
+  # Create output raster objects
+  class_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
+  distance_b <- brick(x@timeseries[[1]], nl = length(index(x)), values = FALSE)
+  class_vv <- matrix(class_b, ncol = nlayers(class_b))
+  distance_vv <- matrix(distance_b, ncol = nlayers(distance_b))
+  names(class_b) = paste0("date.",index(x))
+  names(distance_b) = paste0("date.",index(x))
+
+  filepath <- trim(filepath)
+  filename <- NULL
+  if (filepath != "") {
+    dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
+    filename <- paste0(filepath, "/", c("Class", "Distance"), ".grd")
+    names(filename) <- c("Class", "Distance")
+  } else if (!canProcessInMemory(class_b, n = length(x@timeseries) + 2)) {
+    filename <- c(rasterTmpFile("Class"), rasterTmpFile("Distance"))
+  }
+
+  if (!is.null(filename)) {
+    class_b <- writeStart(class_b, filename = filename[1], ...)
+    distance_b <- writeStart(distance_b, filename = filename[2], ...)
+  }
+
+  bs <- blockSize(x@timeseries[[1]])
+  bs$array_rows <- cumsum(c(1, bs$nrows * class_b@ncols))
+  pb <- pbCreate(bs$n, ...)
+
+  for(k in 1:bs$n){
     
-    class_b = do.call("brick", lapply(out, function(x) x$class))
-    distance_b = do.call("brick", lapply(out, function(x) x$distance)) 
-    names(class_b) = paste0("date.",index(x)) 
-    names(distance_b) = paste0("date.",index(x)) 
+    v <- lapply(x@timeseries[patterns.labels], getValues, row = bs$row[k], nrows = bs$nrows[k])
+    rows <- seq(from = bs$array_rows[k], by = 1, length.out = bs$nrows[k]*class_b@ncols)
     
-    levels = c(seq_along(patterns.labels), fill)
-    labels = c(patterns.labels, "unclassified")
-    twdtwRaster(Class = class_b, Distance = distance_b, ..., timeline = index(x), 
-                labels = labels, levels = levels, filepath = filepath)
+    for(i in seq_along(index(x))) {
+      
+      r <- sapply(v, function(vv) vv[, i])
+      d <- apply(r, 1, min)
+      dc <- apply(r, 1, which.min)
+      dc[which(d[]>=thresholds)] = fill
+      class_vv[rows, i] <- dc
+      distance_vv[rows, i] <- d
+    }
+    
+    if (!is.null(filename)) {
+      writeValues(class_b, class_vv[rows, ], bs$row[k])
+      writeValues(distance_b, distance_vv[rows, ], bs$row[k])
+    } 
+    
+    pbStep(pb, k)
+    
+  }
+  
+  if (!is.null(filename)) {
+    class_b <- writeStop(class_b)
+    distance_b <- writeStop(distance_b)
+  } else {
+    class_b <- setValues(class_b, values = class_vv)
+    distance_b <- setValues(distance_b, values = distance_vv)
+  }
+  
+  pbClose(pb)
+  
+  twdtwRaster(Class = class_b, Distance = distance_b, ..., timeline = index(x), 
+              labels = labels, levels = levels, filepath = filepath)
                 
 }
 

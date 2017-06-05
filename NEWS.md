@@ -8,9 +8,13 @@
   
 * Fixing bugs
 
-  Improve memory usage of functions twdtwApply 
+  Improve memory usage of twdtwApply 
   
-  Fix bug in twdtwAssess for class twdtwMAtches 
+  Improve memory usage and speed of twdtwClassify 
+  
+  Fix bug in twdtwAssess for class twdtwMatches 
+  
+  Fix bug in twdtwRaster 
   
 # dtwSat v0.2.3
 

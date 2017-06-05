@@ -175,7 +175,7 @@ setMethod(f = "twdtwAssess", signature = "matrix",
 #' }
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwMatches",
-          definition = function(object, area, conf.int, rm.nosample) 
+          definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 
             twdtwAssess.twdtwTimeSeries(object, area, conf.int, rm.nosample))
 
 twdtwAssess.twdtwTimeSeries = function(object, area, conf.int, rm.nosample){

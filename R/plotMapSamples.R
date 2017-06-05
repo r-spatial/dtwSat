@@ -16,11 +16,7 @@
 #' \code{\link[dtwSat]{plotAccuracy}}, and
 #' \code{\link[dtwSat]{plotAdjustedArea}}.
 #'  
-#' @examples
-#' \dontrun{
-#' #
-#' 
-#' }
+#' @example examples/test_twdtw_raster_analysis.R
 #' @export
 plotMapSamples = function(x, samples="all", ...){
   .plotMapSamples(x, samples, ...)

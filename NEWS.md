@@ -2,11 +2,15 @@
 
 * New features 
 
-  Include the function twdtwApplyParallel for TWDTW parallel processing using the package snow   
+  Include the function twdtwApplyParallel for TWDTW parallel processing using the package snow 
+  
+  Improve tests and documentation 
   
 * Fixing bugs
 
   Improve memory usage of functions twdtwApply 
+  
+  Fix bug in twdtwAssess for class twdtwMAtches 
   
 # dtwSat v0.2.3
 

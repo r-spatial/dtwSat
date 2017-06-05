@@ -155,10 +155,10 @@ training_ts <- getTimeSeries(rts, y = training_samples, proj4string = proj_str)
 validation_ts <- getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
 
 # Create temporal patterns 
-temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
 # Set TWDTW weight function 
-log_fun = logisticWeight(-0.1, 50)
+log_fun <- logisticWeight(-0.1, 50)
 
 # Run serial TWDTW analysis 
 r_twdtw <-
@@ -189,6 +189,15 @@ plot(twdtw_assess, type = "accuracy")
 
 # Plot area uncertainty 
 plot(twdtw_assess, type = "area")
+
+# Get latex table with error matrix 
+twdtwXtable(twdtw_assess, table.type = "matrix")
+
+# Get latex table with error accuracy 
+twdtwXtable(twdtw_assess, table.type = "accuracy")
+
+# Get latex table with area uncertainty 
+twdtwXtable(twdtw_assess, table.type = "area")
 
 }
 }

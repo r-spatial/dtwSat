@@ -70,10 +70,11 @@ plot(twdtw_assess, type = "accuracy")
 plot(twdtw_assess, type = "area")
 
 # Get latex table with error matrix 
-twdtwXtable(twdtw_assess, table.type="matrix")
+twdtwXtable(twdtw_assess, table.type = "matrix")
 
 # Get latex table with error accuracy 
-twdtwXtable(twdtw_assess, table.type="accuracy")
+twdtwXtable(twdtw_assess, table.type = "accuracy")
 
 # Get latex table with area uncertainty 
-twdtwXtable(twdtw_assess, table.type="area")
+twdtwXtable(twdtw_assess, table.type = "area")
+

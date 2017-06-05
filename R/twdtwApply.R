@@ -262,7 +262,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     
     # Get best mathces for each point, period, and pattern
     m <- length(levels)
-    h <- length(breaks)-1
+    h <- length(breaks) - 1
     
     A <- lapply(as.list(twdtw_results), FUN = .lowestDistances, m = m, n = h, 
                 levels = levels, breaks = breaks, overlap = overlap, fill = 9999)
@@ -303,6 +303,10 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
 .lowestDistances = function(x, m, n, levels, breaks, overlap, fill){
   .bestmatches(x, m, n, levels, breaks, overlap, fill)$AM
 }
+
+# .TlowestDistances = function(x, m, n, levels, breaks, overlap, fill){
+#   t(.bestmatches(x, m, n, levels, breaks, overlap, fill)$AM)
+# }
 
 # Crop raster time series. Returns a 3D array 
 .cropTimeSeries = function(x, r1, r2){

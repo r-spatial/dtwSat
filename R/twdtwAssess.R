@@ -122,57 +122,7 @@ setMethod(f = "twdtwAssess", signature = "matrix",
 #' @aliases twdtwAssess-twdtwMatches
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
-#' 
-#' @examples 
-#' \dontrun{
-#' 
-#' # Create raster time series
-#' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
-#' ndvi = brick(system.file("lucc_MT/data/ndvi.tif", package="dtwSat"))
-#' red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
-#' blue = brick(system.file("lucc_MT/data/blue.tif", package="dtwSat"))
-#' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
-#' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
-#' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-#' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
-#' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
-#' 
-#' # Read fiels samples 
-#' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
-#' proj_str = scan(system.file("lucc_MT/data/samples_projection", 
-#'                 package="dtwSat"), what = "character")
-#' 
-#' # Split samples for training (10%) and validation (90%) using stratified sampling 
-#' library(caret) 
-#' set.seed(1)
-#' I = unlist(createDataPartition(field_samples$label, p = 0.1))
-#' training_samples = field_samples[I,]
-#' validation_samples = field_samples[-I,]
-#' 
-#' # Get time series form raster
-#' training_ts = getTimeSeries(rts, y = training_samples, proj4string = proj_str)
-#' validation_ts = getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
-#' 
-#' # Create temporal patterns 
-#' temporal_patterns = createPatterns(training_ts, freq = 8, formula = y ~ s(x))
-#' 
-#' # Run TWDTW analysis for raster time series 
-#' log_fun = weight.fun=logisticWeight(-0.1,50)
-#' r_twdtw = twdtwApply(x = validation_ts, 
-#'                      y = temporal_patterns, weight.fun = log_fun)
-#' 
-#' # Accuracy assessment 
-#' twdtw_assess = twdtwAssess(r_twdtw, area = 53664.67, conf.int=.95)
-#' twdtw_assess
-#' 
-#' plot(twdtw_assess, type="accuracy")
-#' plot(twdtw_assess, type="area")
-#' 
-#' twdtwXtable(twdtw_assess, table.type="matrix")
-#' twdtwXtable(twdtw_assess, table.type="accuracy")
-#' twdtwXtable(twdtw_assess, table.type="area")
-#' 
-#' }
+#' @example examples/test_twdtw_timeseries_analysis.R 
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwMatches",
           definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 

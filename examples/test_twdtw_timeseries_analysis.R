@@ -1,4 +1,6 @@
-# Example of TWDTW analysis using time series extracted from raster 
+\dontrun{
+  
+# Example of TWDTW analysis using raster files 
 library(dtwSat)
 library(caret) 
 
@@ -64,3 +66,4 @@ twdtwXtable(twdtw_assess, table.type = "accuracy")
 # Get latex table with area uncertainty 
 twdtwXtable(twdtw_assess, table.type = "area")
 
+}

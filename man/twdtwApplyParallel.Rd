@@ -97,7 +97,7 @@ See [1] for details about the method.
 }
 \examples{
 \dontrun{
-
+  
 # Example of TWDTW analysis using raster files 
 library(dtwSat)
 library(caret) 
@@ -141,22 +141,22 @@ log_fun <- logisticWeight(-0.1, 50)
 
 # Run serial TWDTW analysis 
 r_twdtw <-
-  twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'test')
+  twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
 
 # or Run parallel TWDTW analysis
-beginCluster(n = 4)
+beginCluster()
 r_twdtw <- 
-  twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'test')
+  twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
 endCluster()
 
 # Plot TWDTW distances for the first year 
 plot(r_twdtw, type = "distance", time.levels = 1)
 
 # Classify raster based on the TWDTW analysis 
-r_lucc <- twdtwClassify(r_twdtw, format = "GTiff", overwrite = TRUE)
+r_lucc <- twdtwClassify(r_twdtw, progress = 'text')
 
 # Plot TWDTW classification results 
-plot(r_lucc, type = "classification")
+plot(r_lucc, type = "map")
 
 # Assess classification 
 twdtw_assess <- 
@@ -169,6 +169,9 @@ plot(twdtw_assess, type = "accuracy")
 # Plot area uncertainty 
 plot(twdtw_assess, type = "area")
 
+# Plot misclassified samples  
+plot(twdtw_assess, type = "map", samples = "incorrect") 
+
 # Get latex table with error matrix 
 twdtwXtable(twdtw_assess, table.type = "matrix")
 
@@ -179,6 +182,7 @@ twdtwXtable(twdtw_assess, table.type = "accuracy")
 twdtwXtable(twdtw_assess, table.type = "area")
 
 }
+
 }
 \references{
 [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.

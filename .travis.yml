@@ -23,6 +23,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then Rscript -e "install.packages(c('devtools','lme4','stringr','caret'),repos='http://cran.us.r-project.org')"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then Rscript -e "devtools::install_github('vwmaus/dtwSat')"; fi
 
+# add codecov 
 r_packages:
   - covr
 

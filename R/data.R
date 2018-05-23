@@ -37,7 +37,7 @@
 #' \link[dtwSat]{createPatterns}.
 #'  
 #' @seealso MOD13Q1 documentation: See 
-#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
+#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1_v006}.
 #' 
 #' @references 
 #' [1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
@@ -65,7 +65,7 @@
 #' 
 #' 
 #' @seealso MOD13Q1 documentation: 
-#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
+#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1_v006}.
 #' 
 #' @references 
 #' [1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
@@ -107,7 +107,7 @@
 #' 
 #' 
 #' @seealso MOD13Q1 documentation: 
-#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
+#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1_v006}.
 #' 
 #' @references 
 #' [1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
@@ -130,7 +130,7 @@
 #' @format A \link[dtwSat]{twdtwTimeSeries} object.
 #' 
 #' @seealso MOD13Q1 documentation: See 
-#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}.
+#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1_v006}.
 #' 
 #' @references 
 #' [1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).

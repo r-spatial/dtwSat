@@ -182,7 +182,7 @@ red = brick(system.file("lucc_MT/data/red.tif", package="dtwSat"))
 nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
 mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
+rts = twdtwRaster(doy, evi, ndvi, blue, red, nir, mir, timeline = timeline)
 }
 }
 \seealso{

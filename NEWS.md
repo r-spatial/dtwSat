@@ -1,4 +1,4 @@
-# dtwSat v0.2.4.9999
+# dtwSat v0.2.4
 
 * New features 
 
@@ -11,6 +11,8 @@
   Improve memory usage of twdtwApply 
   
   Improve memory usage and speed of twdtwClassify 
+  
+  Auto recognition of the argument "doy" to avoid naming the argument "doy = doy" 
   
 * Fixing bugs
   

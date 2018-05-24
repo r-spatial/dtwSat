@@ -4,13 +4,14 @@
 ^twdtw_results/
 ^examples/
 ^.travis.yml$
+_config.yml
 
 # Other files
 README.md
 corinho.R
 tardis.f
 tardis.o
-.git
+^\.git/
 .gitignore
 ^README\.Rmd$
 ^figure$

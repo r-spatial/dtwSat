@@ -1,8 +1,14 @@
 ## Test environments
-* local Fedora 23 (64-bit), R 3.3.2
+* local Ubuntu 16.04 (64-bit), R 3.4.4
 * win-builder R-devel and R-release 
+devtools::check(args = '--as-cran', build_args = '--compact-vignettes=gs+qpdf')
+devtools::build_win(args = '--compact-vignettes=gs+qpdf')
+devtools::submit_cran(args = '--compact-vignettes=gs+qpdf')
+
 
 ## REVIEWS
+
+# v0.2.4
 
 # v0.2.3
 

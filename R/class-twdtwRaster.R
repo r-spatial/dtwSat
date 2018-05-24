@@ -174,7 +174,7 @@ setGeneric(name = "twdtwRaster",
 #' nir = brick(system.file("lucc_MT/data/nir.tif", package="dtwSat"))
 #' mir = brick(system.file("lucc_MT/data/mir.tif", package="dtwSat"))
 #' doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
-#' rts = twdtwRaster(evi, ndvi, blue, red, nir, mir, timeline=timeline, doy=doy)
+#' rts = twdtwRaster(doy, evi, ndvi, blue, red, nir, mir, timeline = timeline)
 #' }
 #' @export
 setMethod(f = "twdtwRaster",  
@@ -188,6 +188,12 @@ setMethod(f = "twdtwRaster",
               }
               x = list(...)
               names(x) = c(arg_names)
+              if(missing(doy)){
+                if(any(arg_names %in% "doy")){
+                  doy = x[[which(arg_names %in% "doy")]]
+                  x = x[which(!(arg_names %in% "doy"))]
+                }
+              }
               I = which(sapply(x, is, "RasterBrick") | sapply(x, is, "RasterStack") | sapply(x, is, "RasterLayer"))
               if(length(I) < 1)
                 stop("there is no Raster* objects in the list of arguments")

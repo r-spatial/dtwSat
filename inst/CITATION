@@ -19,8 +19,8 @@ citEntry(
   entry="Manual",
   title="dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis",
   year="2017",
-  author="Victor Maus",
-  note="R package version 0.2.3",
-  textVersion="Victor Maus (2017). dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis. R package version 0.2.3." 
+  author="Victor Maus and Marius Appel and Toni Giorgino",
+  note="R package version 0.2.4",
+  textVersion="Victor Maus (2018). dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis. R package version 0.2.8." 
 )
 

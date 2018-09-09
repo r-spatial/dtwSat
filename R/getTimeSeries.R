@@ -169,7 +169,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
     return(NULL)
   }
   # Extract raster values 
-  ts = data.frame(sapply(x[!names(x)%in%c("doy")], function(x) x[p,layer:(layer+nl-1)]))
+  ts = data.frame(lapply(x[!names(x)%in%c("doy")], function(x) x[p,layer:(layer+nl-1)]))
   dates = dates[layer:(layer+nl-1)]
   k = !duplicated(dates)
   zoo(data.frame(ts[k,, drop=FALSE]), dates[k])

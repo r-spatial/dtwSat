@@ -143,7 +143,9 @@ extractTimeSeries.twdtwRaster = function(x, y){
   ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
   # Crop period
   res = lapply(seq_along(pto), FUN=.extractTimeSeries, pto = pto, x = ts_list, y = y, timeline=index(x))
-  labels = as.character(y[pto,]$label)
+  ts_null = !sapply(res, is.null)
+  res = res[ts_null]
+  labels = as.character(y[pto,]$label)[ts_null]
   twdtwTimeSeries(res, labels=labels)
 }
 

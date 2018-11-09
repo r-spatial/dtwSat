@@ -3,7 +3,7 @@ os:
 #  - osx
   - linux
 
-dist: bionic
+dist: trusty
 sudo: required
 
 before_install:

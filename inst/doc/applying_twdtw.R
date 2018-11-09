@@ -130,7 +130,7 @@ plot(ts_classification, type = "classification")
 data_folder <- system.file("lucc_MT/data", package = "dtwSat")
 dir(data_folder)
 
-## ---- echo = TRUE, eval = TRUE--------------------------------------------
+## ---- echo = TRUE, eval = TRUE------------------------------------------------------------------------------
 blue <- brick(paste(data_folder, "blue.tif", sep = "/"))
 red  <- brick(paste(data_folder,  "red.tif", sep = "/"))
 nir  <- brick(paste(data_folder,  "nir.tif", sep = "/"))
@@ -140,11 +140,11 @@ ndvi <- brick(paste(data_folder, "ndvi.tif", sep = "/"))
 day_of_year <- brick(paste(data_folder, "doy.tif", sep = "/"))
 dates <- scan(paste(data_folder, "timeline", sep = "/"), what = "dates")
 
-## ---- echo = TRUE, eval = TRUE--------------------------------------------
+## ---- echo = TRUE, eval = TRUE------------------------------------------------------------------------------
 raster_timeseries <- twdtwRaster(blue, red, nir, mir, evi, ndvi, 
   timeline = dates, doy = day_of_year)
 
-## ---- echo = TRUE, eval = TRUE, results = 'markup'------------------------
+## ---- echo = TRUE, eval = TRUE, results = 'markup'----------------------------------------------------------
 field_samples <- read.csv(paste(data_folder, "samples.csv", sep = "/"))
 head(field_samples, 5)
 table(field_samples[["label"]])
@@ -152,35 +152,35 @@ proj_str <- scan(paste(data_folder, "samples_projection", sep = "/"),
   what = "character")
 proj_str
 
-## ---- echo = TRUE, eval = TRUE, results = 'markup'------------------------
+## ---- echo = TRUE, eval = TRUE, results = 'markup'----------------------------------------------------------
 field_samples_ts <- getTimeSeries(raster_timeseries, 
   y = field_samples, proj4string = proj_str)
 field_samples_ts
 
-## ---- echo = TRUE, eval = FALSE, results = 'markup'-----------------------
+## ---- echo = TRUE, eval = FALSE, results = 'markup'---------------------------------------------------------
 #  set.seed(1)
 #  log_fun <- logisticWeight(alpha = -0.1, beta = 50)
 #  cross_validation <- twdtwCrossValidate(field_samples_ts,
 #    times = 100, p = 0.1, freq = 8, formula = y ~ s(x, bs = "cc"),
 #    weight.fun = log_fun)
 
-## ---- echo = FALSE, eval = TRUE-------------------------------------------
+## ---- echo = FALSE, eval = TRUE-----------------------------------------------------------------------------
 load(system.file("lucc_MT/cross_validation.RData", package = "dtwSat"))
 
-## ---- echo = FALSE, eval = TRUE, results = 'asis'-------------------------
+## ---- echo = FALSE, eval = TRUE, results = 'asis'-----------------------------------------------------------
 twdtwXtable(cross_validation, conf.int = .95, digits = 2, caption = "\\label{tab:cross-validation} User\'s and producer\'s accuracy of the TWDTW cross-validation using 100 resampling-with-replacement. The table shows the standard deviation ($\\sigma$) and the 95\\% confidence interval (ci) of the mean ($\\mu$).", comment = FALSE, caption.placement = "bottom", table.placement="!ht", show.footnote = FALSE)
 
 ## ----plot-accuracy, echo = TRUE, eval = TRUE, fig.width = page_width, fig.height = page_width / 2, fig.align = 'center', fig.cap = 'User\'s and producer\'s accuracy of the TWDTW cross-validation using 100 resampling-with-replacement. The plot shows the 95\\% confidence interval of the mean.', fig.pos = '!ht'----
 plot(cross_validation, conf.int = .95)
 
-## ---- echo = TRUE, eval = TRUE--------------------------------------------
+## ---- echo = TRUE, eval = TRUE------------------------------------------------------------------------------
 library(caret) 
 set.seed(1)
 I <- unlist(createDataPartition(field_samples[ , "label"], p = 0.1))
 training_ts <- subset(field_samples_ts, I)
 validation_samples <- field_samples[-I, ]
 
-## ---- echo = TRUE, eval = TRUE--------------------------------------------
+## ---- echo = TRUE, eval = TRUE------------------------------------------------------------------------------
 temporal_patterns <- 
   createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
@@ -188,7 +188,7 @@ temporal_patterns <-
 plot(temporal_patterns, 
   type = "patterns") + theme(legend.position = c(.8, .21))
 
-## ---- echo = TRUE, eval = TRUE, results = 'markup'------------------------
+## ---- echo = TRUE, eval = TRUE, results = 'markup'----------------------------------------------------------
 log_fun <- logisticWeight(alpha = -0.1, beta = 50) 
 twdtw_dist <- twdtwApply(x = raster_timeseries, y = temporal_patterns, 
   overlap = 0.5, weight.fun = log_fun, overwrite = TRUE, format = "GTiff")
@@ -196,7 +196,7 @@ twdtw_dist <- twdtwApply(x = raster_timeseries, y = temporal_patterns,
 ## ----plot-dissmilarity2008, echo = TRUE, eval = TRUE, fig.width = page_width, fig.align = 'center', fig.cap = 'Illustration of the TWDTW dissimilarity from each temporal pattern in 2008. The blue areas are more similar to the pattern and the red areas are less similar to the pattern.', fig.pos = '!ht'----
 plot(x = twdtw_dist, type = "distance")
 
-## ---- echo = TRUE, eval = TRUE, results = 'markup'------------------------
+## ---- echo = TRUE, eval = TRUE, results = 'markup'----------------------------------------------------------
 land_cover_maps <- 
   twdtwClassify(twdtw_dist, format = "GTiff", overwrite = TRUE)
 
@@ -212,20 +212,20 @@ plot(x = land_cover_maps, type = "changes")
 ## ----plot-dissmilarity, echo = TRUE, eval = TRUE, fig.width = page_width, fig.align = 'center', fig.cap = 'TWDTW dissimilarity measure for each pixel over each classified period. The blue areas have high confidence and the red areas have low confidence in the classification.', fig.pos = '!h'----
 plot(x = land_cover_maps, type = "distance")
 
-## ---- echo = TRUE, eval = TRUE--------------------------------------------
+## ---- echo = TRUE, eval = TRUE------------------------------------------------------------------------------
 maps_assessment <- twdtwAssess(land_cover_maps, y = validation_samples, 
   proj4string = proj_str, conf.int = .95)
 
-## ---- echo = FALSE, eval = TRUE, results = 'asis'-------------------------
+## ---- echo = FALSE, eval = TRUE, results = 'asis'-----------------------------------------------------------
 twdtwXtable(maps_assessment, table.type = "errormatrix", digits = 0, rotate.col = TRUE, caption = "\\label{tab:map-error-matrix}Error matrix of the map classification based on TWDTW analysis. The area is in the map unit, in this case $m^2$. $w$ is the proportion of area mapped for each class.", comment = FALSE, caption.placement = "bottom", table.placement = "!ht", show.footnote = FALSE)
 
-## ---- echo = FALSE, eval = TRUE, results = 'asis'-------------------------
+## ---- echo = FALSE, eval = TRUE, results = 'asis'-----------------------------------------------------------
 twdtwXtable(maps_assessment, table.type = "accuracy", show.prop = TRUE, digits = 2, rotate.col = TRUE, caption = "\\label{tab:map-accuracy}Accuracy and error matrix in proportion of area of the classified map. * 95\\% confidence interval.", comment = FALSE, caption.placement = "bottom", table.placement = "!ht", show.footnote = FALSE)
 
 ## ----plot-map-incorrect-samples, echo = TRUE, eval = TRUE, fig.width = page_width, fig.align = 'center', fig.cap = 'Incorrect classified samples.', fig.pos = '!ht'----
 plot(x = maps_assessment, type = "map", samples = "incorrect")
 
-## ---- echo = FALSE, eval = TRUE, results = 'asis'-------------------------
+## ---- echo = FALSE, eval = TRUE, results = 'asis'-----------------------------------------------------------
 twdtwXtable(maps_assessment, table.type = "area", digits = 0, rotate.col = TRUE, caption = "\\label{tab:map-adjusted-area}Mapped and adjusted, accumulated over the whole period, i.e., the sum of the maps from 2008 to 2013. The area is in the map unit, in this case $m^2$. * 95\\% confidence level.", comment = FALSE, caption.placement = "bottom", table.placement = "!ht", show.footnote = FALSE)
 
 ## ----plot-area-and-uncertainty, echo = FALSE, eval = TRUE, fig.width = page_width, fig.height = page_height / 2.7, fig.align = 'center', fig.cap = 'Mapped and adjusted, accumulated over the whole period, i.e., the sum from the sum of the maps from 2008 to 2013. The area is in the map unit, in this case $m^2$.', fig.pos = '!ht'----

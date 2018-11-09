@@ -529,4 +529,6 @@ The TWDTW algorithm is computationally intensive and for large areas one should 
 Victor Maus has been supported by the Institute for Geoinformatics, University of Münster (Germany), and by the Earth System Science Center, National Institute for Space Research (Brazil). Gilberto Camara's term as Brazil Chair at IFGI has been supported by CAPES (grant 23038.007569\/2012-16). Gilberto's work is also supported by FAPESP e-science program (grant 2014-08398-6) and CNPq (grant 312151\/2014-4).
 
 
-
+<!-- 
+\bibliographystyle{jss} 
+-->

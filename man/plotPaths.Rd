@@ -4,7 +4,8 @@
 \alias{plotPaths}
 \title{Plotting paths}
 \usage{
-plotPaths(x, timeseries.labels = NULL, patterns.labels = NULL, k = NULL)
+plotPaths(x, timeseries.labels = NULL, patterns.labels = NULL,
+  k = NULL)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}

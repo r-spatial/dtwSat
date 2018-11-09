@@ -14,12 +14,13 @@ twdtwApply(x, y, resample = TRUE, length = NULL, weight.fun = NULL,
   span = NULL, min.length = 0, theta = 0.5, ...)
 
 \S4method{twdtwApply}{twdtwTimeSeries}(x, y, resample, length, weight.fun,
-  dist.method, step.matrix, n, span, min.length, theta, keep = FALSE, ...)
+  dist.method, step.matrix, n, span, min.length, theta, keep = FALSE,
+  ...)
 
 \S4method{twdtwApply}{twdtwRaster}(x, y, resample, length, weight.fun,
   dist.method, step.matrix, n, span, min.length, theta, breaks = NULL,
-  from = NULL, to = NULL, by = NULL, overlap = 0.5, filepath = "",
-  ...)
+  from = NULL, to = NULL, by = NULL, overlap = 0.5,
+  filepath = "", ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -182,7 +183,7 @@ plot(r_lucc, type = "map")
 # Assess classification 
 twdtw_assess <- 
   twdtwAssess(object = r_lucc, y = validation_samples, 
-              proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+              proj4string = proj_str, conf.int = .95) 
 
 # Plot map accuracy 
 plot(twdtw_assess, type = "accuracy")

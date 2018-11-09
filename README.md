@@ -250,7 +250,7 @@ We use the validation samples to compute the metrics for accuracy assessment.
 
 ``` r
 twdtw_assess <- twdtwAssess(object = r_lucc, y = validation_samples, 
-  proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+  proj4string = proj_str, conf.int = .95) 
 show(twdtw_assess)
 ```
 
@@ -269,6 +269,7 @@ show(twdtw_assess)
     ## Soybean-cotton     1.00 0.00000 0.000 0.000
     ## Soybean-maize      0.95 0.00036 0.019 0.037
     ## Soybean-millet     1.00 0.00000 0.000 0.000
+    ## unclassified       1.00 0.00000 0.000 0.000
     ## 
     ## Producer's
     ##                Accuracy    Var    sd  ci*
@@ -277,6 +278,7 @@ show(twdtw_assess)
     ## Soybean-cotton     0.72 0.0044 0.067 0.13
     ## Soybean-maize      1.00 0.0000 0.000 0.00
     ## Soybean-millet     1.00 0.0000 0.000 0.00
+    ## unclassified       1.00 0.0000 0.000 0.00
     ## 
     ## Area and uncertainty
     ##                 Mapped Adjusted     ci*
@@ -285,6 +287,7 @@ show(twdtw_assess)
     ## Soybean-cotton 1.9e+07  2.6e+07 4806920
     ## Soybean-maize  1.1e+08  1.0e+08 4115074
     ## Soybean-millet 7.0e+07  7.0e+07       0
+    ## unclassified   0.0e+00  0.0e+00       0
     ## 
     ## * 95 % confidence interval
 

@@ -2,7 +2,7 @@ Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis
 Version: 0.2.4.9999
-Date: 2018-05-24
+Date: 2018-11-08
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com', comment = c(ORCID = "0000-0002-7385-4723")), 
   person('Marius', 'Appel', role = c('ctb')),
   person('Toni',   'Giorgino', role = c('ctb')))
@@ -55,7 +55,7 @@ Author: Victor Maus [aut, cre] (<https://orcid.org/0000-0002-7385-4723>),
   Toni Giorgino [ctb]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Collate: 
     'class-crossValidation.R'
     'class-twdtwRaster.R'

@@ -47,6 +47,9 @@ setGeneric("twdtwAssess",
 #' @param rm.nosample if sum of columns and sum of rows of the error matrix are zero 
 #' then remove class. Default is TRUE. 
 #' 
+#' @param start_date a date. Required if there is only one map to be assessed. Usually this is the 
+#' first date of the timeline from satellite images. 
+#' 
 #' @references 
 #' [1] Olofsson, P., Foody, G.M., Stehman, S.V., Woodcock, C.E. (2013). 
 #' Making better use of accuracy data in land change studies: Estimating 
@@ -70,8 +73,8 @@ NULL
 #' @example examples/test_twdtw_raster_analysis.R
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwRaster",
-          definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95, rm.nosample=TRUE) 
-            twdtwAssess.twdtwRaster(object, y, labels, id.labels, proj4string, conf.int, rm.nosample))
+          definition = function(object, y, labels=NULL, id.labels=NULL, proj4string=NULL, conf.int=.95, rm.nosample=FALSE, start_date=NULL) 
+            twdtwAssess.twdtwRaster(object, y, labels, id.labels, proj4string, conf.int, rm.nosample, start_date))
 
 #' @aliases twdtwAssess-data.frame
 #' @inheritParams twdtwAssess
@@ -167,7 +170,10 @@ twdtwAssess.table = function(object, area, conf.int, rm.nosample){
   new("twdtwAssessment", accuracySummary=accuracy, accuracyByPeriod=accuracy)
 }
   
-twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int, rm.nosample){
+twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int, rm.nosample, start_date){
+  
+  if(rm.nosample)
+    warning("The argument rm.nosample is obsolete and will be removed from the next package release")
   
   # Check control points 
   y = .adjustLabelID(y, labels, id.labels)
@@ -186,7 +192,17 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   # Get time intervals 
   timeline = index(object)
-  timeline = c(timeline[1] - diff(timeline[1:2]) - 1, timeline)
+  if(length(timeline) < 2){
+    if(is.null(start_date)){
+      stop("The classification assessment requires matching time intervals. 
+           If there is only one map please inform the starting date of the map interval 
+           using the argument 'start_date'")
+    }
+    timeline = c(as.Date(start_date), timeline)
+  } else {
+    timeline = c(timeline[1] - diff(timeline[1:2]) - 1, timeline)
+  }
+  
   r_intervals = data.frame(from=timeline[-length(timeline)], to=timeline[-1])
   
   # Get land use/cover classes   
@@ -214,7 +230,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   accuracy_by_period = lapply(seq_along(error_matrix_by_period), function(i) 
     .twdtwAssess(x = error_matrix_by_period[[i]], a_by_interval[[i]], conf.int=conf.int, rm.nosample=FALSE))
   names(accuracy_by_period) = index(object)
-  accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int, rm.nosample)
+  accuracy_summary = .twdtwAssess(error_matrix_summary, area_by_class, conf.int=conf.int, rm.nosample=FALSE)
   
   sp.data = SpatialPointsDataFrame(coords = samples_all[,c("longitude", "latitude")], 
                                    data = samples_all[,!names(samples_all)%in%c("longitude", "latitude")],
@@ -258,7 +274,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   error_matrix = cbind(x, Total=total_map, Area=mapped_area, w=w)
   error_matrix = rbind(error_matrix, Total = colSums(error_matrix))
   
-  # Proportions 
+  # Proportions
   y = t(apply(error_matrix[!rownames(error_matrix)%in%"Total",], 1, function(x) (x[cnames] / x["Total"]) * x["w"]))
   y[total_map==0,] = 0 
   total_prop_map = rowSums(y, na.rm = TRUE)

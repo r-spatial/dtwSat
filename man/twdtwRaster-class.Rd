@@ -29,7 +29,6 @@
 \alias{labels,twdtwRaster-method}
 \alias{crop,twdtwRaster-method}
 \alias{coordinates,twdtwRaster-method}
-\alias{extent,twdtwRaster-method}
 \alias{show,twdtwRaster-method}
 \alias{is.twdtwRaster,ANY-method}
 \alias{is.twdtwRaster}

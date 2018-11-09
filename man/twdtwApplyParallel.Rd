@@ -8,13 +8,14 @@
 \title{Apply TWDTW analysis to twdtwRaster using parallel processing}
 \usage{
 twdtwApplyParallel(x, y, resample = TRUE, length = NULL,
-  weight.fun = NULL, dist.method = "Euclidean", step.matrix = symmetric1,
-  n = NULL, span = NULL, min.length = 0, theta = 0.5, ...)
+  weight.fun = NULL, dist.method = "Euclidean",
+  step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0,
+  theta = 0.5, ...)
 
-\S4method{twdtwApplyParallel}{twdtwRaster}(x, y, resample, length, weight.fun,
-  dist.method, step.matrix, n, span, min.length, theta, breaks = NULL,
-  from = NULL, to = NULL, by = NULL, overlap = 0.5, filepath = "",
-  ...)
+\S4method{twdtwApplyParallel}{twdtwRaster}(x, y, resample, length,
+  weight.fun, dist.method, step.matrix, n, span, min.length, theta,
+  breaks = NULL, from = NULL, to = NULL, by = NULL,
+  overlap = 0.5, filepath = "", ...)
 }
 \arguments{
 \item{x}{an object of class twdtw*. This is the target time series. 
@@ -161,7 +162,7 @@ plot(r_lucc, type = "map")
 # Assess classification 
 twdtw_assess <- 
   twdtwAssess(object = r_lucc, y = validation_samples, 
-              proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+              proj4string = proj_str, conf.int = .95) 
 
 # Plot map accuracy 
 plot(twdtw_assess, type = "accuracy")

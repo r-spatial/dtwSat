@@ -11,8 +11,8 @@
 \usage{
 \S4method{twdtwXtable}{twdtwAssessment}(object, table.type = "accuracy",
   show.prop = TRUE, category.name = NULL, category.type = NULL,
-  rotate.col = FALSE, time.labels = NULL, caption = NULL, digits = 2,
-  show.footnote = TRUE, ...)
+  rotate.col = FALSE, time.labels = NULL, caption = NULL,
+  digits = 2, show.footnote = TRUE, ...)
 
 \S4method{twdtwXtable}{twdtwCrossValidation}(object, conf.int = 0.95,
   show.overall = TRUE, category.name = NULL, category.type = NULL,

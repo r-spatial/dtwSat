@@ -8,7 +8,6 @@
 \alias{plot,twdtwCrossValidation,ANY-method}
 \alias{plot-twdtwTimeSeries}
 \alias{plot,twdtwTimeSeries,ANY-method}
-\alias{plot-twdtwTimeSeries}
 \alias{plot,twdtwMatches,ANY-method}
 \alias{plot-twdtwMatches}
 \alias{plot,twdtwRaster,ANY-method}
@@ -17,7 +16,8 @@
 \usage{
 \S4method{plot}{twdtwAssessment,ANY}(x, type = "area", ...)
 
-\S4method{plot}{twdtwCrossValidation,ANY}(x, type = "crossvalidation", ...)
+\S4method{plot}{twdtwCrossValidation,ANY}(x, type = "crossvalidation",
+  ...)
 
 \S4method{plot}{twdtwTimeSeries,ANY}(x, type = "timeseries", ...)
 

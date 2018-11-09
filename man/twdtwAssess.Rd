@@ -17,7 +17,7 @@
 \usage{
 \S4method{twdtwAssess}{twdtwRaster}(object, y, labels = NULL,
   id.labels = NULL, proj4string = NULL, conf.int = 0.95,
-  rm.nosample = TRUE)
+  rm.nosample = FALSE, start_date = NULL)
 
 \S4method{twdtwAssess}{data.frame}(object, area, conf.int = 0.95,
   rm.nosample = TRUE)
@@ -60,6 +60,9 @@ if \code{y} is a \code{\link[base]{data.frame}}.}
 
 \item{rm.nosample}{if sum of columns and sum of rows of the error matrix are zero 
 then remove class. Default is TRUE.}
+
+\item{start_date}{a date. Required if there is only one map to be assessed. Usually this is the 
+first date of the timeline from satellite images.}
 
 \item{area}{a numeric vector with the area for each class if the argument \code{object}
 is an error matrix (confusion matrix). If \code{object} is \code{\link[dtwSat]{twdtwMatches}} 
@@ -139,7 +142,7 @@ plot(r_lucc, type = "map")
 # Assess classification 
 twdtw_assess <- 
   twdtwAssess(object = r_lucc, y = validation_samples, 
-              proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+              proj4string = proj_str, conf.int = .95) 
 
 # Plot map accuracy 
 plot(twdtw_assess, type = "accuracy")

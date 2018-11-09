@@ -4,11 +4,8 @@
 \name{reexports}
 \alias{reexports}
 \alias{symmetric1}
-\alias{reexports}
 \alias{symmetric2}
-\alias{reexports}
 \alias{asymmetric}
-\alias{reexports}
 \alias{rabinerJuangStepPattern}
 \title{Objects exported from other packages}
 \keyword{internal}

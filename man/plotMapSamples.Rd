@@ -86,7 +86,7 @@ plot(r_lucc, type = "map")
 # Assess classification 
 twdtw_assess <- 
   twdtwAssess(object = r_lucc, y = validation_samples, 
-              proj4string = proj_str, conf.int = .95, rm.nosample = TRUE) 
+              proj4string = proj_str, conf.int = .95) 
 
 # Plot map accuracy 
 plot(twdtw_assess, type = "accuracy")

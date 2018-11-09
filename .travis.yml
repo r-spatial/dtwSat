@@ -12,10 +12,12 @@ cache:
   - packages
   - ccache
 latex: true
-use_bioc: true
 
 r_github_packages:
   - r-lib/covr
+  
+bioc_packages:
+  - Biobase
 
 addons:
   apt:

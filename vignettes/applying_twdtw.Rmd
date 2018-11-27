@@ -385,7 +385,8 @@ twdtwXtable(cross_validation, conf.int = .95, digits = 2, caption = "\\label{tab
 ```
 
 ```{r plot-accuracy, echo = TRUE, eval = TRUE, fig.width = page_width, fig.height = page_width / 2, fig.align = 'center', fig.cap = 'User\'s and producer\'s accuracy of the TWDTW cross-validation using 100 resampling-with-replacement. The plot shows the 95\\% confidence interval of the mean.', fig.pos = '!ht'}
-plot(cross_validation, conf.int = .95)
+plot(cross_validation, conf.int = .95) + 
+  geom_jitter(size = 0.2, width = 0.1) 
 ```
 
 

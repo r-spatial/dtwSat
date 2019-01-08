@@ -22,7 +22,7 @@ setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
 #' 
 #' @description Get time series from objects of class twdtw*.
 #' 
-#' @param object an object of class of class twdtw*.
+#' @param object an object of class twdtw*.
 #'
 #' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
@@ -32,7 +32,7 @@ setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
 #' \code{object}. 
 #' 
 #' @param id.labels a numeric or character with an column name from \code{y} to 
-#' be used as samples labels. Optional.
+#' be used as sample labels. Optional.
 #' 
 #' @param labels character vector with time series labels. For signature 
 #' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
@@ -60,6 +60,7 @@ setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' mat = twdtwApply(x=ts, y=patt)
 #' getTimeSeries(mat, 2)
+#' 
 #' ## This example creates a twdtwRaster object and extract time series from it. 
 #'
 #' # Creating objects of class twdtwRaster with evi and ndvi time series 
@@ -73,7 +74,7 @@ setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
 #'                          from = "2007-09-01", to = "2013-09-01")
 #' prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 #' 
-#' ## Extract time series 
+#' # Extract time series 
 #' ts = getTimeSeries(rts, y = ts_location, proj4string = prj_string)
 #'  
 #' autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
@@ -135,9 +136,9 @@ extractTimeSeries.twdtwRaster = function(x, y){
   # Check if the coordinates are over the raster extent
   pto = .getPointsOverRaster(x, y)
   if(length(pto)<1)
-    stop("extents do not overlap")
+    stop("Extents do not overlap")
   if(length(pto)<length(y))
-    warning(paste("raster extent does not overlap samples:",paste(pto, collapse = ",")), call. = FALSE)
+    warning(paste("Raster extent does not overlap samples:",paste(pto, collapse = ",")), call. = FALSE)
   
   # Extract time series 
   ts_list = lapply(as.list(x), FUN = extract, y = y[pto,])
@@ -151,7 +152,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
 
 .extractTimeSeries = function(p, pto, x, y, timeline){
   s = y[pto[p],]
-  # Check if the sample time interval overlaps the raster time series 
+  # Check if the sample time interval overlaps with the raster time series 
   from  = try(as.Date(s$from))
   to    = try(as.Date(s$to))
   dates = timeline
@@ -167,7 +168,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
   layer =  which.min( abs(from - dates))
   nl    =  which.min( abs(to   - dates)) - layer
   if(nl<=0){
-    warning(paste("time period of sample ",pto[p]," does not overlap rester time series"), call. = FALSE)
+    warning(paste("Time period of sample ",pto[p]," does not overlap rester time series"), call. = FALSE)
     return(NULL)
   }
   # Extract raster values 

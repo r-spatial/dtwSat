@@ -22,11 +22,11 @@
 #' 
 #' @description This dataset has a list of patterns with the phenological cycle of: Soybean,
 #' Cotton, and Maize. These time series are based on the MODIS product 
-#' MOD13Q1 250 m 16 days [1]. The patterns were build from ground truth samples of each 
+#' MOD13Q1 250 m 16 days [1]. The patterns were built from ground truth samples of each 
 #' crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPatterns}.
 #' 
 #' @docType data
-#' @format A named \code{list} of 3 \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
+#' @format A named \code{list} of three \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
 #' and ''Maize'', whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''.
 #' Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
 #' and ''mir''.
@@ -77,10 +77,10 @@
 #' @title Data: Labels of the satellite time series in MOD13Q1.ts 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description This labels are based on field work.
+#' @description These labels are based on field work.
 #' 
 #' @docType data
-#' @format An object of class \link[base]{data.frame}, whose attributas are: 
+#' @format An object of class \link[base]{data.frame}, whose attributes are: 
 #' the label of the crop class ''label'', the start of the crop period ''from'',
 #' and the end of the crop period ''to''. The dates are in the format ''yyyy-mm-dd''.
 #' 
@@ -117,13 +117,13 @@
 "MOD13Q1.ts.list"
 
 
-#' @title Data: patterns time series
+#' @title Data: Pattern time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description This dataset has a list of patterns with the phenological cycle of: Water,
 #' Cotton-Fallow, Forest, Low vegetation, Pasture, Soybean-Cotton, Soybean-Maize, Soybean-Millet, 
 #' Soybean-Sunflower, and Wetland. These time series are based on the MODIS product 
-#' MOD13Q1 250 m 16 days [1]. The patterns were build from ground truth samples of each 
+#' MOD13Q1 250 m 16 days [1]. The patterns were built from ground truth samples of each 
 #' crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPatterns}.
 #' 
 #' @docType data

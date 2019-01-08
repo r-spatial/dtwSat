@@ -22,11 +22,11 @@
 #' @param x an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
 #' 
 #' @param from A character or \code{\link[base]{Dates}} object in the format 
-#' "yyyy-mm-dd". If not informed it is equal to the smallest date of the 
+#' "yyyy-mm-dd". If not provided it is equal to the smallest date of the 
 #' first element in x. See details. 
 #'  
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
-#' object in the format "yyyy-mm-dd". If not informed it is equal to the 
+#' object in the format "yyyy-mm-dd". If not provided it is equal to the 
 #' greatest date of the first element in x. See details. 
 #' 
 #' @param attr A vector character or numeric. The attributes in \code{x} to be used. 
@@ -40,14 +40,14 @@
 #' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}. 
 #' 
 #' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
-#' packege \pkg{mgcv}.
+#' package \pkg{mgcv}.
 #' 
 #' @return an object of class \code{\link[dtwSat]{twdtwTimeSeries}} 
 #' 
 #'
 #' @details The hidden assumption is that the temporal pattern is a cycle the repeats itself 
 #' within a given time interval. Therefore, all time series samples in \code{x} are aligned 
-#' to each other keeping their respective sequence of days of the year. The function fits a 
+#' with each other, keeping their respective sequence of days of the year. The function fits a 
 #' Generalized Additive Model (GAM) to the aligned set of samples.  
 #' 
 #' @seealso 
@@ -93,7 +93,7 @@ setMethod("createPatterns", "twdtwTimeSeries",
                   stop("missing formula")
                 vars = all.vars(formula)
                 
-                # Split samples according their labels 
+                # Split samples according to their labels 
                 if(split) {
                     levels = as.character(levels(x))
                     labels = as.character(labels(x))

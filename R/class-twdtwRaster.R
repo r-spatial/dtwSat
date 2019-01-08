@@ -27,7 +27,7 @@
 #' in the format of "YYYY-MM-DD".
 #'
 #' @param layers a vector with the names of the \code{Raster*} objects 
-#' passed to "\code{...}". If not informed the layers are set to the 
+#' passed to "\code{...}". If not provided the layers are set to the 
 #' names of objects in "\code{...}". 
 #' 
 #' @param labels a vector of class \code{\link[base]{character}} with 
@@ -41,25 +41,25 @@
 #' @param doy A \code{\link[raster]{RasterBrick-class}} or 
 #' \code{\link[raster]{RasterStack-class}} with a sequence of days of the year for each pixel. 
 #' \code{doy} must have the same spatial and temporal extents as the Raster* objects passed to \code{...}.
-#' If \code{doy} is not informed then at least one Raster* object must be passed through \code{...}.
+#' If \code{doy} is not provided then at least one Raster* object must be passed through \code{...}.
 #'  
-#' @param filepath A character. The path to save the raster time series. If informed the 
+#' @param filepath A character. The path to save the raster time series. If provided the 
 #' function saves a raster file for each Raster* object in the list, \emph{i.e} one file 
-#' for each time series. This way the function retrieves an list of 
+#' for each time series. This way the function retrieves a list of 
 #' \code{\link[raster]{RasterBrick-class}}. It is useful when the time series are 
-#' originally stores in separated files. See details. 
+#' originally stored in separated files. See details. 
 #'
 #' @param object an object of class twdtwRaster.
 #'
 #' @param x an object of class twdtwRaster.
 #'
-#' @details The performance the functions \code{\link[dtwSat]{twdtwApply}} and 
+#' @details The performance of the functions \code{\link[dtwSat]{twdtwApply}} and 
 #' \code{\link[dtwSat]{getTimeSeries}} is improved if the Raster* objects are connected 
 #' to files with the whole time series for each attribute. 
 #'
 #' @section Slots :
 #' \describe{
-#'  \item{\code{timeseries}:}{A list of multi-layers Raster* objects 
+#'  \item{\code{timeseries}:}{A list of multi-layer Raster* objects 
 #'        with the satellite image time series.}
 #'  \item{\code{timeline}:}{A vector of class \code{\link[base]{date}} 
 #'        with dates of the satellite images in \code{timeseries}.}
@@ -77,7 +77,7 @@
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}
 #'
 #' @examples 
-#' # Creating new object of class twdtwTimeSeries 
+#' # Creating a new object of class twdtwTimeSeries 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 #' rts = new("twdtwRaster", timeseries = evi, timeline = timeline)
@@ -196,7 +196,7 @@ setMethod(f = "twdtwRaster",
               }
               I = which(sapply(x, is, "RasterBrick") | sapply(x, is, "RasterStack") | sapply(x, is, "RasterLayer"))
               if(length(I) < 1)
-                stop("there is no Raster* objects in the list of arguments")
+                stop("There are no Raster* objects in the list of arguments")
               # Split arguments 
               timeseries = x[I]
               dotargs = x[-I]
@@ -212,7 +212,7 @@ creat.twdtwRaster = function(timeseries, timeline, doy, layers, labels, levels, 
   if(!is.null(doy))
     nl = c(nlayers(doy), nl)
   if(any(nl!=length(timeline)))
-    stop("raster objects do not have the same length as the timeline")
+    stop("Raster objects do not have the same length as the timeline")
   
   res = timeseries
   # Save a single file (complete time series) for each raster attribute 

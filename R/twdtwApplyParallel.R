@@ -21,10 +21,10 @@
 #' [3] Muller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
 #' and Motion (pp. 79-84). London: Springer London, Limited.
 #' 
-#' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
+#' @details The \code{linearWeight} and \code{logisticWeight} weight functions 
 #' can be passed to \code{twdtwApply} through the argument \code{weight.fun}. This will 
 #' add a time-weight to the dynamic time warping analysis. The time weight 
-#' creates a global constraint useful to analyse time series with phenological cycles
+#' creates a global constraint useful for analysing time series with phenological cycles
 #' of vegetation that are usually bound to seasons. In previous studies by [1] the 
 #' logistic weight had better results than the linear for land cover classification. 
 #' See [1] for details about the method. 
@@ -162,7 +162,7 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
                                        step.matrix = step.matrix, n = n, span = span,
                                        min.length = min.length, theta = theta, keep = FALSE)
 
-    # Get best mathces for each point, period, and pattern
+    # Get best matches for each point, period, and pattern
     levels <- dtwSat::levels(y)
     m <- length(levels)
     h <- length(breaks)-1

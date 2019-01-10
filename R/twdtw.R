@@ -62,7 +62,7 @@
     I = order(candidates$d)
     if(length(I)<1) return(NULL)
     
-    # Sellect alignments 
+    # Select alignments 
     if(is.null(n)) n = length(I)
     if(length(I) > n) I = I[1:n]
     
@@ -76,7 +76,7 @@
     alignments$from       = tx[candidates$a[I]] # This is a vector of Dates
     alignments$to         = tx[candidates$b[I]] # This is a vector of Dates
     alignments$distance   = candidates$d[I]     # This is a numeric vector 
-    alignments$K          = length(I)           # This is an interger 
+    alignments$K          = length(I)           # This is an integer 
     alignments$matching   = list()              # This is a list of data.frames with the matching points 
     alignments$internals  = list()              # These is a list variables used in the TWDTW computation
     if(alignments$K<1) alignments$label = numeric(0)

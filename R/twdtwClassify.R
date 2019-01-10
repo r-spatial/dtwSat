@@ -23,14 +23,14 @@
 #' 
 #' @inheritParams get
 #'
-#' @param x an object of class twdtw*. This is the target time series. 
+#' @param x An object of class twdtw*. This is the target time series. 
 #' Usually, it is a set of unclassified time series. 
 #' 
 #' @param from A character or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".
 #' 
 #' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".
 #' 
-#' @param by A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month".
+#' @param by A \code{\link[base]{character}} with the interval size, \emph{e.g.} "6 month".
 #' 
 #' @param breaks A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
 #' \code{to}, and \code{by}.
@@ -43,14 +43,14 @@
 #' The TWDTW dissimilarity thresholds, i.e. the maximum TWDTW cost for consideration 
 #' in the classification. Default is \code{Inf} for all \code{patterns.labels}.
 #' 
-#' @param fill a character or value to fill the classification gaps. 
-#' For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, and 
+#' @param fill A character to fill the classification gaps. 
+#' For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, 
 #' for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.
 #' 
-#' @param filepath A character. The path to save the raster with results. If not informed the 
-#' function saves in the same directory as the input time series raster. 
+#' @param filepath A character. The path at which to save the raster with results. 
+#' If not provided the function saves in the same directory as the input time series raster. 
 #'  
-#' @param ... arguments to pass to specifique methods for each twdtw* class 
+#' @param ... Arguments to pass to specific methods for each twdtw* class 
 #' and other arguments to pass to \code{\link[raster]{writeRaster}} and 
 #' \code{\link[raster]{pbCreate}}. 
 #'
@@ -80,7 +80,7 @@ setMethod("twdtwClassify", "twdtwMatches",
                     if( !is.null(from) &  !is.null(to) ){
                       breaks = seq(as.Date(from), as.Date(to), by=by)    
                     } else {
-                      # This automatic breaks needs to be improved 
+                      # These automatic breaks needs to be improved 
                       y = x@patterns
                       patt_range = lapply(index(y), range)
                       patt_diff = trunc(sapply(patt_range, diff)/30)+1

@@ -13,41 +13,41 @@ setGeneric("twdtwAssess",
 #' and estimated area according to [1-2]. The function returns the metrics 
 #' for each time interval and a summary considering all classified intervals. 
 #' 
-#' @param object an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
+#' @param object An object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
 #' the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
-#' The argument can also receive an error matrix (confusion matrix) in using the classes 
+#' The argument can also receive an error matrix (confusion matrix) using the classes 
 #' \code{\link[base]{data.frame}} or \code{\link[base]{table}}. In this case the user 
-#' must inform the area for each class to the argument \code{area}. 
+#' must provide the area for each class to the argument \code{area}. 
 #' 
-#' @param area a numeric vector with the area for each class if the argument \code{object}
+#' @param area A numeric vector with the area for each class if the argument \code{object}
 #' is an error matrix (confusion matrix). If \code{object} is \code{\link[dtwSat]{twdtwMatches}} 
 #' area can be either a vector with the area of each classified object, or a single number 
 #' if the objects are single pixels. 
 
-#' @param y a \code{\link[base]{data.frame}} whose attributes are: longitude, 
+#' @param y A \code{\link[base]{data.frame}} whose attributes are: longitude, 
 #' latitude, the start ''from'' and the end ''to'' of the time interval 
 #' for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
 #' whose attributes are the start ''from'' and the end ''to'' of the time interval.
 #' If missing ''from'' and/or ''to'', they are set to the time range of the 
 #' \code{object}. 
 #' 
-#' @param id.labels a numeric or character with an column name from \code{y} to 
+#' @param id.labels A numeric or character with an column name from \code{y} to 
 #' be used as samples labels. Optional.
 #' 
-#' @param labels character vector with time series labels. For signature 
+#' @param labels Character vector with time series labels. For signature 
 #' \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
 #' labels for each sample in \code{y}, or it can be combined with \code{id.labels} 
 #' to select samples with a specific label.
 #' 
-#' @param proj4string projection string, see \code{\link[sp]{CRS-class}}. Used 
+#' @param proj4string Projection string, see \code{\link[sp]{CRS-class}}. Used 
 #' if \code{y} is a \code{\link[base]{data.frame}}.
 #' 
-#' @param conf.int specifies the confidence level (0-1).
+#' @param conf.int Specifies the confidence level (0-1).
 #' 
-#' @param rm.nosample if sum of columns and sum of rows of the error matrix are zero 
+#' @param rm.nosample If sum of columns and sum of rows of the error matrix are zero 
 #' then remove class. Default is TRUE. 
 #' 
-#' @param start_date a date. Required if there is only one map to be assessed. Usually this is the 
+#' @param start_date A date. Required if there is only one map to be assessed. Usually this is the 
 #' first date of the timeline from satellite images. 
 #' 
 #' @references 
@@ -173,14 +173,14 @@ twdtwAssess.table = function(object, area, conf.int, rm.nosample){
 twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, conf.int, rm.nosample, start_date){
   
   if(rm.nosample)
-    warning("The argument rm.nosample is obsolete and will be removed from the next package release")
+    warning("The argument rm.nosample is obsolete and will be removed in the next package release")
   
   # Check control points 
   y = .adjustLabelID(y, labels, id.labels)
   if(!"from"%in%names(y))
-    stop("samples starting date not found, the argument 'y' must have a column called 'from'")
+    stop("Sample starting date not found, the argument 'y' must have a column called 'from'")
   if(!"to"%in%names(y))
-    stop("samples ending date not found, the argument 'y' must have a column called 'to'")
+    stop("Sample ending date not found, the argument 'y' must have a column called 'to'")
   y = .toSpatialPointsDataFrame(y, object, proj4string)
   
   # Get classified raster 
@@ -195,7 +195,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   if(length(timeline) < 2){
     if(is.null(start_date)){
       stop("The classification assessment requires matching time intervals. 
-           If there is only one map please inform the starting date of the map interval 
+           If there is only one map please provide the starting date of the map interval 
            using the argument 'start_date'")
     }
     timeline = c(as.Date(start_date), timeline)

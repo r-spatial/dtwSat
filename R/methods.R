@@ -417,7 +417,7 @@ setMethod("crop",
 
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
-#' @param obj object of cless twdtwRaster 
+#' @param obj object of class twdtwRaster. 
 #' @export
 setMethod("coordinates", 
           signature = signature("twdtwRaster"),
@@ -450,7 +450,7 @@ show.twdtwTimeSeries = function(object){
 show.twdtwMatches = function(object){
   cat("An object of class \"twdtwMatches\"\n")
   cat("Number of time series:",length(object@timeseries),"\n")
-  cat("Number of Alignments:",length(object),"\n")
+  cat("Number of alignments:",length(object),"\n")
   cat("Patterns labels:",as.character(labels(object@patterns)),"\n")
   invisible(NULL)
 }
@@ -460,10 +460,10 @@ show.twdtwRaster = function(object){
   cat("An object of class \"twdtwRaster\"\n")
   cat("Time series layers:",coverages(object),"\n")
   cat("Time range:",paste(min(object@timeline)),"...",paste(max(object@timeline)),"\n")
-  cat("dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
-  cat("resolution:",res(object)," (x, y)\n")
-  cat("extent    :",as.vector(extent(object)), "(xmin, xmax, ymin, ymax)\n")
-  cat("coord.ref.:",projection(object),"\n") 
+  cat("Dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
+  cat("Resolution:",res(object)," (x, y)\n")
+  cat("Extent    :",as.vector(extent(object)), "(xmin, xmax, ymin, ymax)\n")
+  cat("Coord.ref.:",projection(object),"\n") 
   invisible(NULL)
 }
 
@@ -507,7 +507,7 @@ show.twdtwCrossValidation = function(object){
   invisible(NULL)
 }
 
-# Project raster which belong to a twdtwRaster object 
+# Project raster which belongs to a twdtwRaster object 
 projecttwdtwRaster.twdtwRaster = function(x, to, ...){
   x@timeseries = lapply(x@timeseries, projectRaster, to, ...)
   x

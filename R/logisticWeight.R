@@ -23,7 +23,7 @@
 #' @param beta numeric. The midpoint of logistic weight.
 #' 
 #' @docType methods
-#' @return An \code{\link[base]{function}} object.
+#' @return A \code{\link[base]{function}} object.
 #' 
 #' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
 #' can be passed to \code{\link[dtwSat]{twdtwApply}} through the argument \code{weight.fun}. 

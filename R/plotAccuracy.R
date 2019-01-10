@@ -14,13 +14,13 @@
 #' area in the map units or km2 for no project raster. Default is TRUE.
 #' 
 #' @param category.name a character vector defining the class names. If NULL
-#' then use the classe names in the object \code{x}. Default is NULL.
+#' the class names in the object \code{x} are used. Default is NULL.
 #' 
 #' @param category.type a character defining the categories type "numeric" 
-#' or "letter", if NULL then use the class names. Default is NULL. 
+#' or "letter", if NULL the class names are used. Default is NULL. 
 #' 
 #' @param conf.int confidence level (0-1) for interval estimation of the population mean.
-#' for details see \code{\link[Hmisc]{smean.cl.normal}}. Used if \code{x} is 
+#' For details see \code{\link[Hmisc]{smean.cl.normal}}. Used if \code{x} is 
 #' \code{\link[dtwSat]{twdtwCrossValidation}}.
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
@@ -49,7 +49,7 @@ plotAccuracy = function(x, perc=TRUE, conf.int=.95, time.labels=NULL,
     if(class(x)=="twdtwAssessment"){
       gp = .plotAssessmentAccuracy(x, perc, time.labels, category.name, category.type)
     } else {
-      stop("class of x is not twdtwAssessment or twdtwCrossValidation")
+      stop("Class of x is not twdtwAssessment or twdtwCrossValidation")
     }
   } 
   

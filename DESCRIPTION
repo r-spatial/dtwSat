@@ -5,6 +5,7 @@ Version: 0.2.4.9999
 Date: 2018-11-08
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com', comment = c(ORCID = "0000-0002-7385-4723")), 
   person('Marius', 'Appel', role = c('ctb')),
+  person('Nikolas', 'Kuschnig', role = c('ctb')),
   person('Toni',   'Giorgino', role = c('ctb')))
 Description: Provides an implementation of the Time-Weighted Dynamic Time
     Warping (TWDTW) method for land cover mapping using satellite image time series.

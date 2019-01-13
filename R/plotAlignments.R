@@ -24,7 +24,7 @@
 #' @param timeseries.labels the label or index of the time series.
 #' Default is 1. 
 #' @param patterns.labels a vector with labels of the patterns. If not 
-#' declared the function will plot the alignments for all patterna in \code{x}.
+#' declared the function will plot the alignments for all patterns in \code{x}.
 #' @param attr An \link[base]{integer} or \link[base]{character} vector 
 #' indicating the attribute for plotting. Default is 1.
 #' @param threshold A number. The TWDTW dissimilarity threshold, \emph{i.e.} the 

@@ -140,7 +140,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
          time.labels = format(as.Date(time.levels, "date.%Y.%m.%d"), "%Y")
             
       if(length(time.levels)!=length(time.labels))
-        stop("time.levels and time.labels have different length")
+        stop("time.levels and time.labels have different lengths")
         
       if(is.null(layers)) {
         if(any(coverages(x)=="Distance")){
@@ -181,7 +181,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
         
       
       if(length(time.levels)!=length(time.labels))
-        stop("time.levels and time.labels have different length")
+        stop("time.levels and time.labels have different lengths")
       
       # if(length(time.levels)>16){
       #   time.levels = time.levels[1:16]
@@ -207,7 +207,7 @@ setMethod("plot", signature(x = "twdtwRaster"), function(x, type="maps", ...) .P
         class.colors = brewer.pal(length(class.levels), "Set3")
       
       if(length(class.levels)!=length(class.labels))
-        stop("class.levels and class.labels have different length")  
+        stop("class.levels and class.labels have different lengths")  
 
       names(time.labels)  = time.levels
       names(time.levels)  = time.labels

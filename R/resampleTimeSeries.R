@@ -17,11 +17,10 @@
 #' @name resampleTimeSeries
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description resample time series in the same object to have the same 
-#' the length. 
+#' @description Resample time series in the object to have the same length. 
 #' 
 #' @inheritParams twdtwTimeSeries-class
-#' @param length An integer. The number of samples to resample the time series. 
+#' @param length An integer. The number of samples to resample the time series to. 
 #' If not declared the length is set to the length of the longest time series.
 #' 
 #' @seealso 

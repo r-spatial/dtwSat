@@ -30,7 +30,7 @@
 #' @param class.labels A \link[base]{character} or \link[base]{numeric}
 #' vector with the labels of the raster values. It must have the same 
 #' length as class.levels. Default is NULL.
-#' @param class.colors a set of aesthetic values. It must have the same 
+#' @param class.colors A set of aesthetic values. It must have the same 
 #' length as class.levels. Default is NULL. See 
 #' \link[ggplot2]{scale_fill_manual} for details.
 #' 

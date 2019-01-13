@@ -14,7 +14,7 @@
 
 .onAttach = function(lib, pkg){
   packageStartupMessage(
-    sprintf("Loaded dtwSat v%s. See ?dtwSat for help, citation(\"dtwSat\") for use in publication.\n",
+    sprintf("Loaded dtwSat v%s. See ?dtwSat for help; citation(\"dtwSat\") for use in publications.\n",
             utils::packageDescription("dtwSat")$Version) )
   
   ## Register TWDTW as a distance function into package proxy

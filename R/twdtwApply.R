@@ -23,23 +23,23 @@
 #' 
 #' @inheritParams twdtwClassify
 #' 
-#' @param x an object of class twdtw*. This is the target time series. 
+#' @param x An object of class twdtw*. This is the target time series. 
 #' Usually, it is a set of unclassified time series. 
 #'
-#' @param y an object of class \link[dtwSat]{twdtwTimeSeries}. 
+#' @param y An object of class \link[dtwSat]{twdtwTimeSeries}. 
 #' The temporal patterns. 
 #' 
-#' @param ... arguments to pass to \code{\link[raster]{writeRaster}} and 
+#' @param ... Arguments to pass to \code{\link[raster]{writeRaster}} and 
 #' \code{\link[raster]{pbCreate}}
 #'
-#' @param resample resample the patterns to have the same length. Default is TRUE.
+#' @param resample Resample the patterns to have the same length. Default is TRUE.
 #' See \link[dtwSat]{resampleTimeSeries} for details.
 #' 
-#' @param length An integer. Patterns length used with \code{patterns.length}. 
+#' @param length An integer. Length of patterns used with \code{patterns.length}. 
 #' If not declared the length of the output patterns will be the length of 
 #' the longest pattern.
 #'  
-#' @param weight.fun A function. Any function that receive and performs a 
+#' @param weight.fun A function. Any function that receives and performs a 
 #' computation on a matrix. The function receives a matrix of time differences 
 #' in days and returns a matrix of time-weights. If not declared the time-weight 
 #' is zero. In this case the function runs the standard version of the dynamic 
@@ -49,29 +49,29 @@
 #' Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
 #' \pkg{proxy}.
 #' 
-#' @param step.matrix see \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2].
+#' @param step.matrix See \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2].
 #' 
 #' @param n An integer. The maximun number of matches to perform. 
 #' NULL will return all matches.
 #' 
-#' @param theta numeric between 0 and 1. The weight of the time 
+#' @param theta Numeric between 0 and 1. The weight of the time 
 #' for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
 #' \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
 #' the time has the same weight as the curve shape in the TWDTW analysis.
 #' 
-#' @param keep preserves the cost matrix, inputs, and other internal structures. 
+#' @param keep Preserves the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE. For plot methods use \code{keep=TRUE}.
 #' 
 #' @param span A number. Span between two matches, \emph{i.e.} the minimum  
-#' interval between two matches, for details see [3]. If not declared it removes
+#' interval between two matches; for details see [3]. If not declared it removes
 #' all overlapping matches of the same pattern. To include overlapping matches 
 #' of the same pattern use \code{span=0}.
 #' 
-#' @param min.length A number between 0 an 1. This argument removes the over fittings.
+#' @param min.length A number between 0 an 1. This argument removes overfittings.
 #' Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
 #' meaning that the matching cannot be shorter than half of the pattern length.
 #' 
-#' @param filepath A character. The path to save the raster with results. If not informed the 
+#' @param filepath A character. The path at which to save the raster with results. If not provided the 
 #' function saves in the current work directory. 
 #' 
 #' @references 
@@ -89,7 +89,7 @@
 #' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
 #' can be passed to \code{twdtwApply} through the argument \code{weight.fun}. This will 
 #' add a time-weight to the dynamic time warping analysis. The time weight 
-#' creates a global constraint useful to analyse time series with phenological cycles
+#' creates a global constraint useful for analysing time series with phenological cycles
 #' of vegetation that are usually bound to seasons. In previous studies by [1] the 
 #' logistic weight had better results than the linear for land cover classification. 
 #' See [1] for details about the method. 
@@ -260,7 +260,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
                                         step.matrix = step.matrix, n = n, span = span,
                                         min.length = min.length, theta = theta, keep = FALSE)
     
-    # Get best mathces for each point, period, and pattern
+    # Get best matches for each point, period, and pattern
     m <- length(levels)
     h <- length(breaks) - 1
     

@@ -8,18 +8,18 @@ setGeneric("twdtwCrossValidate",
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
 #' @description Splits the set of time series into training and validation and 
-#' compute accuracy metrics. The function uses stratified sampling and a simple 
+#' computes accuracy metrics. The function uses stratified sampling and a simple 
 #' random sampling for each stratum. For each data partition this function 
 #' performs a TWDTW analysis and returns the Overall Accuracy, User's Accuracy, 
 #' Produce's Accuracy, error matrix (confusion matrix), and a \code{\link[base]{data.frame}} 
 #' with the classification (Predicted), the reference classes (Reference), 
 #' and the results of the TWDTW analysis.
 #'
-#' @param object an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
+#' @param object An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
 #' 
 #' @param times Number of partitions to create.
 #' 
-#' @param p the percentage of data that goes to training. 
+#' @param p The percentage of data that goes to training. 
 #' See \code{\link[caret]{createDataPartition}} for details.
 #' 
 #' @param ... Other arguments to be passed to \code{\link[dtwSat]{createPatterns}} and 

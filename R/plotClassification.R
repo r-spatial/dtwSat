@@ -20,15 +20,15 @@
 #' subinterval of the time series based on TWDTW analysis. 
 #' 
 #' @param x An object of class \code{\link[dtwSat]{twdtwMatches}}.
-#' @param timeseries.labels the label or index of the time series.
+#' @param timeseries.labels The label or index of the time series.
 #' Default is 1. 
-#' @param patterns.labels a vector with labels of the patterns. If not 
+#' @param patterns.labels A vector with labels of the patterns. If not 
 #' declared the function will plot one alignment for each pattern.
 #' 
 #' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
 #' indicating the attribute for plotting. If not declared the function will plot 
 #' all attributes.
-#' @param ... additional arguments passed to \code{\link[dtwSat]{twdtwClassify}}.
+#' @param ... Additional arguments passed to \code{\link[dtwSat]{twdtwClassify}}.
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
 #' 

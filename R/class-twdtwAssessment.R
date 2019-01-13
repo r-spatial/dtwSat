@@ -28,9 +28,9 @@
 #'
 #' @section Slots :
 #' \describe{
-#'  \item{\code{accuracySummary}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+#'  \item{\code{accuracySummary}:}{Overall Accuracy, User's Accuracy, Producer's Accuracy, 
 #'  Error Matrix (confusion matrix), and Estimated Area, considering all time periods.}
-#'  \item{\code{accuracyByPeriod}:}{Overall Accuracy, User's Accuracy, Produce's Accuracy, 
+#'  \item{\code{accuracyByPeriod}:}{Overall Accuracy, User's Accuracy, Producer's Accuracy, 
 #'  Error Matrix (confusion matrix), and Estimated Area, for each time periods independently 
 #'  from each other.}
 #'  \item{\code{data}:}{A \code{\link[sp]{SpatialPointsDataFrame}} with sample ID, period,
@@ -39,7 +39,7 @@
 #' }
 #' 
 #' @details
-#' If the twdtwRaster is unprojected (longitude/latitude) the estimated area is sum of the approximate 
+#' If the twdtwRaster is unprojected (longitude/latitude) the estimated area is the sum of the approximate 
 #' surface area in km2 of each cell (pixel). If the twdtwRaster is projected the estimated area is calculated 
 #' using the the pixel resolution in the map unit.
 #'

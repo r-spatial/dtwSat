@@ -2,44 +2,44 @@ setGeneric("twdtwXtable",
            def = function(object, ...) standardGeneric("twdtwXtable")
 )
 
-#' @title Latex table from accuracy metrics
+#' @title LaTeX table from accuracy metrics
 #' @name twdtwXtable
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'  
-#' @description Creates Latex table from accuracy metrics
+#' @description Creates LaTeX table from accuracy metrics
 #' 
 #' @inheritParams twdtwAssessment-class
 #' 
-#' @param table.type table type, 'accuracy' for User's and Producer's Accuracy, 
+#' @param table.type Table type, 'accuracy' for User's and Producer's Accuracy, 
 #' 'errormatrix' for error matrix, and 'area' for area and uncertainty. 
 #' Default is 'accuracy'.
 #' 
-#' @param time.labels a character or numeric for the time period or NULL to 
+#' @param time.labels A character or numeric for the time period or NULL to 
 #' include all classified periods. Default is NULL. 
 #' 
-#' @param category.name a character vector defining the class names. If NULL
-#' then use the classe names in the object \code{x}. Default is NULL.
+#' @param category.name A character vector defining the class names. If NULL
+#' the class names in the object \code{x} are used. Default is NULL.
 #' 
-#' @param category.type a character defining the categories type "numeric" 
-#' or "letter", if NULL then use the class names. Default is NULL. 
+#' @param category.type A character defining the categories type "numeric" 
+#' or "letter", if NULL the class names are used. Default is NULL. 
 #' 
-#' @param show.prop if TRUE shows the estimated proportion of area.
+#' @param show.prop If TRUE shows the estimated proportion of area.
 #' Used with \code{table.type='accuracy'}. Default is TRUE. 
 #' 
-#' @param show.overall if TRUE shows the overall accuracy of the cross-validation.
+#' @param show.overall If TRUE shows the overall accuracy of the cross-validation.
 #' Default is TRUE. 
 #' 
-#' @param rotate.col rotate class column names in latex table. Default is FALSE. 
+#' @param rotate.col Rotate class column names in latex table. Default is FALSE. 
 #' 
-#' @param caption the table caption. 
+#' @param caption The table caption. 
 #' 
-#' @param digits number of digits to show. 
+#' @param digits Number of digits to show. 
 #' 
-#' @param conf.int specifies the confidence level (0-1).
+#' @param conf.int Specifies the confidence level (0-1).
 #' 
-#' @param show.footnote show confidence interval in the footnote. 
+#' @param show.footnote Show confidence interval in the footnote. 
 #' 
-#' @param ... other arguments to pass to and \code{\link[xtable]{print.xtable}}.
+#' @param ... Other arguments to pass to \code{\link[xtable]{print.xtable}}.
 #'
 #' @seealso \code{\link[dtwSat]{twdtwAssess}} and  
 #' \code{\link[dtwSat]{twdtwAssessment}}.
@@ -58,7 +58,7 @@ setGeneric("twdtwXtable",
 #' timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 #' rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 #' 
-#' # Read fiels samples 
+#' # Read field samples 
 #' field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
 #' proj_str = scan(system.file("lucc_MT/data/samples_projection", 
 #'                 package="dtwSat"), what = "character")

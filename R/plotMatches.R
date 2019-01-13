@@ -20,18 +20,18 @@
 #' TWDTW analysis.
 #' 
 #' @param x An object of class \code{\link[dtwSat]{twdtwMatches}}.
-#' @param timeseries.labels the label or index of the time series.
+#' @param timeseries.labels The label or index of the time series.
 #' Default is 1. 
-#' @param patterns.labels a vector with labels of the patterns. If not 
+#' @param patterns.labels A vector with labels of the patterns. If not 
 #' declared the function will plot one alignment for each pattern.
 #' @param k A positive integer. The index of the last alignment to include in 
 #' the plot. If not declared the function will plot the best match for 
 #' each pattern. 
 #' @param attr An \link[base]{integer} or \link[base]{character} vector 
 #' indicating the attribute for plotting. Default is 1.
-#' @param shift A number, it shifts the pattern position in the \code{x}
+#' @param shift A number that shifts the pattern position in the \code{x}
 #' direction. Default is 0.5.
-#' @param show.dist show the distance for each alignment. Default is FALSE.
+#' @param show.dist Show the distance for each alignment. Default is FALSE.
 #' @docType methods
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
@@ -65,7 +65,7 @@ plotMatches = function(x, timeseries.labels=1, patterns.labels=NULL, k=1, attr=1
   ## Get data
   internals = getInternals(x)[[1]]
   if(any(sapply(internals, function(x) length(x$internals))<1))
-    stop("plot methods requires internals, set keep=TRUE on twdtwApply() call")
+    stop("Plot methods requires internals, set keep=TRUE on twdtwApply() call")
   matching = getMatches(x)[[1]]
   alignments = getAlignments(x)[[1]]
   ts = getTimeSeries(x)[[1]]
@@ -77,7 +77,7 @@ plotMatches = function(x, timeseries.labels=1, patterns.labels=NULL, k=1, attr=1
     k = unlist(lapply(table(y), function(i) seq(from=1, to=i) ))
   }
   if(length(y)!=length(k))
-    stop("if length of k greater than 1, then patterns.labels must have the same length as k.")
+    stop("If length of k greater than 1, then patterns.labels must have the same length as k.")
   
   xx = ts[,attr,drop=FALSE]
   tx = index(xx)
@@ -95,7 +95,7 @@ plotMatches = function(x, timeseries.labels=1, patterns.labels=NULL, k=1, attr=1
     ty = index(yy)
     
     if(k[i]>alignments[[p]]$K){
-      warning("alignment index out of bounds", call. = TRUE)
+      warning("Alignment index out of bounds", call. = TRUE)
       return(NULL)
     }
       

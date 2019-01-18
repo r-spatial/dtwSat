@@ -131,7 +131,7 @@ plotAccuracy = function(x, perc=TRUE, conf.int=.95, time.labels=NULL,
   
   UA = do.call("rbind", lapply(x@accuracy, function(x) data.frame(label="UA", rbind(x$UsersAccuracy))))
   names(UA)[-1] = category.name
-  PA = do.call("rbind", lapply(x@accuracy, function(x) data.frame(label="PA", rbind(x$UsersAccuracy))))
+  PA = do.call("rbind", lapply(x@accuracy, function(x) data.frame(label="PA", rbind(x$ProducersAccuracy))))
   names(PA)[-1] = category.name
   df = melt(rbind(UA,PA), id="label")
   df$label = factor(df$label, levels = c("UA", "PA"), 

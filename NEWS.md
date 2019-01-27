@@ -1,3 +1,15 @@
+# dtwSat v0.2.5
+
+* Adds dtwSat paper published on Journal of Statistical Software 
+
+* Fixing bugs 
+  
+  Fix error in plotAccuracy 
+  
+  Generalizes twdwAssess to cases with only one map 
+  
+  Fixes error in getTimeSeries due to time series with only one no observation 
+
 # dtwSat v0.2.4
 
 * New features 

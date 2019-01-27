@@ -1,5 +1,5 @@
 ## Test environments
-* local Ubuntu 16.04 (64-bit), R 3.4.4
+* local Ubuntu 18.04 (64-bit), R 3.5.2
 * win-builder R-devel and R-release 
 devtools::check(args = '--as-cran', build_args = '--compact-vignettes=gs+qpdf')
 devtools::build_win(args = '--compact-vignettes=gs+qpdf')
@@ -7,6 +7,10 @@ devtools::submit_cran(args = '--compact-vignettes=gs+qpdf')
 
 
 ## REVIEWS
+
+# v0.2.5
+
+* The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
 
 # v0.2.4
 

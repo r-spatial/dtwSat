@@ -12,20 +12,22 @@ MOD13Q1.ts.list
 }
 \description{
 This dataset has a list of time series based on the 
-MODIS product MOD13Q1 250 m 16 days [1]. It is an irregularly sampled time series 
+MODIS product MOD13Q1 250 m 16 days \insertCite{Didan:2015}{dtwSat}. 
+It is an irregularly sampled time series 
 using the real date of each pixel from ''2009-08-05'' to ''2013-07-31''.
 }
 \references{
-[1] Friedl MA, Sulla-Menashe D, Tan B, Schneider A, Ramankutty N, Sibley A, Huang X. (2010).
-MODIS Collection 5 global land cover: Algorithm refinements and characterization of new
-datasets. Remote Sensing of Environment, 114(1), 168 182.
+\insertAllCited{}
+  
+  \insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
 }
 \seealso{
 \link[dtwSat]{MOD13Q1.ts}, and 
 \link[dtwSat]{MOD13Q1.patterns.list}.
 
-MOD13Q1 documentation: 
-\url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1_v006}.
+For details about MOD13Q1 see \insertCite{Didan:2015}{dtwSat}.
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

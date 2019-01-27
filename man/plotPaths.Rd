@@ -39,6 +39,11 @@ plotPaths(mat1, patterns.labels="Soybean", k=1:2)
 plotPaths(mat1, patterns.labels=c("Maize","Cotton"), k=2)
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 

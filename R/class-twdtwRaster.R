@@ -76,6 +76,11 @@
 #' \code{\link[dtwSat]{twdtwMatches-class}}, and 
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}
 #'
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples 
 #' # Creating a new object of class twdtwTimeSeries 
 #' evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))

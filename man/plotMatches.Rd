@@ -51,6 +51,11 @@ plotMatches(mat1, patterns.labels=c("Soybean","Maize"), k=4)
 plotMatches(mat1, patterns.labels=c("Soybean","Cotton"), k=c(3,1))
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 

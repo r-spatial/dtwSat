@@ -34,6 +34,11 @@
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}} and 
 #' \code{\link[dtwSat]{plotTimeSeries}}
 #'  
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' plotPatterns(patt)

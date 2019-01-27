@@ -67,6 +67,11 @@
 #' \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 
 #' \code{\link[dtwSat]{twdtwRaster-class}}
 #' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#' 
 #' @examples 
 #' ts = twdtwTimeSeries(timeseries=MOD13Q1.ts.list)
 #' patterns = twdtwTimeSeries(timeseries=MOD13Q1.patterns.list)

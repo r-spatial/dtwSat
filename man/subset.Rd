@@ -73,6 +73,11 @@ ts_evi = getTimeSeries(rts_evi, y = field_samples, proj4string = prj_string)
 ts_forest = subset(ts_evi, labels="Forest")
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwRaster-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 

@@ -73,6 +73,11 @@ autoplot(patt[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
 }
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, 

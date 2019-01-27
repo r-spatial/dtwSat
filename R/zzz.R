@@ -48,6 +48,7 @@
 #' @importFrom caret createDataPartition 
 #' @importFrom xtable xtable print.xtable
 #' @importFrom utils packageDescription flush.console 
+#' @importFrom Rdpack reprompt 
 #' @useDynLib dtwSat, .registration = TRUE
 #' 
 NULL

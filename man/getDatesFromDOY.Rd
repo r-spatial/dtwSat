@@ -27,6 +27,11 @@ dates = getDatesFromDOY(year, doy)
 dates
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \link[dtwSat]{shiftDates}
 }

@@ -45,6 +45,11 @@ getMatches(mat)
 getInternals(mat)
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, and
 \code{\link[dtwSat]{twdtwApply}}

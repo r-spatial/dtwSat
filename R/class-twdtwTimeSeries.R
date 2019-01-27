@@ -37,6 +37,11 @@
 #' \code{\link[dtwSat]{getTimeSeries}}, and
 #' \code{\link[dtwSat]{twdtwApply}}
 #'
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'
 #' @examples 
 #' # Creating a new object of class twdtwTimeSeries  
 #' ptt = new("twdtwTimeSeries", timeseries = MOD13Q1.patterns.list, 

@@ -103,6 +103,11 @@ ts = twdtwTimeSeries(tsA, tsB, C=MOD13Q1.ts)
 ts
  
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwRaster-class}}, 

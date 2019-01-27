@@ -43,6 +43,11 @@
 #' \code{\link[dtwSat]{plotChanges}}, and
 #' \code{\link[dtwSat]{plotDistance}}.
 #'  
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' \dontrun{
 #' # Run TWDTW analysis for raster time series 

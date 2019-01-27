@@ -15,6 +15,11 @@
 #' 
 #' @seealso \link[dtwSat]{shiftDates} 
 #' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' year = c(2000, 2001)
 #' doy = c(366, 365)
@@ -48,11 +53,22 @@ getDatesFromDOY = function(year, doy){
 #'
 #' @return An object of the same class as the input \code{object}. 
 #'
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @export
 setGeneric("shiftDates", function(object, year=NULL) standardGeneric("shiftDates"))
 
 #' @rdname shiftDates
 #' @aliases shiftDates-twdtwTimeSeries
+#' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' npatt = shiftDates(patt, year=2005)

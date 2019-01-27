@@ -38,6 +38,11 @@
 #' \code{\link[dtwSat]{twdtwMatches-class}}
 #'
 #' @return An object of class twdtw*. 
+#' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
 #'
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries

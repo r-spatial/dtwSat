@@ -44,6 +44,11 @@ setGeneric("twdtwXtable",
 #' @seealso \code{\link[dtwSat]{twdtwAssess}} and  
 #' \code{\link[dtwSat]{twdtwAssessment}}.
 #'
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'
 #' @examples 
 #' \dontrun{
 #' 

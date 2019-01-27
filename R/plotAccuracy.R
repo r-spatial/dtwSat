@@ -28,6 +28,11 @@
 #' @seealso 
 #' \code{\link[dtwSat]{twdtwAssessment}} and \code{\link[dtwSat]{twdtwAssess}}
 #'  
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' \dontrun{
 #' 

@@ -42,6 +42,11 @@
 #' If the twdtwRaster is unprojected (longitude/latitude) the estimated area is the sum of the approximate 
 #' surface area in km2 of each cell (pixel). If the twdtwRaster is projected the estimated area is calculated 
 #' using the the pixel resolution in the map unit.
+#' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
 #'
 NULL
 setClass(

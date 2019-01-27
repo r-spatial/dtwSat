@@ -109,6 +109,11 @@ twdtwXtable(twdtw_assess, table.type="area", category.type="letter",
 
 }
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwAssess}} and  
 \code{\link[dtwSat]{twdtwAssessment}}.

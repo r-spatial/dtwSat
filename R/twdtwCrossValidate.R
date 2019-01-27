@@ -25,6 +25,11 @@ setGeneric("twdtwCrossValidate",
 #' @param ... Other arguments to be passed to \code{\link[dtwSat]{createPatterns}} and 
 #' to \code{\link[dtwSat]{twdtwApply}}.
 #'
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples 
 #' \dontrun{
 #' # Data folder 

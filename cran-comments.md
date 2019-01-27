@@ -1,10 +1,14 @@
 ## Test environments
-* local Ubuntu 18.04 (64-bit), R 3.5.2
-* win-builder R-devel and R-release 
-devtools::check(args = '--as-cran', build_args = '--compact-vignettes=gs+qpdf')
-devtools::build_win(args = '--compact-vignettes=gs+qpdf')
-devtools::submit_cran(args = '--compact-vignettes=gs+qpdf')
-
+* win-builder 
+  devtools::check_win_oldrelease(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
+  devtools::check_win_release(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
+  devtools::check_win_devel(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
+* R-hub 
+  rhub::check_for_cran(check_args = '--as-cran --compact-vignettes=gs+qpdf')
+* Ubuntu 18.04 (64-bit), R 3.5.2 
+  devtools::check(args = '--as-cran', build_args = '--compact-vignettes=gs+qpdf')
+  devtools::check(args = '--use-valgrind', build_args = '--compact-vignettes=gs+qpdf')
+  devtools::submit_cran(args = '--compact-vignettes=gs+qpdf')
 
 ## REVIEWS
 

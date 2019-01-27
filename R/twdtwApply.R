@@ -19,7 +19,7 @@
 #' 
 #' @description This function performs a multidimensional Time-Weighted DTW 
 #' analysis and retrieves the matches between the temporal patterns and 
-#' a set of time series [1].
+#' a set of time series \insertCite{Maus:2019}{dtwSat}.
 #' 
 #' @inheritParams twdtwClassify
 #' 
@@ -49,7 +49,8 @@
 #' Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
 #' \pkg{proxy}.
 #' 
-#' @param step.matrix See \code{\link[dtw]{stepPattern}} in package \pkg{dtw} [2].
+#' @param step.matrix See \code{\link[dtw]{stepPattern}} in package \pkg{dtw} 
+#' \insertCite{Giorgino:2009}{dtwSat}.
 #' 
 #' @param n An integer. The maximun number of matches to perform. 
 #' NULL will return all matches.
@@ -63,9 +64,9 @@
 #' Default is FALSE. For plot methods use \code{keep=TRUE}.
 #' 
 #' @param span A number. Span between two matches, \emph{i.e.} the minimum  
-#' interval between two matches; for details see [3]. If not declared it removes
-#' all overlapping matches of the same pattern. To include overlapping matches 
-#' of the same pattern use \code{span=0}.
+#' interval between two matches; for details see \insertCite{Muller:2007}{dtwSat}. 
+#' If not declared it removes all overlapping matches of the same pattern. To include 
+#' overlapping matches of the same pattern use \code{span=0}.
 #' 
 #' @param min.length A number between 0 an 1. This argument removes overfittings.
 #' Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
@@ -75,24 +76,16 @@
 #' function saves in the current work directory. 
 #' 
 #' @references 
-#' [1] Maus  V,  Camara  G,  Cartaxo  R,  Sanchez  A,  Ramos  FM,  de Queiroz, GR.
-#' (2016). A Time-Weighted Dynamic Time Warping method for land use and land cover 
-#' mapping. IEEE Journal of Selected Topics in Applied Earth Observations and Remote 
-#' Sensing, vol.9, no.8, pp.3729-3739.
-#' @references 
-#' [2] Giorgino, T. (2009). Computing and Visualizing Dynamic Time Warping Alignments in R: 
-#' The dtw Package. Journal of Statistical Software, 31, 1-24.
-#' @references 
-#' [3] Muller, M. (2007). Dynamic Time Warping. In Information Retrieval for Music 
-#' and Motion (pp. 79-84). London: Springer London, Limited.
+#'   \insertAllCited{}
 #' 
 #' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
 #' can be passed to \code{twdtwApply} through the argument \code{weight.fun}. This will 
 #' add a time-weight to the dynamic time warping analysis. The time weight 
 #' creates a global constraint useful for analysing time series with phenological cycles
-#' of vegetation that are usually bound to seasons. In previous studies by [1] the 
-#' logistic weight had better results than the linear for land cover classification. 
-#' See [1] for details about the method. 
+#' of vegetation that are usually bound to seasons. In previous studies by 
+#' \insertCite{Maus:2016}{dtwSat} the logistic weight had better results than the 
+#' linear for land cover classification. 
+#' See \insertCite{Maus:2016,Maus:2019}{dtwSat} for details about the method. 
 #' 
 #' @return An object of class twdtw*.
 #' 

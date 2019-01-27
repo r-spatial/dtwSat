@@ -119,6 +119,11 @@ mat = twdtwMatches(ts, patterns=patt, alignments=mat)
 mat
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 

@@ -38,6 +38,11 @@
 #'  \item{\code{accuracy}:}{A list with the accuracy and other TWDTW information for each 
 #'  data partitions.}
 #' }
+#' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
 #'
 #' @examples 
 #' \dontrun{

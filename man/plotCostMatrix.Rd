@@ -40,6 +40,11 @@ plotCostMatrix(mat1, matrix.name="localMatrix")
 plotCostMatrix(mat1, matrix.name="timeWeight")
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwMatches-class}}, 
 \code{\link[dtwSat]{twdtwApply}}, 

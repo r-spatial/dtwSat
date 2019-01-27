@@ -39,6 +39,11 @@
 #' \code{\link[dtwSat]{plotMatches}}, and
 #' \code{\link[dtwSat]{plotClassification}}.
 #' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' log_fun = logisticWeight(-0.1, 100)
 #' ts = twdtwTimeSeries(MOD13Q1.ts.list)

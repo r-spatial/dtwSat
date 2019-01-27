@@ -81,6 +81,11 @@ ts = getTimeSeries(rts, y = ts_location, proj4string = prj_string)
 autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwRaster-class}}, 
 \code{\link[dtwSat]{twdtwTimeSeries-class}}, and 

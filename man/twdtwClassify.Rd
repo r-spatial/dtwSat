@@ -217,6 +217,11 @@ twdtwXtable(twdtw_assess, table.type = "area")
 }
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}, 
 \code{\link[dtwSat]{twdtwMatches-class}}, 

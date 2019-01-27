@@ -16,6 +16,11 @@
 #' \code{\link[dtwSat]{plotAccuracy}}, and
 #' \code{\link[dtwSat]{plotAdjustedArea}}.
 #'  
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @example examples/test_twdtw_raster_analysis.R
 #' @export
 plotMapSamples = function(x, samples="all", ...){

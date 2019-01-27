@@ -56,6 +56,11 @@
 #' \code{\link[dtwSat]{getTimeSeries}}, and 
 #' \code{\link[dtwSat]{twdtwApply}}
 #' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#' 
 #' @export
 setGeneric("createPatterns", function(x, from=NULL, to=NULL, freq=1, attr=NULL, split=TRUE, formula, ...) standardGeneric("createPatterns"))
 

@@ -42,7 +42,13 @@ setGeneric("getMatches", function(object, timeseries.labels=NULL, patterns.label
 #' getInternals(mat)
 #'
 #' @return a list with TWDTW results or an object \code{\link[dtwSat]{twdtwTimeSeries-class}}. 
-#'
+#' 
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
+#'   
 NULL
         
 #' @aliases getAlignments

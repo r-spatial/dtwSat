@@ -29,6 +29,11 @@ plotTimeSeries(ts)
 plotTimeSeries(ts, attr="evi")
 
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwTimeSeries-class}} and 
 \code{\link[dtwSat]{plotPatterns}}

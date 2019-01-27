@@ -51,6 +51,11 @@ setGeneric("getPatterns", function(object, ...) standardGeneric("getPatterns"))
 #'
 #' @return a list with TWDTW results or an object \code{\link[dtwSat]{twdtwTimeSeries-class}}. 
 #'
+#' @references
+#'   \insertRef{Maus:2019}{dtwSat}
+#'   
+#'   \insertRef{Maus:2016}{dtwSat}
+#'   
 #' @examples
 #' # Getting time series from objects of class twdtwTimeSeries
 #' ts = twdtwTimeSeries(MOD13Q1.ts.list)

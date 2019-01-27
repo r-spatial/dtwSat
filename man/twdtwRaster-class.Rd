@@ -184,6 +184,11 @@ doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 rts = twdtwRaster(doy, evi, ndvi, blue, red, nir, mir, timeline = timeline)
 }
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \seealso{
 \code{\link[dtwSat]{twdtwApply}}, 
 \code{\link[dtwSat]{getTimeSeries}},

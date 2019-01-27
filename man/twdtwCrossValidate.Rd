@@ -72,6 +72,11 @@ twdtwXtable(cross_validation, show.overall=FALSE)
 
 }
 }
+\references{
+\insertRef{Maus:2019}{dtwSat}
+  
+  \insertRef{Maus:2016}{dtwSat}
+}
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}
 }

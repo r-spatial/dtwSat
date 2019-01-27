@@ -38,7 +38,8 @@ Imports:
     lubridate,
     caret,
     mgcv,
-    xtable
+    xtable,
+    Rdpack
 Suggests:
     knitr,
     rmarkdown,
@@ -101,3 +102,4 @@ Collate:
     'twdtwXtable.R'
     'zzz.R'
 VignetteBuilder: knitr
+RdMacros: Rdpack

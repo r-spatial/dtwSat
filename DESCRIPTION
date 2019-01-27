@@ -57,7 +57,7 @@ Author: Victor Maus [aut, cre] (<https://orcid.org/0000-0002-7385-4723>),
   Toni Giorgino [ctb]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Collate: 
     'class-crossValidation.R'
     'class-twdtwRaster.R'

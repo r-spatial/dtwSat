@@ -14,7 +14,7 @@ resampleTimeSeries(object, length = NULL)
 \arguments{
 \item{object}{an object of class twdtwTimeSeries.}
 
-\item{length}{An integer. The number of samples to resample the time series. 
+\item{length}{An integer. The number of samples to resample the time series to. 
 If not declared the length is set to the length of the longest time series.}
 }
 \value{
@@ -22,8 +22,7 @@ An object of class \code{\link[dtwSat]{twdtwTimeSeries}} whose
 time series have the same number of samples (points).
 }
 \description{
-resample time series in the same object to have the same 
-the length.
+Resample time series in the object to have the same length.
 }
 \examples{
 # Resampling time series from objects of class twdtwTimeSeries

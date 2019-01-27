@@ -13,7 +13,7 @@ logisticWeight(alpha, beta)
 \item{beta}{numeric. The midpoint of logistic weight.}
 }
 \value{
-An \code{\link[base]{function}} object.
+A \code{\link[base]{function}} object.
 }
 \description{
 Builds a logistic time weight 

@@ -21,7 +21,7 @@
 \arguments{
 \item{x}{An objects of class twdtw*.}
 
-\item{labels}{character vector with time series labels.}
+\item{labels}{A character vector with time series labels.}
 
 \item{timeseries.labels}{a vector with labels of the time series.}
 
@@ -33,11 +33,11 @@ the subset.}
 \item{e}{An extent object, or any object from which an Extent object can
 be extracted. See \link[raster]{crop} for details.}
 
-\item{layers}{a vector with the names of the \code{twdtwRaster} object to include in 
+\item{layers}{A vector with the names of the \code{twdtwRaster} object to include in 
 the subset.}
 }
 \value{
-an object of class twdtw*.
+An object of class twdtw*.
 }
 \description{
 Get subsets from objects of class twdtw*.
@@ -52,7 +52,7 @@ patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100))
 mat = subset(mat, k=4)
 
-## This example creates a twdtwRaster object and extract time series from it. 
+## This example creates a twdtwRaster object and extracts time series from it. 
 
 # Creating objects of class twdtwRaster with evi and ndvi time series 
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
@@ -69,7 +69,7 @@ prj_string = scan(system.file("lucc_MT/data/samples_projection", package="dtwSat
 # Extract time series 
 ts_evi = getTimeSeries(rts_evi, y = field_samples, proj4string = prj_string)
 
-# subset all labels = "Forest"
+# Subset all labels = "Forest"
 ts_forest = subset(ts_evi, labels="Forest")
 
 }

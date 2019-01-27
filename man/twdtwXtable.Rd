@@ -7,7 +7,7 @@
 \alias{twdtwXtable-twdtwAssessment}
 \alias{twdtwXtable,twdtwCrossValidation-method}
 \alias{twdtwXtable-twdtwCrossValidation}
-\title{Latex table from accuracy metrics}
+\title{LaTeX table from accuracy metrics}
 \usage{
 \S4method{twdtwXtable}{twdtwAssessment}(object, table.type = "accuracy",
   show.prop = TRUE, category.name = NULL, category.type = NULL,
@@ -21,39 +21,39 @@
 \arguments{
 \item{object}{an object of class twdtwAssessment.}
 
-\item{table.type}{table type, 'accuracy' for User's and Producer's Accuracy, 
+\item{table.type}{Table type, 'accuracy' for User's and Producer's Accuracy, 
 'errormatrix' for error matrix, and 'area' for area and uncertainty. 
 Default is 'accuracy'.}
 
-\item{show.prop}{if TRUE shows the estimated proportion of area.
+\item{show.prop}{If TRUE shows the estimated proportion of area.
 Used with \code{table.type='accuracy'}. Default is TRUE.}
 
-\item{category.name}{a character vector defining the class names. If NULL
-then use the classe names in the object \code{x}. Default is NULL.}
+\item{category.name}{A character vector defining the class names. If NULL
+the class names in the object \code{x} are used. Default is NULL.}
 
-\item{category.type}{a character defining the categories type "numeric" 
-or "letter", if NULL then use the class names. Default is NULL.}
+\item{category.type}{A character defining the categories type "numeric" 
+or "letter", if NULL the class names are used. Default is NULL.}
 
-\item{rotate.col}{rotate class column names in latex table. Default is FALSE.}
+\item{rotate.col}{Rotate class column names in latex table. Default is FALSE.}
 
-\item{time.labels}{a character or numeric for the time period or NULL to 
+\item{time.labels}{A character or numeric for the time period or NULL to 
 include all classified periods. Default is NULL.}
 
-\item{caption}{the table caption.}
+\item{caption}{The table caption.}
 
-\item{digits}{number of digits to show.}
+\item{digits}{Number of digits to show.}
 
-\item{show.footnote}{show confidence interval in the footnote.}
+\item{show.footnote}{Show confidence interval in the footnote.}
 
-\item{...}{other arguments to pass to and \code{\link[xtable]{print.xtable}}.}
+\item{...}{Other arguments to pass to \code{\link[xtable]{print.xtable}}.}
 
-\item{conf.int}{specifies the confidence level (0-1).}
+\item{conf.int}{Specifies the confidence level (0-1).}
 
-\item{show.overall}{if TRUE shows the overall accuracy of the cross-validation.
+\item{show.overall}{If TRUE shows the overall accuracy of the cross-validation.
 Default is TRUE.}
 }
 \description{
-Creates Latex table from accuracy metrics
+Creates LaTeX table from accuracy metrics
 }
 \examples{
 \dontrun{
@@ -69,7 +69,7 @@ doy = brick(system.file("lucc_MT/data/doy.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 
-# Read fiels samples 
+# Read field samples 
 field_samples = read.csv(system.file("lucc_MT/data/samples.csv", package="dtwSat"))
 proj_str = scan(system.file("lucc_MT/data/samples_projection", 
                 package="dtwSat"), what = "character")

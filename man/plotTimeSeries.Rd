@@ -8,9 +8,9 @@ plotTimeSeries(x, labels = NULL, attr)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwTimeSeries}}, 
-\code{\link[zoo]{zoo}}, or list of \code{\link[zoo]{zoo}}.}
+\code{\link[zoo]{zoo}}, or list of class \code{\link[zoo]{zoo}}.}
 
-\item{labels}{a vector with labels of the time series. If missing, all 
+\item{labels}{A vector with labels of the time series. If missing, all 
 elements in the list will be plotted (up to a maximum of 16).}
 
 \item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 

@@ -11,10 +11,10 @@ plotMatches(x, timeseries.labels = 1, patterns.labels = NULL, k = 1,
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}
 
-\item{timeseries.labels}{the label or index of the time series.
+\item{timeseries.labels}{The label or index of the time series.
 Default is 1.}
 
-\item{patterns.labels}{a vector with labels of the patterns. If not 
+\item{patterns.labels}{A vector with labels of the patterns. If not 
 declared the function will plot one alignment for each pattern.}
 
 \item{k}{A positive integer. The index of the last alignment to include in 
@@ -24,10 +24,10 @@ each pattern.}
 \item{attr}{An \link[base]{integer} or \link[base]{character} vector 
 indicating the attribute for plotting. Default is 1.}
 
-\item{shift}{A number, it shifts the pattern position in the \code{x}
+\item{shift}{A number that shifts the pattern position in the \code{x}
 direction. Default is 0.5.}
 
-\item{show.dist}{show the distance for each alignment. Default is FALSE.}
+\item{show.dist}{Show the distance for each alignment. Default is FALSE.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.

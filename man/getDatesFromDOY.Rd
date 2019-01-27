@@ -8,16 +8,16 @@
 getDatesFromDOY(year, doy)
 }
 \arguments{
-\item{year}{An vector with the years.}
+\item{year}{A vector with the years.}
 
-\item{doy}{An vector with the day of the year. 
-It must have the same lenght as \code{year}.}
+\item{doy}{A vector with the day of the year. 
+It must have the same length as \code{year}.}
 }
 \value{
 A \code{\link[base]{Dates}} object.
 }
 \description{
-This function retrieves the date corresponding to the ginven 
+This function retrieves the date corresponding to the given 
 year and day of the year.
 }
 \examples{

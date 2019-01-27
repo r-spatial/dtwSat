@@ -24,7 +24,7 @@
   proj4string = NULL, id.labels = NULL)
 }
 \arguments{
-\item{object}{an object of class of class twdtw*.}
+\item{object}{an object of class twdtw*.}
 
 \item{labels}{character vector with time series labels. For signature 
 \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
@@ -42,7 +42,7 @@ If missing ''from'' and/or ''to'', they are set to the time range of the
 if \code{y} is a \code{\link[base]{data.frame}}.}
 
 \item{id.labels}{a numeric or character with an column name from \code{y} to 
-be used as samples labels. Optional.}
+be used as sample labels. Optional.}
 }
 \value{
 An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
@@ -61,6 +61,7 @@ ts = twdtwTimeSeries(MOD13Q1.ts.list)
 patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 mat = twdtwApply(x=ts, y=patt)
 getTimeSeries(mat, 2)
+
 ## This example creates a twdtwRaster object and extract time series from it. 
 
 # Creating objects of class twdtwRaster with evi and ndvi time series 
@@ -74,7 +75,7 @@ ts_location = data.frame(longitude = -55.96957, latitude = -12.03864,
                          from = "2007-09-01", to = "2013-09-01")
 prj_string = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
-## Extract time series 
+# Extract time series 
 ts = getTimeSeries(rts, y = ts_location, proj4string = prj_string)
  
 autoplot(ts[[1]], facets = NULL) + xlab("Time") + ylab("Value")

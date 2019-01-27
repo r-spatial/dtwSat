@@ -10,11 +10,11 @@
 \S4method{twdtwCrossValidate}{twdtwTimeSeries}(object, times, p, ...)
 }
 \arguments{
-\item{object}{an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.}
+\item{object}{An object of class \code{\link[dtwSat]{twdtwTimeSeries}}.}
 
 \item{times}{Number of partitions to create.}
 
-\item{p}{the percentage of data that goes to training. 
+\item{p}{The percentage of data that goes to training. 
 See \code{\link[caret]{createDataPartition}} for details.}
 
 \item{...}{Other arguments to be passed to \code{\link[dtwSat]{createPatterns}} and 
@@ -22,7 +22,7 @@ to \code{\link[dtwSat]{twdtwApply}}.}
 }
 \description{
 Splits the set of time series into training and validation and 
-compute accuracy metrics. The function uses stratified sampling and a simple 
+computes accuracy metrics. The function uses stratified sampling and a simple 
 random sampling for each stratum. For each data partition this function 
 performs a TWDTW analysis and returns the Overall Accuracy, User's Accuracy, 
 Produce's Accuracy, error matrix (confusion matrix), and a \code{\link[base]{data.frame}} 

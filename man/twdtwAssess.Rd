@@ -32,39 +32,39 @@
   rm.nosample = TRUE)
 }
 \arguments{
-\item{object}{an object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
+\item{object}{An object of class \code{\link[dtwSat]{twdtwRaster}} resulting from 
 the classification, i.e. \code{\link[dtwSat]{twdtwClassify}}.
-The argument can also receive an error matrix (confusion matrix) in using the classes 
+The argument can also receive an error matrix (confusion matrix) using the classes 
 \code{\link[base]{data.frame}} or \code{\link[base]{table}}. In this case the user 
-must inform the area for each class to the argument \code{area}.}
+must provide the area for each class to the argument \code{area}.}
 
-\item{y}{a \code{\link[base]{data.frame}} whose attributes are: longitude, 
+\item{y}{A \code{\link[base]{data.frame}} whose attributes are: longitude, 
 latitude, the start ''from'' and the end ''to'' of the time interval 
 for each sample. This can also be a \code{\link[sp]{SpatialPointsDataFrame}} 
 whose attributes are the start ''from'' and the end ''to'' of the time interval.
 If missing ''from'' and/or ''to'', they are set to the time range of the 
 \code{object}.}
 
-\item{labels}{character vector with time series labels. For signature 
+\item{labels}{Character vector with time series labels. For signature 
 \code{\link[dtwSat]{twdtwRaster}} this argument can be used to set the 
 labels for each sample in \code{y}, or it can be combined with \code{id.labels} 
 to select samples with a specific label.}
 
-\item{id.labels}{a numeric or character with an column name from \code{y} to 
+\item{id.labels}{A numeric or character with an column name from \code{y} to 
 be used as samples labels. Optional.}
 
-\item{proj4string}{projection string, see \code{\link[sp]{CRS-class}}. Used 
+\item{proj4string}{Projection string, see \code{\link[sp]{CRS-class}}. Used 
 if \code{y} is a \code{\link[base]{data.frame}}.}
 
-\item{conf.int}{specifies the confidence level (0-1).}
+\item{conf.int}{Specifies the confidence level (0-1).}
 
-\item{rm.nosample}{if sum of columns and sum of rows of the error matrix are zero 
+\item{rm.nosample}{If sum of columns and sum of rows of the error matrix are zero 
 then remove class. Default is TRUE.}
 
-\item{start_date}{a date. Required if there is only one map to be assessed. Usually this is the 
+\item{start_date}{A date. Required if there is only one map to be assessed. Usually this is the 
 first date of the timeline from satellite images.}
 
-\item{area}{a numeric vector with the area for each class if the argument \code{object}
+\item{area}{A numeric vector with the area for each class if the argument \code{object}
 is an error matrix (confusion matrix). If \code{object} is \code{\link[dtwSat]{twdtwMatches}} 
 area can be either a vector with the area of each classified object, or a single number 
 if the objects are single pixels.}

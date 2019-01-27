@@ -60,7 +60,7 @@
 \item{object}{an object of class twdtwTimeSeries.}
 }
 \description{
-Class for set of irregular time series.
+Class for setting irregular time series.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -78,7 +78,7 @@ Class for set of irregular time series.
 }
 
 \examples{
-# Creating new object of class twdtwTimeSeries  
+# Creating a new object of class twdtwTimeSeries  
 ptt = new("twdtwTimeSeries", timeseries = MOD13Q1.patterns.list, 
            labels = names(MOD13Q1.patterns.list))
 class(ptt)

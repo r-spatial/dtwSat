@@ -9,10 +9,10 @@ plotMapSamples(x, samples = "all", ...)
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwAssessment}}.}
 
-\item{samples}{a character defining the samples to plot 
+\item{samples}{A character defining the samples to plot 
 "correct", "incorrect", "all". Default is "all".}
 
-\item{...}{other arguments to pass to \code{\link[dtwSat]{twdtwRaster}}}
+\item{...}{Other arguments to pass to \code{\link[dtwSat]{twdtwRaster}}}
 }
 \value{
 A \link[ggplot2]{ggplot} object.

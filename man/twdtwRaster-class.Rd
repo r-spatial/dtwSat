@@ -97,10 +97,10 @@ in the format of "YYYY-MM-DD".}
 \item{doy}{A \code{\link[raster]{RasterBrick-class}} or 
 \code{\link[raster]{RasterStack-class}} with a sequence of days of the year for each pixel. 
 \code{doy} must have the same spatial and temporal extents as the Raster* objects passed to \code{...}.
-If \code{doy} is not informed then at least one Raster* object must be passed through \code{...}.}
+If \code{doy} is not provided then at least one Raster* object must be passed through \code{...}.}
 
 \item{layers}{a vector with the names of the \code{Raster*} objects 
-passed to "\code{...}". If not informed the layers are set to the 
+passed to "\code{...}". If not provided the layers are set to the 
 names of objects in "\code{...}".}
 
 \item{labels}{a vector of class \code{\link[base]{character}} with 
@@ -111,11 +111,11 @@ useful for categorical Raster* values of land use classes.}
 levels of the values in the Raster* objects. This is 
 useful for categorical Raster* values of land use classes.}
 
-\item{filepath}{A character. The path to save the raster time series. If informed the 
+\item{filepath}{A character. The path to save the raster time series. If provided the 
 function saves a raster file for each Raster* object in the list, \emph{i.e} one file 
-for each time series. This way the function retrieves an list of 
+for each time series. This way the function retrieves a list of 
 \code{\link[raster]{RasterBrick-class}}. It is useful when the time series are 
-originally stores in separated files. See details.}
+originally stored in separated files. See details.}
 
 \item{x}{an object of class twdtwRaster.}
 
@@ -125,7 +125,7 @@ originally stores in separated files. See details.}
 
 \item{object}{an object of class twdtwRaster.}
 
-\item{obj}{object of cless twdtwRaster}
+\item{obj}{object of class twdtwRaster.}
 
 \item{crs}{character or object of class 'CRS'. PROJ.4 description of 
 the coordinate reference system. For other arguments and more details see 
@@ -135,7 +135,7 @@ the coordinate reference system. For other arguments and more details see
 Class for set of satellite time series.
 }
 \details{
-The performance the functions \code{\link[dtwSat]{twdtwApply}} and 
+The performance of the functions \code{\link[dtwSat]{twdtwApply}} and 
 \code{\link[dtwSat]{getTimeSeries}} is improved if the Raster* objects are connected 
 to files with the whole time series for each attribute.
 }
@@ -151,7 +151,7 @@ to files with the whole time series for each attribute.
 \section{Slots }{
 
 \describe{
- \item{\code{timeseries}:}{A list of multi-layers Raster* objects 
+ \item{\code{timeseries}:}{A list of multi-layer Raster* objects 
        with the satellite image time series.}
  \item{\code{timeline}:}{A vector of class \code{\link[base]{date}} 
        with dates of the satellite images in \code{timeseries}.}
@@ -164,7 +164,7 @@ to files with the whole time series for each attribute.
 }
 
 \examples{
-# Creating new object of class twdtwTimeSeries 
+# Creating a new object of class twdtwTimeSeries 
 evi = brick(system.file("lucc_MT/data/evi.tif", package="dtwSat"))
 timeline = scan(system.file("lucc_MT/data/timeline", package="dtwSat"), what="date")
 rts = new("twdtwRaster", timeseries = evi, timeline = timeline)

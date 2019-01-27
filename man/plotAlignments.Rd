@@ -14,7 +14,7 @@ plotAlignments(x, timeseries.labels = NULL, patterns.labels = NULL,
 Default is 1.}
 
 \item{patterns.labels}{a vector with labels of the patterns. If not 
-declared the function will plot the alignments for all patterna in \code{x}.}
+declared the function will plot the alignments for all patterns in \code{x}.}
 
 \item{attr}{An \link[base]{integer} or \link[base]{character} vector 
 indicating the attribute for plotting. Default is 1.}

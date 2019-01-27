@@ -17,11 +17,11 @@ createPatterns(x, from = NULL, to = NULL, freq = 1, attr = NULL,
 \item{x}{an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format 
-"yyyy-mm-dd". If not informed it is equal to the smallest date of the 
+"yyyy-mm-dd". If not provided it is equal to the smallest date of the 
 first element in x. See details.}
 
 \item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
-object in the format "yyyy-mm-dd". If not informed it is equal to the 
+object in the format "yyyy-mm-dd". If not provided it is equal to the 
 greatest date of the first element in x. See details.}
 
 \item{freq}{An integer. The sampling frequency of the output patterns.}
@@ -35,7 +35,7 @@ all samples are set to the same label.}
 \item{formula}{A formula. Argument to pass to \code{\link[mgcv]{gam}}.}
 
 \item{...}{other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
-packege \pkg{mgcv}.}
+package \pkg{mgcv}.}
 }
 \value{
 an object of class \code{\link[dtwSat]{twdtwTimeSeries}}
@@ -46,7 +46,7 @@ Create temporal patterns from objects of class twdtwTimeSeries.
 \details{
 The hidden assumption is that the temporal pattern is a cycle the repeats itself 
 within a given time interval. Therefore, all time series samples in \code{x} are aligned 
-to each other keeping their respective sequence of days of the year. The function fits a 
+with each other, keeping their respective sequence of days of the year. The function fits a 
 Generalized Additive Model (GAM) to the aligned set of samples.
 }
 \examples{

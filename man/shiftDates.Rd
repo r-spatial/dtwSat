@@ -23,7 +23,7 @@ shiftDates(object, year = NULL)
 \item{object}{\code{\link[dtwSat]{twdtwTimeSeries}} objects, 
 \code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.}
 
-\item{year}{the base year to shit the time series.}
+\item{year}{the base year to shift the time series to.}
 }
 \value{
 An object of the same class as the input \code{object}.

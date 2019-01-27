@@ -13,7 +13,7 @@ linearWeight(a, b = 0)
 \item{b}{numeric. The intercept of the line.}
 }
 \value{
-An \code{\link[base]{function}} object.
+A \code{\link[base]{function}} object.
 }
 \description{
 Builds a linear time weight 

@@ -10,17 +10,17 @@ plotClassification(x, timeseries.labels = NULL, patterns.labels = NULL,
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}
 
-\item{timeseries.labels}{the label or index of the time series.
+\item{timeseries.labels}{The label or index of the time series.
 Default is 1.}
 
-\item{patterns.labels}{a vector with labels of the patterns. If not 
+\item{patterns.labels}{A vector with labels of the patterns. If not 
 declared the function will plot one alignment for each pattern.}
 
 \item{attr}{An \link[base]{integer} vector or \link[base]{character} vector 
 indicating the attribute for plotting. If not declared the function will plot 
 all attributes.}
 
-\item{...}{additional arguments passed to \code{\link[dtwSat]{twdtwClassify}}.}
+\item{...}{Additional arguments passed to \code{\link[dtwSat]{twdtwClassify}}.}
 }
 \value{
 A \link[ggplot2]{ggplot} object.

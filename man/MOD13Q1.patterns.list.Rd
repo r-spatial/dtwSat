@@ -4,7 +4,7 @@
 \name{MOD13Q1.patterns.list}
 \alias{MOD13Q1.patterns.list}
 \title{Data: patterns time series}
-\format{A named \code{list} of 3 \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
+\format{A named \code{list} of three \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
 and ''Maize'', whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''.
 Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
 and ''mir''.}
@@ -14,7 +14,7 @@ MOD13Q1.patterns.list
 \description{
 This dataset has a list of patterns with the phenological cycle of: Soybean,
 Cotton, and Maize. These time series are based on the MODIS product 
-MOD13Q1 250 m 16 days [1]. The patterns were build from ground truth samples of each 
+MOD13Q1 250 m 16 days [1]. The patterns were built from ground truth samples of each 
 crop using Generalized Additive Models (GAM), see \link[dtwSat]{createPatterns}.
 }
 \references{

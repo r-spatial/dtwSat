@@ -19,10 +19,10 @@ twdtwClassify(x, ...)
   thresholds = Inf, fill = 255, filepath = "", ...)
 }
 \arguments{
-\item{x}{an object of class twdtw*. This is the target time series. 
+\item{x}{An object of class twdtw*. This is the target time series. 
 Usually, it is a set of unclassified time series.}
 
-\item{...}{arguments to pass to specifique methods for each twdtw* class 
+\item{...}{Arguments to pass to specific methods for each twdtw* class 
 and other arguments to pass to \code{\link[raster]{writeRaster}} and 
 \code{\link[raster]{pbCreate}}.}
 
@@ -32,7 +32,7 @@ and other arguments to pass to \code{\link[raster]{writeRaster}} and
 
 \item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
 
-\item{by}{A \code{\link[base]{character}} with the intevals size, \emph{e.g.} "6 month".}
+\item{by}{A \code{\link[base]{character}} with the interval size, \emph{e.g.} "6 month".}
 
 \item{breaks}{A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
 \code{to}, and \code{by}.}
@@ -45,12 +45,12 @@ between one match and the interval of classification. Default is 0.5,
 The TWDTW dissimilarity thresholds, i.e. the maximum TWDTW cost for consideration 
 in the classification. Default is \code{Inf} for all \code{patterns.labels}.}
 
-\item{fill}{a character or value to fill the classification gaps. 
-For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, and 
+\item{fill}{A character to fill the classification gaps. 
+For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, 
 for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.}
 
-\item{filepath}{A character. The path to save the raster with results. If not informed the 
-function saves in the same directory as the input time series raster.}
+\item{filepath}{A character. The path at which to save the raster with results. 
+If not provided the function saves in the same directory as the input time series raster.}
 }
 \value{
 An object of class twdtw*.

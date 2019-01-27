@@ -1,19 +1,22 @@
 ## Test environments
 * win-builder 
-  devtools::check_win_release(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
-  devtools::check_win_devel(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
+  devtools::check_win_release()
+  devtools::check_win_devel()
+
 * R-hub 
-  rhub::check_for_cran(check_args = '--as-cran --compact-vignettes=gs+qpdf')
+  rhub::check_for_cran(check_args = '--as-cran')
+  
 * Ubuntu 18.04 (64-bit), R 3.5.2 
-  devtools::check(args = '--as-cran', build_args = '--compact-vignettes=gs+qpdf')
-  devtools::check(args = '--use-valgrind', build_args = '--compact-vignettes=gs+qpdf')
-  devtools::submit_cran(args = '--compact-vignettes=gs+qpdf')
+  devtools::check(args = '--as-cran')
+  devtools::check(args = '--use-valgrind')
+  devtools::submit_cran()
 
 ## REVIEWS
 
 # v0.2.5
 
 * The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
+
 
 # v0.2.4
 

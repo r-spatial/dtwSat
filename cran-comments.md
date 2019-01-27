@@ -1,6 +1,5 @@
 ## Test environments
 * win-builder 
-  devtools::check_win_oldrelease(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
   devtools::check_win_release(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
   devtools::check_win_devel(args = '--compact-vignettes=gs+qpdf', binary = FALSE)
 * R-hub 

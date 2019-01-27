@@ -2,15 +2,15 @@
 author:
   - name: Victor Maus
     affiliation: University of Münster 
-    affiliation2: INPE, IIASA
+    affiliation2: INPE, IIASA, WU
     address: >
-      Ecosystems Services and Management Program\newline
-      International Institute for Applied Systems Analysis\newline
-      Schlossplatz 1\newline
-      A-2361 Laxenburg, Austria
+      Institute for Ecological Economics\newline
+      Vienna University of Economics and Business\newline
+      Welthandelsplatz 1\newline
+      1020 Wien, Austria
     email: vwmaus1@gmail.com
-    url: \url{https://vwmaus.github.io/}
-    Telephone: +43/2236-807-550
+    url: \url{www.victor-maus.com}
+    Telephone: +43-1-313 36-6176
   - name: Gilberto Câmara
     affiliation: INPE
     affiliation2: University of Münster 
@@ -150,7 +150,7 @@ plotMatches(mat, attr = "evi", k = n) +
 
 To use TWDTW for land cover classification, we need the following data sets: 
 
-- A set of remote sensing time series for the study area. For example, a tile of a MODIS MOD13Q1 image consists of 4800 x 4800 pixels, covering an area of 10 degrees x 10 degrees at the Equator [@Friedl:2010]. A 15-year (2000-2015) MODIS MOD13Q1 set time series has 23 images per year, with a total of 23 million time series, each with 346 samples.
+- A set of remote sensing time series for the study area. For example, a tile of a MODIS MOD13Q1 image consists of 4800 x 4800 pixels, covering an area of 10 degrees x 10 degrees at the Equator [@Didan:2015]. A 15-year (2000-2015) MODIS MOD13Q1 set time series has 23 images per year, with a total of 23 million time series, each with 346 samples.
 
 - A set of time series with land cover information, called *temporal patterns*. Typically, each time series is short and covers one phenological cycle of one land cover type. Examples would be a time series of a soybean crop, or one that describes a mature tropical forest. These temporal patterns can be extracted from the remote sensing image data, if the user knows their spatial and temporal location.
 
@@ -185,7 +185,7 @@ The class \code{twdtwRaster} is used for satellite image time series. This class
 
 
 # Classifying a time series
-This section describes how to classify one time series, using examples that come with the \pkg{dtwSat} package. We will show how to match three temporal patterns ("soybean", "cotton", and  "maize") to subintervals of a long-term satellite image time series. These time series have been extracted from a set of MODIS MOD13Q1 [@Friedl:2010] images and include the vegetation indices "ndvi", "evi", and the original bands "nir", "red", "blue", and "mir". In this example, the classification of crop types for the long-term time series is known. 
+This section describes how to classify one time series, using examples that come with the \pkg{dtwSat} package. We will show how to match three temporal patterns ("soybean", "cotton", and  "maize") to subintervals of a long-term satellite image time series. These time series have been extracted from a set of MODIS MOD13Q1 [@Didan:2015] images and include the vegetation indices "ndvi", "evi", and the original bands "nir", "red", "blue", and "mir". In this example, the classification of crop types for the long-term time series is known. 
 
 ## Input data
 
@@ -314,7 +314,7 @@ As an example we classify approximately 5300 km$^2$ in a tropical forest region 
 
 ## Input data 
 
-The inputs are: *a)* the satellite images for a given geographical area, organised as a set of georeferenced raster files in GeoTIFF format, each containing all time steps of a spectral band or index; and *b)* a set of ground truth samples. The satellite images are extracted from the MODIS product MOD13Q1 collection 5 [@Friedl:2010] and include vegetation indices "ndvi", "evi", and original bands "nir", "red", "blue", and "mir". This product has 250 x 250 m spatial resolution and a 16 day maximum-value composite (MVC) for each pixel location [@Friedl:2010], meaning that one image can have measurements from different dates. For this reason, MOD13Q1 also includes the "day of the year" (doy) of each pixel as a layer, which we use to keep the time series consistent with the measurements.
+The inputs are: *a)* the satellite images for a given geographical area, organised as a set of georeferenced raster files in GeoTIFF format, each containing all time steps of a spectral band or index; and *b)* a set of ground truth samples. The satellite images are extracted from the MODIS product MOD13Q1 collection 5 [@Didan:2015] and include vegetation indices "ndvi", "evi", and original bands "nir", "red", "blue", and "mir". This product has 250 x 250 m spatial resolution and a 16 day maximum-value composite (MVC) for each pixel location [@Didan:2015], meaning that one image can have measurements from different dates. For this reason, MOD13Q1 also includes the "day of the year" (doy) of each pixel as a layer, which we use to keep the time series consistent with the measurements.
 
 The data files for the examples that follow are in the \pkg{dtwSat} installation folder *lucc_MT/data/*. The *tif* files include the time series of "blue", "red", "nir", "mir", "evi", "ndvi", and "doy" (day of the year); the text file *timeline* has the dates of the satellite images; the CSV file *samples.csv* has the \code{longitude}, \code{latitude}, \code{from},  \code{to}, and \code{label} for each field sample; and the text file *samples_projection* contains information about the cartographic projection of the samples, in the format of coordinate reference system used by \code{sp::CRS}. 
 ```{r, echo = TRUE, eval = TRUE, results = 'markup'}

@@ -73,7 +73,7 @@ setGeneric(name = "twdtwClassify",
 
 #' @rdname twdtwClassify
 #' @aliases twdtwClassify-twdtwTimeSeries 
-#' @example examples/test_twdtw_timeseries_analysis.R 
+#' @example examples/test_twdtw_raster_analysis.R 
 #' @export
 setMethod("twdtwClassify", "twdtwMatches",
           function(x, patterns.labels=NULL, from=NULL, to=NULL, by=NULL, breaks=NULL,

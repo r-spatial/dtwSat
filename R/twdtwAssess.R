@@ -122,7 +122,7 @@ setMethod(f = "twdtwAssess", signature = "matrix",
 #' @aliases twdtwAssess-twdtwMatches
 #' @inheritParams twdtwAssess
 #' @rdname twdtwAssess 
-#' @example examples/test_twdtw_timeseries_analysis.R 
+#' @example examples/test_twdtw_raster_analysis.R 
 #' @export
 setMethod(f = "twdtwAssess", signature = "twdtwMatches",
           definition = function(object, area, conf.int=.95, rm.nosample=TRUE) 

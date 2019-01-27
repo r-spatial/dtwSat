@@ -101,5 +101,4 @@ Collate:
     'twdtwDist.R'
     'twdtwXtable.R'
     'zzz.R'
-VignetteBuilder: knitr
 RdMacros: Rdpack

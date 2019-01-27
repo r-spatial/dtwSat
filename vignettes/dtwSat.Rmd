@@ -1,8 +1,9 @@
 ---
 author:
   - name: Victor Maus
-    affiliation: University of Münster 
-    affiliation2: INPE, IIASA, WU
+    affiliation: > 
+      University of Münster\newline
+      INPE, IIASA, WU
     address: >
       Institute for Ecological Economics\newline
       Vienna University of Economics and Business\newline
@@ -12,8 +13,9 @@ author:
     url: \url{www.victor-maus.com}
     Telephone: +43-1-313 36-6176
   - name: Gilberto Câmara
-    affiliation: INPE
-    affiliation2: University of Münster 
+    affiliation: > 
+      INPE\newline
+      University of Münster 
   - name: Marius Appel
     affiliation: University of Münster 
   - name: Edzer Pebesma

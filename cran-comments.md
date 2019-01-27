@@ -1,4 +1,9 @@
 ## Test environments
+* Ubuntu 18.04 (64-bit), R 3.5.2 
+  devtools::check(args = '--as-cran')
+  devtools::check(args = '--use-valgrind')
+  devtools::submit_cran()
+
 * win-builder 
   devtools::check_win_release()
   devtools::check_win_devel()
@@ -6,10 +11,6 @@
 * R-hub 
   rhub::check_for_cran(check_args = '--as-cran')
   
-* Ubuntu 18.04 (64-bit), R 3.5.2 
-  devtools::check(args = '--as-cran')
-  devtools::check(args = '--use-valgrind')
-  devtools::submit_cran()
 
 ## REVIEWS
 

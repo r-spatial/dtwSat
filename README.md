@@ -5,7 +5,7 @@
 dtwSat
 ======
 
-[![Build Status](https://travis-ci.org/vwmaus/dtwSat.png?branch=master)](https://travis-ci.org/vwmaus/dtwSat) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/dtwSat)](http://cran.r-project.org/package=dtwSat) [![month](http://cranlogs.r-pkg.org/badges/dtwSat)](http://www.r-pkg.org/pkg/dtwSat) [![total](http://cranlogs.r-pkg.org/badges/grand-total/dtwSat)](http://www.r-pkg.org/pkg/dtwSat)
+[![Build Status](https://travis-ci.org/vwmaus/dtwSat.png?branch=master)](https://travis-ci.org/vwmaus/dtwSat) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/dtwSat)](http://cran.r-project.org/package=dtwSat) [![month](http://cranlogs.r-pkg.org/badges/dtwSat)](http://www.r-pkg.org/pkg/dtwSat) [![total](http://cranlogs.r-pkg.org/badges/grand-total/dtwSat)](http://www.r-pkg.org/pkg/dtwSat) [![DOI](https://zenodo.org/badge/27490736.svg)](https://zenodo.org/badge/latestdoi/27490736)
 
 ### Time-Weighted Dynamic Time Warping for satellite image time series analysis
 
@@ -315,15 +315,13 @@ Fig. 8. Area uncertainty.
 
 For further discussion on the package see the [vignettes](#vignettes) and if you want to learn more about the TWDTW method (see, Maus et al. 2016).
 
-### Vignettes
-
-[dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R](./inst/doc/applying_twdtw.pdf)
-
 ### References
 
 Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Find Patterns in Time Series.” In *KDD Workshop*, edited by Usama M. Fayyad and Ramasamy Uthurusamy, 359–70. AAAI Press.
 
 Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
+
+Maus, Victor, Camara Gilberto, Appel Marius, Pebesma E (2019). "dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R." _Journal of Statistical Software_, *88*(5), 1-31. doi: [10.18637/jss.v088.i05](http://doi.org/10.18637/jss.v088.i05).
 
 Maus, Victor, Gilberto Camara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping Method for Land-Use and Land-Cover Mapping.” *IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (8): 3729–39. doi:[10.1109/JSTARS.2016.2517118](https://doi.org/10.1109/JSTARS.2016.2517118).
 

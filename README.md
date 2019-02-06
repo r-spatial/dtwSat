@@ -313,7 +313,7 @@ plot(twdtw_assess, type = "area")
 Fig. 8. Area uncertainty.
 </p>
 
-For further discussion on the package see the [vignettes](#vignettes) and if you want to learn more about the TWDTW method (see, Maus et al. 2016).
+For further details on the package see the [Maus et al. 2019](https://www.jstatsoft.org/index.php/jss/article/view/v088i05/v88i05.pdf) and if you want to learn more about the TWDTW method see [Maus et al. 2016](https://doi.org/10.1109/JSTARS.2016.2517118).
 
 ### References
 
@@ -321,7 +321,7 @@ Berndt, Donald J., and James Clifford. 1994. “Using Dynamic Time Warping to Fi
 
 Keogh, Eamonn, and Chotirat Ann Ratanamahatana. 2005. “Exact Indexing of Dynamic Time Warping.” *Knowledge Information Systems* 7 (3): 358–86.
 
-Maus, Victor, Camara Gilberto, Appel Marius, Pebesma E (2019). "dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R." _Journal of Statistical Software_, *88*(5), 1-31. doi: [10.18637/jss.v088.i05](http://doi.org/10.18637/jss.v088.i05).
+Maus, Victor, Camara Gilberto, Appel Marius, Pebesma E. 2019. "dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R." _Journal of Statistical Software_, *88*(5), 1-31. doi: [10.18637/jss.v088.i05](http://doi.org/10.18637/jss.v088.i05).
 
 Maus, Victor, Gilberto Camara, Ricardo Cartaxo, Alber Sanchez, Fernando M. Ramos, and Gilberto R. de Queiroz. 2016. “A Time-Weighted Dynamic Time Warping Method for Land-Use and Land-Cover Mapping.” *IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing* 9 (8): 3729–39. doi:[10.1109/JSTARS.2016.2517118](https://doi.org/10.1109/JSTARS.2016.2517118).
 

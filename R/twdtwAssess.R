@@ -241,7 +241,10 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
 }
 
 .twdtwAssess = function(x, mapped_area, conf.int, rm.nosample){
-  
+   
+  if(nrow(x)<1)
+    return(NULL)
+           
   mult = qnorm(1-(1-conf.int)/2, mean = 0, sd = 1)
   
   cnames = names(mapped_area)

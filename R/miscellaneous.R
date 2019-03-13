@@ -158,6 +158,8 @@ shiftDates.twdtwTimeSeries = function(x, year){
   from   = sapply(from[J], function(x) ifelse(x < r_intervals$from[i], r_intervals$from[i], x))
   to     = sapply(to[J], function(x) ifelse(x > r_intervals$to[i], r_intervals$to[i], x))
   # Compute overlapping proportion 
+  if(length(to)<1)
+    return(NULL)
   i_over = to - from 
   # print(i_leng)
   # print(i_over)

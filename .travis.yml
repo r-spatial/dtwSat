@@ -30,6 +30,7 @@ addons:
       - libgdal-dev
 
 before_install:
+  - R -e 'install.packages("rgdal", repos="http://R-Forge.R-project.org")'
   - R -q -e 'install.packages("remotes"); remotes::install_github("ropenscilabs/tic"); tic::prepare_all_stages()'
 
 r_packages:

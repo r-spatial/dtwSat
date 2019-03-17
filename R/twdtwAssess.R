@@ -183,9 +183,19 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   # Get classified raster 
   x = object@timeseries$Class
   x_twdtw = object@timeseries$Distance
-  
+
   # Reproject points to raster projection 
   y = spTransform(y, CRS(projection(object)))
+  
+  # Remove samples outside raster bbox
+  n_s <- length(y)
+  y <- intersect(y, x)
+  if(n_s > length(y)){
+    warning(cat(n_s - length(y), "samples out of bounds removed"))
+  }
+  if(length(y) < 1){
+    stop(cat(n_s - length(y), "samples out of bounds removed. There no samples intersecting the study area"))
+  }
   
   # Get time intervals 
   timeline = index(object)

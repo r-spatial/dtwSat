@@ -1,3 +1,7 @@
+# dtwSat v0.2.6.9999
+
+* Fixes error in to - from : non-numeric argument to binary operator in "twdtwAssess"
+
 # dtwSat v0.2.5
 
 * Adds dtwSat paper published on Journal of Statistical Software 

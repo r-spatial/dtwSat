@@ -2,7 +2,7 @@ language: r
 
 r:
   - release
-  - devel
+#  - devel
 
 deploy.skip_cleanup: true
 

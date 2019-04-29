@@ -194,7 +194,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
     warning(cat(n_s - length(y), "samples out of bounds removed"))
   }
   if(length(y) < 1){
-    stop(cat(n_s - length(y), "samples out of bounds removed. There no samples intersecting the study area"))
+    stop(cat(n_s - length(y), "samples out of bounds removed. There are no samples intersecting the study area"))
   }
   
   # Get time intervals 

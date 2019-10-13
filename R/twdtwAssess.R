@@ -174,10 +174,8 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   # Check control points 
   y = .adjustLabelID(y, labels, id.labels)
-  if(!"from"%in%names(y))
-    stop("Sample starting date not found, the argument 'y' must have a column called 'from'")
-  if(!"to"%in%names(y))
-    stop("Sample ending date not found, the argument 'y' must have a column called 'to'")
+  if(!"from"%in%names(y) || !"to"%in%names(y))
+    stop("Argument 'y' must contain columns called 'to' and 'from' to locate start and end dates")
   y = .toSpatialPointsDataFrame(y, object, proj4string)
   
   # Get classified raster 

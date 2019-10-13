@@ -173,7 +173,7 @@ extractTimeSeries.twdtwRaster = function(x, y){
   layer =  which.min( abs(from - dates))
   nl    =  which.min( abs(to   - dates)) - layer
   if(nl<=0){
-    warning(paste("Time period of sample ",pto[p]," does not overlap rester time series"), call. = FALSE)
+    warning(paste("Time period of sample ",pto[p]," and raster time series do not overlap"), call. = FALSE)
     return(NULL)
   }
   # Extract raster values 

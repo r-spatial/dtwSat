@@ -18,10 +18,10 @@
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #'
 #' @description Class for setting irregular time series.
-#' 
-#' @param ... \code{\link[dtwSat]{twdtwTimeSeries}} objects, 
+#'
+#' @param ... \code{\link[dtwSat]{twdtwTimeSeries}} objects,
 #' \code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.
-#' @param labels a vector with labels of the time series. 
+#' @param labels a vector with labels of the time series.
 #' @param object an object of class twdtwTimeSeries.
 #' @param x an object of class twdtwTimeSeries.
 #'
@@ -31,20 +31,20 @@
 #'  \item{\code{labels}:}{A vector of class \code{\link[base]{factor}} with time series labels.}
 #' }
 #'
-#' @seealso   
-#' \code{\link[dtwSat]{twdtwMatches-class}}, 
-#' \code{\link[dtwSat]{twdtwRaster-class}}, 
+#' @seealso
+#' \code{\link[dtwSat]{twdtwMatches-class}},
+#' \code{\link[dtwSat]{twdtwRaster-class}},
 #' \code{\link[dtwSat]{getTimeSeries}}, and
 #' \code{\link[dtwSat]{twdtwApply}}
 #'
 #' @references
 #'   \insertRef{Maus:2019}{dtwSat}
-#'   
+#'
 #'   \insertRef{Maus:2016}{dtwSat}
 #'
-#' @examples 
-#' # Creating a new object of class twdtwTimeSeries  
-#' ptt = new("twdtwTimeSeries", timeseries = MOD13Q1.patterns.list, 
+#' @examples
+#' # Creating a new object of class twdtwTimeSeries
+#' ptt = new("twdtwTimeSeries", timeseries = MOD13Q1.patterns.list,
 #'            labels = names(MOD13Q1.patterns.list))
 #' class(ptt)
 #' labels(ptt)
@@ -76,14 +76,14 @@ setClass(
 
 setMethod("initialize",
   signature = "twdtwTimeSeries",
-  definition = 
+  definition =
     function(.Object, timeseries, labels){
       .Object@timeseries = list()
       .Object@labels = factor(NULL)
       if(!missing(timeseries)){
         if(is(timeseries, "zoo")) timeseries = list(timeseries)
         .Object@timeseries = timeseries
-        .Object@labels = factor( paste0("ts",seq_along(timeseries)) ) 
+        .Object@labels = factor( paste0("ts",seq_along(timeseries)) )
         if(!is.null(names(timeseries))) .Object@labels = factor(names(timeseries))
       }
       if(!missing(labels)){
@@ -95,39 +95,39 @@ setMethod("initialize",
   }
 )
 
-setGeneric(name = "twdtwTimeSeries", 
+setGeneric(name = "twdtwTimeSeries",
           def = function(...) standardGeneric("twdtwTimeSeries")
 )
 
 #' @inheritParams twdtwTimeSeries-class
 #' @aliases twdtwTimeSeries-create
-#' 
+#'
 #' @describeIn twdtwTimeSeries Create object of class twdtwTimeSeries.
 #'
-#' @examples 
+#' @examples
 #' # Creating objects of class twdtwTimeSeries from zoo objects
 #' ts = twdtwTimeSeries(MOD13Q1.ts)
-#' ts 
-#' 
-#' # Creating objects of class twdtwTimeSeries from list of zoo objects 
+#' ts
+#'
+#' # Creating objects of class twdtwTimeSeries from list of zoo objects
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' patt
-#' 
-#' # Joining objects of class twdtwTimeSeries 
+#'
+#' # Joining objects of class twdtwTimeSeries
 #' tsA = twdtwTimeSeries(MOD13Q1.ts.list[[1]], labels = "A")
 #' tsB = twdtwTimeSeries(B = MOD13Q1.ts.list[[2]])
 #' ts = twdtwTimeSeries(tsA, tsB, C=MOD13Q1.ts)
 #' ts
-#'  
+#'
 #' @export
-setMethod(f = "twdtwTimeSeries", 
+setMethod(f = "twdtwTimeSeries",
           definition = function(..., labels=NULL){
               timeseries = list(...)
               joint_timeseries = list()
               timeseries_class = sapply(timeseries, class)
-              zoo_obj = NULL 
-              list_obj = NULL 
-              twdtw_obj = NULL 
+              zoo_obj = NULL
+              list_obj = NULL
+              twdtw_obj = NULL
               check_class = c("zoo", "list", "twdtwTimeSeries") %in% timeseries_class
               if(check_class[1]){
                   zoo_obj = timeseries[which(timeseries_class=="zoo")]
@@ -145,11 +145,14 @@ setMethod(f = "twdtwTimeSeries",
                   names(twdtw_obj) = as.character(unlist(lapply(timeseries[which(timeseries_class=="twdtwTimeSeries")], labels)))
                   joint_timeseries = c(joint_timeseries, twdtw_obj)
               } else {}
+              if(any(vapply(joint_timeseries, function(x) {is.null(dim(x))}, logical(1L)))) {
+                warning("Timeseries provided as vector. Consider providing a two-dimensional object to bypass issues down the line.")
+              }
               if(is.null(labels)) labels = names(joint_timeseries)
               new("twdtwTimeSeries", timeseries = joint_timeseries, labels = labels)
           })
-          
-          
-          
-          
-          
+
+
+
+
+

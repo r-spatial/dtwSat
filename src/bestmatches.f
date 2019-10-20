@@ -12,17 +12,21 @@ C   Find best matches TWDTW - 2016-03-26                      C
 C                                                             C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C
-C     CM - Input local cost and output cumulative cost matrix
-C     DM - Direction matrix 
-C     VM - Starting points matrix 
-C     SM - Matrix of step patterns 
-C     N  - Number of rows in CM, DM, and VM 
-C     M  - Number of columns CM, DM, and VM 
-C     NS - Number of rows in SM 
+C     XM - Two columns matrix with 'from' and 'to' dates as integers 
+C     AM - Matrix (P-1 x L) with classification intervals (P-1) and possible classes (L) 
+C     DM - Vector length K DTW distance for each alignment 
+C     DP - Vector length P-1 with classification intervals 
+C     X  - Vector length K with alignments index 
+C     IM - Matrix to return best matches, intervals, and class labels 
+C     A  - Vector with alignment index
+C     K  - Number of alignments 
+C     P  - Number of dates defineing classification intervals 
+C     L  - Number of classes 
+C     OV - Minimum temporal overlap 
       SUBROUTINE bestmatches(XM, AM, DM, DP, X, IM, A, K, P, L, OV)
 C  800 FORMAT('i: ',I5,'   i: ',I5,'   VALUE: ',F8.4,'   VALUE: ',F10.4)
 C  801 FORMAT('Here: ',I5)
-C     I/O Variables       
+C     I/O Variables 
       INTEGER K, P, L, XM(K,2), X(K), DP(P), IM(P-1,3), A(K)
       DOUBLE PRECISION AM(P-1,L), DD, DM(K), OV
 C     Internals

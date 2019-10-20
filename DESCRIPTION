@@ -2,7 +2,7 @@ Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis
 Version: 0.2.6.9999
-Date: 2019-03-17
+Date: 2019-10-20
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com', comment = c(ORCID = "0000-0002-7385-4723")), 
   person('Marius', 'Appel', role = c('ctb')),
   person('Nikolas', 'Kuschnig', role = c('ctb')),
@@ -43,12 +43,10 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    rticles,
     gridExtra,
     grid,
     png,
-    Hmisc,
-    tikzDevice
+    Hmisc
 License: GPL (>= 2) | file LICENSE
 URL: https://github.com/vwmaus/dtwSat/
 BugReports: https://github.com/vwmaus/dtwSat/issues
@@ -100,5 +98,6 @@ Collate:
     'twdtwCrossValidate.R'
     'twdtwDist.R'
     'twdtwXtable.R'
+    'twdtw_reduce_time.R'
     'zzz.R'
 RdMacros: Rdpack

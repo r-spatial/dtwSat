@@ -103,7 +103,7 @@
                        X  = as.integer(match(x[[1]]$label, levels)),
                        IM = matrix(as.integer(0), nrow = n, ncol = 3),
                        A  = as.integer(x[[1]]$Alig.N),
-                       K  = as.integer(length(x)),
+                       K  = as.integer(length(x[[1]]$Alig.N)),
                        P  = as.integer(length(breaks)),
                        L  = as.integer(length(levels)),
                        OV = as.double(overlap))) 

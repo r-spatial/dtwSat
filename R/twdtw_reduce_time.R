@@ -45,6 +45,12 @@
     py <- y[[l]][,names(y[[l]])!="date",drop=FALSE] 
     ty <- as.Date(y[[l]]$date)
     
+    # Match bands and remove bands that are not in both time series 
+    names(py) <- tolower(names(py))
+    names(px) <- tolower(names(px))
+    px <- px[,names(py)]
+    py <- py[,names(px)]
+    
     # Compute local cost matrix 
     cm <- proxy::dist(py, px, method = dist.method)
     

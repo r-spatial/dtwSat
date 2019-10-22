@@ -39,7 +39,8 @@ Imports:
     caret,
     mgcv,
     xtable,
-    Rdpack
+    Rdpack,
+    data.table
 Suggests:
     knitr,
     rmarkdown,

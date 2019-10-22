@@ -38,8 +38,10 @@
   px <- x[,names(x)!="date",drop=FALSE] 
   tx <- as.Date(x$date) 
 
+  ## Basic use case
+  
   # Comput TWDTW alignments for all patterns   
-  aligs <- do.call("rbind", lapply(seq_along(y), function(l){
+  aligs <- lapply(seq_along(y), function(l){
     
     # Split pattern time series from dates 
     py <- y[[l]][,names(y[[l]])!="date",drop=FALSE] 
@@ -55,7 +57,6 @@
     cm <- proxy::dist(py, px, method = dist.method)
     
     if(!is.null(weight.fun)){
-      
       # Get day of the year for pattern and time series 
       doyy <- as.numeric(format(ty, "%j")) 
       doyx <- as.numeric(format(tx, "%j")) 
@@ -65,9 +66,7 @@
       
       # Apply time-weight to local cost matrix 
       cm <- w * cm
-      
     }
-    
     # Compute accumulated DTW cost matrix 
     internals <- .computecost(cm = cm, step.matrix = step.matrix)
     
@@ -107,11 +106,14 @@
       distance   = candidates$d[I],
       label      = l
     )
-    
+    tictoc::toc()
     return(res)
     
-  }))
+  })
   
+  # Bind rows 
+  aligs <- data.table::rbindlist(aligs)
+
   # Create classification intervals 
   breaks <- seq(as.Date(from), as.Date(to), by = by)
   # Find best macthes for the intervals 
@@ -123,7 +125,7 @@
     breaks = breaks, 
     overlap = overlap,
     fill = 99999)$IM
-  
+
   # Build output 
   out <- as.data.frame(best_matches[,c(1,3)])
   names(out) <- c("label", "Alig.N")

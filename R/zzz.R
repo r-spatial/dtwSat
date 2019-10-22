@@ -49,6 +49,7 @@
 #' @importFrom xtable xtable print.xtable
 #' @importFrom utils packageDescription flush.console 
 #' @importFrom Rdpack reprompt 
+#' @importFrom data.table rbindlist
 #' @useDynLib dtwSat, .registration = TRUE
 #' 
 NULL

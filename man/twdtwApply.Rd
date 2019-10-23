@@ -24,8 +24,8 @@ twdtwApply(x, y, resample = TRUE, length = NULL, weight.fun = NULL,
   filepath = "", ...)
 
 .twdtw_reduce_time(x, y, weight.fun = NULL, dist.method = "Euclidean",
-  step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0,
-  from = NULL, to = NULL, by = NULL, overlap = 0.5, fill = 255)
+  step.matrix = symmetric1, from = NULL, to = NULL, by = NULL,
+  overlap = 0.5, fill = 255)
 }
 \arguments{
 \item{x}{An object of class twdtw*. This is the target time series. 

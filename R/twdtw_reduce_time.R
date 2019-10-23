@@ -25,9 +25,6 @@
                               weight.fun = NULL,
                               dist.method = "Euclidean",
                               step.matrix = symmetric1,
-                              n = NULL,
-                              span = NULL, 
-                              min.length = 0, 
                               from = NULL, 
                               to = NULL, 
                               by = NULL, 
@@ -71,33 +68,16 @@
     internals <- .computecost(cm = cm, step.matrix = step.matrix)
     
     # Find all low cost candidates 
-    d <- internals$costMatrix[internals$N,1:internals$M]
     a <- internals$startingMatrix[internals$N,1:internals$M]
-    
-    # Remove overlapping matches within a span from local minimum
-    if(is.null(span)){
-      candidates   <- data.frame(a, d)
-      candidates   <- candidates[ candidates$d==ave(candidates$d, candidates$a, FUN=min), ]
-      candidates$b <- as.numeric(row.names(candidates))
-    } else {
-      b <- .findMin(d, tx, span = span)
-      candidates <- data.frame(a[b], d[b], b)
-    }
+    d <- internals$costMatrix[internals$N,1:internals$M]
+    candidates   <- data.frame(a, d)
+    candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min), ]
+    candidates$b <- as.numeric(row.names(candidates))
     
     # Order maches by minimum TWDTW distance 
     I <- order(candidates$d)
     if(length(I)<1) return(NULL)
-    
-    # Select alignments 
-    if(is.null(n)) n <- length(I)
-    if(length(I) > n) I <- I[1:n]
-    
-    # Remove matches that overstretch 
-    I <- I[diff(range(ty))*min.length <= tx[candidates$b[I]] - tx[candidates$a[I]]]
-    
-    # Return null if there are no alignments left
-    if(length(I)<1) return(NULL)
-    
+
     # Build alignments table table 
     res <- data.frame(
       Alig.N     = I,

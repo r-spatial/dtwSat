@@ -12,11 +12,14 @@
 \alias{ncol,twdtwTimeSeries-method}
 \alias{length,twdtwTimeSeries-method}
 \alias{as.list,twdtwTimeSeries-method}
+\alias{as.data.frame,twdtwTimeSeries-method}
 \alias{[,twdtwTimeSeries,ANY,ANY,ANY-method}
 \alias{[[,twdtwTimeSeries,ANY,ANY-method}
 \alias{labels,twdtwTimeSeries-method}
 \alias{levels,twdtwTimeSeries-method}
 \alias{show,twdtwTimeSeries-method}
+\alias{as.twdtwTimeSeries,ANY-method}
+\alias{as.twdtwTimeSeries}
 \alias{is.twdtwTimeSeries,ANY-method}
 \alias{is.twdtwTimeSeries}
 \title{class "twdtwTimeSeries"}
@@ -35,6 +38,8 @@
 
 \S4method{as.list}{twdtwTimeSeries}(x)
 
+\S4method{as.data.frame}{twdtwTimeSeries}(x)
+
 \S4method{[}{twdtwTimeSeries,ANY,ANY,ANY}(x, i)
 
 \S4method{[[}{twdtwTimeSeries,ANY,ANY}(x, i)
@@ -44,6 +49,8 @@
 \S4method{levels}{twdtwTimeSeries}(x)
 
 \S4method{show}{twdtwTimeSeries}(object)
+
+\S4method{as.twdtwTimeSeries}{ANY}(x)
 
 \S4method{is.twdtwTimeSeries}{ANY}(x)
 }
@@ -65,6 +72,8 @@ Class for setting irregular time series.
 \section{Methods (by generic)}{
 \itemize{
 \item \code{twdtwTimeSeries}: Create object of class twdtwTimeSeries.
+
+\item \code{as.twdtwTimeSeries}: convert list of data.frame to class twdtwTimeSeries.
 
 \item \code{is.twdtwTimeSeries}: Check if the object belongs to the class twdtwTimeSeries.
 }}

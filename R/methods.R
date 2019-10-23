@@ -18,6 +18,9 @@ setGeneric("layers",
 setGeneric("coverages", 
            function(x) standardGeneric("coverages"))
 
+setGeneric("as.twdtwTimeSeries", 
+           function(x) standardGeneric("as.twdtwTimeSeries"))
+
 setGeneric("bands", 
            function(x) standardGeneric("bands"))
 
@@ -32,6 +35,14 @@ setGeneric("is.twdtwRaster",
 
 setGeneric("projecttwdtwRaster", 
            function(x, ...) standardGeneric("projecttwdtwRaster"))
+
+as.data.frame.twdtwTimeSeries <- function(x){
+  lapply(x[], function(y){
+    out <- data.frame(date = index(y), y)
+    rownames(out) <- NULL
+    return(out)
+  })
+}
 
 as.list.twdtwTimeSeries = function(x) lapply(seq_along(x), function(i) 
   new("twdtwTimeSeries", x[[i]], labels(x)[i]) )
@@ -295,6 +306,11 @@ setMethod("as.list", "twdtwMatches", as.list.twdtwMatches)
 #' @rdname twdtwMatches-class
 #' @export
 setMethod("as.list", "twdtwRaster", as.list.twdtwRaster)
+
+#' @inheritParams twdtwTimeSeries-class
+#' @rdname twdtwTimeSeries-class
+#' @export
+setMethod("as.data.frame", "twdtwTimeSeries", as.data.frame.twdtwTimeSeries)
 
 #' @inheritParams twdtwTimeSeries-class
 #' @param i indices of the time series.
@@ -574,6 +590,13 @@ setMethod(f = "show", "twdtwMatches",
 #' @export
 setMethod(f = "show", "twdtwRaster",
           definition = show.twdtwRaster)
+
+#' @aliases as.twdtwTimeSeries
+#' @inheritParams twdtwTimeSeries-class
+#' @describeIn twdtwTimeSeries convert list of data.frame to class twdtwTimeSeries.
+#' @export
+setMethod("as.twdtwTimeSeries", "ANY", 
+          function(x) twdtwTimeSeries(lapply(x[], function(y) zoo(y[, names(y)!="date"], order.by = y$date))))
 
 #' @aliases is.twdtwTimeSeries
 #' @inheritParams twdtwTimeSeries-class

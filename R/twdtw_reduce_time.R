@@ -106,7 +106,6 @@
       distance   = candidates$d[I],
       label      = l
     )
-    tictoc::toc()
     return(res)
     
   })

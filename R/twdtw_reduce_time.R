@@ -112,7 +112,7 @@
   out$to <- breaks[-1]
   out <- merge(out, aligs[, c("label", "Alig.N", "distance"),drop=FALSE], by.x = c("label", "Alig.N"), by.y = c("label", "Alig.N"), all.x = TRUE)
   out <- out[order(out$from), names(out)!="Alig.N"]
-  if(any(out$label==0)) out[out$label==0,,drop=FALSE]$label <- fill
+  if(any(out$label==0)) out[out$label==0,]$label <- fill
   return(out)
 }
 

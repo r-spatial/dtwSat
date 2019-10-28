@@ -47,8 +47,8 @@
     # Match bands and remove bands that are not in both time series 
     names(py) <- tolower(names(py))
     names(px) <- tolower(names(px))
-    px <- px[,names(py)]
-    py <- py[,names(px)]
+    px <- px[,names(py),drop=FALSE]
+    py <- py[,names(px),drop=FALSE]
     
     # Compute local cost matrix 
     cm <- proxy::dist(py, px, method = dist.method)
@@ -71,7 +71,7 @@
     a <- internals$startingMatrix[internals$N,1:internals$M]
     d <- internals$costMatrix[internals$N,1:internals$M]
     candidates   <- data.frame(a, d)
-    candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min), ]
+    candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min),,drop=FALSE]
     candidates$b <- as.numeric(row.names(candidates))
     
     # Order maches by minimum TWDTW distance 
@@ -97,7 +97,7 @@
   breaks <- seq(as.Date(from), as.Date(to), by = by)
   # Find best macthes for the intervals 
   best_matches <- .bestmatches(
-    x = list(aligs[order(aligs$from, aligs$from),]), 
+    x = list(aligs[order(aligs$from, aligs$from),,drop=FALSE]), 
     m = length(y), 
     n = length(breaks) - 1, 
     levels = seq_along(y), 
@@ -106,13 +106,13 @@
     fill = 99999)$IM
 
   # Build output 
-  out <- as.data.frame(best_matches[,c(1,3)])
+  out <- as.data.frame(best_matches[,c(1,3),drop=FALSE])
   names(out) <- c("label", "Alig.N")
   out$from <- breaks[-length(breaks)]
   out$to <- breaks[-1]
-  out <- merge(out, aligs[, c("label", "Alig.N", "distance")], by.x = c("label", "Alig.N"), by.y = c("label", "Alig.N"), all.x = TRUE)
+  out <- merge(out, aligs[, c("label", "Alig.N", "distance"),drop=FALSE], by.x = c("label", "Alig.N"), by.y = c("label", "Alig.N"), all.x = TRUE)
   out <- out[order(out$from), names(out)!="Alig.N"]
-  if(any(out$label==0)) out[out$label==0,]$label <- fill
+  if(any(out$label==0)) out[out$label==0,,drop=FALSE]$label <- fill
   return(out)
 }
 

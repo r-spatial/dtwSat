@@ -1,7 +1,7 @@
 Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis
-Version: 0.2.6
+Version: 0.2.7.9999
 Date: 2020-03-02
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com', comment = c(ORCID = "0000-0002-7385-4723")), 
   person('Marius', 'Appel', role = c('ctb'), comment = c(ORCID = "0000-0001-5281-3896")),

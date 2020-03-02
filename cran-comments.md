@@ -1,23 +1,26 @@
 ## Test environments
-* Ubuntu 18.04 (64-bit), R 3.5.2 
+* win-builder 
+  devtools::check_win_release()
+  devtools::check_win_devel()
+  devtools::check_win_oldrelease()
+
+* R-hub 
+  rhub::check_for_cran(check_args = '--as-cran')
+
+* Ubuntu 18.04 (64-bit), R 3.6.1 
   devtools::check(args = '--as-cran')
   devtools::check(args = '--use-valgrind')
   devtools::submit_cran()
 
-* win-builder 
-  devtools::check_win_release()
-  devtools::check_win_devel()
-
-* R-hub 
-  rhub::check_for_cran(check_args = '--as-cran')
-  
-
 ## REVIEWS
+
+# v0.2.6
+
+* Fixes warnings from https://cran.r-project.org/web/checks/check_results_dtwSat.html
 
 # v0.2.5
 
 * The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
-
 
 # v0.2.4
 

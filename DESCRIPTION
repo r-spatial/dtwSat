@@ -1,17 +1,15 @@
 Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis
-Version: 0.2.6.9999
-Date: 2019-10-20
+Version: 0.2.6
+Date: 2020-03-02
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com', comment = c(ORCID = "0000-0002-7385-4723")), 
-  person('Marius', 'Appel', role = c('ctb')),
-  person('Nikolas', 'Kuschnig', role = c('ctb')),
+  person('Marius', 'Appel', role = c('ctb'), comment = c(ORCID = "0000-0001-5281-3896")),
+  person('Nikolas', 'Kuschnig', role = c('ctb'), comment = c(ORCID = "0000-0002-6642-2543")),
   person('Toni',   'Giorgino', role = c('ctb')))
 Description: Provides an implementation of the Time-Weighted Dynamic Time
     Warping (TWDTW) method for land cover mapping using satellite image time series.
-    TWDTW is based on the Dynamic Time Warping technique and has achieved high
-    accuracy for land cover classification using satellite data. The method is
-    based on comparing unclassified satellite image time series with a set of known
+    TWDTW compares unclassified satellite image time series with a set of known
     temporal patterns (e.g. phenological cycles associated with the vegetation).
     Using 'dtwSat' the user can build temporal patterns for land cover types, apply
     the TWDTW analysis for satellite datasets, visualize the results of the time
@@ -42,18 +40,17 @@ Imports:
     Rdpack,
     data.table
 Suggests:
-    knitr,
-    rmarkdown,
     gridExtra,
     grid,
     png,
-    Hmisc
-License: GPL (>= 2) | file LICENSE
+    Hmisc,
+    rbenchmark
+License: GPL (>= 3) | file LICENSE
 URL: https://github.com/vwmaus/dtwSat/
 BugReports: https://github.com/vwmaus/dtwSat/issues
 Author: Victor Maus [aut, cre] (<https://orcid.org/0000-0002-7385-4723>), 
-  Marius Appel [ctb], 
-  Nikolas Kuschnig [ctb],
+  Marius Appel [ctb] (<https://orcid.org/0000-0001-5281-3896>), 
+  Nikolas Kuschnig [ctb] (<https://orcid.org/0000-0002-6642-2543>),
   Toni Giorgino [ctb]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true

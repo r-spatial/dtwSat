@@ -27,7 +27,6 @@
 #' @param patterns a \code{\link[dtwSat]{twdtwTimeSeries}} object.
 #' @param alignments an object of class list with the TWDTW results with 
 #' the same length as \code{timeseries} or a list of twdtwMatches.
-#' @param ... objects of class twdtwMatches.
 #' 
 #' @include class-twdtwTimeSeries.R
 #' 

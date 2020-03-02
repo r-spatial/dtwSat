@@ -1,42 +1,71 @@
-#' @rdname twdtwApply 
-#' @aliases twdtwApply-twdtwTimeSeries 
+#' @include methods.R
+#' @title Fast TWDTW apply
+#' @name twdtw_reduce_time
+#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' @rdname twdtw_reduce_time 
+#' 
+#' @description This function is a faster version of \link[dtwSat]{twdtwApply} (usually 3x faster). 
+#' It does not keep any intermediate data. It performs a multidimensional TWDTW analysis 
+#' \insertCite{Maus:2019}{dtwSat} and retrieves only the best matches between the unclassified 
+#' time series and the patterns for each defined time interval.
+#' 
+#' @inheritParams twdtwApply
+#' @inheritParams twdtwClassify
+#' 
+#' @param x a data.frame with the target time series. Usually, it is an unclassified time series. 
+#' It must contain two or more columns, one column called \code{date} with dates in the format 
+#' "YYYY-MM-DD". The other columns can have any names (e.g., red, blue, nir, evi, ndvi) as long 
+#' as they match the column names in the temporal patterns \code{y}. 
+#' 
+#' @param y a list of data.frama objects similar to \code{x}. 
+#' The temporal patterns used to classify the time series in \code{x}. 
+#' 
+#' @param fill An integer to fill the classification gaps. 
 #' 
 #' @examples 
+#' \dontrun{
 #' 
-#' # Read time series to be labelled from csv
-#' ts_file <- system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat")
-#' ts <- read.csv(ts_file, stringsAsFactors = FALSE)
+#' library(dtwSat)
+#' log_fun = logisticWeight(-0.1, 50)
+#' from = "2009-09-01"
+#' to = "2017-09-01"
+#' by = "12 month"
+#'
+#' # S4 objects for original implementation 
+#' tw_patt = readRDS(system.file("lucc_MT/patterns/patt.rds", package = "dtwSat"))
+#' tw_ts = twdtwTimeSeries(MOD13Q1.ts) 
 #' 
-#' # Read labelled temporal patterns from csv
-#' pattern_files <- dir(system.file("reduce_time/patterns", package = "dtwSat"), full.names = TRUE)
-#' patterns <- lapply(pattern_files, read.csv, stringsAsFactors = FALSE)
+#' # Table from csv for minimalist version 
+#' mn_patt <- lapply(dir(system.file("lucc_MT/patterns", package = "dtwSat"), 
+#'   pattern = ".csv$", full.names = TRUE), read.csv, stringsAsFactors = FALSE)
+#' mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"), 
+#'   stringsAsFactors = FALSE)
 #' 
-#' # Label time series 
-#' ts_class <- .twdtw_reduce_time(x = ts, y = patterns, weight.fun = logisticWeight(-0.1, 50), 
-#'                                from = "2009-09-01", to = "2017-09-01", by = "6 month")
-#' ts_class
-#' 
-#' ts_class$pattern_name <- basename(pattern_files)[ts_class$label]
-#' ts_class
+#' # Benchtmark 
+#' rbenchmark::benchmark(
+#'   original = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), 
+#'                                       from = from, to = to, by = by)[[1]],
+#'   minimalist = twdtw_reduce_time(x = mn_ts, y = mn_patt, weight.fun = log_fun, 
+#'                                       from = from, to = to, by = by)  
+#'  )
+#' }
 #' 
 #' @export
-.twdtw_reduce_time = function(x, 
-                              y, 
-                              weight.fun = NULL,
-                              dist.method = "Euclidean",
-                              step.matrix = symmetric1,
-                              from = NULL, 
-                              to = NULL, 
-                              by = NULL, 
-                              overlap = .5, 
-                              fill = 255){
+twdtw_reduce_time = function(x, 
+                             y, 
+                             weight.fun = NULL,
+                             dist.method = "Euclidean",
+                             step.matrix = symmetric1,
+                             from = NULL, 
+                             to = NULL, 
+                             by = NULL, 
+                             overlap = .5, 
+                             fill = 255){
 
   # Split time series from dates 
   px <- x[,names(x)!="date",drop=FALSE] 
   tx <- as.Date(x$date) 
 
-  ## Basic use case
-  
   # Comput TWDTW alignments for all patterns   
   aligs <- lapply(seq_along(y), function(l){
     

@@ -55,11 +55,6 @@
 #' @param n An integer. The maximun number of matches to perform. 
 #' NULL will return all matches.
 #' 
-#' @param theta Numeric between 0 and 1. The weight of the time 
-#' for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
-#' \emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
-#' the time has the same weight as the curve shape in the TWDTW analysis.
-#' 
 #' @param keep Preserves the cost matrix, inputs, and other internal structures. 
 #' Default is FALSE. For plot methods use \code{keep=TRUE}.
 #' 
@@ -100,7 +95,7 @@
 setGeneric(name = "twdtwApply", 
           def = function(x, y, resample=TRUE, length=NULL, weight.fun=NULL, 
                 dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
-                span=NULL, min.length=0, theta = 0.5, ...) standardGeneric("twdtwApply"))
+                span=NULL, min.length=0, ...) standardGeneric("twdtwApply"))
 
 
 #' @rdname twdtwApply 
@@ -121,7 +116,7 @@ setGeneric(name = "twdtwApply",
 #' }
 #' @export
 setMethod(f = "twdtwApply", "twdtwTimeSeries",
-          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep=FALSE, ...){
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, keep=FALSE, ...){
                   if(!is(y, "twdtwTimeSeries"))
                     stop("y is not of class twdtwTimeSeries")
                   if(!is(step.matrix, "stepPattern"))
@@ -132,11 +127,11 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
                     stop("weight.fun is not a function")
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
-                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
+                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep)
            })
 
-twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep){
-    res = lapply(as.list(x), FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, keep)
+twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep){
+    res = lapply(as.list(x), FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep)
     new("twdtwMatches", timeseries=x, patterns=y, alignments=res)
 }
 
@@ -147,7 +142,7 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' @example examples/test_twdtw_raster_analysis.R 
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",
-          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, 
                         breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", ...){
                   if(!is(step.matrix, "stepPattern"))
                     stop("step.matrix is not of class stepPattern")
@@ -176,12 +171,12 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                   breaks = as.Date(breaks)
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
-                  twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+                  twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                           breaks, overlap, filepath, ...)
            })
            
 
-twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                   breaks, overlap, filepath, ...){
   
   
@@ -251,7 +246,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
     # Apply TWDTW analysis
     twdtw_results <- dtwSat::twdtwApply(x = ts, y = y, weight.fun = weight.fun, dist.method = dist.method,
                                         step.matrix = step.matrix, n = n, span = span,
-                                        min.length = min.length, theta = theta, keep = FALSE)
+                                        min.length = min.length, keep = FALSE)
     
     # Get best matches for each point, period, and pattern
     m <- length(levels)

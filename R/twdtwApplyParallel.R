@@ -31,7 +31,7 @@
 setGeneric(name = "twdtwApplyParallel", 
            def = function(x, y, resample = TRUE, length = NULL, weight.fun = NULL, 
                           dist.method = "Euclidean", step.matrix = symmetric1, n = NULL, 
-                          span = NULL, min.length = 0, theta = 0.5, ...) standardGeneric("twdtwApplyParallel"))
+                          span = NULL, min.length = 0, ...) standardGeneric("twdtwApplyParallel"))
 
 
 
@@ -40,7 +40,7 @@ setGeneric(name = "twdtwApplyParallel",
 #' @example examples/test_twdtw_raster_analysis.R
 #' @export
 setMethod(f = "twdtwApplyParallel", "twdtwRaster",
-          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, 
                          breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", ...){
             if(!is(step.matrix, "stepPattern"))
               stop("step.matrix is not of class stepPattern")
@@ -69,12 +69,12 @@ setMethod(f = "twdtwApplyParallel", "twdtwRaster",
             breaks = as.Date(breaks)
             if(resample)
               y = resampleTimeSeries(object=y, length=length)
-            twdtwApplyParallel.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+            twdtwApplyParallel.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                    breaks, overlap, filepath, ...)
           })
 
 
-twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, theta, 
+twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                   breaks, overlap, filepath, ...){
   
   # Match raster bands to pattern bands
@@ -128,7 +128,7 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
   pb <- pbCreate(bs$n, ...)
 
   clusterExport(cl = cl, list = c("y", "weight.fun", "dist.method", "step.matrix", "n", "span", 
-                                  "min.length", "theta", "breaks", "overlap"), envir = environment())
+                                  "min.length", "breaks", "overlap"), envir = environment())
   
   fun <- function(k){
     
@@ -152,7 +152,7 @@ twdtwApplyParallel.twdtwRaster = function(x, y, weight.fun, dist.method, step.ma
     # Apply TWDTW analysis
     twdtw_results <- dtwSat::twdtwApply(x = ts, y = y, weight.fun = weight.fun, dist.method = dist.method,
                                        step.matrix = step.matrix, n = n, span = span,
-                                       min.length = min.length, theta = theta, keep = FALSE)
+                                       min.length = min.length, keep = FALSE)
 
     # Get best matches for each point, period, and pattern
     levels <- dtwSat::levels(y)

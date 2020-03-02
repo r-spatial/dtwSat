@@ -59,8 +59,6 @@ Default is TRUE.}
 \item{object}{an object of class twdtwMatches.}
 
 \item{labels}{a vector with labels of the time series.}
-
-\item{...}{objects of class twdtwMatches.}
 }
 \description{
 Class for Time-Weighted Dynamic Time Warping results.

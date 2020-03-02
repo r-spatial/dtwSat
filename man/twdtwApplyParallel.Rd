@@ -10,10 +10,10 @@
 twdtwApplyParallel(x, y, resample = TRUE, length = NULL,
   weight.fun = NULL, dist.method = "Euclidean",
   step.matrix = symmetric1, n = NULL, span = NULL, min.length = 0,
-  theta = 0.5, ...)
+  ...)
 
 \S4method{twdtwApplyParallel}{twdtwRaster}(x, y, resample, length,
-  weight.fun, dist.method, step.matrix, n, span, min.length, theta,
+  weight.fun, dist.method, step.matrix, n, span, min.length,
   breaks = NULL, from = NULL, to = NULL, by = NULL,
   overlap = 0.5, filepath = "", ...)
 }
@@ -55,11 +55,6 @@ overlapping matches of the same pattern use \code{span=0}.}
 \item{min.length}{A number between 0 an 1. This argument removes overfittings.
 Minimum length after warping. Percentage of the original pattern length. Default is 0.5, 
 meaning that the matching cannot be shorter than half of the pattern length.}
-
-\item{theta}{Numeric between 0 and 1. The weight of the time 
-for the TWDTW computation. Use \code{theta=0} to cancel the time-weight, 
-\emph{i.e.} to run the original DTW algorithm. Default is 0.5, meaning that 
-the time has the same weight as the curve shape in the TWDTW analysis.}
 
 \item{...}{Arguments to pass to \code{\link[raster]{writeRaster}} and 
 \code{\link[raster]{pbCreate}}}

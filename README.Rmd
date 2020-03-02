@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output:
   md_document:
     variant: markdown_github
-bibliography: ./vignettes/references.bib
+bibliography: ./inst/REFERENCES.bib
 ---
 
 ```{r, echo=FALSE}
@@ -38,7 +38,7 @@ dtwSat
 
 ### Time-Weighted Dynamic Time Warping for satellite image time series analysis
 
-The opening of large archives of satellite data such as Landsat, MODIS and the Sentinels has given researchers unprecedented access to data, allowing them to better quantify and understand local and global land change. The need to analyse such large data sets has led to the development of automated and semi-automated methods for satellite image time series analysis. However, few of the proposed methods for remote sensing time series analysis are available as open source software. The \proglang{R} package *dtwSat* provides an implementation of the Time-Weighted Dynamic Time Warping (TWDTW) method for land cover mapping using multi-band satellite image time series [@Maus:2016]. Methods based on dynamic time warping are flexible to handle irregular sampling and out-of-phase time series, and they have achieved significant results in time series analysis [@Velichko:1970; @Sakoe:1971; @Sakoe:1978; @Rabiner:1993; @Berndt:1994; @Keogh:2005; @Muller:2007]. *dtwSat* is also available from the Comprehensive R Archive Network (CRAN). *dtwSat* provides full cycle of land cover classification using image time series, ranging from selecting temporal patterns to visualising, and assessing the results. Bellow we show a quick demo of the package usage.
+The \proglang{R} package *dtwSat* provides an implementation of the Time-Weighted Dynamic Time Warping (TWDTW) method for land cover mapping using multi-band satellite image time series [@Maus:2016; @Maus:2019]. *dtwSat* provides full cycle of land cover classification using image time series, ranging from selecting temporal patterns to visualising, and assessing the results. Bellow we show a quick demo of the package usage.
 
 
 ### Install
@@ -53,7 +53,7 @@ devtools::install_github("vwmaus/dtwSat")
 k <- 1
 ```
 ### Quick demo
-In this quick demo we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `MOD13Q1.patterns.list` and an example of time series in `MOD13Q1.ts`. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
+In this quick demo we will perform a TWDTW analysis for a single time series. The data for the analysis are a set of temporal patterns in `MOD13Q1.patterns.list` and an example of time series in `MOD13Q1.ts` in the Brazilian state of Mato Grosso. These time series are in `zoo` format and come with the package installation. Suppose that we want to know the crop type of each subinterval in following time series:
 ```{r plot-MOD13Q1.ts-ts, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Example time series which we want to classify.')}
 library(dtwSat)
 # Create and plot object time series 
@@ -65,10 +65,10 @@ plot(ts, type = "timeseries")
 k <- k + 1
 ```
 
-We know that in the region where the time series was observed we have *soybean*, *cotton*, and *maize*, whose typical temporal pattern are:
+For this region in Brazil we have a set of well known temporal patterns derived from field observations, such that:
 ```{r plot-patterns, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Typical temporal patterns of *soybean*, *cotton*, and *maize*.')}
 # Create and plot object time series 
-patt <- twdtwTimeSeries(MOD13Q1.patterns.list)
+patt <- twdtwTimeSeries(MOD13Q1.MT.yearly.patterns)
 class(patt)
 plot(patt, type = "patterns") 
 ```
@@ -79,7 +79,7 @@ k <- k + 1
 Using these temporal patterns we run the TWDTW analysis, such that 
 ```{r perform-twdtw, echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 # Define logistic time-weight, see Maus et al. (2016)
-log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+log_fun <- logisticWeight(alpha = -0.1, beta = 50) 
 # Run TWDTW analysis 
 matches <- twdtwApply(x = ts, y = patt, weight.fun = log_fun, keep = TRUE) 
 ```
@@ -92,21 +92,21 @@ show(matches)
 
 We can use several plot methods to visualize the results of the analysis in the `twdtwMatches` object, for example, to plot the alignments 
 ```{r plot-alignment, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. TWDTW alignments over time and cost (distance) in y-axis.')}
-plot(x = matches, type = "alignments")
+plot(x = matches, type = "alignments", threshold = 2)
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k <- k + 1
 ```
 to plot matching point 
 ```{r plot-match, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. The four best matches of *soybean*.')}
-plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean", k <- 4) 
+plot(x = matches, type = "matches", attr = "evi", patterns.labels = "Soybean-cotton", k <- 1) 
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k <- k + 1 
 ```
 to plot minimum cost paths 
 ```{r plot-path, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. The minimum cost path of the TWDTW alignment for each crop type.')}
-plot(x = matches, type = "paths", k <- 1:4) 
+plot(x = matches, type = "paths", patterns.labels = "Soybean-cotton") 
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k <- k + 1 
@@ -114,8 +114,8 @@ k <- k + 1
 and, finally to classify the subintervals of the time series. The plot will select the best match for each period of 6 months, i.e. the class for each period.
 ```{r plot-group, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4.5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Classification using the best match for each subinterval.')}
 plot(x = matches, type = "classification",
-     from = "2009-09-01", to = "2013-09-01", 
-     by = "6 month", overlap = 0.5) 
+     from = "2009-09-01", to = "2014-08-31", 
+     by = "12 month", overlap = 0.5) 
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k <- k + 1
@@ -125,7 +125,7 @@ k <- k + 1
 
 The next example shows how to classify a raster time series, i.e. the same as we did in the quick demo but now for each pixel location. For that we use a set of MODIS (MOD13Q1 product) images from 2007 to 2013 for a region in the Brazilian Amazon. These data is included in the package installation. 
 Load raster time series:
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 evi  <- brick(system.file("lucc_MT/data/evi.tif",  package = "dtwSat"))
 ndvi <- brick(system.file("lucc_MT/data/ndvi.tif", package = "dtwSat"))
 red  <- brick(system.file("lucc_MT/data/red.tif",  package = "dtwSat"))
@@ -136,23 +136,23 @@ doy  <- brick(system.file("lucc_MT/data/doy.tif",  package = "dtwSat"))
 ```
 
 Load the dates of the MODIS images:
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 timeline <- scan(system.file("lucc_MT/data/timeline", package = "dtwSat"), what = "date")
 ```
 
 Build raster time series:
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 rts <- twdtwRaster(evi, ndvi, red, blue, nir, mir, timeline = timeline, doy = doy)
 ```
 
 Load the set of ground truth samples and projection information: 
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 field_samples <- read.csv(system.file("lucc_MT/data/samples.csv", package = "dtwSat"))
 proj_str <- scan(system.file("lucc_MT/data/samples_projection", package = "dtwSat"), what = "character")
 ```
 
 We use the package *caret* to split the samples into training (10%) and validation (90%)
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 library(caret)
 set.seed(1)
 I <- unlist(createDataPartition(field_samples$label, p = 0.1))
@@ -161,17 +161,17 @@ validation_samples <- field_samples[-I, ]
 ```
 
 Extract training time series from raster time series 
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 training_ts <- getTimeSeries(rts, y = training_samples, proj4string = proj_str)
 validation_ts <- getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
 ```
 
 Create temporal patterns using training samples 
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 ```
 
-```{r plot-patterns-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*.')}
+```{r plot-patterns-map, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=4, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Typical temporal patterns of *Cotton-fallow*, *Forest*, *Soybean-cotton*, *Soybean-maize*, and *Soybean-millet*.'), warning=FALSE}
 plot(temporal_patterns, type = "patterns") 
 ```
 ```{r, echo = FALSE, eval = TRUE}
@@ -179,7 +179,7 @@ k <- k + 1
 ```
 
 Apply TWDTW analysis: 
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 # Define logistic time-weight, see Maus et al. (2016)
 log_fun <- logisticWeight(-0.1, 50)
 
@@ -193,14 +193,14 @@ endCluster()
 ```
 
 Classify raster raster time series using the results from the TWDTW analysis
-```{r , echo = TRUE, eval = TRUE}
+```{r , echo = TRUE, eval = TRUE, warning=FALSE}
 r_lucc <- twdtwClassify(r_twdtw, progress = 'text')
 ```
 
 Visualising the results. 
 
 Land cover maps
-```{r plot-maps, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover maps based on TWDTW analysis.')}
+```{r plot-maps, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover maps based on TWDTW analysis.'), warning=FALSE}
 plot(x = r_lucc, type = "maps")
 ```
 ```{r, echo = FALSE, eval = TRUE}
@@ -208,7 +208,7 @@ k <- k + 1
 ```
 
 Land cover area for each class over time 
-```{r plot-area, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover area based on TWDTW analysis.')}
+```{r plot-area, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover area based on TWDTW analysis.'), warning=FALSE}
 plot(x = r_lucc, type = "area")
 ```
 ```{r, echo = FALSE, eval = TRUE}
@@ -216,7 +216,7 @@ k <- k + 1
 ```
 
 Land cover changes over time (gains and losses from/to classes) 
-```{r plot-changes, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover changes based on TWDTW analysis.')}
+```{r plot-changes, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover changes based on TWDTW analysis.'), warning=FALSE}
 plot(x = r_lucc, type = "changes")
 ```
 ```{r, echo = FALSE, eval = TRUE}
@@ -224,34 +224,29 @@ k <- k + 1
 ```
 
 We use the validation samples to compute the metrics for accuracy assessment. 
-```{r , echo = TRUE, eval = TRUE, echo=TRUE, results='markup'}
+```{r , echo = TRUE, eval = TRUE, echo=TRUE, results='markup', warning=FALSE}
 twdtw_assess <- twdtwAssess(object = r_lucc, y = validation_samples, 
   proj4string = proj_str, conf.int = .95) 
 show(twdtw_assess)
 ```
 
 Visualizing User's and Producer's accuracy 
-```{r plot-users-prodcucers, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. User\'s and Producer\'s accuracy.')}
+```{r plot-users-prodcucers, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. User\'s and Producer\'s accuracy.'), warning=FALSE}
 plot(twdtw_assess, type = "accuracy")
 ```
-```{r, echo = FALSE, eval = TRUE}
+```{r, echo = FALSE, eval = TRUE, warning=FALSE}
 k <- k + 1
 ```
 
 Visualizing area uncertainty 
-```{r plot-area-uncertainty, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Area uncertainty.')}
+```{r plot-area-uncertainty, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=5, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Area uncertainty.'), warning=FALSE}
 plot(twdtw_assess, type = "area")
 ```
 ```{r, echo = FALSE, eval = TRUE}
 k <- k + 1
 ```
 
-For further discussion on the package see the [vignettes][Vignettes] and if you want to learn more about the TWDTW method [see, @Maus:2016].
-
-
-### Vignettes
-[dtwSat: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis in R](./inst/doc/applying_twdtw.pdf)
-
+For further discussion on the package and learn more about the TWDTW method [see, @Maus:2016 and @Maus:2019].
 
 ### References
 

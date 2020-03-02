@@ -6,10 +6,10 @@
 
 * R-hub 
   rhub::check_for_cran(check_args = '--as-cran')
+  rhub::check_for_cran(check_args = '--as-cran', valgrind = TRUE)
 
-* Ubuntu 18.04 (64-bit), R 3.6.1 
+* Ubuntu 18.04 (64-bit), R 3.6.2 
   devtools::check(args = '--as-cran')
-  devtools::check(args = '--use-valgrind')
   devtools::submit_cran()
 
 ## REVIEWS

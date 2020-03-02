@@ -26,3 +26,8 @@ jss\.bst$
 jss\.cls$
 TODO$
 tic.R
+dtwSat-Ex_i386.Rout
+dtwSat-Ex_x64.Rout
+examples_i386
+examples_x64
+  

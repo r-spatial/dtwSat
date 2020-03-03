@@ -246,7 +246,7 @@ plot(twdtw_assess, type = "area")
 k <- k + 1
 ```
 
-For further discussion on the package and learn more about the TWDTW method [see, @Maus:2016 and @Maus:2019].
+For further discussion on the package and learn more about the TWDTW method see, @Maus:2016 and @Maus:2019.
 
 ### References
 

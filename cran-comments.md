@@ -14,6 +14,8 @@
 
 ## REVIEWS
 
+# v0.2.7.9999
+
 # v0.2.6
 
 * Fixes warnings from https://cran.r-project.org/web/checks/check_results_dtwSat.html

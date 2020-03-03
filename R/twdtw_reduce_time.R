@@ -20,7 +20,7 @@
 #' @param y a list of data.frama objects similar to \code{x}. 
 #' The temporal patterns used to classify the time series in \code{x}. 
 #' 
-#' @param fill An integer to fill the classification gaps. 
+#' @param fill An integer to fill the classification gaps. Default 255.
 #' 
 #' @examples 
 #' \dontrun{

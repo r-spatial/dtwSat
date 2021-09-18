@@ -38,7 +38,7 @@
     # Time cost matrix 
     psi = .g(dist(doyy, doyx, method=dist.method))
     # Weighted local cost matrix 
-    cm = phi * weight.fun(psi)
+    cm = weight.fun(phi, psi)
     
     # Compute cost matris 
     internals = .computecost(cm, step.matrix)

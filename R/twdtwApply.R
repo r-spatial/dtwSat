@@ -39,11 +39,13 @@
 #' If not declared the length of the output patterns will be the length of 
 #' the longest pattern.
 #'  
-#' @param weight.fun A function. Any function that receives and performs a 
-#' computation on a matrix. The function receives a matrix of time differences 
-#' in days and returns a matrix of time-weights. If not declared the time-weight 
-#' is zero. In this case the function runs the standard version of the dynamic 
-#' time warping. See details. 
+#' @param weight.fun A function. Any function that receives two matrices and 
+#' performs a computation on them, returning a single matrix with the same 
+#' dimensions. The first matrix is the DTW local cost matrix and the 
+#' second a matrix of the time differences in days. The function should return a 
+#' matrix of DTW local cost weighted by the time differences. If not declared 
+#' the time-weight is zero. In this case the function runs the standard version 
+#' of the dynamic time warping. See details. 
 #' 
 #' @param dist.method A character. Method to derive the local cost matrix.
 #' Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
@@ -76,7 +78,7 @@
 #' @details The linear \code{linearWeight} and \code{logisticWeight} weight functions 
 #' can be passed to \code{twdtwApply} through the argument \code{weight.fun}. This will 
 #' add a time-weight to the dynamic time warping analysis. The time weight 
-#' creates a global constraint useful for analysing time series with phenological cycles
+#' creates a global constraint useful for analyzing time series with phenological cycles
 #' of vegetation that are usually bound to seasons. In previous studies by 
 #' \insertCite{Maus:2016}{dtwSat} the logistic weight had better results than the 
 #' linear for land cover classification. 
@@ -93,7 +95,7 @@
 #' 
 #' @export  
 setGeneric(name = "twdtwApply", 
-          def = function(x, y, resample=TRUE, length=NULL, weight.fun=NULL, 
+          def = function(x, y, resample=TRUE, length=NULL, weight.fun=function(phi, psi) phi, 
                 dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
                 span=NULL, min.length=0, ...) standardGeneric("twdtwApply"))
 

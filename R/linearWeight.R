@@ -45,6 +45,6 @@
 #' 
 #' @export
 linearWeight = function(a, b=0){
-  function(psi) a*psi + b
+  function(phi, psi) phi + a*psi + b
 }
 

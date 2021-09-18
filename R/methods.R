@@ -541,7 +541,7 @@ summary.twdtwCrossValidation = function(object, conf.int=.95, ...){
   
   sd_ov = sd(ov[, c("OV")])
   sd_uapa = aggregate(uapa[, c("UA","PA")], list(uapa$label), sd)
-  l_names = levels(uapa$label)
+  l_names = unique(uapa$label)
   names(l_names) = l_names
   ic_ov = mean_cl_boot(x = ov[, c("OV")], conf.int = conf.int, ...)
   names(ic_ov) = NULL

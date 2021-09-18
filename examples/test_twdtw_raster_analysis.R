@@ -42,13 +42,17 @@ temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 log_fun <- logisticWeight(-0.1, 50)
 
 # Run serial TWDTW analysis 
-r_twdtw <-
-  twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
+system.time(
+  r_twdtw <-
+    twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text') 
+)
 
 # or Run parallel TWDTW analysis
 beginCluster()
-r_twdtw <- 
-  twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
+system.time(
+  r_twdtw <- 
+    twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text') 
+)
 endCluster()
 
 # Plot TWDTW distances for the first year 

@@ -4,10 +4,12 @@
 \name{MOD13Q1.patterns.list}
 \alias{MOD13Q1.patterns.list}
 \title{Data: patterns time series}
-\format{A named \code{list} of three \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
+\format{
+A named \code{list} of three \link[zoo]{zoo} objects, ''Soybean'', ''Cotton'', 
 and ''Maize'', whose indices are \code{\link[base]{Dates}} in the format ''yyyy-mm-dd''.
 Each node has 6 attributes: ''ndvi'', ''evi'', ''red'', ''nir'', ''blue'', 
-and ''mir''.}
+and ''mir''.
+}
 \usage{
 MOD13Q1.patterns.list
 }

@@ -4,9 +4,11 @@
 \name{MOD13Q1.ts.labels}
 \alias{MOD13Q1.ts.labels}
 \title{Data: Labels of the satellite time series in MOD13Q1.ts}
-\format{An object of class \link[base]{data.frame}, whose attributes are: 
+\format{
+An object of class \link[base]{data.frame}, whose attributes are: 
 the label of the crop class ''label'', the start of the crop period ''from'',
-and the end of the crop period ''to''. The dates are in the format ''yyyy-mm-dd''.}
+and the end of the crop period ''to''. The dates are in the format ''yyyy-mm-dd''.
+}
 \usage{
 MOD13Q1.ts.labels
 }

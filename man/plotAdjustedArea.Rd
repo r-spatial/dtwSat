@@ -4,8 +4,13 @@
 \alias{plotAdjustedArea}
 \title{Plotting area and uncertainty}
 \usage{
-plotAdjustedArea(x, perc = TRUE, time.labels = NULL,
-  category.name = NULL, category.type = NULL)
+plotAdjustedArea(
+  x,
+  perc = TRUE,
+  time.labels = NULL,
+  category.name = NULL,
+  category.type = NULL
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwAssessment}} or 

@@ -4,8 +4,12 @@
 \alias{plotCostMatrix}
 \title{Plotting paths}
 \usage{
-plotCostMatrix(x, timeseries.labels = NULL, patterns.labels = NULL,
-  matrix.name = "costMatrix")
+plotCostMatrix(
+  x,
+  timeseries.labels = NULL,
+  patterns.labels = NULL,
+  matrix.name = "costMatrix"
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}

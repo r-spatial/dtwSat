@@ -34,7 +34,6 @@
 #' @import ggplot2
 #' @import methods
 #' @import rgdal 
-#' @import snow 
 #' @importFrom proxy dist pr_DB
 #' @importFrom reshape2 melt
 #' @importFrom scales pretty_breaks date_format percent

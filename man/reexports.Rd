@@ -14,6 +14,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dtw}{\code{\link[dtw]{symmetric1}}, \code{\link[dtw]{symmetric2}}, \code{\link[dtw]{asymmetric}}, \code{\link[dtw]{rabinerJuangStepPattern}}}
+  \item{dtw}{\code{\link[dtw:stepPattern]{asymmetric}}, \code{\link[dtw:stepPattern]{rabinerJuangStepPattern}}, \code{\link[dtw:stepPattern]{symmetric1}}, \code{\link[dtw:stepPattern]{symmetric2}}}
 }}
 

@@ -4,9 +4,15 @@
 \alias{plotArea}
 \title{Plotting accumulated area}
 \usage{
-plotArea(x, time.levels = NULL, time.labels = NULL,
-  class.levels = NULL, class.labels = NULL, class.colors = NULL,
-  perc = TRUE)
+plotArea(
+  x,
+  time.levels = NULL,
+  time.labels = NULL,
+  class.levels = NULL,
+  class.labels = NULL,
+  class.colors = NULL,
+  perc = TRUE
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwRaster}}.}

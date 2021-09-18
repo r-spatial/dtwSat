@@ -4,9 +4,11 @@
 \name{MOD13Q1.ts}
 \alias{MOD13Q1.ts}
 \title{Data: An example of satellite time series}
-\format{A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}} 
+\format{
+A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}} 
 in the format ''yyyy-mm-dd''. Each node has 6 attributes: ''ndvi'', 
-''evi'', ''red'', ''nir'', ''blue'', and ''mir''.}
+''evi'', ''red'', ''nir'', ''blue'', and ''mir''.
+}
 \usage{
 MOD13Q1.ts
 }

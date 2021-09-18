@@ -4,8 +4,13 @@
 \alias{plotAlignments}
 \title{Plotting alignments}
 \usage{
-plotAlignments(x, timeseries.labels = NULL, patterns.labels = NULL,
-  attr = 1, threshold = Inf)
+plotAlignments(
+  x,
+  timeseries.labels = NULL,
+  patterns.labels = NULL,
+  attr = 1,
+  threshold = Inf
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}

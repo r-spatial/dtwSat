@@ -1,4 +1,10 @@
-# dtwSat v0.2.7.999
+# dtwSat v0.2.7
+
+* Adds support to user defined weight function
+
+* Adds a minimalist function called twdtwReduceTime that is 3x faster than twdtwApply
+
+* Drop support to parallel processing
 
 # dtwSat v0.2.6
 

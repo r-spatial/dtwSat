@@ -183,13 +183,8 @@ Apply TWDTW analysis:
 # Define logistic time-weight, see Maus et al. (2016)
 log_fun <- logisticWeight(-0.1, 50)
 
-# Run serial TWDTW analysis 
+# Run TWDTW analysis 
 r_twdtw <- twdtwApply(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
-
-# or Run parallel TWDTW analysis
-beginCluster()
-r_twdtw <- twdtwApplyParallel(x = rts, y = temporal_patterns, weight.fun = log_fun, progress = 'text')
-endCluster()
 ```
 
 Classify raster raster time series using the results from the TWDTW analysis
@@ -197,7 +192,7 @@ Classify raster raster time series using the results from the TWDTW analysis
 r_lucc <- twdtwClassify(r_twdtw, progress = 'text')
 ```
 
-Visualising the results. 
+Visualizing the results. 
 
 Land cover maps
 ```{r plot-maps, echo = TRUE, eval = TRUE, fig.path='figure/', fig.width=6, fig.height=6, fig.align='center', warning = FALSE, message = FALSE, fig.cap=paste0('Fig. ',k,'. Land cover maps based on TWDTW analysis.'), warning=FALSE}

@@ -4,8 +4,14 @@
 \alias{plotChanges}
 \title{Plotting changes}
 \usage{
-plotChanges(x, time.levels = NULL, time.labels = NULL,
-  class.levels = NULL, class.labels = NULL, class.colors = NULL)
+plotChanges(
+  x,
+  time.levels = NULL,
+  time.labels = NULL,
+  class.levels = NULL,
+  class.labels = NULL,
+  class.colors = NULL
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwRaster}}.}

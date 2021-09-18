@@ -8,13 +8,19 @@
   rhub::check_for_cran(check_args = '--as-cran')
   rhub::check_for_cran(check_args = '--as-cran', valgrind = TRUE)
 
-* Ubuntu 18.04 (64-bit), R 3.6.2 
+* Ubuntu 20.04 (64-bit), R 4.1.1 
   devtools::check(args = '--as-cran')
   devtools::submit_cran()
 
 ## REVIEWS
 
-# v0.2.7.9999
+# v0.2.7
+
+* Fixes error in cost TWDTW weighting function 
+
+* Drop support to parallel processing 
+
+* Fixes errors and warnings from https://cran.r-project.org/web/checks/check_results_dtwSat.html
 
 # v0.2.6
 

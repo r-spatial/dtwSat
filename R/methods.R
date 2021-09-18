@@ -15,6 +15,12 @@
 setGeneric("layers", 
            function(x) standardGeneric("layers"))
 
+setGeneric("projection", 
+           function(x) standardGeneric("projection"))
+
+setGeneric("index", 
+           function(x) standardGeneric("index"))
+
 setGeneric("coverages", 
            function(x) standardGeneric("coverages"))
 
@@ -69,6 +75,10 @@ dim.twdtwRaster = function(x){
   res
 }
 
+projection.twdtwRaster = function(x){
+  projection(x@timeseries[[1]])
+}
+
 res.twdtwRaster = function(x){
   res(x@timeseries[[1]])
 }
@@ -79,10 +89,6 @@ extent.twdtwRaster = function(x){
 
 writeRaster.twdtwRaster = function(x, filepath, ...){
   lapply(names(x@timeseries), function(i) writeRaster(x@timeseries[[i]], filename = paste0(filepath, "/", i, ".grd"), ...))
-}
-
-projection.twdtwRaster = function(x){
-  projection(x@timeseries[[1]])
 }
 
 ncol.twdtwRaster = function(x){

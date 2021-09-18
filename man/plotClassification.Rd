@@ -4,8 +4,13 @@
 \alias{plotClassification}
 \title{Plotting subintervals classification}
 \usage{
-plotClassification(x, timeseries.labels = NULL, patterns.labels = NULL,
-  attr, ...)
+plotClassification(
+  x,
+  timeseries.labels = NULL,
+  patterns.labels = NULL,
+  attr,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}

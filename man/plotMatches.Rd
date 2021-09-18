@@ -5,8 +5,15 @@
 \alias{plotMatches}
 \title{Plotting matching points}
 \usage{
-plotMatches(x, timeseries.labels = 1, patterns.labels = NULL, k = 1,
-  attr = 1, shift = 0.5, show.dist = FALSE)
+plotMatches(
+  x,
+  timeseries.labels = 1,
+  patterns.labels = NULL,
+  k = 1,
+  attr = 1,
+  shift = 0.5,
+  show.dist = FALSE
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwMatches}}.}

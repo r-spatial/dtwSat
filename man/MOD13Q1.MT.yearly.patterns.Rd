@@ -4,7 +4,9 @@
 \name{MOD13Q1.MT.yearly.patterns}
 \alias{MOD13Q1.MT.yearly.patterns}
 \title{Data: Pattern time series}
-\format{A \link[dtwSat]{twdtwTimeSeries} object.}
+\format{
+A \link[dtwSat]{twdtwTimeSeries} object.
+}
 \usage{
 MOD13Q1.MT.yearly.patterns
 }

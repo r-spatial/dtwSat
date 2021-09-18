@@ -4,8 +4,14 @@
 \alias{plotAccuracy}
 \title{Plotting accuracy assessment}
 \usage{
-plotAccuracy(x, perc = TRUE, conf.int = 0.95, time.labels = NULL,
-  category.name = NULL, category.type = NULL)
+plotAccuracy(
+  x,
+  perc = TRUE,
+  conf.int = 0.95,
+  time.labels = NULL,
+  category.name = NULL,
+  category.type = NULL
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[dtwSat]{twdtwAssessment}} or 

@@ -2,7 +2,7 @@ Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis
 Version: 0.2.7.9999
-Date: 2020-03-02
+Date: 2021-09-18
 Authors@R: c(person('Victor', 'Maus', role = c('aut', 'cre'), email = 'vwmaus1@gmail.com', comment = c(ORCID = "0000-0002-7385-4723")), 
   person('Marius', 'Appel', role = c('ctb'), comment = c(ORCID = "0000-0001-5281-3896")),
   person('Nikolas', 'Kuschnig', role = c('ctb'), comment = c(ORCID = "0000-0002-6642-2543")),
@@ -19,7 +19,6 @@ Depends:
     R (>= 3.2.0),
     zoo,
     raster,
-    snow,
     ggplot2
 Imports:
     methods,
@@ -54,7 +53,8 @@ Author: Victor Maus [aut, cre] (<https://orcid.org/0000-0002-7385-4723>),
   Toni Giorgino [ctb]
 Maintainer: Victor Maus <vwmaus1@gmail.com>
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
+Encoding: UTF-8
 Collate: 
     'class-crossValidation.R'
     'class-twdtwRaster.R'
@@ -90,7 +90,6 @@ Collate:
     'subset.R'
     'twdtw.R'
     'twdtwApply.R'
-    'twdtwApplyParallel.R'
     'twdtwAssess.R'
     'twdtwClassify.R'
     'twdtwCrossValidate.R'

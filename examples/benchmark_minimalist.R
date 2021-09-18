@@ -15,6 +15,6 @@ mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"
 # Benchtmark 
 rbenchmark::benchmark(
   original = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), from = from, to = to, by = by)[[1]],
-  minimalist = twdtw_reduce_time(x = mn_ts, y = mn_patt, weight.fun = log_fun, from = from, to = to, by = by)  
+  minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, weight.fun = log_fun, from = from, to = to, by = by)  
 )
 

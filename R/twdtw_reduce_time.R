@@ -1,23 +1,25 @@
 #' @include methods.R
-#' @title Fast TWDTW apply
-#' @name twdtw_reduce_time
+#' @title Minimalist version of TWDTW apply
+#' @name twdtwReduceTime
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' @rdname twdtw_reduce_time 
+#' @rdname twdtwReduceTime 
 #' 
-#' @description This function is a faster version of \link[dtwSat]{twdtwApply} (usually 3x faster). 
-#' It does not keep any intermediate data. It performs a multidimensional TWDTW analysis 
-#' \insertCite{Maus:2019}{dtwSat} and retrieves only the best matches between the unclassified 
-#' time series and the patterns for each defined time interval.
+#' @description This function is a minimalist implementation of 
+#' \link[dtwSat]{twdtwApply} that is in average 3x faster. It does not keep any 
+#' intermediate data. It performs a multidimensional TWDTW analysis 
+#' \insertCite{Maus:2019}{dtwSat} and retrieves only the best matches between 
+#' the unclassified time series and the patterns for each defined time interval.
 #' 
 #' @inheritParams twdtwApply
 #' @inheritParams twdtwClassify
 #' 
-#' @param x a data.frame with the target time series. Usually, it is an unclassified time series. 
-#' It must contain two or more columns, one column called \code{date} with dates in the format 
-#' "YYYY-MM-DD". The other columns can have any names (e.g., red, blue, nir, evi, ndvi) as long 
-#' as they match the column names in the temporal patterns \code{y}. 
+#' @param x a data.frame with the target time series. Usually, it is an 
+#' unclassified time series. It must contain two or more columns, one column 
+#' called \code{date} with dates in the format "YYYY-MM-DD". The other columns 
+#' can have any names (e.g., red, blue, nir, evi, ndvi) as long as they match 
+#' the column names in the temporal patterns \code{y}. 
 #' 
-#' @param y a list of data.frama objects similar to \code{x}. 
+#' @param y a list of data.frame objects similar to \code{x}. 
 #' The temporal patterns used to classify the time series in \code{x}. 
 #' 
 #' @param fill An integer to fill the classification gaps. Default 255.
@@ -45,22 +47,22 @@
 #' rbenchmark::benchmark(
 #'   original = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), 
 #'                                       from = from, to = to, by = by)[[1]],
-#'   minimalist = twdtw_reduce_time(x = mn_ts, y = mn_patt, weight.fun = log_fun, 
+#'   minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, weight.fun = log_fun, 
 #'                                       from = from, to = to, by = by)  
 #'  )
 #' }
 #' 
 #' @export
-twdtw_reduce_time = function(x, 
-                             y, 
-                             weight.fun = NULL,
-                             dist.method = "Euclidean",
-                             step.matrix = symmetric1,
-                             from = NULL, 
-                             to = NULL, 
-                             by = NULL, 
-                             overlap = .5, 
-                             fill = 255){
+twdtwReduceTime = function(x, 
+                           y, 
+                           weight.fun = NULL,
+                           dist.method = "Euclidean",
+                           step.matrix = symmetric1,
+                           from = NULL, 
+                           to = NULL, 
+                           by = NULL, 
+                           overlap = .5, 
+                           fill = 255){
 
   # Split time series from dates 
   px <- x[,names(x)!="date",drop=FALSE] 
@@ -88,10 +90,10 @@ twdtw_reduce_time = function(x,
       doyx <- as.numeric(format(tx, "%j")) 
       
       # Compute time-weght matrix 
-      w <- weight.fun(.g(proxy::dist(doyy, doyx, method = dist.method)))
+      w <- .g(proxy::dist(doyy, doyx, method = dist.method))
       
       # Apply time-weight to local cost matrix 
-      cm <- w * cm
+      cm <- weight.fun(cm, w)
     }
     # Compute accumulated DTW cost matrix 
     internals <- .computecost(cm = cm, step.matrix = step.matrix)

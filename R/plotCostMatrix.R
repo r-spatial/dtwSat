@@ -90,7 +90,7 @@ plotCostMatrix = function(x, timeseries.labels=NULL, patterns.labels=NULL, matri
   ## Set axis breaks and labels 
   x.labels = pretty_breaks()(range(df.m$tx, na.rm = TRUE))
   timeline = unique( c(df.m$tx, x.labels) )
-  x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), timeline )
+  x.breaks = zoo( c(unique(df.m$Var2), rep(NA, length(x.labels))), order.by = timeline )
   x.breaks = na.approx(x.breaks, rule = 2)
   x.axis = data.frame(x.breaks=x.breaks[x.labels], x.labels = names(x.labels))
   
@@ -101,8 +101,8 @@ plotCostMatrix = function(x, timeseries.labels=NULL, patterns.labels=NULL, matri
   y.axis = do.call("rbind", lapply(y, function(p){
     df = df.m[df.m$Pattern==p,]
     y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
-    timeline = unique( c(df$ty, y.labels) )
-    y.breaks = zoo( c(unique(df$Var3), rep(NA, length(y.labels))), timeline )
+    timeline <- unique(merge(unique(df[,c("ty","Var3")]), data.frame(ty = y.labels[drop = FALSE]), by.x = "ty", by.y = "ty", all.x = TRUE, all.y = TRUE))
+    y.breaks <- zoo(timeline$Var3, order.by = timeline$ty)
     y.breaks = na.approx(y.breaks, rule = 2)
     y.breaks = y.breaks[y.labels]
     data.frame(y.breaks, y.labels=names(y.labels))

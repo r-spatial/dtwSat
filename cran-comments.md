@@ -1,4 +1,9 @@
 ## Test environments
+
+* Local Ubuntu 20.04 (64-bit), R 4.1.1 
+  devtools::check(args = '--as-cran')
+  devtools::submit_cran()
+
 * win-builder 
   devtools::check_win_release()
   devtools::check_win_devel()
@@ -8,19 +13,17 @@
   rhub::check_for_cran(check_args = '--as-cran')
   rhub::check_for_cran(check_args = '--as-cran', valgrind = TRUE)
 
-* Ubuntu 20.04 (64-bit), R 4.1.1 
-  devtools::check(args = '--as-cran')
-  devtools::submit_cran()
-
 ## REVIEWS
 
 # v0.2.7
 
-* Fixes error in cost TWDTW weighting function 
+* Fixes error in cost TWDTW weighting function
 
-* Drop support to parallel processing 
+* Drop support to parallel processing
 
-* Fixes errors and warnings from https://cran.r-project.org/web/checks/check_results_dtwSat.html
+* Drop projection method for twdtwRaster class as it was used only internally 
+
+* Fixes errors from https://cran.r-project.org/web/checks/check_results_dtwSat.html
 
 # v0.2.6
 
@@ -59,7 +62,7 @@
   
 * build_win() latex compilation error: 
 
-I have successfully built and compiled the latex of the vignette using a personal Windows machine. However, 'build_win' gives an error while compiling the latex of vignette. The error message given by the server is unclear for me:
+I have successfully built and compiled the latex of the vignette using a personal Windows machine. However, 'build_win' gives an error while compiling the latex of vignette. The error message given by the server is unclear to me:
 
     * checking re-building of vignette outputs ... WARNING
 

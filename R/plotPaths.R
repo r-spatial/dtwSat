@@ -105,8 +105,8 @@ plotPaths = function(x, timeseries.labels=NULL, patterns.labels=NULL, k=NULL){
   y.axis = do.call("rbind", lapply(y, function(p){
     df = df.m[df.m$Pattern==p,]
     y.labels = pretty_breaks()(range(df$ty, na.rm = TRUE))
-    timeline = unique( c(df$ty, y.labels) )
-    y.breaks = zoo( c(unique(df$Var3), rep(NA, length(y.labels))), timeline )
+    timeline <- unique(merge(unique(df[,c("ty","Var3")]), data.frame(ty = y.labels[drop = FALSE]), by.x = "ty", by.y = "ty", all.x = TRUE, all.y = TRUE))
+    y.breaks <- zoo(timeline$Var3, order.by = timeline$ty)
     y.breaks = na.approx(y.breaks, rule = 2)
     y.breaks = y.breaks[y.labels]
     data.frame(y.breaks, y.labels=names(y.labels))

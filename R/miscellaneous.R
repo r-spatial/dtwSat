@@ -136,7 +136,7 @@ shiftDates.twdtwTimeSeries = function(x, year){
   if(is(y, "data.frame")){
     if(is.null(proj4string)){
       warning("Missing projection. Setting the same projection as the raster time series.", call. = FALSE)
-      proj4string = CRS(projection(object))
+      proj4string = CRS(projection(object@timeseries[[1]]))
     }
     if(!is(proj4string, "CRS")) proj4string = try(CRS(proj4string))
     y = SpatialPointsDataFrame(y[,c("longitude","latitude")], y, proj4string = proj4string)

@@ -9,7 +9,6 @@
 \alias{res,twdtwRaster-method}
 \alias{extent,twdtwRaster-method}
 \alias{writeRaster,twdtwRaster,ANY-method}
-\alias{projection,twdtwRaster-method}
 \alias{ncol,twdtwRaster-method}
 \alias{nrow,twdtwRaster-method}
 \alias{nlayers,twdtwRaster-method}
@@ -52,8 +51,6 @@
 \S4method{extent}{twdtwRaster}(x, y, ...)
 
 \S4method{writeRaster}{twdtwRaster,ANY}(x, filepath = ".", ...)
-
-\S4method{projection}{twdtwRaster}(x)
 
 \S4method{ncol}{twdtwRaster}(x)
 

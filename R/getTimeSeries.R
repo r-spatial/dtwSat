@@ -137,7 +137,7 @@ setMethod("getTimeSeries", "twdtwRaster",
 extractTimeSeries.twdtwRaster = function(x, y){
     
   # Reproject points to raster projection 
-  y = spTransform(y, CRS(projection(x)))
+  y = spTransform(y, CRS(projection(x@timeseries[[1]])))
   # Check if the coordinates are over the raster extent
   pto = .getPointsOverRaster(x, y)
   if(length(pto)<1)

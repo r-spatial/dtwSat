@@ -183,7 +183,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   x_twdtw = object@timeseries$Distance
 
   # Reproject points to raster projection 
-  y = spTransform(y, CRS(projection(object)))
+  y = spTransform(y, CRS(projection(object@timeseries[[1]])))
   
   # Remove samples outside raster bbox
   n_s <- length(y)
@@ -239,7 +239,7 @@ twdtwAssess.twdtwRaster = function(object, y, labels, id.labels, proj4string, co
   
   sp.data = SpatialPointsDataFrame(coords = samples_all[,c("longitude", "latitude")], 
                                    data = samples_all[,!names(samples_all)%in%c("longitude", "latitude")],
-                                   proj4string = CRS(projection(object)))
+                                   proj4string = CRS(projection(object@timeseries[[1]])))
   
   new("twdtwAssessment", accuracySummary = accuracy_summary, 
                          accuracyByPeriod = accuracy_by_period, 

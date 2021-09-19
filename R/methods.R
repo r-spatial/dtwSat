@@ -15,9 +15,6 @@
 setGeneric("layers", 
            function(x) standardGeneric("layers"))
 
-setGeneric("projection", 
-           function(x) standardGeneric("projection"))
-
 setGeneric("index", 
            function(x) standardGeneric("index"))
 
@@ -73,10 +70,6 @@ dim.twdtwRaster = function(x){
   res = c(nlayers(x), dim=dim(x@timeseries[[1]]))
   names(res) = c("nlayers", "nrow", "ncol", "ntime")
   res
-}
-
-projection.twdtwRaster = function(x){
-  projection(x@timeseries[[1]])
 }
 
 res.twdtwRaster = function(x){
@@ -192,12 +185,6 @@ setMethod("writeRaster", "twdtwRaster",
             writeRaster.twdtwRaster(x, filepath, ...)
           }
 )
-
-#' @inheritParams twdtwRaster-class
-#' @rdname twdtwRaster-class
-#' @export
-setMethod(f = "projection", "twdtwRaster",
-          definition = projection.twdtwRaster)
 
 #' @inheritParams twdtwRaster-class
 #' @rdname twdtwRaster-class
@@ -485,7 +472,7 @@ show.twdtwRaster = function(object){
   cat("Dimensions:",dim(object),"(nlayers, nrow, ncol, length)\n")
   cat("Resolution:",res(object)," (x, y)\n")
   cat("Extent    :",as.vector(extent(object)), "(xmin, xmax, ymin, ymax)\n")
-  cat("Coord.ref.:",projection(object),"\n") 
+  cat("Coord.ref.:",projection(object@timeseries[[1]]),"\n") 
   invisible(NULL)
 }
 

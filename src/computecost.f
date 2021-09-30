@@ -27,7 +27,7 @@ C     I/O Variables
       INTEGER N, M, NS, SM(NS,4), DM(N,M), VM(N,M)
       DOUBLE PRECISION CM(N,M)
 C     Internals
-      DOUBLE PRECISION W, LM(N,M), CP(NS), VMIN
+      DOUBLE PRECISION W, CP(NS), VMIN
       INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE
       PARAMETER(ZERO=0,ONE=1)
       REAL NAN, INF
@@ -35,15 +35,6 @@ C     Internals
       NAN  = NAN / NAN
       INF  = HUGE(ZERO)
       VM(1,1) = 1
-C     Initialize local and accumulated cost matrices 
-      DO 30 J = 1, M 
-         DO 20 I = 1, N 
-            LM(I,J) = CM(I,J)
-            IF (I.NE.ONE.AND.J.NE.ONE) THEN
-              CM(I,J) = NAN
-            ENDIF
-   20    CONTINUE
-   30 CONTINUE
 C     Initialize the firt row and col of the matrices 
       DO 21 I = 2, N 
          CM(I,1) = CM(I-1,1) + CM(I,1)
@@ -56,11 +47,8 @@ C     Initialize the firt row and col of the matrices
          VM(1,J) = J
    31 CONTINUE
 C     Compute cumulative cost matrix
-      DO 32 J = 1, M
-         DO 22 I = 1, N
-            IF ( CM(I,J).EQ.CM(I,J) ) THEN
-                GOTO 22 
-            ENDIF
+      DO 32 J = 2, M
+         DO 22 I = 2, N
 C           Initialize list of step cost 
             DO 10 K = 1, NS
                CP(K) = NAN
@@ -74,7 +62,7 @@ C           Initialize list of step cost
                   IF (W.EQ.-ONE) THEN
                     CP(PK) = CM(IL(K),JL(K))
                   ELSE
-                    CP(PK) = CP(PK) + LM(IL(K),JL(K))*W
+                    CP(PK) = CP(PK) + CM(IL(K),JL(K))*W
                   ENDIF
                ENDIF
    11       CONTINUE

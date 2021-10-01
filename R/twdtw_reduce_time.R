@@ -82,21 +82,28 @@ twdtwReduceTime = function(x,
     py <- py[,names(px),drop=FALSE]
     
     # Compute local cost matrix 
-    cm <- proxy::dist(py, px, method = dist.method)
+    #cm <- proxy::dist(py, px, method = dist.method)
     
-    if(!is.null(weight.fun)){
-      # Get day of the year for pattern and time series 
-      doyy <- as.numeric(format(ty, "%j")) 
-      doyx <- as.numeric(format(tx, "%j")) 
-      
-      # Compute time-weght matrix 
-      w <- .g(proxy::dist(doyy, doyx, method = dist.method))
-      
-      # Apply time-weight to local cost matrix 
-      cm <- weight.fun(cm, w)
-    }
+    # Get day of the year for pattern and time series 
+    doyy <- as.numeric(format(ty, "%j")) 
+    doyx <- as.numeric(format(tx, "%j")) 
+    
+    # if(!is.null(weight.fun)){
+    #   # Get day of the year for pattern and time series 
+    #   doyy <- as.numeric(format(ty, "%j")) 
+    #   doyx <- as.numeric(format(tx, "%j")) 
+    #   
+    #   # Compute time-weght matrix 
+    #   w <- .g(proxy::dist(doyy, doyx, method = dist.method))
+    #   
+    #   # Apply time-weight to local cost matrix 
+    #   cm <- weight.fun(cm, w)
+    # }
     # Compute accumulated DTW cost matrix 
-    internals <- .computecost(cm = cm, step.matrix = step.matrix)
+    #internals <- dtwSat:::.computecost(cm = cm, step.matrix = step.matrix)
+    xm = na.omit(cbind(doyx, as.matrix(px)))
+    ym = na.omit(cbind(doyy, as.matrix(py)))
+    internals = .computecost_fast(xm, ym, step.matrix)
     
     # Find all low cost candidates 
     a <- internals$startingMatrix[internals$N,1:internals$M]
@@ -147,3 +154,36 @@ twdtwReduceTime = function(x,
   return(out)
 }
 
+# @useDynLib dtwSat computecost
+.computecost_fast = function(xm, ym, step.matrix){
+  
+#  cm = rbind(0, cm)
+  n = nrow(ym)
+  m = nrow(xm)
+  d = ncol(ym)
+  
+  if(is.loaded("computecostfast", PACKAGE = "dtwSat", type = "Fortran")){
+    out = .Fortran(computecostfast, 
+                   XM = matrix(as.double(xm), m, d),
+                   YM = matrix(as.double(ym), n, d),
+                   CM = matrix(as.double(0), n+1, m),
+                   DM = matrix(as.integer(0), n+1, m),
+                   VM = matrix(as.integer(0), n+1, m),
+                   SM = matrix(as.integer(step.matrix), nrow(step.matrix), ncol(step.matrix)),
+                   N  = as.integer(n),
+                   M  = as.integer(m),
+                   D  = as.integer(d),
+                   NS = as.integer(nrow(step.matrix)))
+  } else {
+    stop("Fortran computecostfast lib is not loaded")
+  }
+  # sqrt(sum((ym[1,-1] - xm[1,-1])*(ym[1,-1] - xm[1,-1])))
+  res = list()
+  res$costMatrix = out$CM[-1,]
+  res$directionMatrix = out$DM[-1,]
+  res$startingMatrix = out$VM[-1,]
+  res$stepPattern = step.matrix
+  res$N = n
+  res$M = m
+  res
+}

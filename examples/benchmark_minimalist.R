@@ -1,7 +1,7 @@
 library(dtwSat)
 log_fun = logisticWeight(-0.1, 50)
 from = "2009-09-01"
-to = "2017-09-01"
+to = "2017-08-31"
 by = "12 month"
 
 # S4 objects for original implementation 
@@ -15,6 +15,6 @@ mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"
 # Benchtmark 
 rbenchmark::benchmark(
   original = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), from = from, to = to, by = by)[[1]],
-  minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, weight.fun = log_fun, from = from, to = to, by = by)  
+  minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by)  
 )
 

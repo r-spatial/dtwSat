@@ -39,8 +39,10 @@
     psi = .g(dist(doyy, doyx, method=dist.method))
     # Weighted local cost matrix 
     cm = weight.fun(phi, psi)
-    
     # Compute cost matris 
+    # xm = na.omit(cbind(doyx, as.matrix(timeseries)))
+    # ym = na.omit(cbind(doyy, as.matrix(pattern)))
+    # internals = .computecost_fast(xm, ym, step.matrix)
     internals = .computecost(cm, step.matrix)
     internals$timeWeight = matrix(psi, nrow = nrow(psi))
     internals$localMatrix = matrix(cm, nrow = nrow(cm))

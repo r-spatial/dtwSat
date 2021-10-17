@@ -13,6 +13,7 @@ twdtwReduceTime(
   from = NULL,
   to = NULL,
   by = NULL,
+  breaks = NULL,
   overlap = 0.5,
   fill = 255
 )
@@ -47,6 +48,9 @@ Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package
 \item{to}{A \code{\link[base]{character}} or \code{\link[base]{Dates}} object in the format "yyyy-mm-dd".}
 
 \item{by}{A \code{\link[base]{character}} with the interval size, \emph{e.g.} "6 month".}
+
+\item{breaks}{A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
+\code{to}, and \code{by}.}
 
 \item{overlap}{A number between 0 and 1. The minimum overlapping 
 between one match and the interval of classification. Default is 0.5, 

@@ -24,7 +24,7 @@ C     N  - Number of rows in CM, DM, and VM - time series
 C     M  - Number of columns CM, DM, and VM - temporal profile
 C     D  - Number of spectral dimensions including time in XM and YM
 C     NS - Number of rows in SM 
-      SUBROUTINE computecostfast(XM, YM, CM, DM, VM, SM, N, M, D, NS)
+      SUBROUTINE fast_twdtw(XM, YM, CM, DM, VM, SM, N, M, D, NS)
 C     I/O Variables       
       INTEGER N, M, D, NS, SM(NS,4), DM(N+1,M), VM(N+1,M)
       DOUBLE PRECISION XM(M,D), YM(N,D), CM(N+1,M)

@@ -344,3 +344,148 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
   fun
 }
 
+fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric1, n=NULL, progress = "text", ncores = 1,
+                          span=NULL, min.length=0, breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, fill = 255, filepath="", ...){
+  # x = rts
+  # y = temporal_patterns
+  # dist.method="Euclidean"
+  # step.matrix = symmetric1
+  # n=NULL
+  # span=NULL
+  # min.length=0
+  # breaks=NULL
+  # from=NULL
+  # to=NULL
+  # by=NULL
+  # overlap=0.5
+  # filepath=""
+  
+  if(is.twdtwTimeSeries(y)){
+    y <- lapply(y@timeseries, function(yy){
+      date <- index(yy)
+      yy <- as.data.frame(yy)
+      yy <- cbind(date, yy)
+    })
+  }
+
+  if(any(!sapply(y, function(yy) "date" %in% names(yy)))){
+    stop("every patter in y must have a column called 'date'")
+  }
+  
+  if(is.null(breaks))
+    if( !is.null(from) &  !is.null(to) ){
+      breaks = seq(as.Date(from), as.Date(to), by=by)    
+    } else {
+      patt_range = lapply(y, function(yy) range(yy$date))
+      patt_diff = trunc(sapply(patt_range, diff)/30)+1
+      min_range = which.min(patt_diff)
+      by = patt_diff[[min_range]]
+      from = patt_range[[min_range]][1]
+      to = from 
+      month(to) = month(to) + by
+      year(from) = year(range(index(x))[1])
+      year(to) = year(range(index(x))[2])
+      if(to<from) year(to) = year(to) + 1
+      breaks = seq(from, to, paste(by,"month"))
+      by = paste(by, "month")
+    }
+  breaks = as.Date(breaks)
+
+  # Match raster bands to pattern bands
+  raster_bands <- coverages(x)
+  pattern_bands <- names(y[[1]])
+  matching_bands <- pattern_bands[pattern_bands %in% raster_bands]
+  
+  if(length(matching_bands) < 1)
+    stop(paste0("Bands from twdtwRaster do not match the bands from patterns"))
+  
+  if("doy" %in% coverages(x) & !"doy" %in% matching_bands)
+    matching_bands <- c("doy", matching_bands)
+  
+  x <- subset(x, layers = matching_bands)
+  raster_bands <- coverages(x)
+  
+  # Set raster levels and labels 
+  levels <- names(y)
+  names(levels) <- levels
+  
+  # Create output raster objects 
+  r_template <- brick(x@timeseries[[1]], nl = length(breaks) - 1, values = FALSE)
+  out <- rep(list(r_template), 2)
+  names(out) <- c("label", "distance")
+  
+  filepath <- trim(filepath)
+  filename <- NULL
+  if (filepath != "") {
+    dir.create(path = filepath, showWarnings = TRUE, recursive = TRUE)
+    filename <- paste0(filepath, "/", names(out), ".grd")
+    names(filename) <- names(out)
+  } else if (!canProcessInMemory(r_template, n = length(breaks) + length(x@timeseries) )) {
+    filename <- sapply(names(out), rasterTmpFile)
+  }
+  
+  if (!is.null(filename)) {
+    out <- lapply(names(out), function(i) writeStart(out[[i]], filename = filename[i], ...))
+  } else {
+    vv <- lapply(names(out), function(i) matrix(out[[i]], ncol = nlayers(out[[i]])))
+    names(vv) <- names(out)
+  }
+  
+  bs <- blockSize(x@timeseries[[1]])
+  bs$array_rows <- cumsum(c(1, bs$nrows*out[[1]]@ncols))
+  pb <- pbCreate(bs$n, progress)
+  
+  for(k in 1:bs$n){
+    
+    # Get raster data
+    v <- lapply(x@timeseries, getValues, row = bs$row[k], nrows = bs$nrows[k])
+
+    # Get time series
+    ts <- lapply(1:nrow(v[[1]]), function(i){
+      # Get time series dates
+      if(any(names(v) %in% "doy")){
+        timeline <- dtwSat::getDatesFromDOY(year = format(dtwSat::index(x), "%Y"), doy = v[["doy"]][i,])
+      } else {
+        timeline <- dtwSat::index(x)
+      } 
+      data.frame(sapply(v[!(names(v) %in% "doy")], function(v) v[i, , drop = FALSE]), date = timeline)
+    })
+    
+    # Apply TWDTW analysis
+    twdtw_results <- parallel::mclapply(ts, mc.cores = ncores, FUN = twdtwReduceTime, y = y, breaks = breaks, ...)
+    
+    twdtw_results <- data.table::rbindlist(twdtw_results)[,c("label","distance")]
+    twdtw_label <- matrix(twdtw_results$label, ncol = length(breaks)-1, byrow = TRUE)
+    twdtw_distance <- matrix(twdtw_results$distance, ncol = length(breaks)-1, byrow = TRUE)
+    
+    # Get best matches for each point, period, and pattern
+    m <- length(levels)
+    h <- length(breaks) - 1
+    
+    rows <- seq(from = bs$array_rows[k], by = 1, length.out = bs$nrows[k]*out[[1]]@ncols)
+    if (!is.null(filename)) {
+      writeValues(out$label, twdtw_label, bs$row[k])
+      writeValues(out$distance, twdtw_distance, bs$row[k])
+    } else {
+      vv$label[rows,] <- twdtw_label
+      vv$distance[rows,] <- twdtw_distance
+    }
+    
+    pbStep(pb, k)
+    
+  }
+  
+  if (!is.null(filename)) {
+    out <- lapply(out, writeStop)
+  } else {
+    out <- lapply(seq_along(out), function(i) setValues(out[[i]], values = vv[[i]]))
+  }
+  
+  pbClose(pb)
+  
+  names(out) <- c("label", "distance")
+  
+  twdtwRaster(Class = out$label, Distance = out$distance, ..., timeline = breaks[-1], 
+              labels = c(levels, "unclassified"), levels = c(seq_along(levels), fill), filepath = filepath)
+  
+}

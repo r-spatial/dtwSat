@@ -7,7 +7,6 @@
 twdtwReduceTime(
   x,
   y,
-  weight.fun = NULL,
   dist.method = "Euclidean",
   step.matrix = symmetric1,
   from = NULL,
@@ -27,14 +26,6 @@ the column names in the temporal patterns \code{y}.}
 
 \item{y}{a list of data.frame objects similar to \code{x}. 
 The temporal patterns used to classify the time series in \code{x}.}
-
-\item{weight.fun}{A function. Any function that receives two matrices and 
-performs a computation on them, returning a single matrix with the same 
-dimensions. The first matrix is the DTW local cost matrix and the 
-second a matrix of the time differences in days. The function should return a 
-matrix of DTW local cost weighted by the time differences. If not declared 
-the time-weight is zero. In this case the function runs the standard version 
-of the dynamic time warping. See details.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
@@ -60,8 +51,9 @@ between one match and the interval of classification. Default is 0.5,
 }
 \description{
 This function is a minimalist implementation of 
-\link[dtwSat]{twdtwApply} that is in average 3x faster. It does not keep any 
-intermediate data. It performs a multidimensional TWDTW analysis 
+\link[dtwSat]{twdtwApply} that is in average 3x faster. The time weight function 
+is coded in Fortran. It does not keep any intermediate data. 
+It performs a multidimensional TWDTW analysis 
 \insertCite{Maus:2019}{dtwSat} and retrieves only the best matches between 
 the unclassified time series and the patterns for each defined time interval.
 }
@@ -69,7 +61,6 @@ the unclassified time series and the patterns for each defined time interval.
 \dontrun{
 
 library(dtwSat)
-log_fun = logisticWeight(-0.1, 50)
 from = "2009-09-01"
 to = "2017-09-01"
 by = "12 month"
@@ -88,7 +79,7 @@ mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"
 rbenchmark::benchmark(
   original = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), 
                                       from = from, to = to, by = by)[[1]],
-  minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, weight.fun = log_fun, 
+  minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, 
                                       from = from, to = to, by = by)  
  )
 }

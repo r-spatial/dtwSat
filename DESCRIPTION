@@ -37,13 +37,16 @@ Imports:
     mgcv,
     xtable,
     Rdpack,
-    data.table
+    data.table,
+    foreach,
+    parallel
 Suggests:
     gridExtra,
     grid,
     png,
     Hmisc,
-    rbenchmark
+    rbenchmark,
+    doParallel
 License: GPL (>= 3) | file LICENSE
 URL: https://github.com/vwmaus/dtwSat/
 BugReports: https://github.com/vwmaus/dtwSat/issues

@@ -38,16 +38,23 @@
   # Create temporal patterns 
   temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
-  # Set TWDTW weight function 
-  # log_fun <- logisticWeight(-0.1, 50)
-  
-  # Run fast-TWDTW analysis
+  # Run sequential fast-TWDTW analysis
+  foreach::registerDoSEQ()
   system.time(
-    # The logistic time weigh is codeded in Fortran: TODO: add logit parameters to function call
-    # parallel uses parallel::mclapply - not so much implementation
-    fast_lucc <- dtwSat:::fasttwdtwApply(x = rts, y = temporal_patterns, ncores = 1, progress = 'text')
+    # The logistic time weigh is in the Fortran code: TODO: add logit parameters to function call
+    fast_lucc <- dtwSat:::fasttwdtwApply(x = rts, y = temporal_patterns, progress = 'text', minrows = 27)
   )
   
+  # Run parallel fast-TWDTW 
+  cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK")
+  doParallel::registerDoParallel(cl)
+  foreach::getDoParRegistered()
+  system.time(
+    fast_lucc <- dtwSat:::fasttwdtwApply(x = rts, y = temporal_patterns, progress = 'text', minrows = 27)
+  )
+  foreach::registerDoSEQ()
+  parallel::stopCluster(cl)
+
   # Plot TWDTW distances for the first year 
   plot(fast_lucc, type = "distance", time.levels = 1)
   

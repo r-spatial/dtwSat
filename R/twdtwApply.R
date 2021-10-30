@@ -344,8 +344,8 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
   fun
 }
 
-fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric1, n=NULL, progress = "text", ncores = 1,
-                          span=NULL, min.length=0, breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, fill = 255, filepath="", ...){
+fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric1, n=NULL, progress = "text", ncores = 1, paralle = FALSE,
+                          span=NULL, min.length=0, breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, fill = 255, filepath="", chunksize, minrows=1, ...){
   # x = rts
   # y = temporal_patterns
   # dist.method="Euclidean"
@@ -431,7 +431,7 @@ fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric
     names(vv) <- names(out)
   }
   
-  bs <- blockSize(x@timeseries[[1]])
+  bs <- blockSize(x@timeseries[[1]], chunksize = chunksize, minrows = minrows)
   bs$array_rows <- cumsum(c(1, bs$nrows*out[[1]]@ncols))
   pb <- pbCreate(bs$n, progress)
   
@@ -452,9 +452,14 @@ fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric
     })
     
     # Apply TWDTW analysis
-    twdtw_results <- parallel::mclapply(ts, mc.cores = ncores, FUN = twdtwReduceTime, y = y, breaks = breaks, ...)
+    twdtw_results <- foreach(
+      i = ts, 
+      .combine = 'rbind'
+    ) %dopar% {
+      twdtwReduceTime(x = i, y = y, breaks = breaks, ...)
+    }
     
-    twdtw_results <- data.table::rbindlist(twdtw_results)[,c("label","distance")]
+    # twdtw_results <- data.table::rbindlist(twdtw_results)[,c("label","distance")]
     twdtw_label <- matrix(twdtw_results$label, ncol = length(breaks)-1, byrow = TRUE)
     twdtw_distance <- matrix(twdtw_results$distance, ncol = length(breaks)-1, byrow = TRUE)
     

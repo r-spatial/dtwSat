@@ -1,17 +1,3 @@
-###############################################################
-#                                                             #
-#   (c) Victor Maus <vwmaus1@gmail.com>                       #
-#       Institute for Geoinformatics (IFGI)                   #
-#       University of Muenster (WWU), Germany                 #
-#                                                             #
-#       Earth System Science Center (CCST)                    #
-#       National Institute for Space Research (INPE), Brazil  #
-#                                                             #
-#                                                             #
-#   R Package dtwSat - 2016-02-22                             #
-#                                                             #
-###############################################################
-
 #' @include methods.R
 #' @title Apply TWDTW analysis 
 #' @name twdtwApply
@@ -344,8 +330,7 @@ twdtwApply.twdtwRaster = function(x, y, weight.fun, dist.method, step.matrix, n,
   fun
 }
 
-fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric1, n=NULL, progress = "text", ncores = 1, paralle = FALSE,
-                          span=NULL, min.length=0, breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, fill = 255, filepath="", chunksize, minrows=1, ...){
+fasttwdtwApply = function(x, y, progress = "text", breaks=NULL, from=NULL, to=NULL, by=NULL, fill = 255, filepath="", minrows=1, chunksize, ...){
   # x = rts
   # y = temporal_patterns
   # dist.method="Euclidean"
@@ -456,7 +441,7 @@ fasttwdtwApply = function(x, y, dist.method="Euclidean", step.matrix = symmetric
       i = ts, 
       .combine = 'rbind'
     ) %dopar% {
-      twdtwReduceTime(x = i, y = y, breaks = breaks, ...)
+      twdtwReduceTime(x = i, y = y, breaks = breaks, fill = fill, ...)
     }
     
     # twdtw_results <- data.table::rbindlist(twdtw_results)[,c("label","distance")]

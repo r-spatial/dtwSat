@@ -55,6 +55,8 @@
 #' @export
 twdtwReduceTime = function(x, 
                            y, 
+                           alpha = -0.1,
+                           beta = 50,
                            dist.method = "Euclidean",
                            step.matrix = symmetric1,
                            from = NULL, 
@@ -91,7 +93,7 @@ twdtwReduceTime = function(x,
     # Compute accumulated DTW cost matrix 
     xm = na.omit(cbind(doyx, as.matrix(px)))
     ym = na.omit(cbind(doyy, as.matrix(py)))
-    internals = .fast_twdtw(xm, ym, step.matrix)
+    internals = .fast_twdtw(xm, ym, alpha, beta, step.matrix)
     
     # Find all low cost candidates 
     a <- internals$startingMatrix[internals$N,1:internals$M]
@@ -180,15 +182,15 @@ twdtwReduceTime = function(x,
 }
 
 # @useDynLib dtwSat computecost
-.fast_twdtw = function(xm, ym, step.matrix){
+.fast_twdtw = function(xm, ym, alpha, beta, step.matrix){
   
   #  cm = rbind(0, cm)
   n = nrow(ym)
   m = nrow(xm)
   d = ncol(ym)
   
-  if(is.loaded("fast_twdtw", PACKAGE = "dtwSat", type = "Fortran")){
-    out = .Fortran(fast_twdtw, 
+  if(is.loaded("twdtw", PACKAGE = "dtwSat", type = "Fortran")){
+    out = .Fortran(twdtw, 
                    XM = matrix(as.double(xm), m, d),
                    YM = matrix(as.double(ym), n, d),
                    CM = matrix(as.double(0), n+1, m),
@@ -198,9 +200,12 @@ twdtwReduceTime = function(x,
                    N  = as.integer(n),
                    M  = as.integer(m),
                    D  = as.integer(d),
-                   NS = as.integer(nrow(step.matrix)))
+                   NS = as.integer(nrow(step.matrix))
+                   # WA = as.double(alpha),
+                   # WB = as.double(beta)
+                   )
   } else {
-    stop("Fortran fast_twdtw lib is not loaded")
+    stop("Fortran twdtw lib is not loaded")
   }
   # sqrt(sum((ym[1,-1] - xm[1,-1])*(ym[1,-1] - xm[1,-1])))
   res = list()

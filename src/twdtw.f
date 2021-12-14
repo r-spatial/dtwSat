@@ -1,18 +1,4 @@
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C                                                             C
-C   (c) Victor Maus <vwmaus1@gmail.com>                       C
-C       Institute for Geoinformatics (IFGI)                   C
-C       University of Muenster (WWU), Germany                 C
-C                                                             C
-C       Earth System Science Center (CCST)                    C
-C       National Institute for Space Research (INPE), Brazil  C
-C                                                             C
-C                                                             C
-C   Efficient computation of DTW cost matrix  - 2015-10-16    C
-C                                                             C
-C   This function was adpted from the C function 'computeCM'  C
-C   implemented in the R package 'dtw' by Toni Giorgino.      C
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C   Computation of TWDTW cost matrix
 C
 C     XM - matrix with the time series (N,D)
 C     YM - matrix with the temporal profile (M,D)
@@ -24,12 +10,13 @@ C     N  - Number of rows in CM, DM, and VM - time series
 C     M  - Number of columns CM, DM, and VM - temporal profile
 C     D  - Number of spectral dimensions including time in XM and YM
 C     NS - Number of rows in SM 
-      SUBROUTINE fast_twdtw(XM, YM, CM, DM, VM, SM, N, M, D, NS)
+C     TW  - Time-Weight parameters alpha and beta 
+      SUBROUTINE twdtw(XM, YM, CM, DM, VM, SM, N, M, D, NS, TW)
 C     I/O Variables       
       INTEGER N, M, D, NS, SM(NS,4), DM(N+1,M), VM(N+1,M)
-      DOUBLE PRECISION XM(M,D), YM(N,D), CM(N+1,M)
+      DOUBLE PRECISION XM(M,D), YM(N,D), CM(N+1,M), TW(2)
 C     Internals
-      DOUBLE PRECISION W, CP(NS), VMIN
+      DOUBLE PRECISION W, CP(NS), VMIN, A, B, TD
       INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE
       PARAMETER(ZERO=0,ONE=1)
       REAL NAN, INF
@@ -37,28 +24,53 @@ C     Internals
       NAN  = NAN / NAN
       INF  = HUGE(ZERO)
       VM(1,1) = 1
+C      A = TW(1)
+C      B = TW(2)
+C       WRITE (*,*) 'Par ',TW(1),' - ', TW(2)
 C     Initialize the firt row and col of the matrices 
       DO 21 I = 2, N+1 
-         CM(I,1) = CM(I-1,1) + distance(YM, XM, N, M, D, I-1, 1)
+         TD = YM(I-1,1) - XM(1,1)
+         CALL ellapsed(TD)
+C         IF (TD.GT.TW(2)) THEN
+C           CM(I,1) = INF
+C         ELSE
+           CM(I,1) = CM(I-1,1) + 
+     &               distance(YM, XM, N, M, D, I-1, 1, TW, TD)
+C         ENDIF
 C         WRITE (*,*) 'The distance ',I,',1 is ', CM(I,1)
          DM(I,1) = 3
          VM(I,1) = 1
    21 CONTINUE
       DO 31 J = 2, M 
-         CM(2,J) = CM(2,J-1) + distance(YM, XM, N, M, D, 1, J)
+         TD = YM(2,1) - XM(J,1)
+         CALL ellapsed(TD)
+C         IF (TD.GT.TW(2)) THEN
+C           CM(2,J) = INF
+C         ELSE
+           CM(2,J) = CM(2,J-1) + 
+     &               distance(YM, XM, N, M, D, 1, J, TW, TD)
+C         ENDIF
 C         WRITE (*,*) 'The distance 2,',J,' is ', CM(2,J)
          DM(1,J) = 2
          VM(1,J) = J
    31 CONTINUE
 C     Compute cumulative cost matrix
       J = 2
-      DO 32 WHILE ( J .LE. M ) 
-C      DO 32 J = 2, M
+      DO 32 WHILE ( J .LE. M )
          I = 2
          DO 22 WHILE ( I .LE. N+1 ) 
-C         DO 22 I = 2, N+1
 C           Calculate local distance 
-            CM(I,J) = distance(YM, XM, N, M, D, I-1, J)
+C           # the call takes I-1 because local matrix has an additional row at the begning
+            TD = YM(I,1) - XM(J,1)
+            CALL ellapsed(TD)
+            IF (TD.GT.TW(2)) THEN
+              CM(I,J) = INF
+              DM(I,J) = -ONE
+              VM(I,J) = NAN
+              GOTO 44
+            ELSE
+              CM(I,J) = distance(YM, XM, N, M, D, I-1, J, TW, TD) 
+            ENDIF
 C           Initialize list of step cost 
             DO 10 K = 1, NS
                CP(K) = NAN
@@ -94,9 +106,11 @@ C           Initialize list of step cost
                DM(I,J) = KMIN
                VM(I,J) = VM(ILMIN, JLMIN)
             ENDIF
+   44       CONTINUE         
             I = I + 1
    22    CONTINUE
          J = J + 1
    32 CONTINUE
    99 CONTINUE
       END
+

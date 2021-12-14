@@ -96,11 +96,12 @@ twdtwReduceTime = function(x,
     internals = .fast_twdtw(xm, ym, alpha, beta, step.matrix)
     
     # Find all low cost candidates 
-    a <- internals$startingMatrix[internals$N,1:internals$M]
-    d <- internals$costMatrix[internals$N,1:internals$M]
+    a <- internals$startingMatrix[internals$N-1,1:internals$M]
+    d <- internals$costMatrix[internals$N-1,1:internals$M]
     candidates   <- data.frame(a, d)
     candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min),,drop=FALSE]
     candidates$b <- as.numeric(row.names(candidates))
+    candidates <- candidates[!is.na(candidates$a),]
     
     # Order maches by minimum TWDTW distance 
     I <- order(candidates$d)
@@ -148,40 +149,6 @@ twdtwReduceTime = function(x,
 }
 
 # @useDynLib dtwSat computecost
-.computecost_fast = function(xm, ym, step.matrix){
-  
-#  cm = rbind(0, cm)
-  n = nrow(ym)
-  m = nrow(xm)
-  d = ncol(ym)
-  
-  if(is.loaded("computecostfast", PACKAGE = "dtwSat", type = "Fortran")){
-    out = .Fortran(computecostfast, 
-                   XM = matrix(as.double(xm), m, d),
-                   YM = matrix(as.double(ym), n, d),
-                   CM = matrix(as.double(0), n+1, m),
-                   DM = matrix(as.integer(0), n+1, m),
-                   VM = matrix(as.integer(0), n+1, m),
-                   SM = matrix(as.integer(step.matrix), nrow(step.matrix), ncol(step.matrix)),
-                   N  = as.integer(n),
-                   M  = as.integer(m),
-                   D  = as.integer(d),
-                   NS = as.integer(nrow(step.matrix)))
-  } else {
-    stop("Fortran computecostfast lib is not loaded")
-  }
-  # sqrt(sum((ym[1,-1] - xm[1,-1])*(ym[1,-1] - xm[1,-1])))
-  res = list()
-  res$costMatrix = out$CM[-1,]
-  res$directionMatrix = out$DM[-1,]
-  res$startingMatrix = out$VM[-1,]
-  res$stepPattern = step.matrix
-  res$N = n
-  res$M = m
-  res
-}
-
-# @useDynLib dtwSat computecost
 .fast_twdtw = function(xm, ym, alpha, beta, step.matrix){
   
   #  cm = rbind(0, cm)
@@ -200,8 +167,8 @@ twdtwReduceTime = function(x,
                    N  = as.integer(n),
                    M  = as.integer(m),
                    D  = as.integer(d),
-                   NS = as.integer(nrow(step.matrix))
-                   # WA = as.double(alpha),
+                   NS = as.integer(nrow(step.matrix)),
+                   TW = as.double(c(alpha, beta))
                    # WB = as.double(beta)
                    )
   } else {

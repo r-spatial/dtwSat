@@ -2,7 +2,6 @@ Meta
 doc
 # History files
 .Rhistory
-
 # Example code in package build process
 *-Ex.R
 # R data files from past sessions
@@ -24,3 +23,4 @@ tardis.f
 *.o
 *.so
 Makefile
+dtw_result_subarea_250m_1_2017-09-01.tif

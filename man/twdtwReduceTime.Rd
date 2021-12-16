@@ -7,6 +7,8 @@
 twdtwReduceTime(
   x,
   y,
+  alpha = -0.1,
+  beta = 50,
   dist.method = "Euclidean",
   step.matrix = symmetric1,
   from = NULL,

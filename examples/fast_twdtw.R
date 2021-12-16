@@ -64,7 +64,7 @@
   # Assess classification 
   twdtw_assess <- 
     twdtwAssess(object = fast_lucc, y = validation_samples, 
-                proj4string = proj_str, conf.int = .95) 
+                proj4string = proj_str, conf.int = .95)
   
   # Plot map accuracy 
   plot(twdtw_assess, type = "accuracy")

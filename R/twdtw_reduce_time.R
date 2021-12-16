@@ -72,7 +72,7 @@ twdtwReduceTime = function(x,
 
   # Comput TWDTW alignments for all patterns   
   aligs <- lapply(seq_along(y), function(l){
-    
+
     # Split pattern time series from dates 
     py <- y[[l]][,names(y[[l]])!="date",drop=FALSE] 
     ty <- as.Date(y[[l]]$date)
@@ -98,52 +98,62 @@ twdtwReduceTime = function(x,
     # Find all low cost candidates 
     a <- internals$startingMatrix[internals$N-1,1:internals$M]
     d <- internals$costMatrix[internals$N-1,1:internals$M]
-    candidates   <- data.frame(a, d)
-    candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min),,drop=FALSE]
-    candidates$b <- as.numeric(row.names(candidates))
-    candidates <- candidates[!is.na(candidates$a),]
+    # rbenchmark::benchmark(
+    #   df = data.frame(a, d),
+    #   mt = matrix(c(a, d, 1:internals$M), ncol = 3, byrow = F), replications = 100)
+    # candidates   <- data.frame(a, d)
+    candidates   <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
+    # candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min),,drop=FALSE]
+    candidates   <- candidates[candidates[,2]==ave(candidates[,2], candidates[,1], FUN=min),,drop=FALSE]
+    # candidates$b <- as.numeric(row.names(candidates))
+    # candidates[,2] <- as.numeric(row.names(candidates))
+    candidates <- candidates[!is.na(candidates[,1]),,drop=FALSE]
     
     # Order maches by minimum TWDTW distance 
-    I <- order(candidates$d)
+    # I <- order(candidates$d)
+    I <- order(candidates[,3])
     if(length(I)<1) return(NULL)
 
     # Build alignments table table 
-    res <- data.frame(
-      Alig.N     = I,
-      from       = tx[candidates$a[I]],
-      to         = tx[candidates$b[I]],
-      distance   = candidates$d[I],
-      label      = l
-    )
-    return(res)
+    candidates[,4] <- I
+    # res <- data.frame(
+    #   Alig.N     = I,
+    #   from       = tx[candidates[I,1]],
+    #   to         = tx[candidates[I,3]],
+    #   distance   = candidates[I,2],
+    #   label      = l
+    # )
+    return(candidates)
     
   })
   
   # Bind rows 
-  aligs <- data.table::rbindlist(aligs)
-
+  aligs <- do.call("rbind", aligs)
+  
   # Create classification intervals 
   if(is.null(breaks)){
     breaks <- seq(as.Date(from), as.Date(to), by = by) 
   }
   
   # Find best macthes for the intervals 
-  best_matches <- .bestmatches(
-    x = list(aligs[order(aligs$from, aligs$from),,drop=FALSE]), 
+  best_matches <- .bestmatches2(
+    x = aligs[order(aligs[,1], aligs[,2]),,drop=FALSE], 
+    tx = tx,
     m = length(y), 
     n = length(breaks) - 1, 
     levels = seq_along(y), 
     breaks = breaks, 
     overlap = overlap,
-    fill = 99999)$IM
+    fill = 99999)[c("IM", "DB")]
 
   # Build output 
-  out <- as.data.frame(best_matches[,c(1,3),drop=FALSE])
-  names(out) <- c("label", "Alig.N")
+  out <- as.data.frame(best_matches$IM[,1,drop=FALSE])
+  names(out) <- c("label")
   out$from <- breaks[-length(breaks)]
   out$to <- breaks[-1]
-  out <- merge(out, aligs[, c("label", "Alig.N", "distance"),drop=FALSE], by.x = c("label", "Alig.N"), by.y = c("label", "Alig.N"), all.x = TRUE)
-  out <- out[order(out$from), names(out)!="Alig.N"]
+  out$distance <- best_matches$DB
+  # out <- merge(out, aligs[, c("label", "Alig.N", "distance"),drop=FALSE], by.x = c("label", "Alig.N"), by.y = c("label", "Alig.N"), all.x = TRUE)
+  # out <- out[order(out$from), names(out)!="Alig.N"]
   if(any(out$label==0)) out[out$label==0,]$label <- fill
   return(out)
 }
@@ -184,3 +194,60 @@ twdtwReduceTime = function(x,
   res$M = m
   res
 }
+
+
+# @useDynLib dtwSat bestmatches
+.bestmatches2 = function(x, tx, m, n, levels, breaks, overlap, fill=9999){
+  if(is.loaded("bestmatches", PACKAGE = "dtwSat", type = "Fortran")){
+    if(length(x[,2])<1){
+      res = list(
+        XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
+        AM = matrix(as.double(fill), nrow = n, ncol = m), 
+        DM = as.double(x[,2]),
+        DP = as.integer(as.numeric(breaks)),
+        X  = as.integer(match(x[,5], levels)),
+        IM = matrix(as.integer(0), nrow = n, ncol = 3),
+        DB = as.double(x[,2]),
+        A  = as.integer(x[,4]),
+        K  = as.integer(length(x[,4])),
+        P  = as.integer(length(breaks)),
+        L  = as.integer(length(levels)),
+        OV = as.double(overlap))
+    } else {
+      res = try(.Fortran(bestmatches, 
+                         XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
+                         AM = matrix(as.double(fill), nrow = n, ncol = m), 
+                         DM = as.double(x[,2]),
+                         DP  = as.integer(as.numeric(breaks)),
+                         X  = as.integer(match(x[,5], levels)),
+                         IM = matrix(as.integer(0), nrow = n, ncol = 3),
+                         DB = as.double(rep(0, n)),
+                         A  = as.integer(x[,4]),
+                         K  = as.integer(length(x[,4])),
+                         P  = as.integer(length(breaks)),
+                         L  = as.integer(length(levels)),
+                         OV = as.double(overlap))) 
+    }
+  } else {
+    stop("Fortran bestmatches lib is not loaded")
+  }
+  if(is(res, "try-error")){
+    res = list(
+      XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
+      AM = matrix(as.double(fill), nrow = n, ncol = m), 
+      DM = as.double(x[,2]),
+      DP = as.integer(as.numeric(breaks)),
+      X  = as.integer(match(x[,5], levels)),
+      IM = matrix(as.integer(0), nrow = n, ncol = 3),
+      DB = as.double(x[,2]),
+      A  = as.integer(x[,4]),
+      K  = as.integer(length(x[,4])),
+      P  = as.integer(length(breaks)),
+      L  = as.integer(length(levels)),
+      OV = as.double(overlap)
+    )
+  } 
+  res
+}
+
+

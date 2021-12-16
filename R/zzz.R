@@ -34,7 +34,7 @@
 #' @import ggplot2
 #' @import methods
 #' @import rgdal 
-#' @importFrom foreach foreach %dopar%
+#' @importFrom foreach foreach %dopar% 
 #' @importFrom proxy dist pr_DB
 #' @importFrom reshape2 melt
 #' @importFrom scales pretty_breaks date_format percent

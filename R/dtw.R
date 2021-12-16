@@ -89,6 +89,7 @@
                 DP = as.integer(as.numeric(breaks)),
                 X  = as.integer(match(x[[1]]$label, levels)),
                 IM = matrix(as.integer(0), nrow = n, ncol = 3),
+                DB = as.double(x[,2]),
                 A  = as.integer(x[[1]]$Alig.N),
                 K  = as.integer(length(x)),
                 P  = as.integer(length(breaks)),
@@ -102,6 +103,7 @@
                        DP  = as.integer(as.numeric(breaks)),
                        X  = as.integer(match(x[[1]]$label, levels)),
                        IM = matrix(as.integer(0), nrow = n, ncol = 3),
+                       DB = as.double(rep(0, n)),
                        A  = as.integer(x[[1]]$Alig.N),
                        K  = as.integer(length(x[[1]]$Alig.N)),
                        P  = as.integer(length(breaks)),
@@ -119,6 +121,7 @@
       DP  = as.integer(as.numeric(breaks)),
       X  = as.integer(match(x[[1]]$label, levels)),
       IM = matrix(as.integer(0), nrow = n, ncol = 3),
+      DB = as.double(x[,2]),
       A  = as.integer(x[[1]]$Alig.N),
       K  = as.integer(length(x)),
       P  = as.integer(length(breaks)),
@@ -128,5 +131,3 @@
   } 
   res
 }
-
-

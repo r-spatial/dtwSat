@@ -54,6 +54,12 @@ twdtwApply(
   by = NULL,
   overlap = 0.5,
   filepath = "",
+  fill = 255,
+  minimalist = FALSE,
+  progress = "text",
+  minrows = 1,
+  alpha = -0.1,
+  beta = 50,
   ...
 )
 }
@@ -119,6 +125,20 @@ between one match and the interval of classification. Default is 0.5,
 
 \item{filepath}{A character. The path at which to save the raster with results. If not provided the 
 function saves in the current work directory.}
+
+\item{fill}{A character to fill the classification gaps. 
+For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, 
+for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.}
+
+\item{minimalist}{ogical. If TRUE, runs a faster TWDTW implementation. Default FALSE}
+
+\item{progress}{character. 'text' or 'window'.}
+
+\item{minrows}{Integer. Minimum number of rows in each block}
+
+\item{alpha}{Numeric. The steepness of TWDTW logistic weight.}
+
+\item{beta}{Numeric. The midpoint of TWDTW logistic weight.}
 }
 \value{
 An object of class twdtw*.

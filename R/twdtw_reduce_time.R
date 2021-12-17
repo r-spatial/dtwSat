@@ -5,7 +5,7 @@
 #' @rdname twdtwReduceTime 
 #' 
 #' @description This function is a minimalist implementation of 
-#' \link[dtwSat]{twdtwApply} that is in average 3x faster. The time weight function 
+#' \link[dtwSat]{twdtwApply} that is in average 4x faster. The time weight function 
 #' is coded in Fortran. It does not keep any intermediate data. 
 #' It performs a multidimensional TWDTW analysis 
 #' \insertCite{Maus:2019}{dtwSat} and retrieves only the best matches between 
@@ -83,9 +83,6 @@ twdtwReduceTime = function(x,
     px <- px[,names(py),drop=FALSE]
     py <- py[,names(px),drop=FALSE]
     
-    # Compute local cost matrix 
-    #cm <- proxy::dist(py, px, method = dist.method)
-    
     # Get day of the year for pattern and time series 
     doyy <- as.numeric(format(ty, "%j")) 
     doyx <- as.numeric(format(tx, "%j")) 
@@ -98,31 +95,16 @@ twdtwReduceTime = function(x,
     # Find all low cost candidates 
     a <- internals$startingMatrix[internals$N-1,1:internals$M]
     d <- internals$costMatrix[internals$N-1,1:internals$M]
-    # rbenchmark::benchmark(
-    #   df = data.frame(a, d),
-    #   mt = matrix(c(a, d, 1:internals$M), ncol = 3, byrow = F), replications = 100)
-    # candidates   <- data.frame(a, d)
     candidates   <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
-    # candidates   <- candidates[candidates$d==ave(candidates$d, candidates$a, FUN=min),,drop=FALSE]
     candidates   <- candidates[candidates[,2]==ave(candidates[,2], candidates[,1], FUN=min),,drop=FALSE]
-    # candidates$b <- as.numeric(row.names(candidates))
-    # candidates[,2] <- as.numeric(row.names(candidates))
     candidates <- candidates[!is.na(candidates[,1]),,drop=FALSE]
     
     # Order maches by minimum TWDTW distance 
-    # I <- order(candidates$d)
     I <- order(candidates[,3])
     if(length(I)<1) return(NULL)
 
     # Build alignments table table 
     candidates[,4] <- I
-    # res <- data.frame(
-    #   Alig.N     = I,
-    #   from       = tx[candidates[I,1]],
-    #   to         = tx[candidates[I,3]],
-    #   distance   = candidates[I,2],
-    #   label      = l
-    # )
     return(candidates)
     
   })
@@ -152,8 +134,6 @@ twdtwReduceTime = function(x,
   out$from <- breaks[-length(breaks)]
   out$to <- breaks[-1]
   out$distance <- best_matches$DB
-  # out <- merge(out, aligs[, c("label", "Alig.N", "distance"),drop=FALSE], by.x = c("label", "Alig.N"), by.y = c("label", "Alig.N"), all.x = TRUE)
-  # out <- out[order(out$from), names(out)!="Alig.N"]
   if(any(out$label==0)) out[out$label==0,]$label <- fill
   return(out)
 }
@@ -179,7 +159,6 @@ twdtwReduceTime = function(x,
                    D  = as.integer(d),
                    NS = as.integer(nrow(step.matrix)),
                    TW = as.double(c(alpha, beta))
-                   # WB = as.double(beta)
                    )
   } else {
     stop("Fortran twdtw lib is not loaded")
@@ -249,5 +228,4 @@ twdtwReduceTime = function(x,
   } 
   res
 }
-
 

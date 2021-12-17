@@ -42,7 +42,13 @@
   foreach::registerDoSEQ()
   system.time(
     # The logistic time weigh is in the Fortran code: TODO: add logit parameters to function call
-    fast_lucc <- dtwSat:::fasttwdtwApply(x = rts, y = temporal_patterns, progress = 'text', minrows = 30)
+    fast_lucc <- twdtwApply(x = rts, 
+                            y = profiles_library, 
+                            alpha = -0.1,
+                            beta = 50,
+                            progress = 'text', 
+                            minrows = 30,
+                            minimalist = TRUE)
   )
   
   # Run parallel fast-TWDTW 
@@ -50,7 +56,13 @@
   doParallel::registerDoParallel(cl)
   foreach::getDoParRegistered()
   system.time(
-    fast_lucc <- dtwSat:::fasttwdtwApply(x = rts, y = temporal_patterns, progress = 'text', minrows = 30)
+    fast_lucc <- twdtwApply(x = rts, 
+                            y = profiles_library, 
+                            alpha = -0.1,
+                            beta = 50,
+                            progress = 'text', 
+                            minrows = 30,
+                            minimalist = TRUE)
   )
   foreach::registerDoSEQ()
   parallel::stopCluster(cl)

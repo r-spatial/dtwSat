@@ -53,7 +53,7 @@
 #' @param ... Arguments to pass to specific methods for each twdtw* class 
 #' and other arguments to pass to \code{\link[raster]{writeRaster}} and 
 #' \code{\link[raster]{pbCreate}}. 
-#'
+#' 
 #' @return An object of class twdtw*.
 #' 
 #' @seealso 

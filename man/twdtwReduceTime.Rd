@@ -29,6 +29,10 @@ the column names in the temporal patterns \code{y}.}
 \item{y}{a list of data.frame objects similar to \code{x}. 
 The temporal patterns used to classify the time series in \code{x}.}
 
+\item{alpha}{Numeric. The steepness of TWDTW logistic weight.}
+
+\item{beta}{Numeric. The midpoint of TWDTW logistic weight.}
+
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
 \pkg{proxy}.}
@@ -53,7 +57,7 @@ between one match and the interval of classification. Default is 0.5,
 }
 \description{
 This function is a minimalist implementation of 
-\link[dtwSat]{twdtwApply} that is in average 3x faster. The time weight function 
+\link[dtwSat]{twdtwApply} that is in average 4x faster. The time weight function 
 is coded in Fortran. It does not keep any intermediate data. 
 It performs a multidimensional TWDTW analysis 
 \insertCite{Maus:2019}{dtwSat} and retrieves only the best matches between 

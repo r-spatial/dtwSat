@@ -64,7 +64,7 @@ twdtwReduceTime = function(x,
                            by = NULL, 
                            breaks = NULL,
                            overlap = .5, 
-                           fill = 255){
+                           fill = 255, ...){
 
   # Split time series from dates 
   px <- x[,names(x)!="date",drop=FALSE] 

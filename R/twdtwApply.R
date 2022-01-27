@@ -236,6 +236,7 @@ twdtwApply.fast = function(x,
   
   if (!is.null(filename)) {
     out <- lapply(names(out), function(i) writeStart(out[[i]], filename = filename[i], ...))
+    names(out) <- c("label", "distance")
   } else {
     vv <- lapply(names(out), function(i) matrix(out[[i]], ncol = nlayers(out[[i]])))
     names(vv) <- names(out)

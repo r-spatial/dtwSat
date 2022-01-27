@@ -1,5 +1,5 @@
 ---
-title: "2. Land-cover cahnge analysis with TWDTW"
+title: "2. Land-cover change analysis with TWDTW"
 author: "Victor Maus"
 output:
   html_document:
@@ -9,7 +9,7 @@ output:
       smooth_scroll: false
     toc_depth: 2
 vignette: >
-  %\VignetteIndexEntry{1. Land-cover cahnge analysis with TWDTW}
+  %\VignetteIndexEntry{1. Land-cover change analysis with TWDTW}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: ./../inst/REFERENCES.bib

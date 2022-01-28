@@ -36,12 +36,11 @@
   validation_ts <- getTimeSeries(rts, y = validation_samples, proj4string = proj_str)
   
   # Create temporal patterns 
-  temporal_patterns <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
+  profiles_library <- createPatterns(training_ts, freq = 8, formula = y ~ s(x))
 
   # Run sequential fast-TWDTW analysis
   foreach::registerDoSEQ()
   system.time(
-    # The logistic time weigh is in the Fortran code: TODO: add logit parameters to function call
     fast_lucc <- twdtwApply(x = rts, 
                             y = profiles_library, 
                             alpha = -0.1,

@@ -52,7 +52,9 @@
 #'  
 #' @param ... Arguments to pass to specific methods for each twdtw* class 
 #' and other arguments to pass to \code{\link[raster]{writeRaster}} and 
-#' \code{\link[raster]{pbCreate}}. 
+#' \code{\link[raster]{pbCreate}}. If \code{x} of 
+#' \code{\link[dtwSat]{twdtwTimeSeries-class}} additional arguments passed to 
+#' \code{\link[dtwSat]{twdtwApply}}. 
 #' 
 #' @return An object of class twdtw*.
 #' 
@@ -75,9 +77,14 @@ setGeneric(name = "twdtwClassify",
 #' @aliases twdtwClassify-twdtwTimeSeries 
 #' @example examples/test_twdtw_raster_analysis.R 
 #' @export
-setMethod("twdtwClassify", "twdtwMatches",
+setMethod("twdtwClassify", "twdtwTimeSeries",
           function(x, patterns.labels=NULL, from=NULL, to=NULL, by=NULL, breaks=NULL,
-                overlap=.5, thresholds=Inf, fill="unclassified"){
+                overlap=.5, thresholds=Inf, fill="unclassified", ...){
+                    x <- twdtwApply(x = x, from = from, to = to, by = by, breaks = breaks, ...)
+                    # TODO: reconstruct twdtwMatches object for minimalist results 
+                    if(class(x) == "list"){
+                      return(x)
+                    }
                     if(is.null(patterns.labels)) patterns.labels = labels(x@patterns)
                     if( overlap < 0 & 1 < overlap )
                       stop("overlap out of range, it must be a number between 0 and 1")
@@ -105,6 +112,41 @@ setMethod("twdtwClassify", "twdtwMatches",
                     twdtwClassify.twdtwMatches(x, patterns.labels=patterns.labels, breaks=breaks, 
                               overlap=overlap, thresholds=thresholds, fill=fill)
            })
+
+#' @rdname twdtwClassify
+#' @aliases twdtwClassify-twdtwTimeSeries 
+#' @example examples/test_twdtw_raster_analysis.R 
+#' @export
+setMethod("twdtwClassify", "twdtwMatches",
+          function(x, patterns.labels=NULL, from=NULL, to=NULL, by=NULL, breaks=NULL,
+                   overlap=.5, thresholds=Inf, fill="unclassified"){
+            if(is.null(patterns.labels)) patterns.labels = labels(x@patterns)
+            if( overlap < 0 & 1 < overlap )
+              stop("overlap out of range, it must be a number between 0 and 1")
+            if(is.null(breaks))
+              if( !is.null(from) &  !is.null(to) ){
+                breaks = seq(as.Date(from), as.Date(to), by=by)    
+              } else {
+                # These automatic breaks needs to be improved 
+                y = x@patterns
+                patt_range = lapply(index(y), range)
+                patt_diff = trunc(sapply(patt_range, diff)/30)+1
+                min_range = which.min(patt_diff)
+                by = patt_diff[[min_range]]
+                cycles = c(18,12,6,4,3,2)
+                by = cycles[which.min(abs(by-cycles))]
+                from = patt_range[[min_range]][1]
+                to = from 
+                month(to) = month(to) + by
+                dates = as.Date(unlist(index(x@timeseries)))
+                year(from) = year(min(dates))
+                year(to) = year(max(dates))
+                breaks = seq(from, to, paste(by,"month"))
+              }
+            breaks = as.Date(breaks)
+            twdtwClassify.twdtwMatches(x, patterns.labels=patterns.labels, breaks=breaks, 
+                                       overlap=overlap, thresholds=thresholds, fill=fill)
+          })
 
 #' @rdname twdtwClassify
 #' @aliases twdtwClassify-twdtwRaster 

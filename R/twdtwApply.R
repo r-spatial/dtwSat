@@ -95,7 +95,6 @@ setGeneric(name = "twdtwApply",
                 dist.method="Euclidean", step.matrix = symmetric1, n=NULL, 
                 span=NULL, min.length=0, ...) standardGeneric("twdtwApply"))
 
-
 #' @rdname twdtwApply 
 #' @aliases twdtwApply-twdtwTimeSeries 
 #' @examples
@@ -114,7 +113,7 @@ setGeneric(name = "twdtwApply",
 #' }
 #' @export
 setMethod(f = "twdtwApply", "twdtwTimeSeries",
-          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, keep=FALSE, ...){
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, minimalist=FALSE, keep=FALSE, ...){
                   if(!is(y, "twdtwTimeSeries"))
                     stop("y is not of class twdtwTimeSeries")
                   if(!is(step.matrix, "stepPattern"))
@@ -125,8 +124,18 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
                     stop("weight.fun is not a function")
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
-                  twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep)
+                  if(minimalist){
+                    twdtwApply.twdtwTimeSeries.fast(x, y, ...)
+                  } else {
+                    twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep)
+                  }
+                  
            })
+
+twdtwApply.twdtwTimeSeries.fast = function(x, y, ...){
+  yy = lapply(y@timeseries, function(ts)cbind(data.frame(date = index(ts)), as.data.frame(ts))) 
+  lapply(x@timeseries, function(ts)twdtwReduceTime(cbind(data.frame(date = index(ts)), as.data.frame(ts)), y = yy, ...))
+}
 
 twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep){
     res = lapply(as.list(x), FUN = .twdtw, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep)
@@ -172,14 +181,14 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                     y = resampleTimeSeries(object=y, length=length)
                   }
                   if(minimalist){
-                    twdtwApply.fast(x, y, alpha, beta, progress, breaks, fill, filepath, minrows, ...)
+                    twdtwApply.twdtwRaster.fast(x, y, alpha, beta, progress, breaks, fill, filepath, minrows, ...)
                   } else {
                     twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                            breaks, overlap, filepath, fill, ...) 
                   }
            })
 
-twdtwApply.fast = function(x, 
+twdtwApply.twdtwRaster.fast = function(x, 
                            y, 
                            alpha = -0.1,
                            beta = 50,

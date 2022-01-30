@@ -134,7 +134,29 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
 
 twdtwApply.twdtwTimeSeries.fast = function(x, y, ...){
   yy = lapply(y@timeseries, function(ts)cbind(data.frame(date = index(ts)), as.data.frame(ts))) 
-  lapply(x@timeseries, function(ts)twdtwReduceTime(cbind(data.frame(date = index(ts)), as.data.frame(ts)), y = yy, ...))
+  xm = lapply(x@timeseries, function(ts)twdtwReduceTime(cbind(data.frame(date = index(ts)), as.data.frame(ts)), y = yy, ...))
+  lb = as.numeric(labels(y@labels))
+  lv = levels(y)
+  names(lb) = lv
+  list(x = x, y = y, aligs = lapply(xm, function(al) lapply(lb, function(i){
+    bm = list(label = numeric(),
+              from = numeric(),
+              to = numeric(),
+              distance = numeric(),
+              K = 0,
+              matching = list(),
+              internals = list())
+    ml = al[al$label == i,]
+    if(nrow(ml) < 1){
+      return(bm)
+    }
+    bm$label = lv[i]
+    bm$from = ml$from
+    bm$to = ml$to
+    bm$distance = ml$distance
+    bm$K = length(ml$distance)
+    return(bm)
+  })))
 }
 
 twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep){

@@ -23,6 +23,10 @@
 #' @param y a list of data.frame objects similar to \code{x}. 
 #' The temporal patterns used to classify the time series in \code{x}. 
 #' 
+#' @param time.window logical. TRUE will constrain the TWDTW computation to the 
+#' value of the parameter \code{beta} defined in the logistic weight function. 
+#' Default is FALSE. 
+#' 
 #' @param fill An integer to fill the classification gaps. Default 255.
 #' 
 #' @examples 
@@ -53,17 +57,18 @@
 #' }
 #' 
 #' @export
-twdtwReduceTime = function(x, 
-                           y, 
+twdtwReduceTime = function(x,
+                           y,
                            alpha = -0.1,
                            beta = 50,
+                           time.window = FALSE,
                            dist.method = "Euclidean",
                            step.matrix = symmetric1,
-                           from = NULL, 
-                           to = NULL, 
-                           by = NULL, 
+                           from = NULL,
+                           to = NULL,
+                           by = NULL,
                            breaks = NULL,
-                           overlap = .5, 
+                           overlap = .5,
                            fill = 255, ...){
 
   # Split time series from dates 
@@ -90,13 +95,14 @@ twdtwReduceTime = function(x,
     # Compute accumulated DTW cost matrix 
     xm = na.omit(cbind(doyx, as.matrix(px)))
     ym = na.omit(cbind(doyy, as.matrix(py)))
-    internals = .fast_twdtw(xm, ym, alpha, beta, step.matrix)
+    internals = .fast_twdtw(xm, ym, alpha, beta, step.matrix, time.window)
     
     # Find all low cost candidates 
-    a <- internals$startingMatrix[internals$N-1,1:internals$M]
-    d <- internals$costMatrix[internals$N-1,1:internals$M]
-    candidates   <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
-    candidates   <- candidates[candidates[,2]==ave(candidates[,2], candidates[,1], FUN=min),,drop=FALSE]
+    a <- internals$VM[-1,][internals$N-1,1:internals$M]
+    d <- internals$CM[-1,][internals$N-1,1:internals$M]
+    candidates <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
+    # candidates <- candidates[candidates[,2]==ave(candidates[,2], candidates[,1], FUN=min),,drop=FALSE]
+    candidates <- candidates[candidates[,2] %in% tapply(candidates[,2], candidates[,1], min),,drop=FALSE]
     candidates <- candidates[!is.na(candidates[,1]),,drop=FALSE]
     
     # Order maches by minimum TWDTW distance 
@@ -126,20 +132,25 @@ twdtwReduceTime = function(x,
     levels = seq_along(y), 
     breaks = breaks, 
     overlap = overlap,
-    fill = 99999)[c("IM", "DB")]
+    fill = fill)
 
   # Build output 
-  out <- as.data.frame(best_matches$IM[,1,drop=FALSE])
-  names(out) <- c("label")
-  out$from <- breaks[-length(breaks)]
-  out$to <- breaks[-1]
-  out$distance <- best_matches$DB
-  if(any(out$label==0)) out[out$label==0,]$label <- fill
+  out <- data.frame(
+    label = best_matches$IM[,1,drop=FALSE],
+    from = breaks[-length(breaks)],
+    to = breaks[-1],
+    distance = best_matches$DB)
+  # names(out) <- c("label")
+  # out$from <- breaks[-length(breaks)]
+  # out$to <- breaks[-1]
+  # out$distance <- best_matches$DB
+  # if(any(out$label==0)) 
+  # out[out$label==0,]$label <- fill[out$label==0]
   return(out)
 }
 
 # @useDynLib dtwSat computecost
-.fast_twdtw = function(xm, ym, alpha, beta, step.matrix){
+.fast_twdtw = function(xm, ym, alpha, beta, step.matrix, wc){
   
   #  cm = rbind(0, cm)
   n = nrow(ym)
@@ -158,20 +169,22 @@ twdtwReduceTime = function(x,
                    M  = as.integer(m),
                    D  = as.integer(d),
                    NS = as.integer(nrow(step.matrix)),
-                   TW = as.double(c(alpha, beta))
+                   TW = as.double(c(alpha, beta)),
+                   LB = wc
                    )
   } else {
     stop("Fortran twdtw lib is not loaded")
   }
   # sqrt(sum((ym[1,-1] - xm[1,-1])*(ym[1,-1] - xm[1,-1])))
-  res = list()
-  res$costMatrix = out$CM[-1,]
-  res$directionMatrix = out$DM[-1,]
-  res$startingMatrix = out$VM[-1,]
-  res$stepPattern = step.matrix
-  res$N = n
-  res$M = m
-  res
+  # res = list()
+  # res$costMatrix = out$CM[-1,]
+  # res$directionMatrix = out$DM[-1,]
+  # res$startingMatrix = out$VM[-1,]
+  # res$stepPattern = step.matrix
+  # res$N = n
+  # res$M = m
+  # res
+  out
 }
 
 
@@ -181,11 +194,11 @@ twdtwReduceTime = function(x,
     if(length(x[,2])<1){
       res = list(
         XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
-        AM = matrix(as.double(fill), nrow = n, ncol = m), 
+        AM = matrix(as.double(.Machine$double.xmax), nrow = n, ncol = m), 
         DM = as.double(x[,2]),
         DP = as.integer(as.numeric(breaks)),
         X  = as.integer(match(x[,5], levels)),
-        IM = matrix(as.integer(0), nrow = n, ncol = 3),
+        IM = matrix(as.integer(fill), nrow = n, ncol = 3),
         DB = as.double(x[,2]),
         A  = as.integer(x[,4]),
         K  = as.integer(length(x[,4])),
@@ -195,12 +208,12 @@ twdtwReduceTime = function(x,
     } else {
       res = try(.Fortran(bestmatches, 
                          XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
-                         AM = matrix(as.double(fill), nrow = n, ncol = m), 
+                         AM = matrix(as.double(.Machine$double.xmax), nrow = n, ncol = m), 
                          DM = as.double(x[,2]),
                          DP  = as.integer(as.numeric(breaks)),
                          X  = as.integer(match(x[,5], levels)),
-                         IM = matrix(as.integer(0), nrow = n, ncol = 3),
-                         DB = as.double(rep(0, n)),
+                         IM = matrix(as.integer(fill), nrow = n, ncol = 3),
+                         DB = as.double(rep(.Machine$double.xmax, n)),
                          A  = as.integer(x[,4]),
                          K  = as.integer(length(x[,4])),
                          P  = as.integer(length(breaks)),
@@ -210,14 +223,14 @@ twdtwReduceTime = function(x,
   } else {
     stop("Fortran bestmatches lib is not loaded")
   }
-  if(is(res, "try-error")){
+  if(class(res) == "try-error"){
     res = list(
       XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
-      AM = matrix(as.double(fill), nrow = n, ncol = m), 
+      AM = matrix(as.double(.Machine$double.xmax), nrow = n, ncol = m), 
       DM = as.double(x[,2]),
       DP = as.integer(as.numeric(breaks)),
       X  = as.integer(match(x[,5], levels)),
-      IM = matrix(as.integer(0), nrow = n, ncol = 3),
+      IM = matrix(as.integer(fill), nrow = n, ncol = 3),
       DB = as.double(x[,2]),
       A  = as.integer(x[,4]),
       K  = as.integer(length(x[,4])),

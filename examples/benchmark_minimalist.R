@@ -1,5 +1,6 @@
 library(dtwSat)
-log_fun = logisticWeight(-0.1, 50)
+alpha = -0.1
+beta = 50
 from = "2009-09-01"
 to = "2017-08-31"
 by = "12 month"
@@ -12,10 +13,21 @@ tw_ts = twdtwTimeSeries(MOD13Q1.ts)
 mn_patt <- lapply(dir(system.file("lucc_MT/patterns", package = "dtwSat"), pattern = ".csv$", full.names = TRUE), read.csv, stringsAsFactors = FALSE)
 mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"), stringsAsFactors = FALSE)
 
-# Benchtmark 
+# Benchtmark
 rbenchmark::benchmark(
-  original = twdtwClassify(x = tw_ts, y = tw_patt, weight.fun = log_fun, from = from, to = to, by = by),
-  minimalist = twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, minimalist = TRUE),
-  time_reduce = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by)
+  t1_s4_original = twdtwClassify(x = tw_ts, y = tw_patt, weight.fun = logisticWeight(alpha, beta), from = from, to = to, by = by),
+  t2_s4_minimalist = twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, minimalist = TRUE),
+  t2_s4_minimalist_tw = twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, minimalist = TRUE),
+  t3_s3_minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = FALSE),
+  t4_s3_minimalist_tw = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE)
 )
 
+# TODO: increase TS density... that will make difference..... 
+library(profvis)
+profvis({
+  replicate(500, twdtwReduceTime(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE))
+})
+
+twdtwReduceTime(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE)
+
+plotClassification(twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, minimalist = TRUE))

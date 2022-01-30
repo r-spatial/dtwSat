@@ -10,11 +10,13 @@ C     N  - Number of rows in CM, DM, and VM - time series
 C     M  - Number of columns CM, DM, and VM - temporal profile
 C     D  - Number of spectral dimensions including time in XM and YM
 C     NS - Number of rows in SM 
-C     TW  - Time-Weight parameters alpha and beta 
+C     TW - Time-Weight parameters alpha and beta 
+C     LB - Constrain TWDTW calculation to band given by TW(2)
       SUBROUTINE twdtw(XM, YM, CM, DM, VM, SM, N, M, D, NS, TW)
-C     I/O Variables       
+C     I/O Variables
       INTEGER N, M, D, NS, SM(NS,4), DM(N+1,M), VM(N+1,M)
       DOUBLE PRECISION XM(M,D), YM(N,D), CM(N+1,M), TW(2)
+      LOGICAL LB
 C     Internals
       DOUBLE PRECISION W, CP(NS), VMIN, A, B, TD
       INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE
@@ -63,7 +65,8 @@ C           Calculate local distance
 C           # the call takes I-1 because local matrix has an additional row at the begning
             TD = YM(I,1) - XM(J,1)
             CALL ellapsed(TD)
-            IF (TD.GT.TW(2)) THEN
+C            IF (TD.GT.TW(2)) THEN
+            IF (LB.AND.(TD.GT.TW(2))) THEN
               CM(I,J) = INF
               DM(I,J) = -ONE
               VM(I,J) = NAN

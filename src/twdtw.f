@@ -12,19 +12,20 @@ C     D  - Number of spectral dimensions including time in XM and YM
 C     NS - Number of rows in SM 
 C     TW - Time-Weight parameters alpha and beta 
 C     LB - Constrain TWDTW calculation to band given by TW(2)
-      SUBROUTINE twdtw(XM, YM, CM, DM, VM, SM, N, M, D, NS, TW)
+      SUBROUTINE twdtw(XM, YM, CM, DM, VM, SM, N, M, D, NS, TW, LB, JB)
 C     I/O Variables
-      INTEGER N, M, D, NS, SM(NS,4), DM(N+1,M), VM(N+1,M)
+      INTEGER N, M, D, NS, SM(NS,4), DM(N+1,M), VM(N+1,M), JB(N)
       DOUBLE PRECISION XM(M,D), YM(N,D), CM(N+1,M), TW(2)
       LOGICAL LB
 C     Internals
       DOUBLE PRECISION W, CP(NS), VMIN, A, B, TD
-      INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE
+      INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE, JM
       PARAMETER(ZERO=0,ONE=1)
       REAL NAN, INF
       NAN  = ZERO 
       NAN  = NAN / NAN
       INF  = HUGE(ZERO)
+      IML  = 1
       VM(1,1) = 1
 C      A = TW(1)
 C      B = TW(2)
@@ -65,11 +66,10 @@ C           Calculate local distance
 C           # the call takes I-1 because local matrix has an additional row at the begning
             TD = YM(I,1) - XM(J,1)
             CALL ellapsed(TD)
-C            IF (TD.GT.TW(2)) THEN
             IF (LB.AND.(TD.GT.TW(2))) THEN
               CM(I,J) = INF
               DM(I,J) = -ONE
-              VM(I,J) = NAN
+              VM(I,J) = ZERO
               GOTO 44
             ELSE
               CM(I,J) = distance(YM, XM, N, M, D, I-1, J, TW, TD) 
@@ -104,16 +104,41 @@ C           Initialize list of step cost
                   JLMIN = JL(K)
                ENDIF
    12       CONTINUE
-            IF (KMIN.GT.-ONE) THEN 
+            IF (KMIN.GT.-ONE) THEN
                CM(I,J) = VMIN
                DM(I,J) = KMIN
                VM(I,J) = VM(ILMIN, JLMIN)
             ENDIF
-   44       CONTINUE         
+   44       CONTINUE
             I = I + 1
    22    CONTINUE
          J = J + 1
    32 CONTINUE
    99 CONTINUE
+      J = 1
+      K = ZERO
+      DO 69 WHILE ( J .LE. M )
+         IF (VM(N,J).NE.ZERO) THEN
+            IF (K.EQ.ZERO) THEN
+               K = 1
+               JB(K) = J
+               JM = VM(N,J)
+               GOTO 68
+            ENDIF
+            IF (VM(N,J).NE.JM) THEN
+               K = K + 1
+               JB(K) = J
+               JM = VM(N,J)
+               GOTO 68
+            ENDIF
+            IF (CM(N,J).LT.CM(N,JB(K))) THEN
+               JB(K) = J
+               GOTO 68
+            ENDIF
+         ENDIF
+   68    CONTINUE
+C         WRITE (*,*) 'Best start: ',JM,' ...... Best cost: ', JB(K)
+         J = J + 1
+   69 CONTINUE
       END
 

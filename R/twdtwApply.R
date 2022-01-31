@@ -146,15 +146,14 @@ twdtwApply.twdtwTimeSeries.fast = function(x, y, ...){
               K = 0,
               matching = list(),
               internals = list())
-    ml = al[al$label == i,]
-    if(nrow(ml) < 1){
+    if(!any(al$label == i)){
       return(bm)
     }
     bm$label = lv[i]
-    bm$from = ml$from
-    bm$to = ml$to
-    bm$distance = ml$distance
-    bm$K = length(ml$distance)
+    bm$from = al$from[al$label == i]
+    bm$to = al$to[al$label == i]
+    bm$distance = al$distance[al$label == i]
+    bm$K = length(bm$distance)
     return(bm)
   })))
 }
@@ -298,12 +297,17 @@ twdtwApply.twdtwRaster.fast = function(x,
       i = ts, 
       .combine = 'rbind'
     ) %dopar% {
-      twdtwReduceTime(x = i, y = y, breaks = breaks, fill = fill, alpha = alpha, beta = beta, ...)
+      res = twdtwReduceTime(x = i, y = y, breaks = breaks, fill = fill, alpha = alpha, beta = beta, ...)
+      twdtw_label <- matrix(res$label, ncol = length(breaks)-1, byrow = TRUE)
+      twdtw_distance <- matrix(res$distance, ncol = length(breaks)-1, byrow = TRUE)
+      cbind(twdtw_label, twdtw_distance)
     }
     
     # twdtw_results <- data.table::rbindlist(twdtw_results)[,c("label","distance")]
-    twdtw_label <- matrix(twdtw_results$label, ncol = length(breaks)-1, byrow = TRUE)
-    twdtw_distance <- matrix(twdtw_results$distance, ncol = length(breaks)-1, byrow = TRUE)
+    # twdtw_label <- matrix(twdtw_results$label, ncol = length(breaks)-1, byrow = TRUE)
+    # twdtw_distance <- matrix(twdtw_results$distance, ncol = length(breaks)-1, byrow = TRUE)
+    twdtw_label <- twdtw_results[,1:(length(breaks)-1),drop=FALSE]
+    twdtw_distance <- twdtw_results[,length(breaks):(2*length(breaks)-2),drop=FALSE]
     
     # Get best matches for each point, period, and pattern
     m <- length(levels)

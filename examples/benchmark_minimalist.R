@@ -22,12 +22,12 @@ rbenchmark::benchmark(
   t4_s3_minimalist_tw = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE)
 )
 
-# TODO: increase TS density... that will make difference..... 
+# TODO: increase TS density... 
 library(profvis)
 profvis({
   replicate(500, twdtwReduceTime(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE))
 })
 
-twdtwReduceTime(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE)
+twdtwReduceTime(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = FALSE)
 
 plotClassification(twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, minimalist = TRUE))

@@ -98,14 +98,19 @@ twdtwReduceTime = function(x,
     internals = .fast_twdtw(xm, ym, alpha, beta, step.matrix, time.window)
     
     # Find all low cost candidates 
-    a <- internals$VM[-1,][internals$N-1,1:internals$M]
-    d <- internals$CM[-1,][internals$N-1,1:internals$M]
-    candidates <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
+    # a <- internals$VM[-1,][internals$N-1,1:internals$M]
+    b <- internals$JB[internals$JB!=0]
+    a <- internals$VM[-1,][internals$N-1,b]
+    # d <- internals$CM[-1,][internals$N-1,1:internals$M]
+    d <- internals$CM[-1,][internals$N-1,b]
+    # candidates <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
+    candidates <- matrix(c(a, d, b, b, rep(l, length(b))), ncol = 5, byrow = F)
     # candidates <- candidates[candidates[,2]==ave(candidates[,2], candidates[,1], FUN=min),,drop=FALSE]
-    candidates <- candidates[candidates[,2] %in% tapply(candidates[,2], candidates[,1], min),,drop=FALSE]
-    candidates <- candidates[!is.na(candidates[,1]),,drop=FALSE]
+    # candidates <- candidates[candidates[,2] %in% tapply(candidates[,2], candidates[,1], min),,drop=FALSE]
+    # candidates <- candidates[!is.na(candidates[,1]),,drop=FALSE]
+    # candidates <- candidates[candidates[,1]!=0,,drop=FALSE]
     
-    # Order maches by minimum TWDTW distance 
+    # Order matches by minimum TWDTW distance 
     I <- order(candidates[,3])
     if(length(I)<1) return(NULL)
 
@@ -135,8 +140,8 @@ twdtwReduceTime = function(x,
     fill = fill)
 
   # Build output 
-  out <- data.frame(
-    label = best_matches$IM[,1,drop=FALSE],
+  out <- list(
+    label = best_matches$IM[,1],
     from = breaks[-length(breaks)],
     to = breaks[-1],
     distance = best_matches$DB)
@@ -170,7 +175,8 @@ twdtwReduceTime = function(x,
                    D  = as.integer(d),
                    NS = as.integer(nrow(step.matrix)),
                    TW = as.double(c(alpha, beta)),
-                   LB = wc
+                   LB = wc,
+                   JB = as.integer(rep(0, n))
                    )
   } else {
     stop("Fortran twdtw lib is not loaded")

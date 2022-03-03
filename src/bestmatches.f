@@ -23,9 +23,7 @@ C     K  - Number of alignments
 C     P  - Number of dates defineing classification intervals 
 C     L  - Number of classes 
 C     OV - Minimum temporal overlap 
-      SUBROUTINE bestmatches(XM, AM, DM, DP, X, IM, DB, A, K, P, L, OV)
-C  800 FORMAT('i: ',I5,'   i: ',I5,'   VALUE: ',F8.4,'   VALUE: ',F10.4)
-C  801 FORMAT('Here: ',I5)
+      SUBROUTINE bestmatches(XM,AM,DM,DP,X,IM,DB,A,K,P,L,OV)
 C     I/O Variables 
       INTEGER K, P, L, XM(K,2), X(K), DP(P), IM(P-1,4), A(K)
       DOUBLE PRECISION AM(P-1,L), DD, DM(K), OV, DB(P-1)
@@ -37,7 +35,8 @@ C     For all time intervals
          B1 = DP(J)
          B2 = DP(J+1)
          DD = AM(J,1)
-C     For all TWDTW matches 
+         
+C     For all TWDTW matches
          DO 20 I = 1, K
             D1 = XM(I,1)
             D2 = XM(I,2)

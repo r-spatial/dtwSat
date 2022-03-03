@@ -108,7 +108,7 @@
                        K  = as.integer(length(x[[1]]$Alig.N)),
                        P  = as.integer(length(breaks)),
                        L  = as.integer(length(levels)),
-                       OV = as.double(overlap))) 
+                       OV = as.double(overlap)))
    }
   } else {
     stop("Fortran bestmatches lib is not loaded")

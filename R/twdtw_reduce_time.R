@@ -69,14 +69,15 @@ twdtwReduceTime = function(x,
                            by = NULL,
                            breaks = NULL,
                            overlap = .5,
-                           fill = 255, ...){
+                           fill = 255,
+                           keep = FALSE, ...){
 
   # Split time series from dates 
   px <- x[,names(x)!="date",drop=FALSE] 
   tx <- as.Date(x$date) 
 
   # Comput TWDTW alignments for all patterns   
-  aligs <- lapply(seq_along(y), function(l){
+  twdtw_data <- lapply(seq_along(y), function(l){
 
     # Split pattern time series from dates 
     py <- y[[l]][,names(y[[l]])!="date",drop=FALSE] 
@@ -98,17 +99,10 @@ twdtwReduceTime = function(x,
     internals = .fast_twdtw(xm, ym, alpha, beta, step.matrix, time.window)
     
     # Find all low cost candidates 
-    # a <- internals$VM[-1,][internals$N-1,1:internals$M]
     b <- internals$JB[internals$JB!=0]
     a <- internals$VM[-1,][internals$N-1,b]
-    # d <- internals$CM[-1,][internals$N-1,1:internals$M]
     d <- internals$CM[-1,][internals$N-1,b]
-    # candidates <- matrix(c(a, d, 1:internals$M, 1:internals$M, rep(l, internals$M)), ncol = 5, byrow = F)
     candidates <- matrix(c(a, d, b, b, rep(l, length(b))), ncol = 5, byrow = F)
-    # candidates <- candidates[candidates[,2]==ave(candidates[,2], candidates[,1], FUN=min),,drop=FALSE]
-    # candidates <- candidates[candidates[,2] %in% tapply(candidates[,2], candidates[,1], min),,drop=FALSE]
-    # candidates <- candidates[!is.na(candidates[,1]),,drop=FALSE]
-    # candidates <- candidates[candidates[,1]!=0,,drop=FALSE]
     
     # Order matches by minimum TWDTW distance 
     I <- order(candidates[,3])
@@ -116,12 +110,17 @@ twdtwReduceTime = function(x,
 
     # Build alignments table table 
     candidates[,4] <- I
-    return(candidates)
+    
+    if(!keep){
+      internals = NULL
+    }
+    
+    return(list(candidates = candidates, internals = internals))
     
   })
   
-  # Bind rows 
-  aligs <- do.call("rbind", aligs)
+  aligs <- do.call("rbind", lapply(twdtw_data, function(x) x$candidates))
+  il <- order(aligs[,1], aligs[,2])
   
   # Create classification intervals 
   if(is.null(breaks)){
@@ -130,7 +129,7 @@ twdtwReduceTime = function(x,
   
   # Find best macthes for the intervals 
   best_matches <- .bestmatches2(
-    x = aligs[order(aligs[,1], aligs[,2]),,drop=FALSE], 
+    x = aligs[il,,drop=FALSE], 
     tx = tx,
     m = length(y), 
     n = length(breaks) - 1, 
@@ -139,18 +138,19 @@ twdtwReduceTime = function(x,
     overlap = overlap,
     fill = fill)
 
+  # Bind rows 
+  if(keep){
+    il[best_matches$IM[best_matches$IM[,2]!=fill,2]]
+    internals <- lapply(twdtw_data, function(x) x$internals)
+  }
+  
   # Build output 
   out <- list(
     label = best_matches$IM[,1],
     from = breaks[-length(breaks)],
     to = breaks[-1],
     distance = best_matches$DB)
-  # names(out) <- c("label")
-  # out$from <- breaks[-length(breaks)]
-  # out$to <- breaks[-1]
-  # out$distance <- best_matches$DB
-  # if(any(out$label==0)) 
-  # out[out$label==0,]$label <- fill[out$label==0]
+  
   return(out)
 }
 
@@ -181,15 +181,6 @@ twdtwReduceTime = function(x,
   } else {
     stop("Fortran twdtw lib is not loaded")
   }
-  # sqrt(sum((ym[1,-1] - xm[1,-1])*(ym[1,-1] - xm[1,-1])))
-  # res = list()
-  # res$costMatrix = out$CM[-1,]
-  # res$directionMatrix = out$DM[-1,]
-  # res$startingMatrix = out$VM[-1,]
-  # res$stepPattern = step.matrix
-  # res$N = n
-  # res$M = m
-  # res
   out
 }
 
@@ -224,7 +215,7 @@ twdtwReduceTime = function(x,
                          K  = as.integer(length(x[,4])),
                          P  = as.integer(length(breaks)),
                          L  = as.integer(length(levels)),
-                         OV = as.double(overlap))) 
+                         OV = as.double(overlap)))
     }
   } else {
     stop("Fortran bestmatches lib is not loaded")

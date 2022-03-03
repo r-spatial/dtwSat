@@ -33,6 +33,7 @@ twdtwApply(
   n,
   span,
   min.length,
+  minimalist = FALSE,
   keep = FALSE,
   ...
 )
@@ -107,6 +108,8 @@ meaning that the matching cannot be shorter than half of the pattern length.}
 \item{...}{Arguments to pass to \code{\link[raster]{writeRaster}} and 
 \code{\link[raster]{pbCreate}}}
 
+\item{minimalist}{ogical. If TRUE, runs a faster TWDTW implementation. Default FALSE}
+
 \item{keep}{Preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE. For plot methods use \code{keep=TRUE}.}
 
@@ -129,8 +132,6 @@ function saves in the current work directory.}
 \item{fill}{A character to fill the classification gaps. 
 For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, 
 for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.}
-
-\item{minimalist}{ogical. If TRUE, runs a faster TWDTW implementation. Default FALSE}
 
 \item{progress}{character. 'text' or 'window'.}
 

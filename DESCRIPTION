@@ -84,6 +84,7 @@ Collate:
     'dtw.R'
     'dwtSat.R'
     'getInternals.R'
+    'getMatchingDates.R'
     'getTimeSeries.R'
     'linearWeight.R'
     'logisticWeight.R'

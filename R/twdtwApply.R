@@ -134,7 +134,7 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
 
 twdtwApply.twdtwTimeSeries.fast = function(x, y, ...){
   yy = lapply(y@timeseries, function(ts)cbind(data.frame(date = index(ts)), as.data.frame(ts))) 
-  xm = lapply(x@timeseries, function(ts)twdtwReduceTime(cbind(data.frame(date = index(ts)), as.data.frame(ts)), y = yy, ...))
+  xm = lapply(x@timeseries, function(ts)twdtwReduceTime(cbind(data.frame(date = index(ts)), as.data.frame(ts)), keep = FALSE, y = yy, ...))
   lb = as.numeric(labels(y@labels))
   lv = levels(y)
   names(lb) = lv
@@ -297,7 +297,7 @@ twdtwApply.twdtwRaster.fast = function(x,
       i = ts, 
       .combine = 'rbind'
     ) %dopar% {
-      res = twdtwReduceTime(x = i, y = y, breaks = breaks, fill = fill, alpha = alpha, beta = beta, ...)
+      res = twdtwReduceTime(x = i, y = y, breaks = breaks, fill = fill, alpha = alpha, beta = beta, keep = FALSE, ...)
       twdtw_label <- matrix(res$label, ncol = length(breaks)-1, byrow = TRUE)
       twdtw_distance <- matrix(res$distance, ncol = length(breaks)-1, byrow = TRUE)
       cbind(twdtw_label, twdtw_distance)

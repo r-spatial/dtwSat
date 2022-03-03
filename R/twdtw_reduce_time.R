@@ -72,11 +72,11 @@ twdtwReduceTime = function(x,
                            fill = 255,
                            keep = FALSE, ...){
 
-  # Split time series from dates 
-  px <- x[,names(x)!="date",drop=FALSE] 
-  tx <- as.Date(x$date) 
+  # Split time series from dates
+  px <- x[,names(x)!="date",drop=FALSE]
+  tx <- as.Date(x$date)
 
-  # Comput TWDTW alignments for all patterns   
+  # Compute TWDTW alignments for all patterns   
   twdtw_data <- lapply(seq_along(y), function(l){
 
     # Split pattern time series from dates 
@@ -113,6 +113,9 @@ twdtwReduceTime = function(x,
     
     if(!keep){
       internals = NULL
+    } else {
+      internals$tsDates <- tx
+      internals$patternDates <- ty
     }
     
     return(list(candidates = candidates, internals = internals))
@@ -138,18 +141,19 @@ twdtwReduceTime = function(x,
     overlap = overlap,
     fill = fill)
 
-  # Bind rows 
-  if(keep){
-    il[best_matches$IM[best_matches$IM[,2]!=fill,2]]
-    internals <- lapply(twdtw_data, function(x) x$internals)
-  }
-  
   # Build output 
   out <- list(
     label = best_matches$IM[,1],
     from = breaks[-length(breaks)],
     to = breaks[-1],
     distance = best_matches$DB)
+  
+  # Bind rows 
+  if(keep){
+    aligs <- cbind(aligs, rep(0, nrow(aligs)))
+    aligs[il[best_matches$IM[best_matches$IM[,2]!=fill,2]], 6] <- 1
+    out$internals <- list(alignments = aligs, internals = lapply(twdtw_data, function(x) x$internals))
+  }
   
   return(out)
 }

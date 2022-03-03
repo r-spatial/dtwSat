@@ -9,6 +9,7 @@ twdtwReduceTime(
   y,
   alpha = -0.1,
   beta = 50,
+  time.window = FALSE,
   dist.method = "Euclidean",
   step.matrix = symmetric1,
   from = NULL,
@@ -16,7 +17,9 @@ twdtwReduceTime(
   by = NULL,
   breaks = NULL,
   overlap = 0.5,
-  fill = 255
+  fill = 255,
+  keep = FALSE,
+  ...
 )
 }
 \arguments{
@@ -32,6 +35,10 @@ The temporal patterns used to classify the time series in \code{x}.}
 \item{alpha}{Numeric. The steepness of TWDTW logistic weight.}
 
 \item{beta}{Numeric. The midpoint of TWDTW logistic weight.}
+
+\item{time.window}{logical. TRUE will constrain the TWDTW computation to the 
+value of the parameter \code{beta} defined in the logistic weight function. 
+Default is FALSE.}
 
 \item{dist.method}{A character. Method to derive the local cost matrix.
 Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package 
@@ -54,6 +61,12 @@ between one match and the interval of classification. Default is 0.5,
 \emph{i.e.} an overlap minimum of 50\%.}
 
 \item{fill}{An integer to fill the classification gaps. Default 255.}
+
+\item{keep}{Preserves the cost matrix, inputs, and other internal structures. 
+Default is FALSE. For plot methods use \code{keep=TRUE}.}
+
+\item{...}{Arguments to pass to \code{\link[raster]{writeRaster}} and 
+\code{\link[raster]{pbCreate}}}
 }
 \description{
 This function is a minimalist implementation of 

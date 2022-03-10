@@ -1,7 +1,7 @@
 getMatchingDates <- function(x){
   
-  best_aligs <- x$internals$alignments[x$internals$alignments[,6]==1,]
-  best_aligs <- best_aligs[order(best_aligs[,1]),]
+  best_aligs <- x$internals$alignments[x$internals$alignments[,6]==1,,drop=FALSE]
+  best_aligs <- best_aligs[order(best_aligs[,1]),,drop=FALSE]
   
   out <- lapply(1:nrow(best_aligs), function(i){
     idx <- as.data.frame(.tracepath(dm = x$internals$internals[[i]]$DM,

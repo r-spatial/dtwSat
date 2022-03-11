@@ -118,26 +118,26 @@ C           Initialize list of step cost
       J = 1
       K = ZERO
       DO 69 WHILE ( J .LE. M )
-         IF (VM(N,J).NE.ZERO) THEN
+         IF (VM(N+1,J).NE.ZERO) THEN
             IF (K.EQ.ZERO) THEN
                K = 1
                JB(K) = J
-               JM = VM(N,J)
+               JM = VM(N+1,J)
                GOTO 68
             ENDIF
-            IF (VM(N,J).NE.JM) THEN
+            IF (VM(N+1,J).NE.JM) THEN
                K = K + 1
                JB(K) = J
-               JM = VM(N,J)
+               JM = VM(N+1,J)
                GOTO 68
             ENDIF
-            IF (CM(N,J).LT.CM(N,JB(K))) THEN
+C            PRINT *, J, "JB:",JB(k),"-", CM(N+1,J),"-",CM(N+1,JB(K))
+            IF (CM(N+1,J).LT.CM(N+1,JB(K))) THEN
                JB(K) = J
                GOTO 68
             ENDIF
          ENDIF
    68    CONTINUE
-C         WRITE (*,*) 'Best start: ',JM,' ...... Best cost: ', JB(K)
          J = J + 1
    69 CONTINUE
       END

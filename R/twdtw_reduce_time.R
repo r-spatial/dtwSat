@@ -100,8 +100,8 @@ twdtwReduceTime = function(x,
     
     # Find all low cost candidates 
     b <- internals$JB[internals$JB!=0]
-    a <- internals$VM[-1,][internals$N-1,b]
-    d <- internals$CM[-1,][internals$N-1,b]
+    a <- internals$VM[-1,][internals$N,b]
+    d <- internals$CM[-1,][internals$N,b]
     candidates <- matrix(c(a, d, b, b, rep(l, length(b))), ncol = 5, byrow = F)
     
     # Order matches by minimum TWDTW distance 

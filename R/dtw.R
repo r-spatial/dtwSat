@@ -70,7 +70,7 @@
       res = lapply(seq_along(paths$POS)[-1], function(p){
         I = (paths$POS[p]:((paths$POS[p-1])+1)) 
         # -I[1] removes first row in the matrix which was created artificially
-        list(index1 = paths$IND1[I][-I[1]], index2 = paths$IND2[I][-I[1]])
+        list(index1 = paths$IND1[I][-I[1]], index2 = paths$IND2[I][-tail(I, 1)])
       })
     }else{
       stop("Fortran tracepath lib is not loaded")

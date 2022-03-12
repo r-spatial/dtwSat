@@ -73,6 +73,29 @@
 setGeneric(name = "twdtwClassify", 
           def = function(x, ...) standardGeneric("twdtwClassify"))
 
+
+#' @rdname twdtwClassify 
+#' @aliases twdtwClassify-data.frame 
+#' @example examples/test_twdtw_raster_analysis.R 
+#' @export
+setMethod(f = "twdtwClassify", "data.frame",
+          def = function(x, y, step.matrix=symmetric1, breaks=NULL, from=NULL, to=NULL, by=NULL, 
+                         overlap=0.5,fill=255,alpha=-0.1,beta=50,time.window=FALSE, keep=FALSE, ...){
+            twdtwReduceTime(x=x, y=y, step.matrix=step.matrix, breaks=breaks, from=from, to=to, by=by, 
+                            overlap=overlap,fill=fill,alpha=alpha,beta=beta,time.window=time.window,keep=keep, ...)
+          })
+
+#' @rdname twdtwClassify 
+#' @aliases twdtwClassify-list
+#' @example examples/test_twdtw_raster_analysis.R 
+#' @export
+setMethod(f = "twdtwClassify", "list",
+          def = function(x, y, step.matrix=symmetric1, breaks=NULL, from=NULL, to=NULL, by=NULL, 
+                         overlap=0.5,fill=255,alpha=-0.1,beta=50,time.window=FALSE, keep=FALSE, ...){
+            lapply(x, FUN = twdtwReduceTime, y=y, step.matrix=step.matrix, breaks=breaks, from=from, to=to, by=by, 
+                   overlap=overlap,fill=fill,alpha=alpha,beta=beta,time.window=time.window,keep=keep, ...)
+          })
+
 #' @rdname twdtwClassify
 #' @aliases twdtwClassify-twdtwTimeSeries 
 #' @example examples/test_twdtw_raster_analysis.R 

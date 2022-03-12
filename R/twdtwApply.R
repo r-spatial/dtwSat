@@ -62,7 +62,7 @@
 #' 
 #' @param progress character. 'text' or 'window'.
 #' 
-#' @param minimalist ogical. If TRUE, runs a faster TWDTW implementation. Default FALSE
+#' @param legacy logical. If FALSE, runs a faster new TWDTW implementation. Default FLASE
 #' 
 #' @param alpha	Numeric. The steepness of TWDTW logistic weight.
 #' 
@@ -113,7 +113,7 @@ setGeneric(name = "twdtwApply",
 #' }
 #' @export
 setMethod(f = "twdtwApply", "twdtwTimeSeries",
-          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, minimalist=FALSE, keep=FALSE, ...){
+          def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, legacy=FALSE, keep=FALSE, ...){
                   if(!is(y, "twdtwTimeSeries"))
                     stop("y is not of class twdtwTimeSeries")
                   if(!is(step.matrix, "stepPattern"))
@@ -124,10 +124,10 @@ setMethod(f = "twdtwApply", "twdtwTimeSeries",
                     stop("weight.fun is not a function")
                   if(resample)
                     y = resampleTimeSeries(object=y, length=length)
-                  if(minimalist){
-                    twdtwApply.twdtwTimeSeries.fast(x, y, ...)
-                  } else {
+                  if(legacy){
                     twdtwApply.twdtwTimeSeries(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, keep)
+                  } else {
+                    twdtwApply.twdtwTimeSeries.fast(x, y, ...)
                   }
                   
            })
@@ -163,8 +163,6 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
     new("twdtwMatches", timeseries=x, patterns=y, alignments=res)
 }
 
-
-           
 #' @rdname twdtwApply 
 #' @aliases twdtwApply-twdtwRaster 
 #' @example examples/test_twdtw_raster_analysis.R 
@@ -172,7 +170,7 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 setMethod(f = "twdtwApply", "twdtwRaster",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, 
                         breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", fill = 255,
-                        minimalist=FALSE, progress = "text", minrows=1, alpha = -0.1, beta = 50, ...){
+                        legacy=FALSE, progress = "text", minrows=1, alpha = -0.1, beta = 50, ...){
                   if(!is(step.matrix, "stepPattern"))
                     stop("step.matrix is not of class stepPattern")
                   if(is.null(weight.fun))
@@ -201,11 +199,11 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                   if(resample){
                     y = resampleTimeSeries(object=y, length=length)
                   }
-                  if(minimalist){
-                    twdtwApply.twdtwRaster.fast(x, y, alpha, beta, progress, breaks, fill, filepath, minrows, ...)
-                  } else {
+                  if(legacy){
                     twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                            breaks, overlap, filepath, fill, ...) 
+                  } else {
+                    twdtwApply.twdtwRaster.fast(x, y, alpha, beta, progress, breaks, fill, filepath, minrows, ...)
                   }
            })
 

@@ -1,10 +1,10 @@
 #' @include methods.R
-#' @title Minimalist version of TWDTW apply
+#' @title Faster version of TWDTW apply
 #' @name twdtwReduceTime
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' @rdname twdtwReduceTime 
 #' 
-#' @description This function is a minimalist implementation of 
+#' @description This function is a faster implementation of 
 #' \link[dtwSat]{twdtwApply} that is in average 4x faster. The time weight function 
 #' is coded in Fortran. It does not keep any intermediate data. 
 #' It performs a multidimensional TWDTW analysis 
@@ -41,7 +41,7 @@
 #' tw_patt = readRDS(system.file("lucc_MT/patterns/patt.rds", package = "dtwSat"))
 #' tw_ts = twdtwTimeSeries(MOD13Q1.ts) 
 #' 
-#' # Table from csv for minimalist version 
+#' # Table from csv for faster version 
 #' mn_patt <- lapply(dir(system.file("lucc_MT/patterns", package = "dtwSat"), 
 #'   pattern = ".csv$", full.names = TRUE), read.csv, stringsAsFactors = FALSE)
 #' mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"), 
@@ -49,10 +49,9 @@
 #' 
 #' # Benchtmark 
 #' rbenchmark::benchmark(
-#'   original = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), 
+#'   legacy_twdtw = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), 
 #'                                       from = from, to = to, by = by)[[1]],
-#'   minimalist = twdtwReduceTime(x = mn_ts, y = mn_patt, 
-#'                                       from = from, to = to, by = by)  
+#'   fast_twdtw = twdtwReduceTime(x = mn_ts, y = mn_patt, rom = from, to = to, by = by)  
 #'  )
 #' }
 #' 

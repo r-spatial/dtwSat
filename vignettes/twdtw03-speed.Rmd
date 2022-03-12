@@ -13,19 +13,56 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: ./../inst/REFERENCES.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
 ```
-
 This vignette tests the performance of TWDTW. For details about method read @Maus:2016 and @Maus:2019.
 
 # Data 
 
-To test the performance of TWDTW we use....
+This vignette uses data from the R package `sitsdata`, which can be installed from Github run
+```{r, eval=FALSE}
+remotes::install_github(repo = 'e-sensing/sitsdata', ref = '16c8fa7')
+```
+The keep this vignette reproducible, I set the argument `ref` to a commit on the online Github repository.
 
-# Performance on implementations
+```{r, eval=FALSE}
+library(dtwSat)
+library(sitsdata)
+library(dplyr)
+data(samples_cerrado_mod13q1)
+samples_cerrado_mod13q1 |> 
+  group_by(label) |> 
+  summarise(n_samples = n())
+```
 
-# Increasing observations density
+# Performance 
+
+## Performance on implementations - single time series
+
+
+```{r}
+
+# TODO: 
+#  - twdtwCLassify call for twdtwTimeSeries class and list of data.frame/data.table
+#  - the same as above with the legacy option
+rbenchmark::benchmark(
+  legacy = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), from = from, to = to, by = by)[[1]],
+  fast = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by)
+)
+```
+
+## Performance on a real world dataset
+
+## Performance on a real world with dense time sereis
+
+In this experiment I increase the number of observation observations in the time series of the example above.
+
+
+
+
 

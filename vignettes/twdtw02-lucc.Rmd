@@ -103,11 +103,12 @@ system.time(
                            beta = 50,
                            progress = 'text', 
                            minrows = 30,
-                           minimalist = TRUE)
+                           legacy = FALSE,
+                           time.window = TRUE)
 )
 ```
 
-Note the argument `minimalist = TRUE`. Setting this argument to `TRUE` considerably improves the performance of the processing for two reasons. First it  does not keep any intermediate dataset, second it implements a change in the TWDTW algorithm to reduce processing.
+Note the argument `legacy = FALSE`. Setting this argument to `FALSE` considerably improves the performance of the processing as it does not keep any intermediate dataset. Using `time.window = TRUE` implements a change in the TWDTW algorithm to reduce processing.
 
 One can also run TWDTW in parallel. For a small area, the performance is not much better than the sequential processing. However, for larger areas, the parallel processing can reduce processing time. To run `twdtwApply` in parallel setup and register a cluster before calling the function, such that
 ```{r, echo = TRUE, eval = FALSE, warning = FALSE, message = FALSE}
@@ -125,7 +126,8 @@ system.time(
                            beta = 50,
                            progress = 'text', 
                            minrows = 30,
-                           minimalist = TRUE)
+                           legacy = FALSE,
+                           time.window = TRUE)
 )
 
 registerDoSEQ()

@@ -47,7 +47,8 @@
                             beta = 50,
                             progress = 'text', 
                             minrows = 30,
-                            minimalist = TRUE)
+                            legacy = FALSE,
+                            time.window = TRUE)
   )
   
   # Run parallel fast-TWDTW 
@@ -61,7 +62,8 @@
                             beta = 50,
                             progress = 'text', 
                             minrows = 30,
-                            minimalist = TRUE)
+                            legacy = FALSE,
+                            time.window = TRUE)
   )
   foreach::registerDoSEQ()
   parallel::stopCluster(cl)

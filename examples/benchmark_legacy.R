@@ -24,12 +24,6 @@ rbenchmark::benchmark(
   t5_s3_fast_tw = twdtwClassify(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE)
 )
 
-# TODO: increase TS density... 
-library(profvis)
-profvis({
-  replicate(500, twdtwApply(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE))
-})
+twdtwClassify(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, legacy = FALSE, time.window = FALSE)
 
-twdtwClassify(x = mn_ts, y = mn_patt[1], from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = FALSE)
-
-plotClassification(twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, legacy = FALSE))
+plotClassification(twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, legacy = FALSE, time.window = FALSE))

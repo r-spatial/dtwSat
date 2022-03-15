@@ -115,6 +115,5 @@ Collate:
     'twdtwDist.R'
     'twdtwXtable.R'
     'twdtw_reduce_time.R'
-    'utils.R'
     'zzz.R'
 RdMacros: Rdpack

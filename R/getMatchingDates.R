@@ -4,11 +4,12 @@ getMatchingDates <- function(x){
   best_aligs <- best_aligs[order(best_aligs[,1]),,drop=FALSE]
   
   out <- lapply(1:nrow(best_aligs), function(i){
-    idx <- as.data.frame(.tracepath(dm = x$internals$internals[[i]]$DM,
-                                    step.matrix = x$internals$internals[[i]]$SM,
+    ts_id <- best_aligs[i,5]
+    idx <- as.data.frame(.tracepath(dm = x$internals$internals[[ts_id]]$DM,
+                                    step.matrix = x$internals$internals[[ts_id]]$SM,
                                     jmin = best_aligs[i,3]))
-    idx$patternDates <- x$internals$internals[[i]]$patternDates[idx$index1]
-    idx$tsDates <- x$internals$internals[[i]]$tsDates[idx$index2]
+    idx$patternDates <- x$internals$internals[[ts_id]]$patternDates[idx$index1]
+    idx$tsDates <- x$internals$internals[[ts_id]]$tsDates[idx$index2]
     return(idx)
     })
   

@@ -38,10 +38,12 @@ C     For all time intervals
          
 C     For all TWDTW matches
          DO 20 I = 1, K
+C            print *, "I: ", I
             D1 = XM(I,1)
             D2 = XM(I,2)
             IL = X(I)
             IF ((D2.LT.B1).OR.(D1.GT.B2)) THEN
+C                print *, "D1: ", D1, "D2: ", D2
                 GOTO 20 
             ENDIF
             IF (D1.LT.B1) THEN
@@ -52,9 +54,11 @@ C     For all TWDTW matches
             ENDIF
             R = REAL(D2 - D1) / REAL(B2 - B1)
             IF( .NOT.(OV.LE.R.AND.R.LE.(2-OV)) ) THEN
+C                print *, "R: ", R
                 GOTO 20 
             ENDIF
             IF( DM(I).GE.AM(J,IL) ) THEN
+C                print *, "DM(I): ", DM(I)
                 GOTO 20 
             ENDIF
             AM(J,IL) = DM(I)
@@ -63,6 +67,7 @@ C     For all TWDTW matches
                 IM(J,1) = IL
                 IM(J,2) = I
                 IM(J,3) = A(I)
+C                print *, "IM: ", IM
                 DB(J) = DD
             ENDIF
    20    CONTINUE

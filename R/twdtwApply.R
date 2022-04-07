@@ -169,7 +169,7 @@ twdtwApply.twdtwTimeSeries = function(x, y, weight.fun, dist.method, step.matrix
 #' @export
 setMethod(f = "twdtwApply", "twdtwRaster",
           def = function(x, y, resample, length, weight.fun, dist.method, step.matrix, n, span, min.length, 
-                        breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", fill = 255,
+                        breaks=NULL, from=NULL, to=NULL, by=NULL, overlap=0.5, filepath="", fill=NULL,
                         legacy=FALSE, progress = "text", minrows=1, alpha = -0.1, beta = 50, ...){
                   if(!is(step.matrix, "stepPattern"))
                     stop("step.matrix is not of class stepPattern")
@@ -200,6 +200,9 @@ setMethod(f = "twdtwApply", "twdtwRaster",
                     y = resampleTimeSeries(object=y, length=length)
                   }
                   if(legacy){
+                    if(is.null(fill)){
+                      fill = 255
+                    }
                     twdtwApply.twdtwRaster(x, y, weight.fun, dist.method, step.matrix, n, span, min.length, 
                                            breaks, overlap, filepath, fill, ...) 
                   } else {
@@ -213,7 +216,7 @@ twdtwApply.twdtwRaster.fast = function(x,
                            beta = 50,
                            progress = "text", 
                            breaks=NULL, 
-                           fill = 255,
+                           fill=NULL,
                            filepath="",
                            minrows=1, ...){
   
@@ -223,6 +226,10 @@ twdtwApply.twdtwRaster.fast = function(x,
       yy <- as.data.frame(yy)
       yy <- cbind(date, yy)
     })
+  }
+  
+  if(is.null(fill)){
+    fill = length(y) + 1
   }
   
   if(any(!sapply(y, function(yy) "date" %in% names(yy)))){

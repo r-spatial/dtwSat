@@ -27,7 +27,7 @@
 #' value of the parameter \code{beta} defined in the logistic weight function. 
 #' Default is FALSE. 
 #' 
-#' @param fill An integer to fill the classification gaps. Default 255.
+#' @param fill An integer to fill the classification gaps.
 #' 
 #' @examples 
 #' \dontrun{
@@ -68,7 +68,7 @@ twdtwReduceTime = function(x,
                            by = NULL,
                            breaks = NULL,
                            overlap = .5,
-                           fill = 255,
+                           fill = length(y) + 1,
                            keep = FALSE, ...){
 
   # Split time series from dates
@@ -101,6 +101,8 @@ twdtwReduceTime = function(x,
     b <- internals$JB[internals$JB!=0]
     a <- internals$VM[-1,][internals$N,b]
     d <- internals$CM[-1,][internals$N,b]
+    # View(internals$VM[-1,])
+    # CM <- internals$CM[-1,]; CM[CM>10000] <- NA; CM |> t() |> image()
     candidates <- matrix(c(a, d, b, b, rep(l, length(b))), ncol = 5, byrow = F)
     
     # Order matches by minimum TWDTW distance 
@@ -189,7 +191,7 @@ twdtwReduceTime = function(x,
 
 
 # @useDynLib dtwSat bestmatches
-.bestmatches2 = function(x, tx, m, n, levels, breaks, overlap, fill=9999){
+.bestmatches2 = function(x, tx, m, n, levels, breaks, overlap, fill){
   if(is.loaded("bestmatches", PACKAGE = "dtwSat", type = "Fortran")){
     if(length(x[,2])<1){
       res = list(

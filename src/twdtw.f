@@ -22,14 +22,12 @@ C     Internals
       INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE, JM
       PARAMETER(ZERO=0,ONE=1)
       REAL NAN, INF
-      NAN  = ZERO 
+      NAN  = 0.0
       NAN  = NAN / NAN
-      INF  = HUGE(ZERO)
+      INF  = HUGE(0.0)
       IML  = 1
       VM(1,1) = 1
-C      A = TW(1)
-C      B = TW(2)
-C       WRITE (*,*) 'Par ',TW(1),' - ', TW(2)
+
 C     Initialize the firt row and col of the matrices 
       DO 21 I = 2, N+1 
          TD = YM(I-1,1) - XM(1,1)
@@ -64,9 +62,10 @@ C     Compute cumulative cost matrix
          DO 22 WHILE ( I .LE. N+1 ) 
 C           Calculate local distance 
 C           # the call takes I-1 because local matrix has an additional row at the begning
-            TD = YM(I,1) - XM(J,1)
+            TD = YM(I-1,1) - XM(J,1)
             CALL ellapsed(TD)
             IF (LB.AND.(TD.GT.TW(2))) THEN
+C              print *, "I: ", I, "TD: ", TD, " -- TW: ", TW(2)
               CM(I,J) = INF
               DM(I,J) = -ONE
               VM(I,J) = ZERO

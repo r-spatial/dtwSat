@@ -21,7 +21,7 @@ C     Internals
       DOUBLE PRECISION W, CP(NS), VMIN, A, B, TD
       INTEGER I, J, IL(NS), JL(NS), K, PK, KMIN, ZERO, ONE, JM
       PARAMETER(ZERO=0,ONE=1)
-      REAL NAN, INF
+      DOUBLE PRECISION NAN, INF
       NAN  = 0.0
       NAN  = NAN / NAN
       INF  = HUGE(0.0)
@@ -29,7 +29,7 @@ C     Internals
       VM(1,1) = 1
 
 C     Initialize the firt row and col of the matrices 
-      DO 21 I = 2, N+1 
+      DO 21 I = 2, N+1
          TD = YM(I-1,1) - XM(1,1)
          CALL ellapsed(TD)
 C         IF (TD.GT.TW(2)) THEN
@@ -60,6 +60,7 @@ C     Compute cumulative cost matrix
       DO 32 WHILE ( J .LE. M )
          I = 2
          DO 22 WHILE ( I .LE. N+1 ) 
+C         PRINT *, "J: ", J, "I: ", I
 C           Calculate local distance 
 C           # the call takes I-1 because local matrix has an additional row at the begning
             TD = YM(I-1,1) - XM(J,1)
@@ -116,6 +117,7 @@ C           Initialize list of step cost
    99 CONTINUE
       J = 1
       K = ZERO
+C      PRINT *, "DONE: LOOP 1"
       DO 69 WHILE ( J .LE. M )
          IF (VM(N+1,J).NE.ZERO) THEN
             IF (K.EQ.ZERO) THEN
@@ -139,5 +141,17 @@ C            PRINT *, J, "JB:",JB(k),"-", CM(N+1,J),"-",CM(N+1,JB(K))
    68    CONTINUE
          J = J + 1
    69 CONTINUE
+C      PRINT *, "XM", XM
+C      PRINT *, "YM", YM
+C      PRINT *, "CM", CM
+C      PRINT *, "DM", DM
+C      PRINT *, "VM", VM
+C      PRINT *, "SM", SM
+C      PRINT *, "N", N
+C      PRINT *, "M", M
+C      PRINT *, "D", D
+C      PRINT *, "NS", NS
+C      PRINT *, "TW", TW
+C      PRINT *, "LB", LB
+C      PRINT *, "JB", JB
       END
-

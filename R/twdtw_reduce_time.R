@@ -180,7 +180,7 @@ twdtwReduceTime = function(x,
                    D  = as.integer(d),
                    NS = as.integer(nrow(step.matrix)),
                    TW = as.double(c(alpha, beta)),
-                   LB = wc,
+                   LB = as.logical(wc),
                    JB = as.integer(rep(0, n))
                    )
   } else {

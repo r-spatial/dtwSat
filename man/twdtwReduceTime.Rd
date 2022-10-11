@@ -17,7 +17,7 @@ twdtwReduceTime(
   by = NULL,
   breaks = NULL,
   overlap = 0.5,
-  fill = 255,
+  fill = length(y) + 1,
   keep = FALSE,
   ...
 )
@@ -60,7 +60,7 @@ Default is ''Euclidean'' see \code{\link[proxy]{dist}} in package
 between one match and the interval of classification. Default is 0.5, 
 \emph{i.e.} an overlap minimum of 50\%.}
 
-\item{fill}{An integer to fill the classification gaps. Default 255.}
+\item{fill}{An integer to fill the classification gaps.}
 
 \item{keep}{Preserves the cost matrix, inputs, and other internal structures. 
 Default is FALSE. For plot methods use \code{keep=TRUE}.}

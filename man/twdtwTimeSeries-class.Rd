@@ -70,13 +70,13 @@ Class for setting irregular time series.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{twdtwTimeSeries}: Create object of class twdtwTimeSeries.
+\item \code{twdtwTimeSeries(ANY)}: Create object of class twdtwTimeSeries.
 
-\item \code{as.twdtwTimeSeries}: convert list of data.frame to class twdtwTimeSeries.
+\item \code{as.twdtwTimeSeries(ANY)}: convert list of data.frame to class twdtwTimeSeries.
 
-\item \code{is.twdtwTimeSeries}: Check if the object belongs to the class twdtwTimeSeries.
+\item \code{is.twdtwTimeSeries(ANY)}: Check if the object belongs to the class twdtwTimeSeries.
+
 }}
-
 \section{Slots }{
 
 \describe{

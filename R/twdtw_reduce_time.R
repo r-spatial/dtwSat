@@ -127,9 +127,26 @@ twdtwReduceTime = function(x,
   il <- order(aligs[,1], aligs[,2])
   
   # Create classification intervals 
-  if(is.null(breaks)){
-    breaks <- seq(as.Date(from), as.Date(to), by = by) 
-  }
+  # if(is.null(breaks)){
+  #   breaks <- seq(as.Date(from), as.Date(to), by = by) 
+  # }
+  if(is.null(breaks))
+    if( !is.null(from) & !is.null(to) ){
+      breaks = seq(as.Date(from), as.Date(to), by = by)
+    } else {
+      patt_range = lapply(y, function(yy) range(yy$date))
+      patt_diff = trunc(sapply(patt_range, diff)/30)+1
+      min_range = which.min(patt_diff)
+      by = patt_diff[[min_range]]
+      from = patt_range[[min_range]][1]
+      to = from 
+      month(to) = month(to) + by
+      year(from) = year(range(x$date)[1])
+      year(to) = year(range(x$date)[2])
+      if(to<from) year(to) = year(to) + 1
+      breaks = seq(from, to, paste(by,"month"))
+      breaks = as.Date(breaks)
+    }
   
   # Find best macthes for the intervals 
   best_matches <- .bestmatches2(

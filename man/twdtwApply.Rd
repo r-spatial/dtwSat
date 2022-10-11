@@ -55,7 +55,7 @@ twdtwApply(
   by = NULL,
   overlap = 0.5,
   filepath = "",
-  fill = 255,
+  fill = NULL,
   legacy = FALSE,
   progress = "text",
   minrows = 1,

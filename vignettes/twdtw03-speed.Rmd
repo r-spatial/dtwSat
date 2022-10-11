@@ -46,7 +46,6 @@ samples_cerrado_mod13q1 |>
 
 
 ```{r}
-
 # TODO: 
 #  - twdtwCLassify call for twdtwTimeSeries class and list of data.frame/data.table
 #  - the same as above with the legacy option

@@ -60,7 +60,7 @@ weight_fun <- logisticWeight(alpha = -0.1, beta = 50)
 twdtw_matches <- twdtwApply(x = veg_ts, 
                             y = veg_profiles, 
                             weight.fun = weight_fun, 
-                            keep = TRUE) 
+                            keep = TRUE, legacy=TRUE) 
 
 class(twdtw_matches)
 

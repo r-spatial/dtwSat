@@ -144,13 +144,13 @@ to files with the whole time series for each attribute.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{twdtwRaster}: Create object of class twdtwRaster.
+\item \code{twdtwRaster(ANY)}: Create object of class twdtwRaster.
 
-\item \code{is.twdtwRaster}: Check if the object belongs to the class twdtwRaster.
+\item \code{is.twdtwRaster(ANY)}: Check if the object belongs to the class twdtwRaster.
 
-\item \code{projecttwdtwRaster}: project twdtwRaster object.
+\item \code{projecttwdtwRaster(twdtwRaster)}: project twdtwRaster object.
+
 }}
-
 \section{Slots }{
 
 \describe{

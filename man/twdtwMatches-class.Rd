@@ -63,11 +63,11 @@ Class for Time-Weighted Dynamic Time Warping results.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{twdtwMatches}: Create object of class twdtwMatches.
+\item \code{twdtwMatches(ANY)}: Create object of class twdtwMatches.
 
-\item \code{is.twdtwMatches}: Check if the object belongs to the class twdtwMatches.
+\item \code{is.twdtwMatches(ANY)}: Check if the object belongs to the class twdtwMatches.
+
 }}
-
 \section{Slots }{
 
 \describe{

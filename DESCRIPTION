@@ -1,8 +1,8 @@
 Package: dtwSat
 Type: Package
 Title: Time-Weighted Dynamic Time Warping for Satellite Image Time Series Analysis
-Version: 0.2.7.9999
-Date: 2021-12-17
+Version: 0.2.8
+Date: 2022-10-11
 Authors@R:
     c(person(given = "Victor",
              family = "Maus",
@@ -31,7 +31,7 @@ Description: Provides an implementation of the Time-Weighted Dynamic Time
     produce land cover maps, create temporal plots for land cover change, and compute 
     accuracy metrics.
 Depends:
-    R (>= 3.2.0),
+    R (>= 3.5.0),
     zoo,
     raster,
     ggplot2

@@ -29,7 +29,7 @@ cost matrix.
 log_fun = logisticWeight(-0.1, 100)
 ts = twdtwTimeSeries(MOD13Q1.ts.list)
 patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE)
+mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE, legacy=TRUE)
 
 plotPaths(mat1)
 

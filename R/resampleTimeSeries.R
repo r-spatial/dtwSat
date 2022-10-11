@@ -50,9 +50,9 @@ setMethod("resampleTimeSeries", "twdtwTimeSeries",
           })
             
 resampleTimeSeries.twdtwTimeSeries = function(x, length){
-  labels = as.character(labels(x))
+  #labels = as.character(labels(x))
   dates = index(x)
-  freq = as.numeric(diff(range(dates)))/(length-1)
+  freq = trunc(as.numeric(diff(range(dates)))/(length-1))
   timeline = seq(min(dates, na.rm = TRUE), max(dates, na.rm = TRUE), by=freq)
   zoo(data.frame(na.spline(x, xout = timeline)), timeline)
 }

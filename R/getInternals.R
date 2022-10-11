@@ -34,7 +34,8 @@ setGeneric("getMatches", function(object, timeseries.labels=NULL, patterns.label
 #' # Getting patterns from objects of class twdtwMatches
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
 #' ts = twdtwTimeSeries(MOD13Q1.ts.list)
-#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100), keep=TRUE)
+#' mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100), 
+#'                  keep=TRUE, legacy = TRUE)
 #' getPatterns(mat)
 #' getTimeSeries(mat)
 #' getAlignments(mat)

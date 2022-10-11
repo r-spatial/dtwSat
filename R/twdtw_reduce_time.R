@@ -242,7 +242,7 @@ twdtwReduceTime = function(x,
   } else {
     stop("Fortran bestmatches lib is not loaded")
   }
-  if(class(res) == "try-error"){
+  if(is(res, "try-error")){
     res = list(
       XM = matrix(as.integer(c(as.numeric(tx[x[,1]]), as.numeric(tx[x[,3]]))), ncol = 2),
       AM = matrix(as.double(.Machine$double.xmax), nrow = n, ncol = m), 

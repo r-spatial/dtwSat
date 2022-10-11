@@ -57,7 +57,7 @@ getTimeSeries(ts, 2)
 # Getting time series from objects of class twdtwTimeSeries
 ts = twdtwTimeSeries(MOD13Q1.ts.list)
 patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-mat = twdtwApply(x=ts, y=patt)
+mat = twdtwApply(x=ts, y=patt, keep=TRUE, legacy=TRUE)
 getTimeSeries(mat, 2)
 
 ## This example creates a twdtwRaster object and extract time series from it. 

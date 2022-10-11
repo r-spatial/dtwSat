@@ -93,6 +93,12 @@ and other arguments to pass to \code{\link[raster]{writeRaster}} and
 \code{\link[dtwSat]{twdtwTimeSeries-class}} additional arguments passed to 
 \code{\link[dtwSat]{twdtwApply}}.}
 
+\item{y}{a list of data.frame objects similar to \code{x}. 
+The temporal patterns used to classify the time series in \code{x}.}
+
+\item{step.matrix}{See \code{\link[dtw]{stepPattern}} in package \pkg{dtw} 
+\insertCite{Giorgino:2009}{dtwSat}.}
+
 \item{breaks}{A vector of class \code{\link[base]{Dates}}. This replaces the arguments \code{from},
 \code{to}, and \code{by}.}
 
@@ -109,6 +115,17 @@ between one match and the interval of classification. Default is 0.5,
 \item{fill}{A character to fill the classification gaps. 
 For signature \code{twdtwTimeSeries} the default is \code{fill="unclassified"}, 
 for signature \code{twdtwRaster} the default is \code{fill="unclassified"}.}
+
+\item{alpha}{Numeric. The steepness of TWDTW logistic weight.}
+
+\item{beta}{Numeric. The midpoint of TWDTW logistic weight.}
+
+\item{time.window}{logical. TRUE will constrain the TWDTW computation to the 
+value of the parameter \code{beta} defined in the logistic weight function. 
+Default is FALSE.}
+
+\item{keep}{Preserves the cost matrix, inputs, and other internal structures. 
+Default is FALSE. For plot methods use \code{keep=TRUE}.}
 
 \item{patterns.labels}{a vector with labels of the patterns.}
 

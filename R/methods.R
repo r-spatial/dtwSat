@@ -358,10 +358,10 @@ setMethod("[", "twdtwMatches", function(x, i, j, drop=TRUE) {
   if(missing(i)) i = 1:length(x@alignments)
   # if(missing(j)) j = 2:length(x@patterns)
   if(any(is.na(i))) stop("NA index not permitted")
-  if(class(i)=="character") i = match(i, names(x@timeseries@timeseries))
+  if(is(i, "character")) i = match(i, names(x@timeseries@timeseries))
   res = x@alignments[i]
   if(missing(j)) j = 1:length(res[[1]])
-  if(class(j)=="character") j = match(j, names(x@patterns@timeseries))
+  if(is(j, "character")) j = match(j, names(x@patterns@timeseries))
   if(any(is.na(j))) stop("NA index not permitted")
   res = lapply(res, function(x) x[j])
   res = res[sapply(res, length)>0]

@@ -21,7 +21,7 @@
 #' @description This function classifies the intervals of a time series 
 #' based on the TWDTW results. 
 #' 
-#' @inheritParams get
+#' @inheritParams twdtwReduceTime
 #'
 #' @param x An object of class twdtw*. This is the target time series. 
 #' Usually, it is a set of unclassified time series. 
@@ -38,6 +38,8 @@
 #' @param overlap A number between 0 and 1. The minimum overlapping 
 #' between one match and the interval of classification. Default is 0.5, 
 #' \emph{i.e.} an overlap minimum of 50\%.
+#' 
+#' @param patterns.labels a vector with labels of the patterns.
 #' 
 #' @param thresholds A numeric vector the same length as \code{patterns.labels}. 
 #' The TWDTW dissimilarity thresholds, i.e. the maximum TWDTW cost for consideration 
@@ -104,7 +106,7 @@ setMethod("twdtwClassify", "twdtwTimeSeries",
           function(x, patterns.labels=NULL, from=NULL, to=NULL, by=NULL, breaks=NULL,
                 overlap=.5, thresholds=Inf, fill="unclassified", ...){
                     xm = twdtwApply(x = x, from = from, to = to, by = by, breaks = breaks, ...)
-                    if(class(xm) == "twdtwMatches"){
+                    if(is(xm, "twdtwMatches")){
                       x = xm 
                       if(is.null(patterns.labels)) patterns.labels = labels(x@patterns)
                       if( overlap < 0 & 1 < overlap )

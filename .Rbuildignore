@@ -31,5 +31,7 @@ dtwSat-Ex_x64.Rout
 examples_i386
 examples_x64
 vignettes/twdtw03-speed.Rmd
-  
+
+^data/mod13q1/
+^data/mod13q1.db
 ^CRAN-RELEASE$

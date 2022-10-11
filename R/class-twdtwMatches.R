@@ -74,7 +74,7 @@
 #' @examples 
 #' ts = twdtwTimeSeries(timeseries=MOD13Q1.ts.list)
 #' patterns = twdtwTimeSeries(timeseries=MOD13Q1.patterns.list)
-#' matches = twdtwApply(x = ts, y = patterns)
+#' matches = twdtwApply(x = ts, y = patterns, keep=TRUE, legacy=TRUE)
 #' class(matches)
 #' length(matches)
 #' matches 
@@ -128,7 +128,8 @@ setGeneric(name = "twdtwMatches",
 #' # Creating objects of class twdtwMatches 
 #' ts  = twdtwTimeSeries(MOD13Q1.ts.list)
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-#' mat = twdtwApply(ts, patt, weight.fun = logisticWeight(-0.1, 100))
+#' mat = twdtwApply(ts, patt, weight.fun = logisticWeight(-0.1, 100), 
+#'                  keep=TRUE, legacy=TRUE)
 #' mat = twdtwMatches(ts, patterns=patt, alignments=mat)
 #' mat
 #' 

@@ -48,10 +48,10 @@
 plotAccuracy = function(x, perc=TRUE, conf.int=.95, time.labels=NULL, 
                         category.name=NULL, category.type=NULL){
   
-  if(class(x)=="twdtwCrossValidation"){
+  if(is(x, "twdtwCrossValidation")){
     gp = .plotCrossValidation(x, conf.int, perc, category.name, category.type)
   } else {
-    if(class(x)=="twdtwAssessment"){
+    if(is(x, "twdtwAssessment")){
       gp = .plotAssessmentAccuracy(x, perc, time.labels, category.name, category.type)
     } else {
       stop("Class of x is not twdtwAssessment or twdtwCrossValidation")

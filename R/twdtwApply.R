@@ -102,7 +102,7 @@ setGeneric(name = "twdtwApply",
 #' log_fun = logisticWeight(-0.1, 100)
 #' ts = twdtwTimeSeries(MOD13Q1.ts.list)
 #' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-#' mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun)
+#' mat1 = twdtwApply(x=ts, y=patt, weight.fun=log_fun, keep=TRUE, legacy=TRUE)
 #' mat1
 #' 
 #' \dontrun{
@@ -299,10 +299,10 @@ twdtwApply.twdtwRaster.fast = function(x,
     
     # Apply TWDTW analysis
     twdtw_results <- foreach(
-      i = ts, 
+      tsidopar = ts, 
       .combine = 'rbind'
     ) %dopar% {
-      res = twdtwReduceTime(x = i, y = y, breaks = breaks, fill = fill, alpha = alpha, beta = beta, keep = FALSE, ...)
+      res = twdtwReduceTime(x = tsidopar, y = y, breaks = breaks, fill = fill, alpha = alpha, beta = beta, keep = FALSE, ...)
       twdtw_label <- matrix(res$label, ncol = length(breaks)-1, byrow = TRUE)
       twdtw_distance <- matrix(res$distance, ncol = length(breaks)-1, byrow = TRUE)
       cbind(twdtw_label, twdtw_distance)

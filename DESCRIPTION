@@ -53,8 +53,7 @@ Imports:
     xtable,
     Rdpack,
     data.table,
-    foreach,
-    parallel
+    foreach
 Suggests:
     gridExtra,
     grid,

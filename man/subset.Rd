@@ -47,7 +47,8 @@ ts = subset(ts, 2)
 ts
 # Getting time series from objects of class twdtwTimeSeries
 patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100))
+mat = twdtwApply(x=ts, y=patt, weight.fun=logisticWeight(-0.1,100), 
+                 keep=TRUE, legacy=TRUE)
 mat = subset(mat, k=4)
 
 ## This example creates a twdtwRaster object and extracts time series from it. 

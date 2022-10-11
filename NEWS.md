@@ -1,6 +1,6 @@
-# dtwSat v0.2.8.9999
+# dtwSat v0.2.8
 
-* Adds faster implementation of TWDTW for logistic weight function.
+* Adds faster implementation of TWDTW for logistic weight function
 
 * Fixes small bugs 
 

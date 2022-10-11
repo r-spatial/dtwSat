@@ -1,9 +1,5 @@
 ## Test environments
 
-* Local Ubuntu 22.04.1 LTS x86_64-pc-linux-gnu (64-bit), R 4.2.1 (2022-06-23)
-  devtools::check(args = '--as-cran')
-  devtools::submit_cran()
-  
 * win-builder 
   devtools::check_win_release()
   devtools::check_win_devel()
@@ -13,6 +9,10 @@
   rhub::check_for_cran(check_args = '--as-cran')
   rhub::check_for_cran(check_args = '--as-cran', valgrind = TRUE)
 
+* Local Ubuntu 22.04.1 LTS x86_64-pc-linux-gnu (64-bit), R 4.2.1 (2022-06-23)
+  devtools::check(args = '--as-cran')
+  devtools::submit_cran()
+  
 ## REVIEWS
 
 # v0.2.8

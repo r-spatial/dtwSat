@@ -1,13 +1,7 @@
 ---
 title: "1. TWDTW: Time-Weighted Dynamic Time Warping"
 author: "Victor Maus"
-output:
-  html_document:
-    toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
-    toc_depth: 2
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{1. TWDTW: Time-Weighted Dynamic Time Warping}
   %\VignetteEncoding{UTF-8}
@@ -17,6 +11,8 @@ bibliography: ./../inst/REFERENCES.bib
 
 ```{r, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
+knitr::opts_chunk$set(fig.height = 4.5)
+knitr::opts_chunk$set(fig.width = 6)
 ```
 
 This vignette present a short introduction on Time-Weighted Dynamic Time Warping (TWDTW) analysis using `dtwSat`. TWDTW is an algorithm for land cover mapping using multi-band satellite image time series. The algorithm is particularly valuable to produce land cover maps in regions with scarcity of training data. For details see @Maus:2016 and @Maus:2019. 

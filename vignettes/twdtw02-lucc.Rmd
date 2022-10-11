@@ -1,13 +1,7 @@
 ---
 title: "2. Land-cover change analysis with TWDTW"
 author: "Victor Maus"
-output:
-  html_document:
-    toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
-    toc_depth: 2
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{1. Land-cover change analysis with TWDTW}
   %\VignetteEncoding{UTF-8}
@@ -17,6 +11,8 @@ bibliography: ./../inst/REFERENCES.bib
 
 ```{r, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
+knitr::opts_chunk$set(fig.height = 4.5)
+knitr::opts_chunk$set(fig.width = 6)
 ```
 
 This vignette provides a short guide on how to perform a Time-Weighted Dynamic Time Warping (TWDTW) analysis on raster image time series using `dtwSat`. For more details about TWDTW read @Maus:2016 and @Maus:2019.

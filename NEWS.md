@@ -1,3 +1,7 @@
+# dtwSat v1.0.0
+
+* Major release: drops dependencies on rgdal and rgeos
+
 # dtwSat v0.2.8
 
 * Adds faster implementation of TWDTW for logistic weight function

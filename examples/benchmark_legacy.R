@@ -8,11 +8,11 @@ to = "2017-08-31"
 by = "12 month"
 
 # S4 objects for original implementation 
-tw_patt = readRDS(system.file("lucc_MT/patterns/patt.rds", package = "dtwSat"))
-tw_ts = twdtwTimeSeries(MOD13Q1.ts) 
+tw_patt = subset(readRDS(system.file("lucc_MT/patterns/patt.rds", package = "dtwSat")), labels = "Soy_Cotton")
+tw_ts = twdtwTimeSeries(MOD13Q1.ts)
 
 # Table from csv for legacy version 
-mn_patt <- lapply(dir(system.file("lucc_MT/patterns", package = "dtwSat"), pattern = ".csv$", full.names = TRUE), read.csv, stringsAsFactors = FALSE)
+mn_patt <- lapply(dir(system.file("lucc_MT/patterns", package = "dtwSat"), pattern = ".csv$", full.names = TRUE), read.csv, stringsAsFactors = FALSE)[12]
 mn_ts <- read.csv(system.file("reduce_time/ts_MODIS13Q1.csv", package = "dtwSat"), stringsAsFactors = FALSE)
 
 # Benchtmark
@@ -21,7 +21,8 @@ rbenchmark::benchmark(
   t2_s4_fast    = twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, legacy = FALSE),
   t3_s4_fast_tw = twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, legacy = FALSE),
   t4_s3_fast    = twdtwClassify(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = FALSE),
-  t5_s3_fast_tw = twdtwClassify(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE)
+  t5_s3_fast_tw = twdtwClassify(x = mn_ts, y = mn_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, time.window = TRUE),
+  replications = 100
 )
 
 plotClassification(twdtwClassify(x = tw_ts, y = tw_patt, from = from, to = to, by = by, alpha = alpha, beta = beta, legacy = FALSE, time.window = FALSE))

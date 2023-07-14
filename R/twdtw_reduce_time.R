@@ -51,7 +51,7 @@
 #' rbenchmark::benchmark(
 #'   legacy_twdtw = twdtwClassify(twdtwApply(x = tw_ts, y = tw_patt, weight.fun = log_fun), 
 #'                                       from = from, to = to, by = by)[[1]],
-#'   fast_twdtw = twdtwReduceTime(x = mn_ts, y = mn_patt, rom = from, to = to, by = by)  
+#'   fast_twdtw = twdtwReduceTime(x = mn_ts, y = mn_patt, from = from, to = to, by = by)  
 #'  )
 #' }
 #' 

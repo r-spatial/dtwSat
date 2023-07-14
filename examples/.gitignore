@@ -1,0 +1,3 @@
+create_patterns.R
+dtwsat_gdalcubes
+parallel_twdtw_gdalcubes.R

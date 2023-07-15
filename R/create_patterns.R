@@ -3,7 +3,7 @@
 #' 
 #' @description Create temporal patterns from objects of class twdtwTimeSeries.
 #' 
-#' @param x an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.
+#' @param x an object of class \code{\link[base]{data.frame}}.
 #' 
 #' @param from A character or \code{\link[base]{Dates}} object in the format 
 #' "yyyy-mm-dd". If not provided it is equal to the smallest date of the 
@@ -26,24 +26,13 @@
 #' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
 #' package \pkg{mgcv}.
 #' 
-#' @return an object of class \code{\link[dtwSat]{twdtwTimeSeries}} 
+#' @return an object of class \code{\link[base]{data.frame}} 
 #' 
 #'
 #' @details The hidden assumption is that the temporal pattern is a cycle the repeats itself 
 #' within a given time interval. Therefore, all time series samples in \code{x} are aligned 
 #' with each other, keeping their respective sequence of days of the year. The function fits a 
 #' Generalized Additive Model (GAM) to the aligned set of samples.  
-#' 
-#' @seealso 
-#' \code{\link[dtwSat]{twdtwMatches-class}}, 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}}, 
-#' \code{\link[dtwSat]{getTimeSeries}}, and 
-#' \code{\link[dtwSat]{twdtwApply}}
-#' 
-#' @references
-#'   \insertRef{Maus:2019}{dtwSat}
-#'   
-#'   \insertRef{Maus:2016}{dtwSat}
 #' 
 #' @export
 create_pattern = function(x, from, to, freq, attr, formula, ...){
@@ -62,7 +51,7 @@ create_pattern = function(x, from, to, freq, attr, formula, ...){
   
   # Shift dates to match the same period  
   df = do.call("rbind", lapply(as.list(x), function(x){
-    res = shiftDates(x, year=as.numeric(format(to, "%Y")))
+    res = shift_dates(x, year=as.numeric(format(to, "%Y")))
     res = window(res, start = from, end = to)
     res = data.frame(time=index(res), res)
     names(res) = c("time", names(x))

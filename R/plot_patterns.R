@@ -3,8 +3,7 @@
 #' 
 #' @description Method for plotting the temporal patterns.
 #' 
-#' @param x An object of class \code{\link[dtwSat]{twdtwTimeSeries}}, 
-#' \code{\link[zoo]{zoo}}, or list of \code{\link[zoo]{zoo}}.
+#' @param x An object of class \code{\link[base]{data.frame}}.
 #' @param labels A vector with labels of the time series. If not declared 
 #' the function will plot all time series. 
 #' @param year An integer. The base year to shift the dates of the time series to. 
@@ -15,15 +14,6 @@
 #' 
 #' @return A \link[ggplot2]{ggplot} object.
 #' 
-#' @seealso 
-#' \code{\link[dtwSat]{twdtwTimeSeries-class}} and 
-#' \code{\link[dtwSat]{plotTimeSeries}}
-#'  
-#' @references
-#'   \insertRef{Maus:2019}{dtwSat}
-#'   
-#'   \insertRef{Maus:2016}{dtwSat}
-#'   
 #' @export
 plot_patterns = function(x, labels=NULL, attr, year=2005){
   

@@ -7,7 +7,7 @@
 create_pattern(x, from, to, freq, attr, formula, ...)
 }
 \arguments{
-\item{x}{an object of class \code{\link[dtwSat]{twdtwTimeSeries}}.}
+\item{x}{an object of class \code{\link[base]{data.frame}}.}
 
 \item{from}{A character or \code{\link[base]{Dates}} object in the format
 "yyyy-mm-dd". If not provided it is equal to the smallest date of the
@@ -31,7 +31,7 @@ package \pkg{mgcv}.}
 all samples are set to the same label.}
 }
 \value{
-an object of class \code{\link[dtwSat]{twdtwTimeSeries}}
+an object of class \code{\link[base]{data.frame}}
 }
 \description{
 Create temporal patterns from objects of class twdtwTimeSeries.
@@ -41,17 +41,6 @@ The hidden assumption is that the temporal pattern is a cycle the repeats itself
 within a given time interval. Therefore, all time series samples in \code{x} are aligned
 with each other, keeping their respective sequence of days of the year. The function fits a
 Generalized Additive Model (GAM) to the aligned set of samples.
-}
-\references{
-\insertRef{Maus:2019}{dtwSat}
-
-\insertRef{Maus:2016}{dtwSat}
-}
-\seealso{
-\code{\link[dtwSat]{twdtwMatches-class}},
-\code{\link[dtwSat]{twdtwTimeSeries-class}},
-\code{\link[dtwSat]{getTimeSeries}}, and
-\code{\link[dtwSat]{twdtwApply}}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

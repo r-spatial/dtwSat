@@ -8,16 +8,8 @@
 #' @param doy A vector with the day of the year. 
 #' It must have the same length as \code{year}.
 #' 
-#' @docType methods
-#' 
 #' @return A \code{\link[base]{Dates}} object.
 #' 
-#' @seealso \link[dtwSat]{shiftDates} 
-#' 
-#' @references
-#'   \insertRef{Maus:2019}{dtwSat}
-#'   
-#'   \insertRef{Maus:2016}{dtwSat}
 #'   
 #' @export
 get_dates_from_doy = function(year, doy){
@@ -35,18 +27,12 @@ get_dates_from_doy = function(year, doy){
 #' @description This function shifts the dates of the time series to a 
 #' given base year. 
 #' 
-#' @param object \code{\link[dtwSat]{twdtwTimeSeries}} objects, 
-#' \code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.
+#' @param object \code{\link[base]{data.frame}} objects.
 #' 
 #' @param year the base year to shift the time series to. 
 #' 
 #' @return An object of the same class as the input \code{object}. 
 #'
-#' @references
-#'   \insertRef{Maus:2019}{dtwSat}
-#'   
-#'   \insertRef{Maus:2016}{dtwSat}
-#'   
 #' @export
 shift_dates = function(x, year){
   labels = as.character(labels(x))

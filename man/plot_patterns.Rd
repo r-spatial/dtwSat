@@ -7,8 +7,7 @@
 plot_patterns(x, labels = NULL, attr, year = 2005)
 }
 \arguments{
-\item{x}{An object of class \code{\link[dtwSat]{twdtwTimeSeries}},
-\code{\link[zoo]{zoo}}, or list of \code{\link[zoo]{zoo}}.}
+\item{x}{An object of class \code{\link[base]{data.frame}}.}
 
 \item{labels}{A vector with labels of the time series. If not declared
 the function will plot all time series.}
@@ -25,15 +24,6 @@ A \link[ggplot2]{ggplot} object.
 }
 \description{
 Method for plotting the temporal patterns.
-}
-\references{
-\insertRef{Maus:2019}{dtwSat}
-
-\insertRef{Maus:2016}{dtwSat}
-}
-\seealso{
-\code{\link[dtwSat]{twdtwTimeSeries-class}} and
-\code{\link[dtwSat]{plotTimeSeries}}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

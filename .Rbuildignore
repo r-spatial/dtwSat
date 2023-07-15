@@ -36,3 +36,5 @@ vignettes/twdtw03-speed.Rmd
 ^data/mod13q1.db
 ^CRAN-RELEASE$
 ^CRAN-SUBMISSION$
+^LICENSE\.md$
+^dtwSat\.Rproj$

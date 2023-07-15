@@ -9,8 +9,7 @@ shift_dates(x, year)
 \arguments{
 \item{year}{the base year to shift the time series to.}
 
-\item{object}{\code{\link[dtwSat]{twdtwTimeSeries}} objects,
-\code{\link[zoo]{zoo}} objects or a list of \code{\link[zoo]{zoo}} objects.}
+\item{object}{\code{\link[base]{data.frame}} objects.}
 }
 \value{
 An object of the same class as the input \code{object}.
@@ -18,11 +17,6 @@ An object of the same class as the input \code{object}.
 \description{
 This function shifts the dates of the time series to a
 given base year.
-}
-\references{
-\insertRef{Maus:2019}{dtwSat}
-
-\insertRef{Maus:2016}{dtwSat}
 }
 \author{
 Victor Maus, \email{vwmaus1@gmail.com}

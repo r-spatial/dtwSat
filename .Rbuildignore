@@ -1,18 +1,10 @@
-^Meta$
-^doc$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\vignettes$
-^twdtw_results/
 ^examples/
-^.travis.yml$
-_config.yml
 
 # Other files
 README.md
-corinho.R
-tardis.f
-tardis.o
 ^\.git/
 .gitignore
 ^README\.Rmd$
@@ -21,20 +13,14 @@ tardis.o
 ^.*\.xml$
 ^README-.*\.png$
 ^cran-comments\.md$
-src/symbols.rds$
-jss\.bst$
-jss\.cls$
 TODO$
-tic.R
 dtwSat-Ex_i386.Rout
 dtwSat-Ex_x64.Rout
 examples_i386
 examples_x64
-vignettes/twdtw03-speed.Rmd
 
-^data/mod13q1/
-^data/mod13q1.db
 ^CRAN-RELEASE$
 ^CRAN-SUBMISSION$
 ^LICENSE\.md$
 ^dtwSat\.Rproj$
+^\.github$

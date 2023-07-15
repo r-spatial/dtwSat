@@ -5,28 +5,28 @@
 \alias{MOD13Q1.ts.list}
 \title{Data: A list of satellite time series}
 \format{
-A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}} 
-in the format ''yyyy-mm-dd''. Each node has 6 attributes: ''ndvi'', 
+A \link[zoo]{zoo} object, whose indices are \code{\link[base]{Dates}}
+in the format ''yyyy-mm-dd''. Each node has 6 attributes: ''ndvi'',
 ''evi'', ''red'', ''nir'', ''blue'', and ''mir''.
 }
 \usage{
 MOD13Q1.ts.list
 }
 \description{
-This dataset has a list of time series based on the 
-MODIS product MOD13Q1 250 m 16 days \insertCite{Didan:2015}{dtwSat}. 
-It is an irregularly sampled time series 
+This dataset has a list of time series based on the
+MODIS product MOD13Q1 250 m 16 days \insertCite{Didan:2015}{dtwSat}.
+It is an irregularly sampled time series
 using the real date of each pixel from ''2009-08-05'' to ''2013-07-31''.
 }
 \references{
 \insertAllCited{}
-  
-  \insertRef{Maus:2019}{dtwSat}
-  
-  \insertRef{Maus:2016}{dtwSat}
+
+\insertRef{Maus:2019}{dtwSat}
+
+\insertRef{Maus:2016}{dtwSat}
 }
 \seealso{
-\link[dtwSat]{MOD13Q1.ts}, and 
+\link[dtwSat]{MOD13Q1.ts}, and
 \link[dtwSat]{MOD13Q1.patterns.list}.
 
 For details about MOD13Q1 see \insertCite{Didan:2015}{dtwSat}.

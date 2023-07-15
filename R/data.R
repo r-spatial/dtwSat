@@ -1,22 +1,3 @@
-###############################################################
-#                                                             #
-#   (c) Victor Maus <vwmaus1@gmail.com>                       #
-#       Institute for Geoinformatics (IFGI)                   #
-#       University of Muenster (WWU), Germany                 #
-#                                                             #
-#       Earth System Science Center (CCST)                    #
-#       National Institute for Space Research (INPE), Brazil  #
-#                                                             #
-#                                                             #
-#   R Package dtwSat - 2015-09-01                             #
-#                                                             #
-###############################################################
-
-
-###############################################################
-#### DATASET DOCUMENTATION
-
-
 #' @title Data: patterns time series
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 

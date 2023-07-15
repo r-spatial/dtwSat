@@ -1,6 +1,6 @@
 # dtwSat v1.0.0
 
-* Major release: drops dependencies on rgdal and rgeos
+* Major release: drops dependencies and simplifies package
 
 # dtwSat v0.2.8
 

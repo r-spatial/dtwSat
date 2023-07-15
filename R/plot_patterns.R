@@ -1,18 +1,3 @@
-###############################################################
-#                                                             #
-#   (c) Victor Maus <vwmaus1@gmail.com>                       #
-#       Institute for Geoinformatics (IFGI)                   #
-#       University of Muenster (WWU), Germany                 #
-#                                                             #
-#       Earth System Science Center (CCST)                    #
-#       National Institute for Space Research (INPE), Brazil  #
-#                                                             #
-#                                                             #
-#   R Package dtwSat - 2016-01-16                             #
-#                                                             #
-###############################################################
-
-
 #' @title Plotting temporal patterns 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
@@ -39,16 +24,9 @@
 #'   
 #'   \insertRef{Maus:2016}{dtwSat}
 #'   
-#' @examples
-#' patt = twdtwTimeSeries(MOD13Q1.patterns.list)
-#' plotPatterns(patt)
-#' plotPatterns(patt, attr="evi")
-#' 
 #' @export
-plotPatterns = function(x, labels=NULL, attr, year=2005){
+plot_patterns = function(x, labels=NULL, attr, year=2005){
   
-  if(is(x, "twdtwMatches")) x = x@patterns
-  if(is(x, "twdtwTimeSeries")) x = subset(x, labels) 
   x = twdtwTimeSeries(x, labels)
   labels = labels(x)
   

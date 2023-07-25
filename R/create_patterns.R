@@ -1,7 +1,7 @@
 #' @title Create patterns 
 #' @author Victor Maus, \email{vwmaus1@@gmail.com}
 #' 
-#' @description Create temporal patterns from objects of class twdtwTimeSeries.
+#' @description Create temporal patterns.
 #' 
 #' @param x an object of class \code{\link[base]{data.frame}}.
 #' 
@@ -39,8 +39,8 @@ create_pattern = function(x, from, to, freq, attr, formula, ...){
   
   # Pattern period 
   if( is.null(from) | is.null(to) ){
-    from = as.Date(min(index(x[[1]])))
-    to = as.Date(max(index(x[[1]])))
+    from = min(as.Date(x[[1]]))
+    to = max(as.Date(x[[1]]))
   }
 
   from = as.Date(from)
@@ -74,8 +74,8 @@ create_pattern = function(x, from, to, freq, attr, formula, ...){
   if(is.null(attr)) attr = names(df)[-which(names(df) %in% vars[2])]
 
   res = sapply(as.list(df[attr]), FUN=fun, ...)
-  zoo(data.frame(res), as.Date(pred_time))
-}
+
+  }
 
 
 

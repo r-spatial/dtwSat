@@ -17,17 +17,14 @@
 #' @export
 plot_patterns = function(x, labels=NULL, attr, year=2005){
   
-  x = twdtwTimeSeries(x, labels)
-  labels = labels(x)
-  
   # Shift dates 
-  if(!is.null(year)) x = shiftDates(x, year=year)
+  if(!is.null(year)) x = shift_dates(x, year=year)
     
   # Build data.frame
   if(missing(attr)) attr = names(x[[1]])
   df.p = do.call("rbind", lapply(labels, function(p){
     ts = x[[p]][,attr,drop=FALSE]
-    data.frame(Time=index(ts), ts, Pattern=p)
+    data.frame(Time=ts[,1], ts, Pattern=p)
   }))
   df.p = melt(df.p, id.vars=c("Time","Pattern"))
   

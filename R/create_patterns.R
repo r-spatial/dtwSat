@@ -2,15 +2,14 @@
 #'
 #' This function creates a pattern based on Generalized Additive Models (GAM).
 #' It uses the specified formula to fit the model and predict values.
-#' It operates on stars objects (for spatial-temporal data) and sf objects (for spatial data).
 #'
-#' @param x A stars object representing spatial-temporal data.
-#' @param y An sf object representing spatial data with associated attributes.
-#' @param formula A formula for the GAM. 
+#' @param x A three dimensions stars object (x, y, time) with the satellite image time series.
+#' @param y An sf object with the coordinates of the training points.
+#' @param formula A formula for the GAM. Default is \code{band ~ \link[mgcv]{s}(time)}.
 #' @param start_column Name of the column in y that indicates the start date. Default is 'start_date'.
 #' @param end_column Name of the column in y that indicates the end date. Default is 'end_date'.
-#' @param label_colum Name of the column in y that contains labels. Default is 'label'.
-#' @param sampling_freq The time frequency for sampling. If NULL, the function will infer it.
+#' @param label_colum Name of the column in y that contains land use labels. Default is 'label'.
+#' @param sampling_freq The time frequency for sampling including unit, e.g '16 day'. If NULL, the function will infer it.
 #' @param ... Additional arguments passed to the GAM function.
 #'
 #' @return A list containing the predicted values for each label.
@@ -18,7 +17,7 @@
 #' 
 #'
 #' @export
-create_patterns = function(x, y, formula, start_column = 'start_date', 
+create_patterns = function(x, y, formula = band ~ s(time), start_column = 'start_date', 
                           end_column = 'end_date', label_colum = 'label', 
                           sampling_freq = NULL, ...){
   
@@ -37,6 +36,11 @@ create_patterns = function(x, y, formula, start_column = 'start_date',
   missing_columns <- setdiff(required_columns, names(y))
   if (length(missing_columns) > 0) {
     stop(paste("Missing required columns in y:", paste(missing_columns, collapse = ", ")))
+  }
+
+  # Check if formula has two 
+  if(length(all.vars(formula)) != 2) {
+    stop("The formula should have only one predictor!")
   }
 
   # Convert columns to date-time
@@ -66,29 +70,27 @@ create_patterns = function(x, y, formula, start_column = 'start_date',
     sampling_freq <- get_stars_time_freq(x)
   }
 
-  # Extract variables from formula
-  vars <- all.vars(formula)
-
   # Define GAM function
-  gam_fun = function(y, t, formula_vars, ...){
-    df = data.frame(y, t = as.numeric(t))
-    names(df) <- formula_vars
-    fit = mgcv::gam(data = df, formula = as.formula(paste(formula_vars[1], "~", formula_vars[2])), ...)
-    pred_t = data.frame(t = as.numeric(seq(min(t), max(t), by = sampling_freq)))
+  gam_fun <- function(y, t, formula, ...){
+    df <- data.frame(y, t = as.numeric(t))
+    df <- setNames(list(y, as.numeric(t)), all.vars(formula))
+    fit <- mgcv::gam(data = df, formula = formula, ...)
+    pred_t <- setNames(list(as.numeric(seq(min(t), max(t), by = sampling_freq))), all.vars(formula)[2])
     predict(fit, newdata = pred_t)
   }
 
   # Apply GAM function
-  res <- lapply(y_ts, function(ts){
+  patterns <- lapply(y_ts, function(ts){
     y_time <- ts$time
     ts$time <- NULL
     ts$id <- NULL
     sapply(as.list(ts), function(y) {
-      gam_fun(y, y_time, vars)
+      gam_fun(y, y_time, formula, ...)
     })
   })
 
-  return(res)
+  return(patterns)
+
 }
 
 
@@ -119,24 +121,26 @@ extract_time_series <- function(x, y) {
 #' This function calculates the most common difference between consecutive time points in a stars object. 
 #' This can be useful for determining the sampling frequency of the time series data.
 #'
-#' @param stars_object A stars object containing time series data.
+#' @param x A stars object containing time series data.
 #'
 #' @return A difftime object representing the most common time difference between consecutive samples.
 #'
 #'
-get_stars_time_freq <- function(stars_object) {
+get_stars_time_freq <- function(x) {
 
   # Extract the time dimension
-  time_values <- st_get_dimension_values(stars_object, "time")
+  time_values <- st_get_dimension_values(x, "time")
 
   # Compute the differences between consecutive time points
   time_diffs <- diff(time_values)
 
-  # Convert differences to days
+  # Convert differences to days (while retaining the difftime class)
   time_diffs <- as.difftime(time_diffs, units = "days")
 
-  # Compute the most common difference (mode)
-  freq <- unique(time_diffs)[which.max(tabulate(match(time_diffs, unique(time_diffs))))]
+  # Identify the mode
+  mode_val_index <- which.max(tabulate(match(time_diffs, unique(time_diffs))))
+  freq <- diff(time_values[mode_val_index:(mode_val_index+1)])
 
   return(freq)
 }
+

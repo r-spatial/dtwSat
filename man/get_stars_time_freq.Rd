@@ -4,10 +4,10 @@
 \alias{get_stars_time_freq}
 \title{Compute the Most Common Sampling Frequency in a Stars Object}
 \usage{
-get_stars_time_freq(stars_object)
+get_stars_time_freq(x)
 }
 \arguments{
-\item{stars_object}{A stars object containing time series data.}
+\item{x}{A stars object containing time series data.}
 }
 \value{
 A difftime object representing the most common time difference between consecutive samples.

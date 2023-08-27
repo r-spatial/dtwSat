@@ -21,7 +21,7 @@ dc <- read_stars(tif_files, proxy = FALSE, along = list(time = acquisition_date)
 dc <- dc[c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")]
 
 # Get temporal patters
-ts_patterns <- create_patterns(x = dc, y = samples, formula = band ~ s(t), sampling_freq = 23)
+ts_patterns <- create_patterns(x = dc, y = samples)
 
 # Visualize patterns
 plot_patterns(ts_patterns)

@@ -7,7 +7,7 @@
 create_patterns(
   x,
   y,
-  formula,
+  formula = band ~ s(time),
   start_column = "start_date",
   end_column = "end_date",
   label_colum = "label",
@@ -16,19 +16,19 @@ create_patterns(
 )
 }
 \arguments{
-\item{x}{A stars object representing spatial-temporal data.}
+\item{x}{A three dimensions stars object (x, y, time) with the satellite image time series.}
 
-\item{y}{An sf object representing spatial data with associated attributes.}
+\item{y}{An sf object with the coordinates of the training points.}
 
-\item{formula}{A formula for the GAM.}
+\item{formula}{A formula for the GAM. Default is \code{band ~ \link[mgcv]{s}(time)}.}
 
 \item{start_column}{Name of the column in y that indicates the start date. Default is 'start_date'.}
 
 \item{end_column}{Name of the column in y that indicates the end date. Default is 'end_date'.}
 
-\item{label_colum}{Name of the column in y that contains labels. Default is 'label'.}
+\item{label_colum}{Name of the column in y that contains land use labels. Default is 'label'.}
 
-\item{sampling_freq}{The time frequency for sampling. If NULL, the function will infer it.}
+\item{sampling_freq}{The time frequency for sampling including unit, e.g '16 day'. If NULL, the function will infer it.}
 
 \item{...}{Additional arguments passed to the GAM function.}
 }
@@ -38,5 +38,4 @@ A list containing the predicted values for each label.
 \description{
 This function creates a pattern based on Generalized Additive Models (GAM).
 It uses the specified formula to fit the model and predict values.
-It operates on stars objects (for spatial-temporal data) and sf objects (for spatial data).
 }

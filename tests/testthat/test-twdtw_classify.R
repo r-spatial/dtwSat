@@ -1,11 +1,12 @@
 library(stars)
 library(stringr)
 
-samples <- st_read("inst/mato_grosso_brazil/samples.gpkg")
+# Read training samples
+samples <- st_read(system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat"))
 
-#tif_files <- system.file("inst/mato_grosso_brazil", package = "dtwSat") |>
-#  dir(pattern = "\\.tif$", full.names = TRUE)
-tif_files <- dir("inst/mato_grosso_brazil", pattern = "\\.tif$", full.names = TRUE)
+# Satellite image time sereis files
+tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
+  dir(pattern = "\\.tif$", full.names = TRUE)
 
 # The acquisition date is in the file name are not the true acquisition date of each pixel
 # MOD13Q1 is a 16-day composite product, so the acquisition date is the first day of the 16-day period
@@ -19,16 +20,8 @@ dc <- read_stars(tif_files, proxy = FALSE, along = list(time = acquisition_date)
 # Remove the DOY band - this will be supported int the future
 dc <- dc[c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")]
 
-# Extract the samples
-ts_samples <- st_extract(dc, samples)
-ts_samples$id <- 1:dim(ts_samples)["geom"]
-ts_samples$label <- samples$label
+# Get temporal patters
+ts_patterns <- create_patterns(x = dc, y = samples, formula = band ~ s(t), sampling_freq = 23)
 
-a <- as.data.frame(ts_samples)
-a$geom <- NULL
-
-head(a)
-
-a[a$id == "1", ]
-
-# training set ready!
+# Visualize patterns
+plot_patterns(ts_patterns)

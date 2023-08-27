@@ -1,43 +1,41 @@
-#' @title Plotting temporal patterns 
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
+#' Plot Patterns from Time Series Data
+#'
+#' This function takes a list of time series data and creates a multi-faceted plot
+#' where each facet corresponds to a different time series from the list. 
+#' Within each facet, different attributes (columns of the time series) are 
+#' plotted as lines with different colors.
+#'
+#' @param x A list where each element is a data.frame representing a time series.
+#'          Each data.frame should have the same number of rows and columns, 
+#'          with columns representing different attributes (e.g., bands or indices)
+#'          and rows representing time points.
+#'          The name of each element in the list will be used as the facet title.
 #' 
-#' @description Method for plotting the temporal patterns.
+#' @param ... Not used.
 #' 
-#' @param x An object of class \code{\link[base]{data.frame}}.
-#' @param labels A vector with labels of the time series. If not declared 
-#' the function will plot all time series. 
-#' @param year An integer. The base year to shift the dates of the time series to. 
-#' If NULL then the time series is not shifted. Default is 2005. 
-#' @param attr An \link[base]{integer} vector or \link[base]{character} vector 
-#' indicating the attribute for plotting. If not declared the function will plot 
-#' all attributes.
-#' 
-#' @return A \link[ggplot2]{ggplot} object.
-#' 
+#' @return A ggplot object displaying the time series patterns.
+#'
 #' @export
-plot_patterns = function(x, labels=NULL, attr, year=2005){
-  
-  # Shift dates 
-  if(!is.null(year)) x = shift_dates(x, year=year)
-    
-  # Build data.frame
-  if(missing(attr)) attr = names(x[[1]])
-  df.p = do.call("rbind", lapply(labels, function(p){
-    ts = x[[p]][,attr,drop=FALSE]
-    data.frame(Time=ts[,1], ts, Pattern=p)
+plot_patterns = function(x, ...) {
+   
+  # Convert the list of time series data into a long-format data.frame
+  df.p = do.call("rbind", lapply(names(x), function(p) {
+    ts = x[[p]]
+    # Create a new data.frame with a 'Time' column and a 'Pattern' column
+    # representing the name of the current time series (facet name).
+    data.frame(Time = 1:nrow(ts), ts, Pattern = p) # Assuming the time series are evenly spaced
   }))
-  df.p = melt(df.p, id.vars=c("Time","Pattern"))
   
-  # Plot temporal patterns
-  gp = ggplot(df.p, aes_string(x="Time", y="value", colour="variable") ) + 
+  # Melt the data into long format suitable for ggplot2
+  df.p = melt(df.p, id.vars = c("Time", "Pattern"))
+  
+  # Construct the ggplot
+  gp = ggplot(df.p, aes(x = .data$Time, y = .data$value, colour = .data$variable)) + 
     geom_line() + 
     facet_wrap(~Pattern) + 
     theme(legend.position = "bottom") + 
-    scale_x_date(labels = date_format("%b")) + 
     guides(colour = guide_legend(title = "Bands")) + 
     ylab("Value")
   
-  gp
-  
+  return(gp)
 }
-

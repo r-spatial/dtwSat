@@ -1,89 +1,142 @@
-#' @title Create patterns 
-#' @author Victor Maus, \email{vwmaus1@@gmail.com}
-#' 
-#' @description Create temporal patterns.
-#' 
-#' @param x an object of class \code{\link[base]{data.frame}}.
-#' 
-#' @param from A character or \code{\link[base]{Dates}} object in the format 
-#' "yyyy-mm-dd". If not provided it is equal to the smallest date of the 
-#' first element in x. See details. 
-#'  
-#' @param to A \code{\link[base]{character}} or \code{\link[base]{Dates}} 
-#' object in the format "yyyy-mm-dd". If not provided it is equal to the 
-#' greatest date of the first element in x. See details. 
-#' 
-#' @param attr A vector character or numeric. The attributes in \code{x} to be used. 
-#' If not declared the function uses all attributes.  
-#' 
-#' @param freq An integer. The sampling frequency of the output patterns.
+#' Create a Pattern Using GAM
 #'
-#' @param split A logical. If TRUE the samples are split by label. If FALSE 
-#' all samples are set to the same label. 
-#' 
-#' @param formula A formula. Argument to pass to \code{\link[mgcv]{gam}}. 
-#' 
-#' @param ... other arguments to pass to the function \code{\link[mgcv]{gam}} in the 
-#' package \pkg{mgcv}.
-#' 
-#' @return an object of class \code{\link[base]{data.frame}} 
+#' This function creates a pattern based on Generalized Additive Models (GAM).
+#' It uses the specified formula to fit the model and predict values.
+#' It operates on stars objects (for spatial-temporal data) and sf objects (for spatial data).
+#'
+#' @param x A stars object representing spatial-temporal data.
+#' @param y An sf object representing spatial data with associated attributes.
+#' @param formula A formula for the GAM. 
+#' @param start_column Name of the column in y that indicates the start date. Default is 'start_date'.
+#' @param end_column Name of the column in y that indicates the end date. Default is 'end_date'.
+#' @param label_colum Name of the column in y that contains labels. Default is 'label'.
+#' @param sampling_freq The time frequency for sampling. If NULL, the function will infer it.
+#' @param ... Additional arguments passed to the GAM function.
+#'
+#' @return A list containing the predicted values for each label.
+#'
 #' 
 #'
-#' @details The hidden assumption is that the temporal pattern is a cycle the repeats itself 
-#' within a given time interval. Therefore, all time series samples in \code{x} are aligned 
-#' with each other, keeping their respective sequence of days of the year. The function fits a 
-#' Generalized Additive Model (GAM) to the aligned set of samples.  
-#' 
 #' @export
-create_pattern = function(x, from, to, freq, attr, formula, ...){
+create_patterns = function(x, y, formula, start_column = 'start_date', 
+                          end_column = 'end_date', label_colum = 'label', 
+                          sampling_freq = NULL, ...){
   
-  # Pattern period 
-  if( is.null(from) | is.null(to) ){
-    from = min(as.Date(x[[1]]))
-    to = max(as.Date(x[[1]]))
+  # Check if x is a stars object with a time dimension
+  if (!inherits(x, "stars") || dim(x)['time'] < 1) {
+    stop("x must be a stars object with a 'time' dimension")
   }
 
-  from = as.Date(from)
-  to = as.Date(to)
-  
-  # Get formula variables
-  vars = all.vars(formula)
-  
-  # Shift dates to match the same period  
-  df = do.call("rbind", lapply(as.list(x), function(x){
-    res = shift_dates(x, year=as.numeric(format(to, "%Y")))
-    res = window(res, start = from, end = to)
-    res = data.frame(time=index(res), res)
-    names(res) = c("time", names(x))
-    res
-  }))
-  names(df)[1] = vars[2]
-  
-  dates = as.Date(df[[vars[2]]])
-  pred_time = seq(from, to, freq)
-  
-  fun = function(y, ...){
-    df = data.frame(y, as.numeric(dates))
-    names(df) = vars
-    fit = gam(data = df, formula = formula, ...)
-    time = data.frame(as.numeric(pred_time))
-    names(time) = vars[2]
-    predict.gam(fit, newdata = time)
-  }
-  
-  if(is.null(attr)) attr = names(df)[-which(names(df) %in% vars[2])]
-
-  res = sapply(as.list(df[attr]), FUN=fun, ...)
-
+  # Check if y is an sf object with point geometry
+  if (!inherits(y, "sf") || !all(st_is(y, "POINT"))) {
+    stop("y must be an sf object with point geometry")
   }
 
+  # Check for required columns in y
+  required_columns <- c(start_column, end_column, label_colum)
+  missing_columns <- setdiff(required_columns, names(y))
+  if (length(missing_columns) > 0) {
+    stop(paste("Missing required columns in y:", paste(missing_columns, collapse = ", ")))
+  }
+
+  # Convert columns to date-time
+  y[ , start_column] <- to_date_time(y[[start_column]])
+  y[ , end_column] <- to_date_time(y[[end_column]])
+
+  # Extract time series from stars
+  y_ts <- extract_time_series(x, y)
+  y_ts$geom <- NULL
+
+  # Shift dates
+  unique_ids <- unique(y_ts$id)
+  for (id in seq_along(unique_ids)) {
+    idx <- y_ts$id == unique_ids[id]
+    y_ts[idx, 'time'] <- shift_dates(y_ts[idx, 'time'])
+  }
+
+  # Split data frame by label and remove label column
+  y_ts <- lapply(split(y_ts, y_ts$label), function(df) {
+    df$label <- NULL
+    return(df)
+  })
+
+  # Determine sampling frequency
+  if (is.null(sampling_freq)) {
+    warning("Sampling frequency not defined; inferring from the stars object.")
+    sampling_freq <- get_stars_time_freq(x)
+  }
+
+  # Extract variables from formula
+  vars <- all.vars(formula)
+
+  # Define GAM function
+  gam_fun = function(y, t, formula_vars, ...){
+    df = data.frame(y, t = as.numeric(t))
+    names(df) <- formula_vars
+    fit = mgcv::gam(data = df, formula = as.formula(paste(formula_vars[1], "~", formula_vars[2])), ...)
+    pred_t = data.frame(t = as.numeric(seq(min(t), max(t), by = sampling_freq)))
+    predict(fit, newdata = pred_t)
+  }
+
+  # Apply GAM function
+  res <- lapply(y_ts, function(ts){
+    y_time <- ts$time
+    ts$time <- NULL
+    ts$id <- NULL
+    sapply(as.list(ts), function(y) {
+      gam_fun(y, y_time, vars)
+    })
+  })
+
+  return(res)
+}
 
 
 
+#' Extract Time Series from a Stars Object for Specified Points
+#'
+#' This function extracts a time series from a stars object for each specified point in the sf object. 
+#' Each extracted sample is then labeled with an ID and the label from the sf object.
+#'
+#' @param x A stars object containing the raster time series data.
+#' @param y An sf object containing the point geometries and their associated labels.
+#'
+#' @return A data.frame with the extracted time series for each point in the sf object, 
+#'         with additional columns for the ID and label of each sample.
+#'
+#'
+extract_time_series <- function(x, y) {
+  ts_samples <- st_extract(x, y)
+  ts_samples$id <- 1:dim(ts_samples)["geom"]
+  ts_samples$label <- y$label
+  as.data.frame(ts_samples)
+}
 
 
 
+#' Compute the Most Common Sampling Frequency in a Stars Object
+#'
+#' This function calculates the most common difference between consecutive time points in a stars object. 
+#' This can be useful for determining the sampling frequency of the time series data.
+#'
+#' @param stars_object A stars object containing time series data.
+#'
+#' @return A difftime object representing the most common time difference between consecutive samples.
+#'
+#'
+get_stars_time_freq <- function(stars_object) {
 
+  # Extract the time dimension
+  time_values <- st_get_dimension_values(stars_object, "time")
 
+  # Compute the differences between consecutive time points
+  time_diffs <- diff(time_values)
 
+  # Convert differences to days
+  time_diffs <- as.difftime(time_diffs, units = "days")
 
+  # Compute the most common difference (mode)
+  freq <- unique(time_diffs)[which.max(tabulate(match(time_diffs, unique(time_diffs))))]
+
+  return(freq)
+}

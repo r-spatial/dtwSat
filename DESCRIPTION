@@ -22,14 +22,16 @@ Authors@R:
              role = c("ctb"),
              comment = c(ORCID = "0000-0002-6642-2543"))
              )
-Description: Provides an implementation of the Time-Weighted Dynamic Time
-    Warping (TWDTW) method for land cover mapping. TWDTW computes the similarity between 
-    satellite image time series with a set of known temporal patterns 
-    (e.g. phenological cycles of the vegetation).
-    'dtwSat' offers the user methods to create temporal patterns for land cover types, 
-    perform TWDTW analysis for satellite datasets, visualize the results of the analysis, 
-    produce land cover maps, create temporal plots for land cover change, and compute 
-    accuracy metrics.
+Description: Provides a robust approach to land use mapping using multi-dimensional 
+    (multi-band) satellite image time series. By leveraging the Time-Weighted Dynamic 
+    Time Warping (TWDTW) distance metric in tandem with a 1-NN classifier, the package 
+    provides functions to produce land use maps based on distinct seasonality patterns, 
+    typically observed in the phenological cycles of vegetation. The TWDTW algorithm is 
+    described in Maus et al. (2016) <doi:10.1109/JSTARS.2016.2517118> and 
+    Maus et al. (2019) <doi:10.18637/jss.v088.i05>. A key strength of TWDTW is its ability 
+    to recognize patterns with only a minimal training set, achieving notable accuracy. 
+    The package features tools for generating temporal patterns for various land cover types, 
+    conducting land use mapping, and visualizing the outcomes.
 License: GPL (>= 3)
 URL: https://github.com/vwmaus/dtwSat/
 BugReports: https://github.com/vwmaus/dtwSat/issues/
@@ -39,10 +41,17 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends:
     twdtw,
-    stars
+    sf,
+    stars,
+    ggplot2
 Imports:
-    mgcv
+    mgcv,
+    stats,
+    scales,
+    reshape2,
+    rlang
 Suggests:
     rbenchmark,
+    stringr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -2,29 +2,25 @@
 % Please edit documentation in R/plot_patterns.R
 \name{plot_patterns}
 \alias{plot_patterns}
-\title{Plotting temporal patterns}
+\title{Plot Patterns from Time Series Data}
 \usage{
-plot_patterns(x, labels = NULL, attr, year = 2005)
+plot_patterns(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{\link[base]{data.frame}}.}
+\item{x}{A list where each element is a data.frame representing a time series.
+Each data.frame should have the same number of rows and columns,
+with columns representing different attributes (e.g., bands or indices)
+and rows representing time points.
+The name of each element in the list will be used as the facet title.}
 
-\item{labels}{A vector with labels of the time series. If not declared
-the function will plot all time series.}
-
-\item{attr}{An \link[base]{integer} vector or \link[base]{character} vector
-indicating the attribute for plotting. If not declared the function will plot
-all attributes.}
-
-\item{year}{An integer. The base year to shift the dates of the time series to.
-If NULL then the time series is not shifted. Default is 2005.}
+\item{...}{Not used.}
 }
 \value{
-A \link[ggplot2]{ggplot} object.
+A ggplot object displaying the time series patterns.
 }
 \description{
-Method for plotting the temporal patterns.
-}
-\author{
-Victor Maus, \email{vwmaus1@gmail.com}
+This function takes a list of time series data and creates a multi-faceted plot
+where each facet corresponds to a different time series from the list.
+Within each facet, different attributes (columns of the time series) are
+plotted as lines with different colors.
 }

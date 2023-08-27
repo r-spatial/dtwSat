@@ -66,8 +66,8 @@ create_patterns = function(x, y, formula = band ~ s(time), start_column = 'start
 
   # Determine sampling frequency
   if (is.null(sampling_freq)) {
-    warning("Sampling frequency not defined; inferring from the stars object.")
     sampling_freq <- get_stars_time_freq(x)
+    cat("Sampling frequency inferred from the stars object:", as.numeric(sampling_freq), attr(sampling_freq, "units"), "\n")
   }
 
   # Define GAM function

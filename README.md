@@ -7,6 +7,9 @@
 [![CRAN](https://www.r-pkg.org/badges/version/dtwSat)](https://cran.r-project.org/package=dtwSat)
 [![Downloads](https://cranlogs.r-pkg.org/badges/dtwSat?color=brightgreen)](https://www.r-pkg.org/pkg/dtwSat)
 [![total](http://cranlogs.r-pkg.org/badges/grand-total/dtwSat)](http://www.r-pkg.org/pkg/dtwSat)
+[![cran checks](https://badges.cranchecks.info/worst/dtwSat.svg)](https://cran.r-project.org/web/checks/check_results_dtwSat.html)
+[![status](https://tinyverse.netlify.com/badge/dtwSat)](https://CRAN.R-project.org/package=dtwSat)
+
 <!-- badges: end -->
   
 

@@ -3,9 +3,9 @@
 #' @import stars
 #' @import ggplot2
 #' @importFrom stats as.formula predict setNames
-#' @importFrom mgcv gam s predict.gam 
-#' @importFrom scales pretty_breaks date_format percent
-#' @importFrom reshape2 melt
+#' @importFrom mgcv gam s predict.gam
 #' @importFrom rlang .data
+#' @importFrom tidyr pivot_longer pivot_wider nest unnest
+#' @importFrom proxy dist
 #' 
 NULL

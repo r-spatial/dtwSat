@@ -47,11 +47,10 @@ Depends:
 Imports:
     mgcv,
     stats,
-    scales,
-    reshape2,
-    rlang
+    tidyr,
+    rlang,
+    proxy
 Suggests:
     rbenchmark,
-    stringr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

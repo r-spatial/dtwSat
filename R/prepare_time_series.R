@@ -56,7 +56,7 @@ prepare_time_series <- function(x) {
   x$band <- rep(date_band$band, ns)
   x$time <- rep(date_band$time, ns)
   x$band_date <- NULL
-  result_df <- pivot_wider(x, id_cols = c(.data$ts_id, .data$label, .data$time), names_from = 'band', values_from = 'value')
+  result_df <- pivot_wider(x, id_cols = c('ts_id', 'label', 'time'), names_from = 'band', values_from = 'value')
   result_df <- nest(result_df, .by = c(.data$ts_id, .data$label), .key = "observations")
 
   return(result_df)

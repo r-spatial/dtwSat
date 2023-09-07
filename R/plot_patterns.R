@@ -24,15 +24,15 @@
 plot.knn1_twdtw <- function(x, n = 12, ...) {
 
   # Convert the list of time series data into a long-format data.frame
-  df <- unnest(x$data[1:n, ], cols = .data$observations)
+  df <- unnest(x$data[1:n, ], cols = 'observations')
 
   # Melt the data into long format suitable for ggplot2
-  df <- pivot_longer(df, !c(.data$label, .data$time), names_to = "band", values_to = "value")
+  df <- pivot_longer(df, !c('label', 'time'), names_to = "band", values_to = "value")
 
   # Construct the ggplot
-  gp <- ggplot(df, aes(x = .data$time, y = .data$value, colour = .data$band)) +
+  gp <- ggplot(df, aes(x = 'time', y = 'value', colour = 'band')) +
     geom_line() +
-    facet_wrap(~label) +
+    facet_wrap(~'label') +
     theme(legend.position = "bottom") +
     guides(colour = guide_legend(title = "Bands")) +
     ylab("Value") +

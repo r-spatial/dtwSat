@@ -73,7 +73,7 @@ knn1_twdtw <- function(x, y, formula = NULL, start_column = 'start_date',
     ts_data$observations <- lapply(ts_data$observations, shift_ts_dates)
 
     # Split data frame by label
-    ts_data <- unnest(ts_data, cols = .data$observations)
+    ts_data <- unnest(ts_data, cols = 'observations')
     ts_data <- nest(ts_data, .by = .data$label, .key = "observations")
 
     # Define GAM function

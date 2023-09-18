@@ -19,10 +19,11 @@
 #' then samples of the same label (land cover class) will be resampled using GAM.
 #' Resampling can significantly reduce prediction processing time.
 #'
-#' @return A 'knn1_twdtw' model containing the trained model information and the data used.
+#' @return A 'twdtw_knn1' model containing the trained model information and the data used.
 #'
 #' @examples
 #' \dontrun{
+#'
 #' # Read training samples
 #' samples <-
 #'   system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
@@ -46,7 +47,7 @@
 #'       split(c("time"))
 #'
 #' # Create a knn1-twdtw model
-#' m <- knn1_twdtw(x = dc,
+#' m <- twdtw_knn1(x = dc,
 #'                 y = samples,
 #'                 formula = band ~ s(time))
 #'
@@ -62,9 +63,10 @@
 #'                 time_scale = 'day',
 #'                 time_weight = c(steepness = 0.1, midpoint = 50))
 #' )
+#'
 #' }
 #' @export
-knn1_twdtw <- function(x, y, formula = NULL, start_column = 'start_date',
+twdtw_knn1 <- function(x, y, formula = NULL, start_column = 'start_date',
                        end_column = 'end_date', label_colum = 'label',
                        sampling_freq = NULL, ...){
 
@@ -138,7 +140,7 @@ knn1_twdtw <- function(x, y, formula = NULL, start_column = 'start_date',
   model$call <- match.call()
   model$formula <- formula
   model$data <- ts_data
-  class(model) <- "knn1_twdtw"
+  class(model) <- "twdtw_knn1"
 
   return(model)
 

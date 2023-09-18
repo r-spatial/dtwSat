@@ -24,7 +24,7 @@ dc <- read_stars(tif_files,
   split(c("time"))
 
 # Create a knn1-twdtw model
-m <- knn1_twdtw(x = dc,
+m <- twdtw_knn1(x = dc,
                 y = samples,
                 formula = band ~ s(time))
 
@@ -51,10 +51,12 @@ dc <- read_stars(tif_files,
   split(c("time")) |>
   split(c("band"))
 
-m <- knn1_twdtw(x = dc,
+m <- twdtw_knn1(x = dc,
                 y = samples,
                 formula = band ~ s(time),
                 sampling_freq = 60)
+
+plot(m)
 
 system.time(
   lu <- predict(dc,
@@ -66,5 +68,9 @@ system.time(
 )
 
 # Test model without samples reduction
-m <- knn1_twdtw(x = dc,
+m <- twdtw_knn1(x = dc,
                 y = samples)
+
+plot(m)
+
+plot(m, bands = c('EVI', 'NDVI'))

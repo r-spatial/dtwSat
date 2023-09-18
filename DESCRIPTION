@@ -54,7 +54,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Collate: 
-    'plot_patterns.R'
+    'plot.R'
     'predict.R'
     'prepare_time_series.R'
     'shift_dates.R'

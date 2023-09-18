@@ -14,6 +14,8 @@ prepare_time_series <- function(x) {
 
   # Remove the 'geom' column if it exists
   x$geom <- NULL
+  x$x <- NULL
+  x$y <- NULL
   var_names <- names(x)
   var_names <- var_names[!var_names %in% 'label']
 

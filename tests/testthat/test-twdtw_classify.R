@@ -26,8 +26,7 @@ dc <- read_stars(tif_files,
 # Create a knn1-twdtw model
 m <- knn1_twdtw(x = dc,
                 y = samples,
-                formula = band ~ s(time),
-                sampling_freq = 16)
+                formula = band ~ s(time))
 
 # Visualize model patterns
 plot(m)
@@ -42,11 +41,30 @@ system.time(
                 time_weight = c(steepness = 0.1, midpoint = 50))
 )
 
-# Test get freq from data
+### OTHER TESTS
+# split time first
+dc <- read_stars(tif_files,
+                 proxy = FALSE,
+                 along = list(time = acquisition_date),
+                 RasterIO = list(bands = 1:6)) |>
+  st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
+  split(c("time")) |>
+  split(c("band"))
+
 m <- knn1_twdtw(x = dc,
                 y = samples,
-                formula = band ~ s(time))
+                formula = band ~ s(time),
+                sampling_freq = 60)
 
-# Test without samples reduction
+system.time(
+  lu <- predict(dc,
+                model = m,
+                drop_dimensions = TRUE,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50))
+)
+
+# Test model without samples reduction
 m <- knn1_twdtw(x = dc,
                 y = samples)

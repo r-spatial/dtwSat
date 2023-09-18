@@ -11,6 +11,9 @@
 #'
 #' @return A vector of predicted classes for the `newdata`.
 #'
+#' @seealso knn1_twdtw
+#'
+#' @inherit knn1_twdtw examples
 #'
 #' @export
 predict.knn1_twdtw <- function(object, newdata, ...){

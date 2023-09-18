@@ -22,3 +22,49 @@ This function predicts the classes of new data using the Time Warped Dynamic Tim
 method with a 1-nearest neighbor approach. The prediction is based on the minimum TWDTW distance
 to the known patterns stored in the \code{knn1_twdtw} model.
 }
+\examples{
+\dontrun{
+# Read training samples
+samples <-
+  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
+  st_read(quiet = TRUE)
+
+# Get satellite image time sereis files
+tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
+  dir(pattern = "\\\\.tif$", full.names = TRUE)
+
+# Get acquisition dates
+acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
+  as.Date(format = "\%Y\%m\%d")
+
+# Create a 2D datacube
+dc <- read_stars(tif_files,
+                 proxy = FALSE,
+                 along = list(time = acquisition_date),
+                 RasterIO = list(bands = 1:6)) |>
+      st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
+      split(c("band")) |>
+      split(c("time"))
+
+# Create a knn1-twdtw model
+m <- knn1_twdtw(x = dc,
+                y = samples,
+                formula = band ~ s(time))
+
+# Visualize model patterns
+plot(m)
+
+# Classify satellite images
+system.time(
+  lu <- predict(dc,
+                model = m,
+                drop_dimensions = TRUE,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50))
+)
+}
+}
+\seealso{
+knn1_twdtw
+}

@@ -52,12 +52,12 @@ prepare_time_series <- function(x) {
   if (!'label' %in% names(x)) {
     x$label <- NA
   }
-  x <- pivot_longer(x, !c(.data$ts_id, .data$label), names_to = "band_date", values_to = "value")
+  x <- pivot_longer(x, !c('ts_id', 'label'), names_to = 'band_date', values_to = 'value')
   x$band <- rep(date_band$band, ns)
   x$time <- rep(date_band$time, ns)
   x$band_date <- NULL
   result_df <- pivot_wider(x, id_cols = c('ts_id', 'label', 'time'), names_from = 'band', values_from = 'value')
-  result_df <- nest(result_df, .by = c(.data$ts_id, .data$label), .key = "observations")
+  result_df <- nest(result_df, .by = c('ts_id', 'label'), .key = 'observations')
 
   return(result_df)
 

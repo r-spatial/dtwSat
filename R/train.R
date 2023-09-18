@@ -22,9 +22,47 @@
 #' @return A 'knn1_twdtw' model containing the trained model information and the data used.
 #'
 #' @examples
+#' \dontrun{
+#' # Read training samples
+#' samples <-
+#'   system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
+#'   st_read(quiet = TRUE)
 #'
-#' # Example will be added once the function is properly implemented and tested.
-#' 
+#' # Get satellite image time sereis files
+#' tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
+#'   dir(pattern = "\\.tif$", full.names = TRUE)
+#'
+#' # Get acquisition dates
+#' acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
+#'   as.Date(format = "%Y%m%d")
+#'
+#' # Create a 2D datacube
+#' dc <- read_stars(tif_files,
+#'                  proxy = FALSE,
+#'                  along = list(time = acquisition_date),
+#'                  RasterIO = list(bands = 1:6)) |>
+#'       st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
+#'       split(c("band")) |>
+#'       split(c("time"))
+#'
+#' # Create a knn1-twdtw model
+#' m <- knn1_twdtw(x = dc,
+#'                 y = samples,
+#'                 formula = band ~ s(time))
+#'
+#' # Visualize model patterns
+#' plot(m)
+#'
+#' # Classify satellite images
+#' system.time(
+#'   lu <- predict(dc,
+#'                 model = m,
+#'                 drop_dimensions = TRUE,
+#'                 cycle_length = 'year',
+#'                 time_scale = 'day',
+#'                 time_weight = c(steepness = 0.1, midpoint = 50))
+#' )
+#' }
 #' @export
 knn1_twdtw <- function(x, y, formula = NULL, start_column = 'start_date',
                        end_column = 'end_date', label_colum = 'label',
@@ -74,7 +112,7 @@ knn1_twdtw <- function(x, y, formula = NULL, start_column = 'start_date',
 
     # Split data frame by label
     ts_data <- unnest(ts_data, cols = 'observations')
-    ts_data <- nest(ts_data, .by = .data$label, .key = "observations")
+    ts_data <- nest(ts_data, .by = 'label', .key = "observations")
 
     # Define GAM function
     gam_fun <- function(band, t, pred_t, formula, ...){
@@ -106,34 +144,15 @@ knn1_twdtw <- function(x, y, formula = NULL, start_column = 'start_date',
 
 }
 
-#' Compute the Most Common Sampling Frequency in a Stars Object
+#' Compute the Most Common Sampling Frequency across all observations
 #'
-#' This function calculates the most common difference between consecutive time points in a stars object. 
-#' This can be useful for determining the sampling frequency of the time series data.
+#' This function calculates the most common difference between consecutive time points.
+#' This can be useful for determining the aproximate sampling frequency of the time series data.
 #'
-#' @param x A stars object containing time series data.
+#' @param x A data frame including a column called `observations`` with the time series 
 #'
 #' @return A difftime object representing the most common time difference between consecutive samples.
 #'
-#'
-get_stars_time_freq <- function(x) {
-
-  # Extract the time dimension
-  time_values <- st_get_dimension_values(x, "time")
-
-  # Compute the differences between consecutive time points
-  time_diffs <- diff(time_values)
-
-  # Convert differences to days (while retaining the difftime class)
-  time_diffs <- as.difftime(time_diffs, units = "days")
-
-  # Identify the mode
-  mode_val_index <- which.max(tabulate(match(time_diffs, unique(time_diffs))))
-  freq <- diff(time_values[mode_val_index:(mode_val_index+1)])
-
-  return(freq)
-}
-
 get_time_series_freq <- function(x) {
 
   # Extract the time dimension

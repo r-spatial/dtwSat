@@ -20,6 +20,10 @@
 #'
 #' @return A \code{\link[ggplot2]{ggplot}} object displaying the time series patterns.
 #'
+#' @seealso knn1_twdtw
+#'
+#' @inherit knn1_twdtw examples
+#'
 #' @export
 plot.knn1_twdtw <- function(x, n = 12, ...) {
 
@@ -30,9 +34,9 @@ plot.knn1_twdtw <- function(x, n = 12, ...) {
   df <- pivot_longer(df, !c('label', 'time'), names_to = "band", values_to = "value")
 
   # Construct the ggplot
-  gp <- ggplot(df, aes(x = 'time', y = 'value', colour = 'band')) +
+  gp <- ggplot(df, aes(x = .data$time, y = .data$value, colour = .data$band)) +
     geom_line() +
-    facet_wrap(~'label') +
+    facet_wrap(~label) +
     theme(legend.position = "bottom") +
     guides(colour = guide_legend(title = "Bands")) +
     ylab("Value") +

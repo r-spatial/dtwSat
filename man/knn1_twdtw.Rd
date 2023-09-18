@@ -47,7 +47,45 @@ then samples of the same label (land cover class) will be resampled using GAM.
 Resampling can significantly reduce prediction processing time.
 }
 \examples{
+\dontrun{
+# Read training samples
+samples <-
+  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
+  st_read(quiet = TRUE)
 
-# Example will be added once the function is properly implemented and tested.
+# Get satellite image time sereis files
+tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
+  dir(pattern = "\\\\.tif$", full.names = TRUE)
 
+# Get acquisition dates
+acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
+  as.Date(format = "\%Y\%m\%d")
+
+# Create a 2D datacube
+dc <- read_stars(tif_files,
+                 proxy = FALSE,
+                 along = list(time = acquisition_date),
+                 RasterIO = list(bands = 1:6)) |>
+      st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
+      split(c("band")) |>
+      split(c("time"))
+
+# Create a knn1-twdtw model
+m <- knn1_twdtw(x = dc,
+                y = samples,
+                formula = band ~ s(time))
+
+# Visualize model patterns
+plot(m)
+
+# Classify satellite images
+system.time(
+  lu <- predict(dc,
+                model = m,
+                drop_dimensions = TRUE,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50))
+)
+}
 }

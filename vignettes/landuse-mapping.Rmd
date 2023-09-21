@@ -49,6 +49,8 @@ tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
 
 acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
   as.Date(format = "%Y%m%d")
+
+print(acquisition_date)
 ```
 
 *Side note:* The date in the file name is not the true acquisition date for each pixel.
@@ -63,6 +65,8 @@ dc <- read_stars(tif_files,
                  RasterIO = list(bands = 1:6)) |>
   st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
   split(c("band"))
+
+print(dc)
 ```
 
 Note that it's important to set the date for each observation using the parameter `along`.
@@ -72,7 +76,7 @@ the 'band' dimension into attributes. This prepares the data for training the TW
 ## Create TWDTW-KNN1 model
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
-twdtw_model <- twdtw_knn1(x = dc, 
+twdtw_model <- twdtw_knn1(x = dc,
                           y = samples,
                           cycle_length = 'year',
                           time_scale = 'day',

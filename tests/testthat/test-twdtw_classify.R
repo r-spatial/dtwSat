@@ -31,7 +31,9 @@ system.time(
                   time_weight = c(steepness = 0.1, midpoint = 50),
                   formula = band ~ s(time))
 )
-m
+
+print(m)
+
 # Visualize model patterns
 plot(m)
 

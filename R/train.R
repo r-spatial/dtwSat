@@ -4,7 +4,7 @@
 #' This function prepares a KNN-1 model with the Time Warp Dynamic Time Warping (TWDTW) algorithm.
 #' If a formula is provided, the training samples are resampled using Generalized Additive Models (GAM).
 #'
-#' @param x A two-dimensional stars object (x, y) with time and bands as attributes.
+#' @param x A three-dimensional stars object (x, y, time) with bands as attributes.
 #' @param y An sf object with the coordinates of the training points.
 #' @param time_weight A numeric vector with length two (steepness and midpoint of logistic weight) or a function.
 #' See details in \link[twdtw]{twdtw}.
@@ -41,14 +41,13 @@
 #' acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
 #'   as.Date(format = "%Y%m%d")
 #'
-#' # Create a 2D datacube
+#' # Create a 3D datacube
 #' dc <- read_stars(tif_files,
 #'                  proxy = FALSE,
 #'                  along = list(time = acquisition_date),
 #'                  RasterIO = list(bands = 1:6)) |>
 #'       st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-#'       split(c("band")) |>
-#'       split(c("time"))
+#'       split(c("band")) 
 #'
 #' # Create a knn1-twdtw model
 #' m <- twdtw_knn1(x = dc,
@@ -77,9 +76,11 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
                        sampling_freq = NULL, ...){
 
   # Check if x is a stars object with a time dimension
-  if (!inherits(x, "stars") || length(dim(x)) != 2) {
-    stop("x must be a stars object with two dimensions")
+  if (!inherits(x, "stars") || dim(x)['time'] < 1 || length(dim(x)) != 3) {
+    stop("x must be a three-dimensional stars object with a 'time' dimension")
   }
+
+  x <- split(x, c("time"))
 
   # Check if y is an sf object with point geometry
   if (!inherits(y, "sf") || !all(st_is(y, "POINT"))) {

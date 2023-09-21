@@ -39,14 +39,13 @@ tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
 acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
   as.Date(format = "\%Y\%m\%d")
 
-# Create a 2D datacube
+# Create a 3D datacube
 dc <- read_stars(tif_files,
                  proxy = FALSE,
                  along = list(time = acquisition_date),
                  RasterIO = list(bands = 1:6)) |>
       st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-      split(c("band")) |>
-      split(c("time"))
+      split(c("band")) 
 
 # Create a knn1-twdtw model
 m <- twdtw_knn1(x = dc,

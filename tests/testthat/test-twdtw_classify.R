@@ -13,15 +13,14 @@ acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
   as.Date(format = "%Y%m%d")
 
 # Read the data as a stars object setting the time/date for each observation
-# using along. This will prodcue a 4D array (data-cube) which will then be to
-# a 2D array by spliting 'band' and 'time' dimensions
+# using along. This will prodcue a 4D array (data-cube) which will then be converted
+# to a 3D array by spliting the 'band' dimension
 dc <- read_stars(tif_files,
                  proxy = FALSE,
                  along = list(time = acquisition_date),
                  RasterIO = list(bands = 1:6)) |>
   st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-  split(c("band")) |>
-  split(c("time"))
+  split(c("band"))
 
 # Create a knn1-twdtw model
 system.time(
@@ -44,7 +43,6 @@ ggplot() +
   geom_stars(data = lu) +
   theme_minimal()
 
-
 ### OTHER TESTS
 # split time first
 dc <- read_stars(tif_files,
@@ -52,7 +50,6 @@ dc <- read_stars(tif_files,
                  along = list(time = acquisition_date),
                  RasterIO = list(bands = 1:6)) |>
   st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-  split(c("time")) |>
   split(c("band"))
 
 m <- twdtw_knn1(x = dc,

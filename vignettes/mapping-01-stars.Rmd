@@ -1,0 +1,130 @@
+---
+title: "1. Land use mapping using TWDTW-1NN and stars"
+author: "Victor Maus"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{1. Land use mapping using TWDTW-1NN and stars}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: ./../inst/REFERENCES.bib
+---
+
+```{r, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+This vignette offers a concise guide for using version 1.0.0 or higher of the `dtwSat` package to generate a land-use map.
+The package utilizes Time-Weighted Dynamic Time Warping (TWDTW) along with a 1-Nearest Neighbor (1-NN) classifier.
+The subsequent sections will walk you through the process of creating a land-use map based on a set of training samples 
+and a multi-band satellite image time series.
+
+# Reading Training Samples
+
+First, let's read a set of training samples that come with the `dtwSat` package installation.
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+library(dtwSat)
+
+samples <- system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
+  st_read(quiet = TRUE)
+```
+
+# Preparing the Satellite Image Time Series
+
+The `dtwSat` package supports satellite images read into R using the `stars` package.
+The instalation comes with a set of MOD13Q1 images for a region within the Brazilian Amazon.
+Note that timing is crucial for the TWDTW distance metric. To create a consistent image time series, 
+we start by extracting the date of acquisition from the MODIS file names [@Didan:2015].
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
+  dir(pattern = "\\.tif$", full.names = TRUE)
+
+acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
+  as.Date(format = "%Y%m%d")
+```
+
+*Side note:* The date in the file name is not the true acquisition date for each pixel.
+MOD13Q1 is a 16-day composite product, and the date in the file name is the first day of this 16-day period.
+
+With the files and dates in hand, we can construct a stars satellite image time series for `dtwSat`.
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+dc <- read_stars(tif_files,
+                 proxy = FALSE,
+                 along = list(time = acquisition_date),
+                 RasterIO = list(bands = 1:6)) |>
+  st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
+  split(c("band")) |>
+  split(c("time"))
+```
+
+Note that it's important to set the date for each observation using the parameter `along`.
+This will produce a 4D array (data-cube) that will be collapsed into a 2D array by splitting 
+the 'band' and 'time' dimensions. This prepares the data for training the TWDTW-1NN model.
+
+# Create TWDTW-KNN1 model
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+twdtw_model <- twdtw_knn1(x = dc, 
+                          y = samples,
+                          cycle_length = 'year',
+                          time_scale = 'day',
+                          time_weight = c(steepness = 0.1, midpoint = 50),
+                          formula = band ~ s(time))
+```
+
+In addition to the mandatory arguments `x` (satellite data-cube) and `y` (training samples), 
+the TWDTW distance calculation also requires setting `cycle_length`, `time_scale`, and `time_weight`.
+For more details, refer to the documentation using `?twdtw`. The argument `formula = band ~ s(time)` is optional.
+If provided, training samples time sereis are resampled using Generalized Additive Models (GAMs), 
+collapsing all samples with the same land-use label into a single sample. This reduces computational 
+demands. The sample in the model can be visualized as follows:
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+plot(twdtw_model)
+```
+
+
+# Land Use Prediction
+
+Finally, we predict the land-use classes for each pixel location in the data-cube:
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+lu_map <- predict(dc, model = twdtw_model)
+```
+
+And visualize the results using `ggplot`:
+
+```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+ggplot() +
+  geom_stars(data = lu_map) +
+  theme_minimal()
+```
+
+Note that some pixels (in a 3x3 box) in the northeast part of the map have `NA` values due 
+to a missing value in the blue band recorded on 2011-11-17. This limitation will be addressed 
+in future versions of the dtwSat package.
+
+Ultimately, we can write the map to a TIFF file we can use:
+
+```{r , echo = TRUE, eval = FALSE, warning = FALSE, message = FALSE}
+write_stars(lu_map, "lu_map.tif")
+```
+
+# Further Reading
+
+This introduction outlined the use of `dtwSat` for land-use mapping. 
+For more in-depth information, refer to the papers by @Maus:2016 and @Maus:2019 and the 
+[`twdtw` R package documentation](https://cran.r-project.org/web/packages/twdtw).
+
+For additional details on how to manage input and output satellite images, 
+[`check` the stars documentation](https://cran.r-project.org/web/packages/stars).
+
+# References

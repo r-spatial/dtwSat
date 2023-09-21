@@ -24,22 +24,26 @@ dc <- read_stars(tif_files,
   split(c("time"))
 
 # Create a knn1-twdtw model
-m <- twdtw_knn1(x = dc,
-                y = samples,
-                formula = band ~ s(time))
+system.time(
+  m <- twdtw_knn1(x = dc,
+                  y = samples,
+                  cycle_length = 'year',
+                  time_scale = 'day',
+                  time_weight = c(steepness = 0.1, midpoint = 50),
+                  formula = band ~ s(time))
+)
 
 # Visualize model patterns
 plot(m)
 
 # Classify satellite image time series
-system.time(
-  lu <- predict(dc,
-                model = m,
-                drop_dimensions = TRUE,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50))
-)
+system.time(lu <- predict(dc, model = m))
+
+# Visualise land use classification
+ggplot() +
+  geom_stars(data = lu) +
+  theme_minimal()
+
 
 ### OTHER TESTS
 # split time first
@@ -53,6 +57,9 @@ dc <- read_stars(tif_files,
 
 m <- twdtw_knn1(x = dc,
                 y = samples,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50),
                 formula = band ~ s(time),
                 sampling_freq = 60)
 
@@ -61,15 +68,22 @@ plot(m)
 system.time(
   lu <- predict(dc,
                 model = m,
-                drop_dimensions = TRUE,
                 cycle_length = 'year',
                 time_scale = 'day',
                 time_weight = c(steepness = 0.1, midpoint = 50))
 )
 
+# Visualise land use classification
+ggplot() +
+  geom_stars(data = lu) +
+  theme_minimal()
+
 # Test model without samples reduction
 m <- twdtw_knn1(x = dc,
-                y = samples)
+                y = samples,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50))
 
 plot(m)
 

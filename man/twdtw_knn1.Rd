@@ -7,6 +7,9 @@
 twdtw_knn1(
   x,
   y,
+  time_weight,
+  cycle_length,
+  time_scale,
   formula = NULL,
   start_column = "start_date",
   end_column = "end_date",
@@ -20,6 +23,13 @@ twdtw_knn1(
 
 \item{y}{An sf object with the coordinates of the training points.}
 
+\item{time_weight}{A numeric vector with length two (steepness and midpoint of logistic weight) or a function.
+See details in \link[twdtw]{twdtw}.}
+
+\item{cycle_length}{The length of the cycle, e.g. phenological cycles. Details in \link[twdtw]{twdtw}.}
+
+\item{time_scale}{Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.}
+
 \item{formula}{Either NULL or a formula to reduce samples of the same label using Generalized Additive Models (GAM).
 Default is \code{band ~ s(time)}. See details.}
 
@@ -32,7 +42,7 @@ Default is \code{band ~ s(time)}. See details.}
 \item{sampling_freq}{The time frequency for sampling, including the unit (e.g., '16 day').
 If NULL, the function will infer the frequency. This parameter is only used if a formula is provided.}
 
-\item{...}{Additional arguments passed to the GAM function.}
+\item{...}{Additional arguments passed to the \link[mgcv]{gam} function and to \link[twdtw]{twdtw} function.}
 }
 \value{
 A 'twdtw_knn1' model containing the trained model information and the data used.
@@ -74,20 +84,21 @@ dc <- read_stars(tif_files,
 # Create a knn1-twdtw model
 m <- twdtw_knn1(x = dc,
                 y = samples,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50),
                 formula = band ~ s(time))
 
 # Visualize model patterns
 plot(m)
 
 # Classify satellite images
-system.time(
-  lu <- predict(dc,
-                model = m,
-                drop_dimensions = TRUE,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50))
-)
+system.time(lu <- predict(dc, model = m))
+
+# Visualise land use classification
+ggplot() +
+  geom_stars(data = lu) +
+  theme_minimal()
 
 }
 }

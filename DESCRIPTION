@@ -35,6 +35,8 @@ License: GPL (>= 3)
 URL: https://github.com/vwmaus/dtwSat/
 BugReports: https://github.com/vwmaus/dtwSat/issues/
 Maintainer: Victor Maus <vwmaus1@gmail.com>
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
@@ -47,10 +49,9 @@ Imports:
     mgcv,
     stats,
     tidyr,
-    rlang,
     proxy
 Suggests:
-    rbenchmark,
+    knitr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Collate: 

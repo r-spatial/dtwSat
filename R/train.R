@@ -6,6 +6,10 @@
 #'
 #' @param x A two-dimensional stars object (x, y) with time and bands as attributes.
 #' @param y An sf object with the coordinates of the training points.
+#' @param time_weight A numeric vector with length two (steepness and midpoint of logistic weight) or a function.
+#' See details in \link[twdtw]{twdtw}.
+#' @param cycle_length The length of the cycle, e.g. phenological cycles. Details in \link[twdtw]{twdtw}.
+#' @param time_scale Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.
 #' @param formula Either NULL or a formula to reduce samples of the same label using Generalized Additive Models (GAM).
 #' Default is \code{band ~ s(time)}. See details.
 #' @param start_column Name of the column in y that indicates the start date. Default is 'start_date'.
@@ -13,7 +17,7 @@
 #' @param label_colum Name of the column in y containing land use labels. Default is 'label'.
 #' @param sampling_freq The time frequency for sampling, including the unit (e.g., '16 day').
 #' If NULL, the function will infer the frequency. This parameter is only used if a formula is provided.
-#' @param ... Additional arguments passed to the GAM function.
+#' @param ... Additional arguments passed to the \link[mgcv]{gam} function and to \link[twdtw]{twdtw} function.
 #'
 #' @details If \code{formula} is NULL, the KNN-1 model will retain all training samples. If a formula is passed (e.g., \code{band ~ \link[mgcv]{s}(time)}),
 #' then samples of the same label (land cover class) will be resampled using GAM.
@@ -49,24 +53,26 @@
 #' # Create a knn1-twdtw model
 #' m <- twdtw_knn1(x = dc,
 #'                 y = samples,
+#'                 cycle_length = 'year',
+#'                 time_scale = 'day',
+#'                 time_weight = c(steepness = 0.1, midpoint = 50),
 #'                 formula = band ~ s(time))
 #'
 #' # Visualize model patterns
 #' plot(m)
 #'
 #' # Classify satellite images
-#' system.time(
-#'   lu <- predict(dc,
-#'                 model = m,
-#'                 drop_dimensions = TRUE,
-#'                 cycle_length = 'year',
-#'                 time_scale = 'day',
-#'                 time_weight = c(steepness = 0.1, midpoint = 50))
-#' )
+#' system.time(lu <- predict(dc, model = m))
+#'
+#' # Visualise land use classification
+#' ggplot() +
+#'   geom_stars(data = lu) +
+#'   theme_minimal()
 #'
 #' }
 #' @export
-twdtw_knn1 <- function(x, y, formula = NULL, start_column = 'start_date',
+twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
+                       formula = NULL, start_column = 'start_date',
                        end_column = 'end_date', label_colum = 'label',
                        sampling_freq = NULL, ...){
 
@@ -79,6 +85,11 @@ twdtw_knn1 <- function(x, y, formula = NULL, start_column = 'start_date',
   if (!inherits(y, "sf") || !all(st_is(y, "POINT"))) {
     stop("y must be an sf object with point geometry")
   }
+
+  # check for minimum set of twdtw arguments
+  if (!(is.function(time_weight) || (is.numeric(time_weight) && length(time_weight) == 2))) stop("'time_weight' should be either a function or a numeric vector with length two")
+  if (is.null(cycle_length)) stop("The 'cycle_length' argument is missing.")
+  if (is.null(time_scale)) stop("The 'time_scale' argument is missing for 'cycle_length' type character.")
 
   # Check for required columns in y
   required_columns <- c(start_column, end_column, label_colum)
@@ -140,6 +151,17 @@ twdtw_knn1 <- function(x, y, formula = NULL, start_column = 'start_date',
   model$call <- match.call()
   model$formula <- formula
   model$data <- ts_data
+  # add twdtw arguments to model
+  model$twdtw_args <- list(time_weight = time_weight,
+                           cycle_length = cycle_length,
+                           time_scale = time_scale,
+                           origin = NULL,
+                           max_elapsed = Inf,
+                           version = "f90")
+  new_twdtw_args <- list(...)
+  matching_twdtw_args <- intersect(names(model$twdtw_args), names(new_twdtw_args))
+  model$twdtw_args[matching_twdtw_args] <- new_twdtw_args[matching_twdtw_args]
+
   class(model) <- "twdtw_knn1"
 
   return(model)

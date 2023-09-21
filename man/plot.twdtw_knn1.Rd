@@ -51,20 +51,21 @@ dc <- read_stars(tif_files,
 # Create a knn1-twdtw model
 m <- twdtw_knn1(x = dc,
                 y = samples,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50),
                 formula = band ~ s(time))
 
 # Visualize model patterns
 plot(m)
 
 # Classify satellite images
-system.time(
-  lu <- predict(dc,
-                model = m,
-                drop_dimensions = TRUE,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50))
-)
+system.time(lu <- predict(dc, model = m))
+
+# Visualise land use classification
+ggplot() +
+  geom_stars(data = lu) +
+  theme_minimal()
 
 }
 }

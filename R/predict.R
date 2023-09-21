@@ -8,6 +8,7 @@
 #' @param newdata A data frame or similar object containing the new observations 
 #' (time series data) to be predicted.
 #' @param ... Additional arguments passed to the \link[twdtw]{twdtw} function.
+#' If provided, they will overwrite twdtw arguments previously passed to \link[dtwSat]{twdtw_knn1}.
 #'
 #' @return A vector of predicted classes for the `newdata`.
 #'
@@ -18,6 +19,10 @@
 #' @export
 predict.twdtw_knn1 <- function(object, newdata, ...){
 
+  # Update twdtw_args with new arguments passed via ...
+  new_twdtw_args <- list(...)
+  matching_twdtw_args <- intersect(names(new_twdtw_args), names(object$twdtw_args))
+  object$twdtw_args[matching_twdtw_args] <- new_twdtw_args[matching_twdtw_args]
 
   # Convert newdata to time series
   newdata_ts <- prepare_time_series(newdata)
@@ -25,7 +30,7 @@ predict.twdtw_knn1 <- function(object, newdata, ...){
   # Compute TWDTW distances
   distances <- sapply(object$data$observations, function(pattern){
     sapply(newdata_ts$observations, function(ts) {
-      proxy::dist(x = as.data.frame(ts), y = as.data.frame(pattern), method = 'twdtw', ...)
+      do.call(proxy::dist, c(list(x = as.data.frame(ts), y = as.data.frame(pattern), method = 'twdtw'), object$twdtw_args))
     })
   })
 

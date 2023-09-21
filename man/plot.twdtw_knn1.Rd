@@ -55,6 +55,8 @@ m <- twdtw_knn1(x = dc,
                 time_weight = c(steepness = 0.1, midpoint = 50),
                 formula = band ~ s(time))
 
+print(m)
+
 # Visualize model patterns
 plot(m)
 

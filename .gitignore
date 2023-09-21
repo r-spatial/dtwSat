@@ -37,3 +37,5 @@ CRAN-SUBMISSION
 src/symbols.rds
 *.o
 *.so
+/doc/
+/Meta/

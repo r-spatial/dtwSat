@@ -43,22 +43,8 @@ shift_dates <- function(x, origin = "1970-01-01") {
   return(shifted_dates)
 }
 
-#### TO BE REMOVED: twdtw package will export this fucntion 
-to_date_time <- function(x){
-  if (!inherits(x, c("Date", "POSIXt"))) {
-    # check if all strings in the vector include hours, minutes, and seconds
-    if (all(grepl("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", x))) {
-      x <- try(as.POSIXct(x), silent = TRUE)
-    } else {
-      x <- try(as.Date(x), silent = TRUE)
-    }
-    if (inherits(x, "try-error")) {
-      stop("Some elements of x could not be converted to a date or datetime format")
-    }
-  }
+
+shift_ts_dates <- function(x) {
+  x$time <- shift_dates(x$time)
   return(x)
 }
-
-
-
-

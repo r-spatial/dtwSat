@@ -24,3 +24,8 @@ examples_x64
 ^LICENSE\.md$
 ^dtwSat\.Rproj$
 ^\.github$
+^doc$
+^Meta$
+
+vignettes.awk
+_pkgdown.yml

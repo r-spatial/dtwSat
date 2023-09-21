@@ -32,8 +32,7 @@ First, let's read a set of training samples that come with the `dtwSat` package 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 library(dtwSat)
 
-samples <- system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
-  st_read(quiet = TRUE)
+samples <- st_read(system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat"), quiet = TRUE)
 ```
 
 ## Preparing the Satellite Image Time Series
@@ -44,11 +43,9 @@ Note that timing is crucial for the TWDTW distance metric. To create a consisten
 we start by extracting the date of acquisition from the MODIS file names [@Didan:2015].
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
-tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
-  dir(pattern = "\\.tif$", full.names = TRUE)
+tif_files <- dir(system.file("mato_grosso_brazil", package = "dtwSat"), pattern = "\\.tif$", full.names = TRUE)
 
-acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
-  as.Date(format = "%Y%m%d")
+acquisition_date <- as.Date(regmatches(tif_files, regexpr("[0-9]{8}", tif_files)), format = "%Y%m%d")
 
 print(acquisition_date)
 ```
@@ -59,12 +56,17 @@ MOD13Q1 is a 16-day composite product, and the date in the file name is the firs
 With the files and dates in hand, we can construct a stars satellite image time series for `dtwSat`.
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+# read data-cube
 dc <- read_stars(tif_files,
                  proxy = FALSE,
                  along = list(time = acquisition_date),
-                 RasterIO = list(bands = 1:6)) |>
-  st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-  split(c("band"))
+                 RasterIO = list(bands = 1:6))
+
+# set band names
+dc <- st_set_dimensions(dc, 3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR"))
+
+# convert band dimension to attribute
+dc <- split(dc, c("band"))
 
 print(dc)
 ```
@@ -129,9 +131,9 @@ write_stars(lu_map, "lu_map.tif")
 
 This introduction outlined the use of `dtwSat` for land-use mapping. 
 For more in-depth information, refer to the papers by @Maus:2016 and @Maus:2019 and the 
-[`twdtw` R package documentation](https://cran.r-project.org/web/packages/twdtw).
+[`twdtw` R package documentation](https://CRAN.R-project.org/package=twdtw).
 
 For additional details on how to manage input and output satellite images, 
-[`check` the stars documentation](https://cran.r-project.org/web/packages/stars).
+[`check` the stars documentation](https://CRAN.R-project.org/package=stars).
 
 ## References

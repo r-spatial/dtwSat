@@ -27,25 +27,26 @@ to the known patterns stored in the \code{twdtw_knn1} model.
 \dontrun{
 
 # Read training samples
-samples <-
-  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
-  st_read(quiet = TRUE)
+samples_path <- 
+  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat")
+
+samples <- st_read(samples_path, quiet = TRUE)
 
 # Get satellite image time sereis files
-tif_files <- system.file("mato_grosso_brazil", package = "dtwSat") |>
-  dir(pattern = "\\\\.tif$", full.names = TRUE)
+tif_path <- system.file("mato_grosso_brazil", package = "dtwSat")
+tif_files <- dir(tif_path, pattern = "\\\\.tif$", full.names = TRUE)
 
 # Get acquisition dates
-acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files)) |>
-  as.Date(format = "\%Y\%m\%d")
+acquisition_date <- regmatches(tif_files, regexpr("[0-9]{8}", tif_files))
+acquisition_date <- as.Date(acquisition_date, format = "\%Y\%m\%d")
 
 # Create a 3D datacube
 dc <- read_stars(tif_files,
                  proxy = FALSE,
                  along = list(time = acquisition_date),
-                 RasterIO = list(bands = 1:6)) |>
-      st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-      split(c("band")) 
+                 RasterIO = list(bands = 1:6))
+dc <- st_set_dimensions(dc, 3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR"))
+dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
 m <- twdtw_knn1(x = dc,

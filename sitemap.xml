@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/articles/index.html</loc>
   </url>
   <url>
-    <loc>/articles/landuse-mapping.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/articles/landuse-mapping.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/index.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/get_time_series_freq.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/get_time_series_freq.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/plot.twdtw_knn1.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/plot.twdtw_knn1.html</loc>
   </url>
   <url>
-    <loc>/reference/predict.twdtw_knn1.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/predict.twdtw_knn1.html</loc>
   </url>
   <url>
-    <loc>/reference/prepare_time_series.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/prepare_time_series.html</loc>
   </url>
   <url>
-    <loc>/reference/pretty_arguments.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/pretty_arguments.html</loc>
   </url>
   <url>
-    <loc>/reference/print.twdtw_knn1.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/print.twdtw_knn1.html</loc>
   </url>
   <url>
-    <loc>/reference/shift_dates.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/shift_dates.html</loc>
   </url>
   <url>
-    <loc>/reference/twdtw_knn1.html</loc>
+    <loc>http://www.victor-maus.com/dtwSat/reference/twdtw_knn1.html</loc>
   </url>
 </urlset>

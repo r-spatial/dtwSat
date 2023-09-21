@@ -2,6 +2,7 @@
 
 S3method(plot,twdtw_knn1)
 S3method(predict,twdtw_knn1)
+S3method(print,twdtw_knn1)
 export(shift_dates)
 export(twdtw_knn1)
 import(ggplot2)

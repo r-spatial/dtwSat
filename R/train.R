@@ -169,6 +169,80 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
 
 }
 
+#' Print method for objects of class twdtw_knn1
+#'
+#' This method provides a structured printout of the important components
+#' of a `twdtw_knn1` object.
+#'
+#' @param x An object of class `twdtw_knn1`.
+#' @param ... ignored
+#' 
+#' @return Invisible `twdtw_knn1` object.
+#'
+#' @export
+print.twdtw_knn1 <- function(x, ...) {
+  cat("\nModel of class 'twdtw_knn1'\n")
+  cat("-----------------------------\n")
+
+  # Printing the call
+  cat("Call:\n")
+  print(x$call)
+
+  # Printing the formula, if available
+  cat("\nFormula:\n")
+  print(x$formula)
+
+  # Printing the data summary
+  cat("\nData:\n")
+  print(x$data)
+
+  # Printing twdtw arguments
+  cat("\nTWDTW Arguments:\n")
+  pretty_arguments(x$twdtw_args)
+
+  invisible(x) # Returns the object invisibly, so it doesn't print twice
+}
+
+#' Print Pretty Arguments
+#'
+#' Display a list of arguments of a given function in a human-readable format.
+#'
+#' @param args A list of named arguments to display.
+#'
+#' @return Invisible NULL. The function is mainly used for its side effect of printing.
+#'
+#' @examples
+#' \dontrun{
+#' pretty_arguments(formals(twdtw_knn1))
+#' }
+#'
+pretty_arguments <- function(args) {
+
+  if (is.null(args)) {
+    cat("Arguments are missing.\n")
+    return(invisible(NULL))
+  }
+
+  for (name in names(args)) {
+    default_value <- args[[name]]
+
+    if (is.symbol(default_value)) {
+      default_value <- as.character(default_value)
+
+    } else if (is.null(default_value)) {
+      default_value <- "NULL"
+
+    } else if (is.vector(default_value) && !is.null(names(default_value))) {
+      # Handle named vectors
+      values <- paste(names(default_value), default_value, sep = "=", collapse = ", ")
+      default_value <- paste0("c(", values, ")")
+    }
+    cat(paste0(" - ", name, ": ", default_value, "\n"))
+  }
+}
+
+
+
 #' Compute the Most Common Sampling Frequency across all observations
 #'
 #' This function calculates the most common difference between consecutive time points.

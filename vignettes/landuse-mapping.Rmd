@@ -82,6 +82,8 @@ twdtw_model <- twdtw_knn1(x = dc,
                           time_scale = 'day',
                           time_weight = c(steepness = 0.1, midpoint = 50),
                           formula = band ~ s(time))
+
+print(twdtw_model)
 ```
 
 In addition to the mandatory arguments `x` (satellite data-cube) and `y` (training samples), 
@@ -102,9 +104,10 @@ Finally, we predict the land-use classes for each pixel location in the data-cub
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 lu_map <- predict(dc, model = twdtw_model)
+print(lu_map)
 ```
 
-And visualize the results using `ggplot`:
+The 'time' dimension was reduced to a single map. We can now visualize it using `ggplot`:
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 ggplot() +

@@ -15,8 +15,9 @@ vignette: >
 bibliography: ./../inst/REFERENCES.bib
 ---
 
-```{r, echo=FALSE, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, dev = "png")
 ```
 
 This vignette offers a concise guide for using version 1.0.0 or higher of the `dtwSat` package to generate a land-use map.
@@ -24,7 +25,7 @@ The package utilizes Time-Weighted Dynamic Time Warping (TWDTW) along with a 1-N
 The subsequent sections will walk you through the process of creating a land-use map based on a set of training samples 
 and a multi-band satellite image time series.
 
-# Reading Training Samples
+## Reading Training Samples
 
 First, let's read a set of training samples that come with the `dtwSat` package installation.
 
@@ -35,7 +36,7 @@ samples <- system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat") |>
   st_read(quiet = TRUE)
 ```
 
-# Preparing the Satellite Image Time Series
+## Preparing the Satellite Image Time Series
 
 The `dtwSat` package supports satellite images read into R using the `stars` package.
 The instalation comes with a set of MOD13Q1 images for a region within the Brazilian Amazon.
@@ -61,15 +62,14 @@ dc <- read_stars(tif_files,
                  along = list(time = acquisition_date),
                  RasterIO = list(bands = 1:6)) |>
   st_set_dimensions(3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR")) |>
-  split(c("band")) |>
-  split(c("time"))
+  split(c("band"))
 ```
 
 Note that it's important to set the date for each observation using the parameter `along`.
-This will produce a 4D array (data-cube) that will be collapsed into a 2D array by splitting 
-the 'band' and 'time' dimensions. This prepares the data for training the TWDTW-1NN model.
+This will produce a 4D array (data-cube) that will be collapsed into a 3D array by converting 
+the 'band' dimension into attributes. This prepares the data for training the TWDTW-1NN model.
 
-# Create TWDTW-KNN1 model
+## Create TWDTW-KNN1 model
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 twdtw_model <- twdtw_knn1(x = dc, 
@@ -92,7 +92,7 @@ plot(twdtw_model)
 ```
 
 
-# Land Use Prediction
+## Land Use Prediction
 
 Finally, we predict the land-use classes for each pixel location in the data-cube:
 
@@ -118,7 +118,7 @@ Ultimately, we can write the map to a TIFF file we can use:
 write_stars(lu_map, "lu_map.tif")
 ```
 
-# Further Reading
+## Further Reading
 
 This introduction outlined the use of `dtwSat` for land-use mapping. 
 For more in-depth information, refer to the papers by @Maus:2016 and @Maus:2019 and the 
@@ -127,4 +127,4 @@ For more in-depth information, refer to the papers by @Maus:2016 and @Maus:2019 
 For additional details on how to manage input and output satellite images, 
 [`check` the stars documentation](https://cran.r-project.org/web/packages/stars).
 
-# References
+## References

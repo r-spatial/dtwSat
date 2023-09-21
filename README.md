@@ -12,30 +12,36 @@
 
 <!-- badges: end -->
   
+Provides a robust approach to land use mapping using multi-dimensional 
+(multi-band) satellite image time series. By leveraging the Time-Weighted Dynamic 
+Time Warping (TWDTW) distance metric in tandem with a 1 Nearest-Neighbor (1-NN) Classifier,
+this package offers functions to produce land use maps based on distinct seasonality patterns, 
+commonly observed in the phenological cycles of vegetation. The approach is described in 
+Maus et al. (2016) and Maus et al. (2019).
+A primary advantage of TWDTW is its capability to handle irregularly sampled and noisy time series, 
+while also requiring minimal training sets. The package includes tools for training the 1-NN-TWDTW model, 
+visualizing temporal patterns, producing land use maps, and visualizing the results.
 
-### Time-Weighted Dynamic Time Warping for satellite image time series analysis
+## Getting Started
 
-The package *dtwSat* provides an implementation of the Time-Weighted
-Dynamic Time Warping (TWDTW) method for land cover mapping using
-multi-band satellite image time series (Maus et al. 2016, 2019).
-*dtwSat* provides full cycle of land cover classification using image
-time series, ranging from selecting temporal patterns to visualizing,
-and assessing the results.
-
-## Installing
-
-Install either from CRAN
+You can install dtwSat from CRAN using the following command:
 
 ``` r
 install.packages("dtwSat")
 ```
 
-or install the development versions from GitHub
+Alternatively, you can install the development version from GitHub:
 
 ``` r
-library(devtools)
 devtools::install_github("vwmaus/dtwSat")
 ```
+
+After installation, you can read the vignette for a quick start guide:
+
+``` r
+vignette("landuse-mapping", "dtwSat")
+```
+
 
 ## References
 

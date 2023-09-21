@@ -26,3 +26,6 @@ examples_x64
 ^\.github$
 ^doc$
 ^Meta$
+
+vignettes.awk
+_pkgdown.yml

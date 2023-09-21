@@ -1,6 +1,14 @@
 # dtwSat v1.0.0
 
-* Major release: drops dependencies and simplifies package
+## Major Updates:
+
+* Dependency Updates: This release removes obsolete dependencies, notably raster, rgdal, and sp.
+
+* Reduced Dependencies: We have significantly minimized the number of package dependencies to streamline the installation and update process.
+
+* Spatial Data Handling with sf and stars: Spatial data handling has been overhauled. We've introduced support for the sf and stars packages to enhance this capability.
+
+* Improved Workflow Compatibility: The package now offers a workflow that aligns more seamlessly with other prevalent image classification workflows.
 
 # dtwSat v0.2.8
 

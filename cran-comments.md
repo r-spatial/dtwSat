@@ -1,4 +1,4 @@
-## Test environments
+# Test environments
 
 * win-builder 
   devtools::check_win_release()
@@ -9,23 +9,32 @@
   rhub::check_for_cran(check_args = '--as-cran')
   rhub::check_for_cran(check_args = '--as-cran', valgrind = TRUE)
 
-* Local Ubuntu 22.04.1 LTS x86_64-pc-linux-gnu (64-bit), R 4.3.0 (2023-04-21)
+* Local Ubuntu 22.04.1 LTS x86_64-pc-linux-gnu (64-bit), R 4.3.1 (2023-06-16)
   devtools::check(args = '--as-cran')
   devtools::submit_cran()
   
-## REVIEWS
+# REVIEWS
 
-# v1.0.0
+## v1.0.0
 
-* This is a major review that removes obsolete package dependencies
+* Major release that removes obsolete dependencies, such as raster, rgdal, and sp.
 
-# v0.2.8
+* Substantially reduced the number of dependencies.
+
+* Introduced sf and stars for spatial data handling.
+
+* Provided a workflow compatible with other image classification workflows.
+
+
+
+
+## v0.2.8
 
 * Fixes errors from https://cran.r-project.org/web/checks/check_results_dtwSat.html
 
 * Speed improvements
 
-# v0.2.7
+## v0.2.7
 
 * Fixes error in cost TWDTW weighting function
 
@@ -35,31 +44,31 @@
 
 * Fixes errors from https://cran.r-project.org/web/checks/check_results_dtwSat.html
 
-# v0.2.6
+## v0.2.6
 
 * Fixes warnings from https://cran.r-project.org/web/checks/check_results_dtwSat.html
 
-# v0.2.5
+## v0.2.5
 
 * The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
 
-# v0.2.4
+## v0.2.4
 
-# v0.2.3
+## v0.2.3
 
 * Fix check error 
    checking re-building of vignette outputs ... [1s/1s] WARNING 
    Error in re-building vignettes: 
    ... 
 
-# v0.2.2
+## v0.2.2
 
-# v0.2.1
+## v0.2.1
 
 * Fix Solaris installation errors. 
     Replacing the GNU extension ISNAN with pure Fortran code to check for NAN. 
 
-# v0.2.0
+## v0.2.0
 
 * Single quote software names in the Descriptoin.
   
@@ -105,7 +114,7 @@ There was 1 NOTE:
  
   + Fortran code for optimization. 
 
-# v0.1.0
+## v0.1.0
 
 * authors / copyright holder
 

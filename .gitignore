@@ -39,3 +39,4 @@ src/symbols.rds
 *.so
 /doc/
 /Meta/
+docs

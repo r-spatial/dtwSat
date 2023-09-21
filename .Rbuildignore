@@ -29,3 +29,6 @@ examples_x64
 
 vignettes.awk
 _pkgdown.yml
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

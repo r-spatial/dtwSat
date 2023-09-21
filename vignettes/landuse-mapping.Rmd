@@ -38,7 +38,7 @@ samples <- st_read(system.file("mato_grosso_brazil/samples.gpkg", package = "dtw
 ## Preparing the Satellite Image Time Series
 
 The `dtwSat` package supports satellite images read into R using the `stars` package.
-The instalation comes with a set of MOD13Q1 images for a region within the Brazilian Amazon.
+The installation comes with a set of MOD13Q1 images for a region within the Brazilian Amazon.
 Note that timing is crucial for the TWDTW distance metric. To create a consistent image time series, 
 we start by extracting the date of acquisition from the MODIS file names [@Didan:2015].
 

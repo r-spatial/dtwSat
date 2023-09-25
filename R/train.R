@@ -102,6 +102,10 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
     stop(paste("Missing required columns in y:", paste(missing_columns, collapse = ", ")))
   }
 
+  # adjust y column names
+  st_geometry(y) <- 'geom'
+  y <- y[, c(start_column, end_column, label_colum, 'geom')]
+
   # Convert columns to date-time
   y[, start_column] <- to_date_time(y[[start_column]])
   y[, end_column] <- to_date_time(y[[end_column]])

@@ -26,8 +26,7 @@ system.time(
                   y = samples,
                   cycle_length = 'year',
                   time_scale = 'day',
-                  time_weight = c(steepness = 0.1, midpoint = 50),
-                  formula = band ~ s(time))
+                  time_weight = c(steepness = 0.1, midpoint = 50))
 )
 
 print(m)
@@ -38,18 +37,19 @@ plot(m)
 # Classify satellite image time series
 system.time(lu <- predict(dc, model = m))
 
-# Visualise land use classification
+print(lu)
+
+# # Visualise land use classification
 ggplot() +
   geom_stars(data = lu) +
   theme_minimal()
 
-### OTHER TESTS
+# ### OTHER TESTS
 m <- twdtw_knn1(x = dc,
                 y = samples,
                 cycle_length = 'year',
                 time_scale = 'day',
                 time_weight = c(steepness = 0.1, midpoint = 50),
-                formula = band ~ s(time),
                 sampling_freq = 60)
 
 plot(m)
@@ -62,6 +62,8 @@ system.time(
                 time_weight = c(steepness = 0.1, midpoint = 50))
 )
 
+print(lu)
+
 # Visualise land use classification
 ggplot() +
   geom_stars(data = lu) +
@@ -72,7 +74,25 @@ m <- twdtw_knn1(x = dc,
                 y = samples,
                 cycle_length = 'year',
                 time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50))
+                time_weight = c(steepness = 0.1, midpoint = 50),
+                smooth_fun = NULL)
+
+print(m)
+
+plot(m)
+
+plot(m, bands = c('EVI', 'NDVI'))
+
+
+# Test custom smooth function
+m <- twdtw_knn1(x = dc,
+                y = samples,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50),
+                smooth_fun = function(x, y) tapply(y, x, mean))
+
+print(m)
 
 plot(m)
 

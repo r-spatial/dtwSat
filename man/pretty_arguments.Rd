@@ -21,3 +21,4 @@ pretty_arguments(formals(twdtw_knn1))
 }
 
 }
+\keyword{internal}

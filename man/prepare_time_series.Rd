@@ -18,3 +18,4 @@ The nested structure contains observations (time series) for each 'ts_id', inclu
 This function reshapes a data frame, which has been converted from a stars object, into a nested wide tibble format.
 The stars object conversion often results in columns named in formats like "band.YYYY.MM.DD", "XYYYY.MM.DD.band", or "YYYY.MM.DD.band".
 }
+\keyword{internal}

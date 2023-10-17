@@ -1,8 +1,7 @@
 #'
-#' Train a KNN-1 TWDTW model with optional GAM resampling
+#' Train a KNN-1 TWDTW model
 #'
 #' This function prepares a KNN-1 model with the Time Warp Dynamic Time Warping (TWDTW) algorithm.
-#' If a formula is provided, the training samples are resampled using Generalized Additive Models (GAM).
 #'
 #' @param x A three-dimensional stars object (x, y, time) with bands as attributes.
 #' @param y An sf object with the coordinates of the training points.
@@ -10,18 +9,30 @@
 #' See details in \link[twdtw]{twdtw}.
 #' @param cycle_length The length of the cycle, e.g. phenological cycles. Details in \link[twdtw]{twdtw}.
 #' @param time_scale Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.
-#' @param formula Either NULL or a formula to reduce samples of the same label using Generalized Additive Models (GAM).
-#' Default is \code{band ~ s(time)}. See details.
+#' @param smooth_fun Either NULL or a function specifying how to reduce samples of the same label.
+#' Default uses Generalized Additive Models (GAM) with cubic regression splines create a temporal pattern for each label. See details.
 #' @param start_column Name of the column in y that indicates the start date. Default is 'start_date'.
 #' @param end_column Name of the column in y that indicates the end date. Default is 'end_date'.
 #' @param label_colum Name of the column in y containing land use labels. Default is 'label'.
 #' @param sampling_freq The time frequency for sampling, including the unit (e.g., '16 day').
-#' If NULL, the function will infer the frequency. This parameter is only used if a formula is provided.
-#' @param ... Additional arguments passed to the \link[mgcv]{gam} function and to \link[twdtw]{twdtw} function.
+#' If NULL, the function will infer the frequency. This parameter is only used if `smooth_fun` is provided.
+#' @param ... Additional arguments passed to \link[twdtw]{twdtw}.
 #'
-#' @details If \code{formula} is NULL, the KNN-1 model will retain all training samples. If a formula is passed (e.g., \code{band ~ \link[mgcv]{s}(time)}),
-#' then samples of the same label (land cover class) will be resampled using GAM.
-#' Resampling can significantly reduce prediction processing time.
+#' @details If \code{smooth_fun} is NULL, the KNN-1 model will retain all training samples.
+#'
+#' If a custom smoothing function is passed to `smooth_fun`, the function will be used to
+#' resample values of samples sharing the same label (land cover class). If no function is provided,
+#' the default method uses Generalized Additive Models (GAM) with cubic regression splines.
+#'
+#' The custom smoothing function takes two or three numeric vectors as arguments and return a single numeric vector:
+#' \itemize{
+#'   \item The first argument represents the independent variable (typically time).
+#'   \item The second argument represents the dependent variable (e.g., band values) corresponding to each coordinate in the first argument.
+#'   \item Optional. The third argument specifies the locations (e.g., times) where interpolation predictions should be made.
+#' }
+#' See the examples section for further clarity.
+#'
+#' Smooting the samples can significantly reduce the processing time for prediction using `twdtw_knn1` model.
 #'
 #' @return A 'twdtw_knn1' model containing the trained model information and the data used.
 #'
@@ -29,9 +40,9 @@
 #' \dontrun{
 #'
 #' # Read training samples
-#' samples_path <- 
-#'   system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat")
-#' 
+#' samples_path <-
+# '   system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat")
+#'
 #' samples <- st_read(samples_path, quiet = TRUE)
 #'
 #' # Get satellite image time sereis files
@@ -55,8 +66,7 @@
 #'                 y = samples,
 #'                 cycle_length = 'year',
 #'                 time_scale = 'day',
-#'                 time_weight = c(steepness = 0.1, midpoint = 50),
-#'                 formula = band ~ s(time))
+#'                 time_weight = c(steepness = 0.1, midpoint = 50))
 #'
 #' print(m)
 #'
@@ -70,11 +80,23 @@
 #' ggplot() +
 #'   geom_stars(data = lu) +
 #'   theme_minimal()
+#' 
+#' 
+#' # Create a knn1-twdtw model with custom smoothing function 
+#' 
+#' m <- twdtw_knn1(x = dc,
+#'                 y = samples,
+#'                 cycle_length = 'year',
+#'                 time_scale = 'day',
+#'                 time_weight = c(steepness = 0.1, midpoint = 50),
+#'                 smooth_fun = function(x, y) tapply(y, x, mean))
+#' 
+#' plot(m)
 #'
 #' }
 #' @export
 twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
-                       formula = NULL, start_column = 'start_date',
+                       smooth_fun = approx_gam_spline, start_column = 'start_date',
                        end_column = 'end_date', label_colum = 'label',
                        sampling_freq = NULL, ...){
 
@@ -116,11 +138,11 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
   ts_data <- prepare_time_series(as.data.frame(ts_data))
   ts_data$ts_id <- NULL
 
-  if(!is.null(formula)) {
+  if(!is.null(smooth_fun)) {
 
-    # Check if formula has two
-    if(length(all.vars(formula)) != 2) {
-      stop("The formula should have only one predictor!")
+    # Check if smooth_fun has two or three arguments
+    if(!length(formals(smooth_fun)) %in% c(2, 3)) {
+      stop("The smooth_fun function should have two or three arguments!")
     }
 
     # Determine sampling frequency
@@ -135,29 +157,43 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
     ts_data <- unnest(ts_data, cols = 'observations')
     ts_data <- nest(ts_data, .by = 'label', .key = "observations")
 
-    # Define GAM function
-    gam_fun <- function(band, t, pred_t, formula, ...){
-      df <- setNames(list(band, as.numeric(t)), all.vars(formula))
-      pred_t[[all.vars(formula)[2]]] <- as.numeric(pred_t[[all.vars(formula)[2]]])
-      fit <- mgcv::gam(data = df, formula = formula, ...)
-      predict(fit, newdata = pred_t)
-    }
-
-    # Apply GAM function
-    ts_data$observations <- lapply(ts_data$observations, function(ts){
+    # Apply smooth function
+    ts_data$observations <- lapply(ts_data$observations, function(ts) {
       y_time <- ts$time
       ts$time <- NULL
-      pred_time <- setNames(list(seq(min(y_time), max(y_time), by = sampling_freq)), all.vars(formula)[2])
-      cbind(pred_time, as.data.frame(sapply(as.list(ts), function(band) {
-        gam_fun(band, y_time, pred_time, formula, ...)
-      })))
+
+      # Determine pred_time
+      if (length(formals(smooth_fun)) == 3) {
+        pred_time <- seq(min(y_time), max(y_time), by = sampling_freq)
+      } else {
+        pred_time <- y_time
+      }
+
+      # Wrapper function
+      wrapper_smooth_fun <- function(x, y, z = as.numeric(pred_time)) {
+        if (length(formals(smooth_fun)) == 3) {
+          return(as.vector(smooth_fun(x, y, z)))
+        } else {
+          return(as.vector(smooth_fun(x, y)))
+        }
+      }
+      
+      # Apply the wrapper function to each band and bind results
+      smoothed_data <- sapply(as.list(ts), function(band) {
+        wrapper_smooth_fun(as.numeric(y_time), band)
+      })
+      
+      # Bind time and smoothed data into a data frame
+      result_df <- data.frame(time = pred_time, smoothed_data)
+      
+      return(result_df)
     })
 
   }
 
   model <- list()
   model$call <- match.call()
-  model$formula <- formula
+  model$smooth_fun <- smooth_fun
   model$data <- ts_data
   # add twdtw arguments to model
   model$twdtw_args <- list(time_weight = time_weight,
@@ -176,6 +212,28 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
 
 }
 
+#' Approximate temporal patterns using GAM with Cubic Regression Splines
+#'
+#' This function uses Generalized Additive Models (GAM) with cubic regression splines 
+#' to interpolate the provided data. It then predicts values at specified locations.
+#'
+#' @param x A numeric vector representing the independent variable (coordinates) of the points to be interpolated.
+#' @param y A numeric vector representing the dependent variable (values) corresponding to each coordinate in `x`.
+#' @param xout A numeric vector specifying the locations where interpolation predictions should be made.
+#'
+#' @return A numeric vector of predicted values at the `xout` locations based on the GAM cubic spline interpolation.
+#'
+#' @seealso \code{\link[mgcv]{bam}} and \code{\link[mgcv]{s}} for details on the GAM with cubic regression splines.
+#'
+#' @keywords internal
+approx_gam_spline <- function(x, y, xout){
+  df <- data.frame(x = x, y = y)
+  gam_fit <- mgcv::bam(data = df, formula = y ~ s(x, bs = "cr"))
+  predict(gam_fit, newdata = data.frame(x = xout))
+}
+
+
+
 #' Print method for objects of class twdtw_knn1
 #'
 #' This method provides a structured printout of the important components
@@ -183,7 +241,7 @@ twdtw_knn1 <- function(x, y, time_weight, cycle_length, time_scale,
 #'
 #' @param x An object of class `twdtw_knn1`.
 #' @param ... ignored
-#' 
+#'
 #' @return Invisible `twdtw_knn1` object.
 #'
 #' @export
@@ -195,9 +253,9 @@ print.twdtw_knn1 <- function(x, ...) {
   cat("Call:\n")
   print(x$call)
 
-  # Printing the formula, if available
-  cat("\nFormula:\n")
-  print(x$formula)
+  # Printing the smooth_fun, if available
+  cat("\nSmooth function:\n")
+  print(x$smooth_fun)
 
   # Printing the data summary
   cat("\nData:\n")
@@ -223,6 +281,7 @@ print.twdtw_knn1 <- function(x, ...) {
 #' pretty_arguments(formals(twdtw_knn1))
 #' }
 #'
+#' @keywords internal
 pretty_arguments <- function(args) {
 
   if (is.null(args)) {
@@ -259,6 +318,7 @@ pretty_arguments <- function(args) {
 #'
 #' @return A difftime object representing the most common time difference between consecutive samples.
 #'
+#' @keywords internal
 get_time_series_freq <- function(x) {
 
   # Extract the time dimension

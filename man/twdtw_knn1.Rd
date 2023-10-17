@@ -2,7 +2,7 @@
 % Please edit documentation in R/train.R
 \name{twdtw_knn1}
 \alias{twdtw_knn1}
-\title{Train a KNN-1 TWDTW model with optional GAM resampling}
+\title{Train a KNN-1 TWDTW model}
 \usage{
 twdtw_knn1(
   x,
@@ -10,7 +10,7 @@ twdtw_knn1(
   time_weight,
   cycle_length,
   time_scale,
-  formula = NULL,
+  smooth_fun = approx_gam_spline,
   start_column = "start_date",
   end_column = "end_date",
   label_colum = "label",
@@ -30,8 +30,8 @@ See details in \link[twdtw]{twdtw}.}
 
 \item{time_scale}{Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.}
 
-\item{formula}{Either NULL or a formula to reduce samples of the same label using Generalized Additive Models (GAM).
-Default is \code{band ~ s(time)}. See details.}
+\item{smooth_fun}{Either NULL or a function specifying how to reduce samples of the same label.
+Default uses Generalized Additive Models (GAM) with cubic regression splines create a temporal pattern for each label. See details.}
 
 \item{start_column}{Name of the column in y that indicates the start date. Default is 'start_date'.}
 
@@ -40,28 +40,38 @@ Default is \code{band ~ s(time)}. See details.}
 \item{label_colum}{Name of the column in y containing land use labels. Default is 'label'.}
 
 \item{sampling_freq}{The time frequency for sampling, including the unit (e.g., '16 day').
-If NULL, the function will infer the frequency. This parameter is only used if a formula is provided.}
+If NULL, the function will infer the frequency. This parameter is only used if \code{smooth_fun} is provided.}
 
-\item{...}{Additional arguments passed to the \link[mgcv]{gam} function and to \link[twdtw]{twdtw} function.}
+\item{...}{Additional arguments passed to \link[twdtw]{twdtw}.}
 }
 \value{
 A 'twdtw_knn1' model containing the trained model information and the data used.
 }
 \description{
 This function prepares a KNN-1 model with the Time Warp Dynamic Time Warping (TWDTW) algorithm.
-If a formula is provided, the training samples are resampled using Generalized Additive Models (GAM).
 }
 \details{
-If \code{formula} is NULL, the KNN-1 model will retain all training samples. If a formula is passed (e.g., \code{band ~ \link[mgcv]{s}(time)}),
-then samples of the same label (land cover class) will be resampled using GAM.
-Resampling can significantly reduce prediction processing time.
+If \code{smooth_fun} is NULL, the KNN-1 model will retain all training samples.
+
+If a custom smoothing function is passed to \code{smooth_fun}, the function will be used to
+resample values of samples sharing the same label (land cover class). If no function is provided,
+the default method uses Generalized Additive Models (GAM) with cubic regression splines.
+
+The custom smoothing function takes two or three numeric vectors as arguments and return a single numeric vector:
+\itemize{
+\item The first argument represents the independent variable (typically time).
+\item The second argument represents the dependent variable (e.g., band values) corresponding to each coordinate in the first argument.
+\item Optional. The third argument specifies the locations (e.g., times) where interpolation predictions should be made.
+}
+See the examples section for further clarity.
+
+Smooting the samples can significantly reduce the processing time for prediction using \code{twdtw_knn1} model.
 }
 \examples{
 \dontrun{
 
 # Read training samples
-samples_path <- 
-  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat")
+samples_path <-
 
 samples <- st_read(samples_path, quiet = TRUE)
 
@@ -86,8 +96,7 @@ m <- twdtw_knn1(x = dc,
                 y = samples,
                 cycle_length = 'year',
                 time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                formula = band ~ s(time))
+                time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -101,6 +110,18 @@ system.time(lu <- predict(dc, model = m))
 ggplot() +
   geom_stars(data = lu) +
   theme_minimal()
+
+
+# Create a knn1-twdtw model with custom smoothing function 
+
+m <- twdtw_knn1(x = dc,
+                y = samples,
+                cycle_length = 'year',
+                time_scale = 'day',
+                time_weight = c(steepness = 0.1, midpoint = 50),
+                smooth_fun = function(x, y) tapply(y, x, mean))
+
+plot(m)
 
 }
 }

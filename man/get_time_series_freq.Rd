@@ -16,3 +16,4 @@ A difftime object representing the most common time difference between consecuti
 This function calculates the most common difference between consecutive time points.
 This can be useful for determining the aproximate sampling frequency of the time series data.
 }
+\keyword{internal}

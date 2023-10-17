@@ -9,7 +9,7 @@
 #' @return A nested tibble in wide format. Each row of the tibble corresponds to a unique 'ts_id' that maintains the order from the original stars object.
 #' The nested structure contains observations (time series) for each 'ts_id', including the 'time' of each observation, and individual bands are presented as separate columns.
 #'
-#'
+#' @keywords internal
 prepare_time_series <- function(x) {
 
   # Remove the 'geom' column if it exists

@@ -3,7 +3,7 @@
 		print("output: rmarkdown::html_vignette")
 	} else if (NR > 4 && NR <= 10) {
 	} else if (NR == 16) {
-		print("\n**For a better version of the dtwSat vignettes see** https://vwmaus.github.io/dtwSat/articles/\n")
+		print("\n**For a better version of the dtwSat vignettes see** https://r-spatial.github.io/dtwSat/articles/\n")
 	} else if (NR == 19) {
 		print
 		print("knitr::opts_chunk$set(fig.height = 4.5)")

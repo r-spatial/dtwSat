@@ -27,6 +27,7 @@ examples_x64
 ^doc$
 ^Meta$
 
+^\.vscode$
 vignettes.awk
 _pkgdown.yml
 ^_pkgdown\.yml$

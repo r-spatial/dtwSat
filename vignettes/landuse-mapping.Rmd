@@ -82,16 +82,15 @@ twdtw_model <- twdtw_knn1(x = dc,
                           y = samples,
                           cycle_length = 'year',
                           time_scale = 'day',
-                          time_weight = c(steepness = 0.1, midpoint = 50),
-                          formula = band ~ s(time))
+                          time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(twdtw_model)
 ```
 
 In addition to the mandatory arguments `x` (satellite data-cube) and `y` (training samples), 
 the TWDTW distance calculation also requires setting `cycle_length`, `time_scale`, and `time_weight`.
-For more details, refer to the documentation using `?twdtw`. The argument `formula = band ~ s(time)` is optional.
-If provided, training samples time sereis are resampled using Generalized Additive Models (GAMs), 
+For more details, refer to the documentation using `?twdtw`. 
+The model will resample the training set using Generalized Additive Models (GAMs), 
 collapsing all samples with the same land-use label into a single sample. This reduces computational 
 demands. The sample in the model can be visualized as follows:
 

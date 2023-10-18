@@ -46,11 +46,12 @@ Depends:
     stars,
     ggplot2
 Imports:
-    mgcv,
     stats,
+    methods,
     tidyr,
     proxy
 Suggests:
+    mgcv,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

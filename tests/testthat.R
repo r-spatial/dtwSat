@@ -7,6 +7,5 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(dtwSat)
 
 test_check("dtwSat")

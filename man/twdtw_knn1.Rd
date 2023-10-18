@@ -7,14 +7,14 @@
 twdtw_knn1(
   x,
   y,
+  smooth_fun = NULL,
+  resampling_freq = NULL,
   time_weight,
   cycle_length,
   time_scale,
-  smooth_fun = approx_gam_spline,
   start_column = "start_date",
   end_column = "end_date",
   label_colum = "label",
-  sampling_freq = NULL,
   ...
 )
 }
@@ -23,6 +23,13 @@ twdtw_knn1(
 
 \item{y}{An sf object with the coordinates of the training points.}
 
+\item{smooth_fun}{a function specifying how to create temporal patterns using the samples.
+If not defined, it will keep all samples. Note that reducing the samples to patterns can significantly
+improve computational time of predictions. See details.}
+
+\item{resampling_freq}{The time for sampling the time series if \code{smooth_fun} is given.
+If NULL, the function will infer the frequency of observations in \code{x}.}
+
 \item{time_weight}{A numeric vector with length two (steepness and midpoint of logistic weight) or a function.
 See details in \link[twdtw]{twdtw}.}
 
@@ -30,17 +37,11 @@ See details in \link[twdtw]{twdtw}.}
 
 \item{time_scale}{Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.}
 
-\item{smooth_fun}{Either NULL or a function specifying how to reduce samples of the same label.
-Default uses Generalized Additive Models (GAM) with cubic regression splines create a temporal pattern for each label. See details.}
-
 \item{start_column}{Name of the column in y that indicates the start date. Default is 'start_date'.}
 
 \item{end_column}{Name of the column in y that indicates the end date. Default is 'end_date'.}
 
 \item{label_colum}{Name of the column in y containing land use labels. Default is 'label'.}
-
-\item{sampling_freq}{The time frequency for sampling, including the unit (e.g., '16 day').
-If NULL, the function will infer the frequency. This parameter is only used if \code{smooth_fun} is provided.}
 
 \item{...}{Additional arguments passed to \link[twdtw]{twdtw}.}
 }
@@ -51,17 +52,15 @@ A 'twdtw_knn1' model containing the trained model information and the data used.
 This function prepares a KNN-1 model with the Time Warp Dynamic Time Warping (TWDTW) algorithm.
 }
 \details{
-If \code{smooth_fun} is NULL, the KNN-1 model will retain all training samples.
+If \code{smooth_fun} not informed, the KNN-1 model will retain all training samples.
 
 If a custom smoothing function is passed to \code{smooth_fun}, the function will be used to
-resample values of samples sharing the same label (land cover class). If no function is provided,
-the default method uses Generalized Additive Models (GAM) with cubic regression splines.
+resample values of samples sharing the same label (land cover class).
 
-The custom smoothing function takes two or three numeric vectors as arguments and return a single numeric vector:
+The custom smoothing function takes two numeric vectors as arguments and returns a model:
 \itemize{
 \item The first argument represents the independent variable (typically time).
 \item The second argument represents the dependent variable (e.g., band values) corresponding to each coordinate in the first argument.
-\item Optional. The third argument specifies the locations (e.g., times) where interpolation predictions should be made.
 }
 See the examples section for further clarity.
 
@@ -92,11 +91,13 @@ dc <- st_set_dimensions(dc, 3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR"))
 dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
-m <- twdtw_knn1(x = dc,
-                y = samples,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50))
+m <- twdtw_knn1(
+   x = dc,
+   y = samples,
+   smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y))
+   cycle_length = 'year',
+   time_scale = 'day',
+   time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -112,14 +113,14 @@ ggplot() +
   theme_minimal()
 
 
-# Create a knn1-twdtw model with custom smoothing function 
+# Create a knn1-twdtw model with custom smoothing function
 
 m <- twdtw_knn1(x = dc,
-                y = samples,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                smooth_fun = function(x, y) tapply(y, x, mean))
+ y = samples,
+ smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x=x, y=y))
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
 
 plot(m)
 

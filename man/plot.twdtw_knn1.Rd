@@ -48,11 +48,13 @@ dc <- st_set_dimensions(dc, 3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR"))
 dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
-m <- twdtw_knn1(x = dc,
-                y = samples,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50))
+m <- twdtw_knn1(
+   x = dc,
+   y = samples,
+   smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y))
+   cycle_length = 'year',
+   time_scale = 'day',
+   time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -68,14 +70,14 @@ ggplot() +
   theme_minimal()
 
 
-# Create a knn1-twdtw model with custom smoothing function 
+# Create a knn1-twdtw model with custom smoothing function
 
 m <- twdtw_knn1(x = dc,
-                y = samples,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                smooth_fun = function(x, y) tapply(y, x, mean))
+ y = samples,
+ smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x=x, y=y))
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
 
 plot(m)
 

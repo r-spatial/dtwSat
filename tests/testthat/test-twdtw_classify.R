@@ -1,3 +1,5 @@
+library(mgcv)
+
 # Read training samples
 samples <- st_read(system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat"), quiet = TRUE)
 
@@ -24,6 +26,7 @@ dc <- split(dc, c("band"))
 system.time(
   m <- twdtw_knn1(x = dc,
                   y = samples,
+                  smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y)),
                   cycle_length = 'year',
                   time_scale = 'day',
                   time_weight = c(steepness = 0.1, midpoint = 50))
@@ -50,7 +53,8 @@ m <- twdtw_knn1(x = dc,
                 cycle_length = 'year',
                 time_scale = 'day',
                 time_weight = c(steepness = 0.1, midpoint = 50),
-                sampling_freq = 60)
+                smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y)),
+                resampling_freq = 60)
 
 plot(m)
 
@@ -83,14 +87,13 @@ plot(m)
 
 plot(m, bands = c('EVI', 'NDVI'))
 
-
-# Test custom smooth function
+# Test custom smooth function -- mean value for each time in dc
 m <- twdtw_knn1(x = dc,
                 y = samples,
                 cycle_length = 'year',
                 time_scale = 'day',
                 time_weight = c(steepness = 0.1, midpoint = 50),
-                smooth_fun = function(x, y) tapply(y, x, mean))
+                smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x = x, y = y)))
 
 print(m)
 

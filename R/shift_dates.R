@@ -22,7 +22,8 @@
 #' 
 #' shift_dates(x)
 #' 
-#' @export 
+#' @noRd
+#' @keywords internal
 shift_dates <- function(x, origin = "1970-01-01") {
   
   # Convert the input dates to Date objects

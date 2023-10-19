@@ -47,6 +47,7 @@ Depends:
     ggplot2
 Imports:
     stats,
+    utils,
     methods,
     tidyr,
     proxy

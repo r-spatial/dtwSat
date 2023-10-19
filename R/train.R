@@ -247,11 +247,14 @@ print.twdtw_knn1 <- function(x, ...) {
   print(x$call)
 
   # Printing the smooth_fun, if available
-  cat("\nAdjusted R-squared of smooth models:\n")
+  cat("\nRoot Mean Squared Error (RMSE) of smooth models:\n")
   if(is.null(x$smooth_models)){
     print(NULL)
   } else {
-    print(sapply(x$smooth_models, function(m1) sapply(m1, function(m2) summary(m2)$adj.r.squared)))
+    print(sapply(x$smooth_models, function(m1) sapply(m1, function(m2){
+      residuals <- try(resid(m2))
+      ifelse(is.numeric(residuals), sqrt(mean(residuals^2)), NA)
+    })))
   }
 
   # Printing the data summary

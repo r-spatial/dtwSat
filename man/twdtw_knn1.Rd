@@ -2,19 +2,19 @@
 % Please edit documentation in R/train.R
 \name{twdtw_knn1}
 \alias{twdtw_knn1}
-\title{Train a KNN-1 TWDTW model with optional GAM resampling}
+\title{Train a KNN-1 TWDTW model}
 \usage{
 twdtw_knn1(
   x,
   y,
+  resampling_fun = NULL,
+  resampling_freq = NULL,
   time_weight,
   cycle_length,
   time_scale,
-  formula = NULL,
   start_column = "start_date",
   end_column = "end_date",
   label_colum = "label",
-  sampling_freq = NULL,
   ...
 )
 }
@@ -23,6 +23,14 @@ twdtw_knn1(
 
 \item{y}{An sf object with the coordinates of the training points.}
 
+\item{resampling_fun}{a function specifying how to create temporal patterns using the samples.
+If not defined, it will keep all samples. Note that reducing the samples to patterns can significantly
+improve computational time of predictions. The resampling function must receive a single data frame as
+argument an return a model. See details.}
+
+\item{resampling_freq}{The time for sampling the time series if \code{resampling_fun} is given.
+If NULL, the function will infer the frequency of observations in \code{x}.}
+
 \item{time_weight}{A numeric vector with length two (steepness and midpoint of logistic weight) or a function.
 See details in \link[twdtw]{twdtw}.}
 
@@ -30,38 +38,42 @@ See details in \link[twdtw]{twdtw}.}
 
 \item{time_scale}{Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.}
 
-\item{formula}{Either NULL or a formula to reduce samples of the same label using Generalized Additive Models (GAM).
-Default is \code{band ~ s(time)}. See details.}
-
 \item{start_column}{Name of the column in y that indicates the start date. Default is 'start_date'.}
 
 \item{end_column}{Name of the column in y that indicates the end date. Default is 'end_date'.}
 
 \item{label_colum}{Name of the column in y containing land use labels. Default is 'label'.}
 
-\item{sampling_freq}{The time frequency for sampling, including the unit (e.g., '16 day').
-If NULL, the function will infer the frequency. This parameter is only used if a formula is provided.}
-
-\item{...}{Additional arguments passed to the \link[mgcv]{gam} function and to \link[twdtw]{twdtw} function.}
+\item{...}{Additional arguments passed to \link[twdtw]{twdtw}.}
 }
 \value{
 A 'twdtw_knn1' model containing the trained model information and the data used.
 }
 \description{
 This function prepares a KNN-1 model with the Time Warp Dynamic Time Warping (TWDTW) algorithm.
-If a formula is provided, the training samples are resampled using Generalized Additive Models (GAM).
 }
 \details{
-If \code{formula} is NULL, the KNN-1 model will retain all training samples. If a formula is passed (e.g., \code{band ~ \link[mgcv]{s}(time)}),
-then samples of the same label (land cover class) will be resampled using GAM.
-Resampling can significantly reduce prediction processing time.
+If \code{resampling_fun} not informed, the KNN-1 model will retain all training samples.
+
+If a custom smoothing function is passed to \code{resampling_fun}, the function will be used to
+resample values of samples sharing the same label (land cover class).
+
+The custom smoothing function takes a single data frame and returns a model.
+The data frame has two named columns:
+\itemize{
+\item \code{x} is the first column representing the independent variable (typically time).
+\item \code{y} is the second column representing the dependent variable (e.g., band values) corresponding to each coordinate in \code{x}.
+}
+
+Smooting the samples can significantly reduce the processing time for prediction using \code{twdtw_knn1} model.
+
+See the examples section for further clarity.
 }
 \examples{
 \dontrun{
 
 # Read training samples
-samples_path <- 
-  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat")
+samples_path <-
 
 samples <- st_read(samples_path, quiet = TRUE)
 
@@ -82,12 +94,13 @@ dc <- st_set_dimensions(dc, 3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR"))
 dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
-m <- twdtw_knn1(x = dc,
-                y = samples,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                formula = band ~ s(time))
+m <- twdtw_knn1(
+ x = dc,
+ y = samples,
+ resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -101,6 +114,18 @@ system.time(lu <- predict(dc, model = m))
 ggplot() +
   geom_stars(data = lu) +
   theme_minimal()
+
+
+# Create a knn1-twdtw model with custom smoothing function
+
+m <- twdtw_knn1(x = dc,
+ y = samples,
+ resampling_fun = function(data) lm(y ~ factor(x), data = data),
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
+
+plot(m)
 
 }
 }

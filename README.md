@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![License](https://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![R-CMD-check](https://github.com/vwmaus/dtwSat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/vwmaus/dtwSat/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/r-spatial/dtwSat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-spatial/dtwSat/actions/workflows/R-CMD-check.yaml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/vwmaus/dtwSat/main.svg)](https://app.codecov.io/gh/vwmaus/dtwSat)
 [![CRAN](https://www.r-pkg.org/badges/version/dtwSat)](https://cran.r-project.org/package=dtwSat)
 [![Downloads](https://cranlogs.r-pkg.org/badges/dtwSat?color=brightgreen)](https://www.r-pkg.org/pkg/dtwSat)
@@ -33,7 +33,7 @@ install.packages("dtwSat")
 Alternatively, you can install the development version from GitHub:
 
 ``` r
-devtools::install_github("vwmaus/dtwSat")
+devtools::install_github("r-spatial/dtwSat")
 ```
 
 After installation, you can read the vignette for a quick start guide:

@@ -27,8 +27,7 @@ to the known patterns stored in the \code{twdtw_knn1} model.
 \dontrun{
 
 # Read training samples
-samples_path <- 
-  system.file("mato_grosso_brazil/samples.gpkg", package = "dtwSat")
+samples_path <-
 
 samples <- st_read(samples_path, quiet = TRUE)
 
@@ -49,12 +48,13 @@ dc <- st_set_dimensions(dc, 3, c("EVI", "NDVI", "RED", "BLUE", "NIR", "MIR"))
 dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
-m <- twdtw_knn1(x = dc,
-                y = samples,
-                cycle_length = 'year',
-                time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                formula = band ~ s(time))
+m <- twdtw_knn1(
+ x = dc,
+ y = samples,
+ resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -68,6 +68,18 @@ system.time(lu <- predict(dc, model = m))
 ggplot() +
   geom_stars(data = lu) +
   theme_minimal()
+
+
+# Create a knn1-twdtw model with custom smoothing function
+
+m <- twdtw_knn1(x = dc,
+ y = samples,
+ resampling_fun = function(data) lm(y ~ factor(x), data = data),
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
+
+plot(m)
 
 }
 }

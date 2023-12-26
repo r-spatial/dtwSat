@@ -58,7 +58,6 @@ With the files and dates in hand, we can construct a stars satellite image time 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 # read data-cube
 dc <- read_stars(tif_files,
-                 proxy = FALSE,
                  along = list(time = acquisition_date),
                  RasterIO = list(bands = 1:6))
 
@@ -77,23 +76,31 @@ the 'band' dimension into attributes. This prepares the data for training the TW
 
 ## Create TWDTW-KNN1 model
 
+There several wayis to buld the TWDTW-1NN model. The default options is to keep all samples as part of the model.
+However, this implies in higher computational time for prediction. To speed the precessing, 
+here I show how to reduce the samples to a single pattern for land use class using 
+Generalized Additive Models (GAM) with cubic regression splines.
+That can be achieved by defining a smoothing function, such as
+
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
+library(mgcv)
+
 twdtw_model <- twdtw_knn1(x = dc,
                           y = samples,
+                          resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
                           cycle_length = 'year',
                           time_scale = 'day',
-                          time_weight = c(steepness = 0.1, midpoint = 50),
-                          formula = band ~ s(time))
+                          time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(twdtw_model)
 ```
 
 In addition to the mandatory arguments `x` (satellite data-cube) and `y` (training samples), 
 the TWDTW distance calculation also requires setting `cycle_length`, `time_scale`, and `time_weight`.
-For more details, refer to the documentation using `?twdtw`. The argument `formula = band ~ s(time)` is optional.
-If provided, training samples time sereis are resampled using Generalized Additive Models (GAMs), 
-collapsing all samples with the same land-use label into a single sample. This reduces computational 
-demands. The sample in the model can be visualized as follows:
+For more details, refer to the documentation using `?twdtw`. 
+The model will resample the training set using the defined function, 
+collapsing all samples with the same land-use label into a single sample.
+This reduces computational demands. The sample in the model can be visualized as follows:
 
 ```{r , echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 plot(twdtw_model)

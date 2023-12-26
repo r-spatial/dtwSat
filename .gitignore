@@ -34,6 +34,7 @@ revdep/
 CRAN-SUBMISSION
 
 # Other files
+.vscode
 src/symbols.rds
 *.o
 *.so

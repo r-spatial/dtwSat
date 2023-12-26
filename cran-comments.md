@@ -15,6 +15,12 @@
   
 # REVIEWS
 
+## v1.0-1
+
+* Improves flexibility for user defined smooting models
+
+* 
+
 ## v1.0.0
 
 * Major release that removes obsolete dependencies, such as raster, rgdal, and sp.

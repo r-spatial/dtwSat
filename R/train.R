@@ -9,29 +9,32 @@
 #' See details in \link[twdtw]{twdtw}.
 #' @param cycle_length The length of the cycle, e.g. phenological cycles. Details in \link[twdtw]{twdtw}.
 #' @param time_scale Specifies the time scale for the observations. Details in \link[twdtw]{twdtw}.
-#' @param smooth_fun a function specifying how to create temporal patterns using the samples.
-#' If not defined, it will keep all samples. Note that reducing the samples to patterns can significantly 
-#' improve computational time of predictions. See details.
+#' @param resampling_fun a function specifying how to create temporal patterns using the samples.
+#' If not defined, it will keep all samples. Note that reducing the samples to patterns can significantly
+#' improve computational time of predictions. The resampling function must receive a single data frame as 
+#' argument an return a model. See details.
 #' @param start_column Name of the column in y that indicates the start date. Default is 'start_date'.
 #' @param end_column Name of the column in y that indicates the end date. Default is 'end_date'.
 #' @param label_colum Name of the column in y containing land use labels. Default is 'label'.
-#' @param resampling_freq The time for sampling the time series if `smooth_fun` is given.
+#' @param resampling_freq The time for sampling the time series if `resampling_fun` is given.
 #' If NULL, the function will infer the frequency of observations in `x`.
 #' @param ... Additional arguments passed to \link[twdtw]{twdtw}.
 #'
-#' @details If \code{smooth_fun} not informed, the KNN-1 model will retain all training samples.
+#' @details If \code{resampling_fun} not informed, the KNN-1 model will retain all training samples.
 #'
-#' If a custom smoothing function is passed to `smooth_fun`, the function will be used to
+#' If a custom smoothing function is passed to `resampling_fun`, the function will be used to
 #' resample values of samples sharing the same label (land cover class). 
 #'
-#' The custom smoothing function takes two numeric vectors as arguments and returns a model:
+#' The custom smoothing function takes a single data frame and returns a model.
+#' The data frame has two named columns:
 #' \itemize{
-#'   \item The first argument represents the independent variable (typically time).
-#'   \item The second argument represents the dependent variable (e.g., band values) corresponding to each coordinate in the first argument.
+#'   \item `x` is the first column representing the independent variable (typically time).
+#'   \item `y` is the second column representing the dependent variable (e.g., band values) corresponding to each coordinate in `x`.
 #' }
-#' See the examples section for further clarity.
 #'
 #' Smooting the samples can significantly reduce the processing time for prediction using `twdtw_knn1` model.
+#' 
+#' See the examples section for further clarity.
 #'
 #' @return A 'twdtw_knn1' model containing the trained model information and the data used.
 #'
@@ -62,12 +65,12 @@
 #'
 #' # Create a knn1-twdtw model
 #' m <- twdtw_knn1(
-#'    x = dc,
-#'    y = samples,
-#'    smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y))
-#'    cycle_length = 'year',
-#'    time_scale = 'day',
-#'    time_weight = c(steepness = 0.1, midpoint = 50))
+#'  x = dc,
+#'  y = samples,
+#'  resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
+#'  cycle_length = 'year',
+#'  time_scale = 'day',
+#'  time_weight = c(steepness = 0.1, midpoint = 50))
 #'
 #' print(m)
 #'
@@ -87,7 +90,7 @@
 #'
 #' m <- twdtw_knn1(x = dc,
 #'  y = samples,
-#'  smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x=x, y=y))
+#'  resampling_fun = function(data) lm(y ~ factor(x), data = data),
 #'  cycle_length = 'year',
 #'  time_scale = 'day',
 #'  time_weight = c(steepness = 0.1, midpoint = 50))
@@ -96,7 +99,7 @@
 #'
 #' }
 #' @export
-twdtw_knn1 <- function(x, y, smooth_fun = NULL, resampling_freq = NULL,
+twdtw_knn1 <- function(x, y, resampling_fun = NULL, resampling_freq = NULL,
                        time_weight, cycle_length, time_scale,
                        start_column = 'start_date', end_column = 'end_date',
                        label_colum = 'label', ...){
@@ -140,12 +143,7 @@ twdtw_knn1 <- function(x, y, smooth_fun = NULL, resampling_freq = NULL,
   ts_data$ts_id <- NULL
 
   smooth_models <- NULL
-  if(!is.null(smooth_fun)) {
-
-    # Check if smooth_fun has two or three arguments
-    if(length(formals(smooth_fun)) != c(2)) {
-      stop("The smooth function should have only two arguments!")
-    }
+  if(!is.null(resampling_fun)) {
 
     # Shift dates
     ts_data$observations <- lapply(ts_data$observations, shift_ts_dates)
@@ -163,7 +161,7 @@ twdtw_knn1 <- function(x, y, smooth_fun = NULL, resampling_freq = NULL,
 
       # Fit smooth model to each band
       smooth_models <- lapply(as.list(ts), function(band) {
-        smooth_fun(x = as.numeric(y_time), y = band)
+        resampling_fun(data.frame(x = as.numeric(y_time), y = band))
       })
 
       return(smooth_models)

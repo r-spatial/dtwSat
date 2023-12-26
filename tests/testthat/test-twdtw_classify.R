@@ -26,7 +26,7 @@ cat("Creating twdtw_knn1 model using GAM...\n")
 system.time(
   m <- twdtw_knn1(x = dc,
                   y = samples,
-                  smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y)),
+                  resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
                   cycle_length = 'year',
                   time_scale = 'day',
                   time_weight = c(steepness = 0.1, midpoint = 50))
@@ -52,11 +52,12 @@ ggplot() +
 cat("Testing model with resampling frequency of 60 and GAM...\n")
 m <- twdtw_knn1(x = dc,
                 y = samples,
+                resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
+                resampling_freq = 60,
                 cycle_length = 'year',
                 time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y)),
-                resampling_freq = 60)
+                time_weight = c(steepness = 0.1, midpoint = 50)
+                )
 
 cat("Visualizing resampled patterns...\n")
 plot(m)
@@ -98,10 +99,10 @@ plot(m, bands = c('EVI', 'NDVI'))
 cat("Testing custom smooth function using the average for each observation date...\n")
 m <- twdtw_knn1(x = dc,
                 y = samples,
+                resampling_fun = function(data) lm(y ~ factor(x), data = data),
                 cycle_length = 'year',
                 time_scale = 'day',
-                time_weight = c(steepness = 0.1, midpoint = 50),
-                smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x = x, y = y)))
+                time_weight = c(steepness = 0.1, midpoint = 50))
 
 cat("Printing model with custom smooth...\n")
 print(m)

@@ -7,7 +7,7 @@
 twdtw_knn1(
   x,
   y,
-  smooth_fun = NULL,
+  resampling_fun = NULL,
   resampling_freq = NULL,
   time_weight,
   cycle_length,
@@ -23,11 +23,12 @@ twdtw_knn1(
 
 \item{y}{An sf object with the coordinates of the training points.}
 
-\item{smooth_fun}{a function specifying how to create temporal patterns using the samples.
+\item{resampling_fun}{a function specifying how to create temporal patterns using the samples.
 If not defined, it will keep all samples. Note that reducing the samples to patterns can significantly
-improve computational time of predictions. See details.}
+improve computational time of predictions. The resampling function must receive a single data frame as
+argument an return a model. See details.}
 
-\item{resampling_freq}{The time for sampling the time series if \code{smooth_fun} is given.
+\item{resampling_freq}{The time for sampling the time series if \code{resampling_fun} is given.
 If NULL, the function will infer the frequency of observations in \code{x}.}
 
 \item{time_weight}{A numeric vector with length two (steepness and midpoint of logistic weight) or a function.
@@ -52,19 +53,21 @@ A 'twdtw_knn1' model containing the trained model information and the data used.
 This function prepares a KNN-1 model with the Time Warp Dynamic Time Warping (TWDTW) algorithm.
 }
 \details{
-If \code{smooth_fun} not informed, the KNN-1 model will retain all training samples.
+If \code{resampling_fun} not informed, the KNN-1 model will retain all training samples.
 
-If a custom smoothing function is passed to \code{smooth_fun}, the function will be used to
+If a custom smoothing function is passed to \code{resampling_fun}, the function will be used to
 resample values of samples sharing the same label (land cover class).
 
-The custom smoothing function takes two numeric vectors as arguments and returns a model:
+The custom smoothing function takes a single data frame and returns a model.
+The data frame has two named columns:
 \itemize{
-\item The first argument represents the independent variable (typically time).
-\item The second argument represents the dependent variable (e.g., band values) corresponding to each coordinate in the first argument.
+\item \code{x} is the first column representing the independent variable (typically time).
+\item \code{y} is the second column representing the dependent variable (e.g., band values) corresponding to each coordinate in \code{x}.
 }
-See the examples section for further clarity.
 
 Smooting the samples can significantly reduce the processing time for prediction using \code{twdtw_knn1} model.
+
+See the examples section for further clarity.
 }
 \examples{
 \dontrun{
@@ -92,12 +95,12 @@ dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
 m <- twdtw_knn1(
-   x = dc,
-   y = samples,
-   smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y))
-   cycle_length = 'year',
-   time_scale = 'day',
-   time_weight = c(steepness = 0.1, midpoint = 50))
+ x = dc,
+ y = samples,
+ resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -117,7 +120,7 @@ ggplot() +
 
 m <- twdtw_knn1(x = dc,
  y = samples,
- smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x=x, y=y))
+ resampling_fun = function(data) lm(y ~ factor(x), data = data),
  cycle_length = 'year',
  time_scale = 'day',
  time_weight = c(steepness = 0.1, midpoint = 50))

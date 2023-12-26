@@ -49,12 +49,12 @@ dc <- split(dc, c("band"))
 
 # Create a knn1-twdtw model
 m <- twdtw_knn1(
-   x = dc,
-   y = samples,
-   smooth_fun = function(x, y) gam(y ~ s(x), data = data.frame(x = x, y = y))
-   cycle_length = 'year',
-   time_scale = 'day',
-   time_weight = c(steepness = 0.1, midpoint = 50))
+ x = dc,
+ y = samples,
+ resampling_fun = function(data) mgcv::gam(y ~ s(x), data = data),
+ cycle_length = 'year',
+ time_scale = 'day',
+ time_weight = c(steepness = 0.1, midpoint = 50))
 
 print(m)
 
@@ -74,7 +74,7 @@ ggplot() +
 
 m <- twdtw_knn1(x = dc,
  y = samples,
- smooth_fun = function(x, y) lm(y ~ factor(x), data = data.frame(x=x, y=y))
+ resampling_fun = function(data) lm(y ~ factor(x), data = data),
  cycle_length = 'year',
  time_scale = 'day',
  time_weight = c(steepness = 0.1, midpoint = 50))

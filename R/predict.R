@@ -28,8 +28,10 @@ predict.twdtw_knn1 <- function(object, newdata, ...){
   newdata_ts <- prepare_time_series(newdata)
 
   # Compute TWDTW distances
-  distances <- sapply(object$data$observations, function(pattern){
-    sapply(newdata_ts$observations, function(ts) {
+  distances <- sapply(seq_along(object$data$observations), function(i){
+    pattern <- object$data$observations[[i]]
+    sapply(seq_along(newdata_ts$observations), function(j) {
+      ts <- newdata_ts$observations[[j]]
       do.call(proxy::dist, c(list(x = as.data.frame(ts), y = as.data.frame(pattern), method = 'twdtw'), object$twdtw_args))
     })
   })
